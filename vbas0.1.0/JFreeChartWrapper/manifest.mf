@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+OpenIDE-Module: uk.ac.isc.jfreechartwrapper
+OpenIDE-Module-Localizing-Bundle: uk/ac/isc/jfreechartwrapper/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0
+
