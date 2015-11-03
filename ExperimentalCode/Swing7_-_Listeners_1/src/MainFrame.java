@@ -3,7 +3,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 
 
-public class MainFrame implements StringListener extends JFrame {
+public class MainFrame extends JFrame implements StringListener {
 
     private TextPanel textPanel;
     private JButton button;
@@ -16,18 +16,16 @@ public class MainFrame implements StringListener extends JFrame {
         textPanel = new TextPanel();
         
         toolBar = new ToolBar(); 
-        //toolBar.setTextPanel(textPanel);
-        
-        toolBar.setStringListener(this);
-        
-        
-            
+                            
         add(toolBar, BorderLayout.NORTH);
         add(textPanel, BorderLayout.CENTER);
         
         setSize(600, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
+        
+        // send ref
+        toolBar.setStringListener(this);
     }
 
     @Override
