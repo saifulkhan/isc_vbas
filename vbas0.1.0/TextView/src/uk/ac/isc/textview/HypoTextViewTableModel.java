@@ -1,4 +1,3 @@
-
 package uk.ac.isc.textview;
 
 import java.text.DecimalFormat;
@@ -10,28 +9,28 @@ import uk.ac.isc.seisdata.Hypocentre;
 
 /**
  * This is the table model fro hypocentre table
+ *
  * @author hui
  */
 class HypoTextViewTableModel extends AbstractTableModel {
 
-    private final String[] columnNames = {"Agency", "Time", 
-        "Lat.", "Long.","Depth", "Depth Error","Magnitude 1", "Magnitude 2", "RMS", "Hypid"};
-    
-    private final Class[] columns = new Class[]{String.class, String.class, String.class, String.class, Double.class, Integer.class, 
+    private final String[] columnNames = {"Agency", "Time", "Lat.", "Long.", 
+        "Depth", "Depth Error", "Magnitude 1", "Magnitude 2", "RMS", "Hypid"};
+
+    private final Class[] columns = new Class[]{String.class, String.class, 
+        String.class, String.class, Double.class, Integer.class,
         String.class, String.class, Double.class, Integer.class};
-    
+
     private ArrayList<Hypocentre> hyposList;
-    
-    public HypoTextViewTableModel(ArrayList<Hypocentre> hyposList)
-    {
+
+    public HypoTextViewTableModel(ArrayList<Hypocentre> hyposList) {
         this.hyposList = hyposList;
     }
-    
-    public void setHyposList(ArrayList<Hypocentre> hlist)
-    {
+
+    public void setHyposList(ArrayList<Hypocentre> hlist) {
         this.hyposList = hlist;
     }
-    
+
     @Override
     public int getRowCount() {
         return hyposList.size();
@@ -43,13 +42,11 @@ class HypoTextViewTableModel extends AbstractTableModel {
     }
 
     @Override
-    public String getColumnName(int col)
-    {
+    public String getColumnName(int col) {
         return columnNames[col];
     }
-    
-    public ArrayList<Hypocentre> getHyposList()
-    {
+
+    public ArrayList<Hypocentre> getHyposList() {
         return this.hyposList;
     }
 
@@ -57,104 +54,80 @@ class HypoTextViewTableModel extends AbstractTableModel {
     public Class getColumnClass(int c) {
         return columns[c];
     }
-    
+
     //return values at row and column
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-       
+
         Object retObject = null;
-        
+
         NumberFormat numFormat = DecimalFormat.getInstance();
         numFormat.setMaximumFractionDigits(1);
-        numFormat.setMinimumFractionDigits(1); 
-        
-        if(columnIndex==0)
-        {
+        numFormat.setMinimumFractionDigits(1);
+
+        if (columnIndex == 0) {
             retObject = hyposList.get(rowIndex).getAgency();//agency
-        }
-        else if(columnIndex==1)
-        {
+        } else if (columnIndex == 1) {
             SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-            if(hyposList.get(rowIndex).getOrigTime()!=null)
-               retObject = dateFormat.format(hyposList.get(rowIndex).getOrigTime()) + "." + hyposList.get(rowIndex).getMsec()/100;
-            else
-               retObject = null;
-        }
-        else if(columnIndex==2) //lat
+            if (hyposList.get(rowIndex).getOrigTime() != null) {
+                retObject = dateFormat.format(hyposList.get(rowIndex).getOrigTime()) + "." + hyposList.get(rowIndex).getMsec() / 100;
+            } else {
+                retObject = null;
+            }
+        } else if (columnIndex == 2) //lat
         {
-            String latString="";
-            if(hyposList.get(rowIndex).getLat()<0)
-            {
+            String latString = "";
+            if (hyposList.get(rowIndex).getLat() < 0) {
                 latString += numFormat.format(Math.abs(hyposList.get(rowIndex).getLat()));
                 latString += "S";
-            }
-            else
-            {
+            } else {
                 latString += numFormat.format(hyposList.get(rowIndex).getLat());
                 latString += "N";
             }
             retObject = latString;
-        }
-        else if(columnIndex==3) //lon
+        } else if (columnIndex == 3) //lon
         {
-            String lonString="";
-            if(hyposList.get(rowIndex).getLon()<0)
-            {
+            String lonString = "";
+            if (hyposList.get(rowIndex).getLon() < 0) {
                 lonString += numFormat.format(Math.abs(hyposList.get(rowIndex).getLon()));
                 lonString += "W";
-            }
-            else
-            {
+            } else {
                 lonString += numFormat.format(hyposList.get(rowIndex).getLon());
                 lonString += "E";
             }
             retObject = lonString;
-        }
-        else if(columnIndex==4) //depth
+        } else if (columnIndex == 4) //depth
         {
-           retObject = hyposList.get(rowIndex).getDepth();
-        }
-        else if(columnIndex==5) //depth error
+            retObject = hyposList.get(rowIndex).getDepth();
+        } else if (columnIndex == 5) //depth error
         {
-            if(hyposList.get(rowIndex).getErrDepth()!=null)
-            {
+            if (hyposList.get(rowIndex).getErrDepth() != null) {
                 retObject = Math.round(hyposList.get(rowIndex).getErrDepth());
-            }
-            else
-            {
+            } else {
                 retObject = null;
             }
-        }
-        else if(columnIndex==6) //mag 1 + type
+        } else if (columnIndex == 6) //mag 1 + type
         {
-             if(hyposList.get(rowIndex).getMagnitude().size()>0)
-             {
-                 Object key = hyposList.get(rowIndex).getMagnitude().keySet().toArray()[0];
-                 retObject = hyposList.get(rowIndex).getMagnitude().get(key).toString() + key.toString();
-             }
-             else
+            if (hyposList.get(rowIndex).getMagnitude().size() > 0) {
+                Object key = hyposList.get(rowIndex).getMagnitude().keySet().toArray()[0];
+                retObject = hyposList.get(rowIndex).getMagnitude().get(key).toString() + key.toString();
+            } else {
                 retObject = null;
-        }
-        else if(columnIndex==7)
-        {
-            if(hyposList.get(rowIndex).getMagnitude().size()>1)
-            {
+            }
+        } else if (columnIndex == 7) {
+            if (hyposList.get(rowIndex).getMagnitude().size() > 1) {
                 Object key = hyposList.get(rowIndex).getMagnitude().keySet().toArray()[1];
                 retObject = hyposList.get(rowIndex).getMagnitude().get(key).toString() + key.toString();
-            }
-            else
+            } else {
                 retObject = null;
-        }
-        else if(columnIndex==8)
-        {
+            }
+        } else if (columnIndex == 8) {
             retObject = Double.valueOf(numFormat.format(hyposList.get(rowIndex).getStime()));
-        }
-        else
-        {
+        } else {
             retObject = hyposList.get(rowIndex).getHypid();
         }
-        
+
         return retObject;
     }
-    
+
 }

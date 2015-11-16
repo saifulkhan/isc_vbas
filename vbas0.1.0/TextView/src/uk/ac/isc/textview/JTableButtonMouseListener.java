@@ -29,7 +29,7 @@ class JTableButtonMouseListener extends MouseAdapter {
             if (value instanceof JButton) {
                 /**Here is the code for popup a dialog to edit the phase reading*/
                 //((JButton)value).doClick(); 
-                //System.out.println(this.table.getValueAt(row, 2));
+                System.out.println("JTableButtonMouseListener: Mouse Clicked." + this.table.getValueAt(row, 2));
             }
         }
     }
