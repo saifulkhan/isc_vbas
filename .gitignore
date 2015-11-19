@@ -1,3 +1,4 @@
+*.ini
 build/
 /JMapViewerWrapper/nbproject/private/
 /dist/

@@ -45,6 +45,8 @@ import uk.ac.isc.seisdata.SeisDataChangeListener;
     "CTL_PhaseTextViewTopComponent=PhaseTextView Window",
     "HINT_PhaseTextViewTopComponent=This is a PhaseTextView window"
 })
+
+
 public final class PhaseTextViewTopComponent extends TopComponent implements SeisDataChangeListener {
 
     //reference of phase list
