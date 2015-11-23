@@ -7,12 +7,9 @@ import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 import uk.ac.isc.seisdata.Hypocentre;
 
-/**
- * This is the table model fro hypocentre table
- *
- * @author hui
- */
-class HypoTextViewTableModel extends AbstractTableModel {
+
+
+class HypoTableModel extends AbstractTableModel {
 
     private final String[] columnNames = {"Agency", "Time", "Lat.", "Long.", 
         "Depth", "Depth Error", "Magnitude 1", "Magnitude 2", "RMS", "Hypid"};
@@ -23,7 +20,7 @@ class HypoTextViewTableModel extends AbstractTableModel {
 
     private ArrayList<Hypocentre> hyposList;
 
-    public HypoTextViewTableModel(ArrayList<Hypocentre> hyposList) {
+    public HypoTableModel(ArrayList<Hypocentre> hyposList) {
         this.hyposList = hyposList;
     }
 
@@ -50,9 +47,16 @@ class HypoTextViewTableModel extends AbstractTableModel {
         return this.hyposList;
     }
 
+    /*
+     * JTable uses this method to determine the default renderer/
+     * editor for each cell.  If we didn't implement this method,
+     * then the last column would contain text ("true"/"false"),
+     * rather than a check box.
+     */
     @Override
     public Class getColumnClass(int c) {
-        return columns[c];
+        //return columns[c];   // Hui
+        return getValueAt(0, c).getClass(); // Saiful
     }
 
     //return values at row and column
@@ -129,5 +133,38 @@ class HypoTextViewTableModel extends AbstractTableModel {
 
         return retObject;
     }
+
+    public boolean isCellEditable(int row, int col) {
+        //Note that the data/cell address is constant, no matter where the cell appears onscreen.
+        /*
+        if (col < 1) {
+            return false;
+        } else {
+            return true;
+        }*/
+        
+        return false;
+    }
+    
+    public void setValueAt(Object value, int row, int col) {
+        /*  
+         if (DEBUG) {
+         System.out.println("Setting value at " + row + "," + col
+         + " to " + value
+         + " (an instance of "
+         + value.getClass() + ")");
+         }
+
+         data[row][col] = value;
+         fireTableCellUpdated(row, col);
+
+         if (DEBUG) {
+         System.out.println("New value of data:");
+         printDebugData();
+         }
+         */
+    }
+
+            
 
 }

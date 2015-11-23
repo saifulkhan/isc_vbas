@@ -32,18 +32,22 @@ public final class SeisDataDAO {
      * Loading user name, password and scheme from system environment
      */
     static {
-        /*
+        
         //will load from from bashrc for personal login later, here is for testing
         Map<String, String> env = System.getenv();
         url = "jdbc:postgresql://" + env.get("PGHOSTADDR") + ":" + env.get("PGPORT") + "/" + env.get("PGDATABASE");
         user = env.get("PGUSER");
         password = env.get("PGPASSWORD");
-        */
         
+        /*
         // Saiful home laptop
         url = "jdbc:postgresql://127.0.0.1:5432/isc";
         user = "saiful";
         password = "saiful";
+        */
+        
+        String osName = System.getProperty("os.name");
+        System.out.println(osName);
             
     }
 
@@ -52,12 +56,11 @@ public final class SeisDataDAO {
     private static final String user; //= "hui";
     private static final String password; //= "njustga"; 
     
+    
     private SeisDataDAO() {
-        
-        
-
     }
 
+    
     /**
      * retrieve all the events in a user's schema
      *

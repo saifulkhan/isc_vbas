@@ -27,8 +27,7 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */ 
-
+ */
 package components;
 
 /*
@@ -36,7 +35,6 @@ package components;
  *   ColorRenderer.java
  *   ColorEditor.java
  */
-
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -49,19 +47,25 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.Action;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
+import javax.swing.undo.UndoManager;
 
 /**
- * This is like TableDemo, except that it substitutes a
- * Favorite Color column for the Last Name column and specifies
- * a custom cell renderer and editor for the color data.
+ * This is like TableDemo, except that it substitutes a Favorite Color column
+ * for the Last Name column and specifies a custom cell renderer and editor for
+ * the color data.
  */
 public class TableDialogEditDemo extends JPanel implements ActionListener {
+
     private boolean DEBUG = false;
 
     public TableDialogEditDemo() {
-        super(new GridLayout(1,0));
+        super(new GridLayout(1, 0));
 
         JTable table = new JTable(new MyTableModel());
         table.setPreferredScrollableViewportSize(new Dimension(500, 70));
@@ -72,31 +76,51 @@ public class TableDialogEditDemo extends JPanel implements ActionListener {
 
         //Set up renderer and editor for the Favorite Color column.
         table.setDefaultRenderer(Color.class,
-                                 new ColorRenderer(true));
+                new ColorRenderer(true));
         table.setDefaultEditor(Color.class,
-                               new ColorEditor());
+                new ColorEditor());
 
         //Add the scroll pane to this panel.
         add(scrollPane);
-        
-        
+
         /*
          * Popup Menu 
          */
-        
-        JPopupMenu popupMenu = new JPopupMenu();
+        JPopupMenu popup = new JPopupMenu();
         JMenuItem menuItemAdd = new JMenuItem("Add New Row");
         JMenuItem menuItemRemove = new JMenuItem("Remove Current Row");
         JMenuItem menuItemRemoveAll = new JMenuItem("Remove All Rows");
 
-        popupMenu.add(menuItemAdd);
-        popupMenu.add(menuItemRemove);
-        popupMenu.add(menuItemRemoveAll);
-        table.setComponentPopupMenu(popupMenu);
-        
+        popup.add(menuItemAdd);
+        popup.add(menuItemRemove);
+        popup.add(menuItemRemoveAll);
+
+        popup.addPopupMenuListener(new PopupMenuListener() {
+            public void popupMenuCanceled(PopupMenuEvent e) {
+            }
+
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+                 //undoAction.setEnabled(true);
+                //redoAction.setEnabled(true);
+            }
+
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+                JPopupMenu pop = (JPopupMenu) e.getSource();
+                JTextField field = (JTextField) pop.getInvoker();
+                boolean flg = field.getSelectedText() != null;
+      //cutAction.setEnabled(flg);
+                //copyAction.setEnabled(flg);
+                //deleteAction.setEnabled(flg);
+                //undoAction.setEnabled(manager.canUndo());
+                //redoAction.setEnabled(manager.canRedo());
+            }
+        });
+
+        table.setComponentPopupMenu(popup);
+
+        // end popup menu
         table.addMouseListener(new TableMouseListener(table));
-        
-        
+
     }
 
     public void actionPerformed(ActionEvent ae) {
@@ -104,22 +128,23 @@ public class TableDialogEditDemo extends JPanel implements ActionListener {
     }
 
     class MyTableModel extends AbstractTableModel {
+
         private String[] columnNames = {"First Name",
-                                        "Favorite Color",
-                                        "Sport",
-                                        "# of Years",
-                                        "Vegetarian"};
+            "Favorite Color",
+            "Sport",
+            "# of Years",
+            "Vegetarian"};
         private Object[][] data = {
             {"Mary", new Color(153, 0, 153),
-             "Snowboarding", new Integer(5), new Boolean(false)},
+                "Snowboarding", new Integer(5), new Boolean(false)},
             {"Alison", new Color(51, 51, 153),
-             "Rowing", new Integer(3), new Boolean(true)},
+                "Rowing", new Integer(3), new Boolean(true)},
             {"Kathy", new Color(51, 102, 51),
-             "Knitting", new Integer(2), new Boolean(false)},
+                "Knitting", new Integer(2), new Boolean(false)},
             {"Sharon", Color.red,
-             "Speed reading", new Integer(20), new Boolean(true)},
+                "Speed reading", new Integer(20), new Boolean(true)},
             {"Philip", Color.pink,
-             "Pool", new Integer(10), new Boolean(false)}
+                "Pool", new Integer(10), new Boolean(false)}
         };
 
         public int getColumnCount() {
@@ -161,9 +186,9 @@ public class TableDialogEditDemo extends JPanel implements ActionListener {
         public void setValueAt(Object value, int row, int col) {
             if (DEBUG) {
                 System.out.println("Setting value at " + row + "," + col
-                                   + " to " + value
-                                   + " (an instance of "
-                                   + value.getClass() + ")");
+                        + " to " + value
+                        + " (an instance of "
+                        + value.getClass() + ")");
             }
 
             data[row][col] = value;
@@ -179,9 +204,9 @@ public class TableDialogEditDemo extends JPanel implements ActionListener {
             int numRows = getRowCount();
             int numCols = getColumnCount();
 
-            for (int i=0; i < numRows; i++) {
+            for (int i = 0; i < numRows; i++) {
                 System.out.print("    row " + i + ":");
-                for (int j=0; j < numCols; j++) {
+                for (int j = 0; j < numCols; j++) {
                     System.out.print("  " + data[i][j]);
                 }
                 System.out.println();
@@ -191,9 +216,8 @@ public class TableDialogEditDemo extends JPanel implements ActionListener {
     }
 
     /**
-     * Create the GUI and show it.  For thread safety,
-     * this method should be invoked from the
-     * event-dispatching thread.
+     * Create the GUI and show it. For thread safety, this method should be
+     * invoked from the event-dispatching thread.
      */
     private static void createAndShowGUI() {
         //Create and set up the window.

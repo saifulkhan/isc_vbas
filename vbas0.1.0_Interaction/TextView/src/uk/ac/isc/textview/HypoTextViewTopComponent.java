@@ -65,7 +65,7 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
     private static JTextPane header;
             
     //table model for the hypo table
-    private HypoTextViewTableModel hptvtModel = null;
+    private HypoTableModel hptvtModel = null;
     
     //hypocentre table
     private JTable hyposTable = null;
@@ -111,7 +111,7 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
         doc.setParagraphAttributes(0, doc.getLength(), center, false);
         
-        hptvtModel = new HypoTextViewTableModel(hyposList.getHypocentres());
+        hptvtModel = new HypoTableModel(hyposList.getHypocentres());
         hyposTable = new JTable(hptvtModel);
         
         hyposTable.setRowHeight(40);
