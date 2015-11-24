@@ -35,7 +35,9 @@ public class App {
     }
   
     private AbstractTableModel getModel() {
+        
         return new AbstractTableModel() {
+            
             public int getColumnCount() { return 3; }
             public int getRowCount() { return 4;}
             public Object getValueAt(int row, int col) {
