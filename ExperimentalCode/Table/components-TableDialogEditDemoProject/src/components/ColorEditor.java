@@ -102,11 +102,7 @@ public class ColorEditor extends AbstractCellEditor
     }
 
     //Implement the one method defined by TableCellEditor.
-    public Component getTableCellEditorComponent(JTable table,
-                                                 Object value,
-                                                 boolean isSelected,
-                                                 int row,
-                                                 int column) {
+    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
         currentColor = (Color)value;
         return button;
     }
