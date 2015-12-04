@@ -56,6 +56,10 @@ public class App {
     }
 }
   
+
+
+
+
 class PopupManager extends MouseAdapter implements ActionListener {
     JTable table;
     JPopupMenu popupMenu;
@@ -67,11 +71,34 @@ class PopupManager extends MouseAdapter implements ActionListener {
         initPopup();
         initDialog();
     }
-  
-    public void actionPerformed(ActionEvent e) {
-        showDialog();
+    
+      
+    private void initPopup() {
+        popupMenu = new JPopupMenu();
+        JMenuItem item = new JMenuItem("item 1");
+        item.addActionListener(this);
+        popupMenu.add(item);
+        
+        // TODO: add more item in the menu
     }
   
+    // TODO: add more dialogs
+    private void initDialog() {
+        Frame owner = (Frame)table.getTopLevelAncestor();
+        dialog = new JDialog(owner, "title", false);
+        JList list = new JList(new DefaultListModel());
+        dialog.add(list);
+    }
+    
+  
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        
+        // TODO: Which dialog?
+        showDialog();        
+    }
+  
+    
     private void showDialog() {
         int row = table.getSelectedRow();
         int col = table.getSelectedColumn();
@@ -88,6 +115,7 @@ class PopupManager extends MouseAdapter implements ActionListener {
         dialog.setVisible(true);
     }
   
+    @Override
     public void mousePressed(MouseEvent e) {
         Point p = e.getPoint();
         final int row = table.rowAtPoint(p);
@@ -102,6 +130,8 @@ class PopupManager extends MouseAdapter implements ActionListener {
         // in case a new selection is made with the right mouse button.
         if(row != selectedRow || col != selectedCol) {
             EventQueue.invokeLater(new Runnable() {
+                
+                @Override
                 public void run() {
                     table.changeSelection(row, col, true, false);
                 }
@@ -118,18 +148,5 @@ class PopupManager extends MouseAdapter implements ActionListener {
             }
         }
     }
-  
-    private void initPopup() {
-        popupMenu = new JPopupMenu();
-        JMenuItem item = new JMenuItem("item 1");
-        item.addActionListener(this);
-        popupMenu.add(item);
-    }
-  
-    private void initDialog() {
-        Frame owner = (Frame)table.getTopLevelAncestor();
-        dialog = new JDialog(owner, "title", false);
-        JList list = new JList(new DefaultListModel());
-        dialog.add(list);
-    }
+
 }
