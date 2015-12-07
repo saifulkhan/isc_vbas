@@ -64,6 +64,7 @@ class PopupManager extends MouseAdapter implements ActionListener {
     JTable table;
     JPopupMenu popupMenu;
     JDialog dialog;
+    //JOptionPane dialog;
   
     public PopupManager(JTable table) {
         this.table = table;
@@ -75,57 +76,64 @@ class PopupManager extends MouseAdapter implements ActionListener {
       
     private void initPopup() {
         popupMenu = new JPopupMenu();
-        JMenuItem item = new JMenuItem("item 1");
-        item.addActionListener(this);
-        popupMenu.add(item);
+
+        JMenuItem menuItem_setprime = new JMenuItem("Set Prime"); 
+        JMenuItem menuItem_relocate = new JMenuItem("Relocate..");
+        JMenuItem menuItem_depricate = new JMenuItem("Depricate");
+        JMenuItem menuItem_edit = new JMenuItem("Edit..");
+        JMenuItem menuItem_create = new JMenuItem("Create..");
+        JMenuItem menuItem_move = new JMenuItem("Move..");
+
+        popupMenu.add(menuItem_setprime);
+        popupMenu.add(menuItem_relocate);
+        popupMenu.add(menuItem_depricate);
+        popupMenu.add(menuItem_edit);
+        popupMenu.add(menuItem_create);
+        popupMenu.add(menuItem_move);
+                
+        menuItem_setprime.addActionListener(this);
+        menuItem_relocate.addActionListener(this);
+        menuItem_depricate.addActionListener(this);
+        menuItem_edit.addActionListener(this);
+        menuItem_create.addActionListener(this);
+        menuItem_move.addActionListener(this);               
         
-        // TODO: add more item in the menu
+        this.table.setComponentPopupMenu(popupMenu); 
     }
   
+    
     // TODO: add more dialogs
     private void initDialog() {
         Frame owner = (Frame)table.getTopLevelAncestor();
         dialog = new JDialog(owner, "title", false);
+        //dialog = new JOptionPane();
         JList list = new JList(new DefaultListModel());
         dialog.add(list);
     }
     
-  
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        
-        // TODO: Which dialog?
-        showDialog();        
-    }
-  
     
-    private void showDialog() {
-        int row = table.getSelectedRow();
-        int col = table.getSelectedColumn();
-        Rectangle r = table.getCellRect(row, col, true);
-        JList list = (JList)dialog.getContentPane().getComponent(0);
-        DefaultListModel model = (DefaultListModel)list.getModel();
-        model.removeAllElements();
-        model.addElement("You selected row " + row);
-        model.addElement("You selected column " + col);
-        dialog.pack();
-        Point p = r.getLocation();
-        SwingUtilities.convertPointToScreen(p, table);
-        dialog.setLocation(p.x, p.y+r.height);
-        dialog.setVisible(true);
-    }
-  
+    /*
+     * Row selected.
+     */
     @Override
     public void mousePressed(MouseEvent e) {
+        System.out.println("Mouse Pressed.");
+        
         Point p = e.getPoint();
         final int row = table.rowAtPoint(p);
         final int col = table.columnAtPoint(p);
         int selectedRow = table.getSelectedRow();
         int selectedCol = table.getSelectedColumn();
+        
+        // close the opened dialog
+        // Saiful: it should be "modal".
         if(dialog.isShowing())
             dialog.dispose();
+        
+        
         if(popupMenu.isVisible())
             popupMenu.setVisible(false);
+        
         // Update the current selection for correct popupMenu behavior
         // in case a new selection is made with the right mouse button.
         if(row != selectedRow || col != selectedCol) {
@@ -137,6 +145,7 @@ class PopupManager extends MouseAdapter implements ActionListener {
                 }
             });
         }
+        
         // Specify the condition(s) you want for popupMenu display.
         // For Example: show popupMenu only for view column index 1.
         if(row != -1 && col == 1) {
@@ -147,6 +156,63 @@ class PopupManager extends MouseAdapter implements ActionListener {
                 e.consume();
             }
         }
+        
+        
     }
+    
+    
+    /*
+     * Menu item selected.
+     */
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        
+       
+        // TODO: 
+        //showDialog();  
+        
+        if("Set Prime".equals(e.getActionCommand())){
+            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand());
+        }
+        if("Relocate..".equals(e.getActionCommand())){
+            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand());
+        }
+        if("Depricate".equals(e.getActionCommand())){
+            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand());
+        }
+        if("Edit..".equals(e.getActionCommand())){
+            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand());
+        }
+        if("Create..".equals(e.getActionCommand())){
+            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand());
+        }
+        if("Move..".equals(e.getActionCommand())){
+            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand());
+        }
+        
+    }
+  
+    
+    private void showDialog() {
+        int row = table.getSelectedRow();
+        int col = table.getSelectedColumn();
+        Rectangle r = table.getCellRect(row, col, true);
+        Point p = r.getLocation();
+        SwingUtilities.convertPointToScreen(p, table);
+
+         
+        JList list = (JList) dialog.getContentPane().getComponent(0);
+        DefaultListModel model = (DefaultListModel) list.getModel();
+        model.removeAllElements();
+        model.addElement("You selected row " + row);
+        model.addElement("You selected column " + col);
+        dialog.pack();
+        
+
+        dialog.setLocation(p.x, p.y + r.height);
+        dialog.setVisible(true);
+    }
+  
+
 
 }

@@ -138,7 +138,36 @@ public class HypoTable extends JPanel implements SeisDataChangeListener {
 
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+         //start concatenating the header string
+        currentEvent = ((EventsControlViewTopComponent) tc).getControlPanel().getSelectedSeisEvent();
+        
+        headerString = "";
+        headerString += currentEvent.getLocation();
+        headerString += "  ";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        headerString += sdf.format(currentEvent.getPrimeHypo().getOrigTime());
+        headerString += "\n Default Grid Depth: ";
+        if(SeisDataDAO.retrieveDefaultGridDepth(currentEvent.getPrimeHypo().getHypid())!=null)
+        {
+            headerString += SeisDataDAO.retrieveDefaultGridDepth(currentEvent.getPrimeHypo().getHypid()).toString();
+        }
+        else
+        {
+            headerString += "N/A";
+        }
+        
+        header.setText(headerString);
+        header.setEditable(false);
+        //Font font1 = new Font("SansSerif", Font.BOLD, 20);
+        //header.setFont(font1);
+        //header.setHorizontalAlignment(JTextField.CENTER);
+        
+        header.repaint();
+        
+        hyposTable.clearSelection();
+        scrollPane.setViewportView(hyposTable);
+        scrollPane.repaint();
+    
     }
  
 }

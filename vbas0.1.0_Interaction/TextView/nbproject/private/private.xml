@@ -3,6 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group name="test"/>
-        <group/>
+        <group>
+            <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_Interaction/TextView/src/uk/ac/isc/textview/HypoTable.java</file>
+            <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_Interaction/TextView/test/unit/src/uk/ac/isc/textview/unittest/TextViewUnitTest.java</file>
+        </group>
     </open-files>
 </project-private>

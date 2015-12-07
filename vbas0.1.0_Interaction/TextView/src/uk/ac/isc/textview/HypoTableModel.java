@@ -55,8 +55,8 @@ class HypoTableModel extends AbstractTableModel {
      */
     @Override
     public Class getColumnClass(int c) {
-        //return columns[c];   // Hui
-        return getValueAt(0, c).getClass(); // Saiful
+        return columns[c];   // Hui
+        //return getValueAt(0, c).getClass(); // Saiful
     }
 
     //return values at row and column
@@ -163,8 +163,6 @@ class HypoTableModel extends AbstractTableModel {
          printDebugData();
          }
          */
-    }
-
-            
+    }          
 
 }
