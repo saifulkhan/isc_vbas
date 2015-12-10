@@ -29,12 +29,11 @@ public class EventSearchPanel extends JPanel {
     
     private boolean searchFlag = false;
     
-    public EventSearchPanel(final EventsControlPanel ecp)
-    {
+    public EventSearchPanel(final EventsControlPanel ecp) {
         this.ecp = ecp;
         
-        Font font = new Font("SansSerif", Font.PLAIN, 18);
-        inputLabel = new JLabel("Please input the Evid number: ");
+        Font font = new Font("SansSerif", Font.PLAIN, 16);
+        inputLabel = new JLabel("Event Number: ");
         inputField = new JTextField("",8);
         searchButton = new JButton("Search");
         
@@ -48,12 +47,10 @@ public class EventSearchPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 String evidString = inputField.getText().trim();
                 Integer evid = null;
-                try
-                {
+                try {
                    evid = Integer.valueOf(evidString);
                 }
-                catch (NumberFormatException nfe)
-                {
+                catch (NumberFormatException nfe) {
                     JOptionPane.showMessageDialog(null, "The input Evid should be an integer value", "Search Error",JOptionPane.WARNING_MESSAGE);
                 }
                 

@@ -37,13 +37,14 @@ import org.openide.windows.TopComponent;
     "CTL_EventsControlViewTopComponent=EventsControlView Window",
     "HINT_EventsControlViewTopComponent=This is a EventsControlView window"
 })
+
+
 public final class EventsControlViewTopComponent extends TopComponent {
     
-    //the control panel for switching the events
-    EventsControlPanel eventsCP; 
+    EventsControlPanel eventsTable;         // Event Table
+    EventSearchPanel eventsSearchPanel;     // Search Panel
+    ActionHistory actionHistory;            // Action Hostory Table
     
-    //search panel is for searching particular event in the list
-    EventSearchPanel esp;
     
     public EventsControlViewTopComponent() {
         initComponents();
@@ -52,29 +53,30 @@ public final class EventsControlViewTopComponent extends TopComponent {
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
         
-        //try {
-        //    handler = new FileHandler("test.log", 100, 500);
-        //} catch(IOException e)
-        //{
-         //   System.out.println("Can't find the log file");
-        //}
-        //logger.addHandler(handler);
-        //logger.log(Level.FINE,"Just a test...");
-
-        eventsCP = new EventsControlPanel();
-        esp = new EventSearchPanel(eventsCP);
+ 
+        eventsTable = new EventsControlPanel();
+        eventsSearchPanel = new EventSearchPanel(eventsTable);
+        actionHistory = new ActionHistory();
         
-        JScrollPane scrollPane = new JScrollPane(eventsCP.getTable());
+        JScrollPane scrollPane = new JScrollPane(eventsTable.getTable());
+        
         this.setLayout(new BorderLayout());
+        
+        this.add(eventsSearchPanel, BorderLayout.NORTH);
         this.add(scrollPane, BorderLayout.CENTER);
-        this.add(esp, BorderLayout.SOUTH);
+        this.add(actionHistory, BorderLayout.SOUTH);
+        
+        
+        
     }
     
-    /*return of the control panel, as all the data is in this class*/
-    public EventsControlPanel getControlPanel()
-    {
-        return this.eventsCP;
+    /* 
+     * return of the control panel, all the data is in this class.
+     */
+    public EventsControlPanel getControlPanel() {
+        return this.eventsTable;
     }
+    
     
     /**
      * This method is called from within the constructor to initialize the form.

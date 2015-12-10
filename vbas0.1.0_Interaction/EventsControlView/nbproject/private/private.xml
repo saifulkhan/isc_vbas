@@ -6,6 +6,12 @@
             <file>file:/export/home/hui/NetBeansProjects/vbas0.1.0/EventsControlView/src/uk/ac/isc/eventscontrolview/EventsControlPanel.java</file>
             <file>file:/export/home/hui/NetBeansProjects/vbas0.1.0/EventsControlView/src/uk/ac/isc/eventscontrolview/EventsControlViewTopComponent.java</file>
         </group>
-        <group/>
+        <group>
+            <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_Interaction/EventsControlView/src/uk/ac/isc/eventscontrolview/EventsControlPanel.java</file>
+            <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_Interaction/EventsControlView/src/uk/ac/isc/eventscontrolview/EventsControlViewTopComponent.java</file>
+            <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_Interaction/EventsControlView/src/uk/ac/isc/eventscontrolview/ActionHistory.java</file>
+            <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_Interaction/EventsControlView/src/uk/ac/isc/eventscontrolview/EventSearchPanel.java</file>
+            <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_Interaction/EventsControlView/src/uk/ac/isc/eventscontrolview/ActionHistoryModel.java</file>
+        </group>
     </open-files>
 </project-private>

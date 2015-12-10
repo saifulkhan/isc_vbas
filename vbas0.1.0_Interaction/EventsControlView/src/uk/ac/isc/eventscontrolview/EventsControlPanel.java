@@ -23,18 +23,12 @@ import uk.ac.isc.seisdata.SeisEvent;
 import uk.ac.isc.seisdata.SeisEventsList;
 
 /**
- * It holds all the phases, hypocentres and events and passes reference to other
- * views
- *
- * @author hui, saiful
+ * It holds all the "phases", "hypocentres", and "events" data and passes
+ * reference to other views.
  */
-
 public class EventsControlPanel extends JPanel implements ListSelectionListener {
 
-    /*
-     * Attributes
-     */
-    
+
     //the main table of the event list
     private JTable eventsTable = null;
 
@@ -57,11 +51,9 @@ public class EventsControlPanel extends JPanel implements ListSelectionListener 
     //each class may need logger to keep log file, too rush to follow the good practice 
     private static final Logger logger = Logger.getLogger(EventsControlPanel.class.getName());
 
-    
     /*
      * Methods
      */
-    
     public EventsControlPanel() {
 
         /*1. set the table and tooltips*/
@@ -213,9 +205,9 @@ public class EventsControlPanel extends JPanel implements ListSelectionListener 
     //when selection changes, trigger the change of all the regestered listeners (observers)
     @Override
     public void valueChanged(ListSelectionEvent e) {
-        
+
         System.out.println(this.toString());
-        
+
         //disable the double calls
         if (e.getValueIsAdjusting()) {
             return;
@@ -244,7 +236,7 @@ public class EventsControlPanel extends JPanel implements ListSelectionListener 
                 selectedEvent.setPrimeHypo(hypo);
             }
         }
-        
+
         /*verify that the hypocentres and phases lists are correct*/
         //for(int i = 0; i<hyposList.getHypocentres().size();i++)
         //{
