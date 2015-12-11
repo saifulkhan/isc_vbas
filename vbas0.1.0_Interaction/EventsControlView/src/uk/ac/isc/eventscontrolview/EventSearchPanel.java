@@ -81,6 +81,8 @@ public class EventSearchPanel extends JPanel {
                 }
             }
         });
+        
+        
         this.setLayout(new FlowLayout());
         this.add(inputLabel);
         this.add(inputField);

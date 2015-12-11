@@ -3,8 +3,12 @@ package uk.ac.isc.eventscontrolview;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -18,38 +22,48 @@ public class ActionHistory extends JPanel implements TableModelListener {
     
     
     private JTable table;
-    
-    private final JButton buttonBanish;
-    private final JButton buttonDone;
-    private final JButton buttonAssess;
-    private final JButton buttonCommit;
+    private JButton buttonBanish;
+    private JButton buttonDone;
+    private JButton buttonAssess;
+    private JButton buttonCommit;
     
              
     public ActionHistory() {
+        initLayout();
+        initActionListeners();
+    }
+
+    
+    private void initLayout() {
+        
         // Table    
         table = new JTable(new ActionHistoryModel());
-        table.setPreferredScrollableViewportSize(new Dimension(500, 120));
+        table.setPreferredScrollableViewportSize(new Dimension(760, 200));
         table.setFillsViewportHeight(true);
         
-        initColumnSizes(); 
+        table.getColumnModel().getColumn(0).setPreferredWidth(60);
+        table.getColumnModel().getColumn(1).setPreferredWidth(150);
+        table.getColumnModel().getColumn(2).setPreferredWidth(550);
+        //initColumnSizes(); 
         
         // Table: listener
         table.getModel().addTableModelListener(this);
-   
+        
     
         // Layout    
         JPanel topPanel = new JPanel();
         JPanel bottomPanel = new JPanel();
         this.add(topPanel, BorderLayout.CENTER);
-        this.add(bottomPanel, BorderLayout.SOUTH);
+        this.add(bottomPanel, BorderLayout.LINE_END);
         
         // Layout : add table in the top panel
-        //topPanel.setLayout(new BorderLayout());
         JScrollPane scrollPane = new JScrollPane(table);
-        //add(scrollPane);
         topPanel.add(scrollPane, BorderLayout.CENTER);
         
-        //bottomPanel.setLayout(new GridLayout(0, 3));        
+        //add(bottomPanel, BorderLayout.SOUTH);
+        //topPanel.add(scrollPane);
+        
+        bottomPanel.setLayout(new FlowLayout());        
 
         buttonBanish = new JButton("Banish");
         buttonDone = new JButton("Done");
@@ -60,13 +74,24 @@ public class ActionHistory extends JPanel implements TableModelListener {
         bottomPanel.add(buttonDone);
         bottomPanel.add(buttonAssess);
         bottomPanel.add(buttonCommit);
+        
     }
+    
+    public void initActionListeners() {
+        
+        buttonAssess.addActionListener(new ActionListener() {
 
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "Asses: clicked!", " ", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+        
+    }
     
     /*
      * This method picks good column sizes. 
-     * If all column heads are wider than the column's cells'
-     * contents, then you can just use column.sizeWidthToFit().
+     * If all column heads are wider than the column's cells' contents, then you can just use column.sizeWidthToFit().
      */
     public void initColumnSizes() {
        /* ActionHistory model = (ActionHistory) table.getModel();
@@ -115,9 +140,4 @@ public class ActionHistory extends JPanel implements TableModelListener {
     }
     
 }
-
-
-    /*
-     * Buttons
-     */
-       
+ 

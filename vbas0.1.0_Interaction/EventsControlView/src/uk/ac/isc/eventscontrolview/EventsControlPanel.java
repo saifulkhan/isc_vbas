@@ -1,5 +1,6 @@
 package uk.ac.isc.eventscontrolview;
 
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.util.TreeMap;
@@ -107,6 +108,7 @@ public class EventsControlPanel extends JPanel implements ListSelectionListener 
         eventsTable.setColumnSelectionAllowed(false);
         //eventsTable.setSelectionBackground(new Color(255,255,153));
         eventsTable.setRowSelectionInterval(0, 0);
+        
 
         /*Change the skin and appearance of the control panel*/
         //eventsTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -202,24 +204,32 @@ public class EventsControlPanel extends JPanel implements ListSelectionListener 
         return this.blockTableModel;
     }
 
-    //when selection changes, trigger the change of all the regestered listeners (observers)
+    /*
+    * When another event is selected or selection changes then it  trigger the change of all the regestered listeners (observers)
+    */
+     
     @Override
     public void valueChanged(ListSelectionEvent e) {
 
-        System.out.println(this.toString());
+        System.out.println(Thread.currentThread().getStackTrace()[1].getLineNumber() + ", " + "public void valueChanged(ListSelectionEvent e)");
 
-        //disable the double calls
+        // disable the double calls
         if (e.getValueIsAdjusting()) {
             return;
         }
 
-        int rowNumber = eventsTable.getSelectedRow();
+        int selectedRowNum = eventsTable.getSelectedRow();
 
-        /*Step 1. get selected evid*/
-        selectedEvid = (Integer) eventsTable.getValueAt(rowNumber, 0);
-        //System.out.println(selectedEvid);
+        /*
+         * Step 1. get selected evid.
+         */
+        selectedEvid = (Integer) eventsTable.getValueAt(selectedRowNum, 0);
+        System.out.println(selectedEvid);
 
-        /*update the hypocentres and phases lists*/
+        
+        /*
+         * update the hypocentres and phases lists
+         */
         boolean retDAO = SeisDataDAO.retrieveHypos(selectedEvid, hyposList.getHypocentres());
         retDAO = SeisDataDAO.retrieveHyposMagnitude(hyposList.getHypocentres());
 
@@ -230,7 +240,7 @@ public class EventsControlPanel extends JPanel implements ListSelectionListener 
             logger.log(Level.SEVERE, "Fail to load hypocentres and phases list from database when selecting event.");
         }
 
-        selectedEvent = eventsList.getEvents().get(rowNumber);
+        selectedEvent = eventsList.getEvents().get(selectedRowNum);
         for (Hypocentre hypo : hyposList.getHypocentres()) {
             if (hypo.getIsPrime() == true) {
                 selectedEvent.setPrimeHypo(hypo);
