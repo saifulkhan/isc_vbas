@@ -2524,4 +2524,58 @@ public final class SeisDataDAO {
         return true;
     }
 
+    
+    /*
+     * Retrieve all the action histories .
+     * Check SeisDataDAO.retrieveHypos()
+     */
+    
+    public static boolean retrieveActionHistory(Integer evid, ArrayList<ActionHistory> actionHistoryList) {
+
+        Connection con = null;
+        Statement st = null;
+        ResultSet rs = null;
+
+        actionHistoryList.clear();
+
+        try {
+            con = DriverManager.getConnection(url, user, password);
+            st = con.createStatement();
+            
+            // TODO
+            String query = "";
+
+            rs = st.executeQuery(query);
+
+            while (rs.next()) {
+
+                ActionHistory actionHistory = new ActionHistory();
+                // TODO    
+                actionHistoryList.add(actionHistory);
+            }
+
+            rs.close();
+
+        } catch (SQLException ex) {
+            return false;
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (st != null) {
+                    st.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+
+            } catch (SQLException ex) {
+                return false;
+            }
+        }
+        return true;
+
+    }
+  
 }

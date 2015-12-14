@@ -11,7 +11,7 @@ import javax.swing.table.AbstractTableModel;
  */
 
 
-public class ActionHistoryModel extends AbstractTableModel {
+public class ActionHistoryTableModel extends AbstractTableModel {
 
     private final String[] columnNames = {"Select", "Analyst", "Command"};
     private final Class[] columns = new Class[]{Boolean.class, String.class, String.class};

@@ -111,8 +111,6 @@ public class Hypocentre extends AbstractSeisData implements Cloneable {
         return this.hypid;
     }
     
-    /** set and get positions of hypocenter
-     * @param latitude */    
     public void setLat(double latitude)
     {
         this.lat = latitude;
@@ -183,8 +181,6 @@ public class Hypocentre extends AbstractSeisData implements Cloneable {
         return agency;
     }
 
-    /** set and get the depth of hypocentre
-     * @param depth */ 
     public void setDepth(Integer depth)
     {
            this.depth = depth;

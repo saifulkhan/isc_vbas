@@ -211,25 +211,20 @@ public class EventsControlPanel extends JPanel implements ListSelectionListener 
     @Override
     public void valueChanged(ListSelectionEvent e) {
 
-        System.out.println(Thread.currentThread().getStackTrace()[1].getLineNumber() + ", " + "public void valueChanged(ListSelectionEvent e)");
+        System.out.println("DEBUG: " + Thread.currentThread().getStackTrace()[1].getLineNumber() + ", " + "public void valueChanged(ListSelectionEvent e) -> " + "call fireSeisDataChanged()");
 
         // disable the double calls
         if (e.getValueIsAdjusting()) {
             return;
         }
-
-        int selectedRowNum = eventsTable.getSelectedRow();
-
-        /*
-         * Step 1. get selected evid.
-         */
-        selectedEvid = (Integer) eventsTable.getValueAt(selectedRowNum, 0);
-        System.out.println(selectedEvid);
-
         
-        /*
-         * update the hypocentres and phases lists
-         */
+        int selectedRowNum = eventsTable.getSelectedRow();
+        // Step 1. get selected evid.
+        selectedEvid = (Integer) eventsTable.getValueAt(selectedRowNum, 0);
+        System.out.println("Selected evid: " + selectedEvid);
+        
+        // Update the hypocentres and phases lists
+        
         boolean retDAO = SeisDataDAO.retrieveHypos(selectedEvid, hyposList.getHypocentres());
         retDAO = SeisDataDAO.retrieveHyposMagnitude(hyposList.getHypocentres());
 

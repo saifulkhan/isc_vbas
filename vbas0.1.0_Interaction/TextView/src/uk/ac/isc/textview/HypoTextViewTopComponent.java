@@ -82,6 +82,8 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         setName(Bundle.CTL_HypoTextViewTopComponent());
         setToolTipText(Bundle.HINT_HypoTextViewTopComponent());
         
+        
+                
         currentEvent = ((EventsControlViewTopComponent) tc).getControlPanel().getSelectedSeisEvent();
         hyposList = ((EventsControlViewTopComponent) tc).getControlPanel().getHyposList();
         
@@ -182,10 +184,15 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         // TODO read your settings according to their version
     }
 
-    //repaint if data changes
+    /*
+    * Repaint if data changes
+    */
+    
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
         
+        System.out.println("DEBUG: " + Thread.currentThread().getStackTrace()[1].getLineNumber() + ", " + "public void SeisDataChanged(SeisDataChangeEvent event)");
+
         //start concatenating the header string
         currentEvent = ((EventsControlViewTopComponent) tc).getControlPanel().getSelectedSeisEvent();
         
@@ -214,7 +221,7 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         
         hyposTable.clearSelection();
         scrollPane.setViewportView(hyposTable);
-        scrollPane.repaint();
-        
+        scrollPane.repaint();    
     }
+    
 }

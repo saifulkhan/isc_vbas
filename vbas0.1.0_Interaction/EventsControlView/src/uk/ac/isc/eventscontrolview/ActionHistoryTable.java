@@ -18,7 +18,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
  
-public class ActionHistory extends JPanel implements TableModelListener {
+public class ActionHistoryTable extends JPanel implements TableModelListener {
     
     
     private JTable table;
@@ -28,7 +28,7 @@ public class ActionHistory extends JPanel implements TableModelListener {
     private JButton buttonCommit;
     
              
-    public ActionHistory() {
+    public ActionHistoryTable() {
         initLayout();
         initActionListeners();
     }
@@ -37,7 +37,7 @@ public class ActionHistory extends JPanel implements TableModelListener {
     private void initLayout() {
         
         // Table    
-        table = new JTable(new ActionHistoryModel());
+        table = new JTable(new ActionHistoryTableModel());
         table.setPreferredScrollableViewportSize(new Dimension(760, 200));
         table.setFillsViewportHeight(true);
         
@@ -132,7 +132,7 @@ public class ActionHistory extends JPanel implements TableModelListener {
         int row = e.getFirstRow();
         int column = e.getColumn();
         
-        ActionHistoryModel model = (ActionHistoryModel) e.getSource();
+        ActionHistoryTableModel model = (ActionHistoryTableModel) e.getSource();
         String columnName = model.getColumnName(column);
         Object data = model.getValueAt(row, column);
         
