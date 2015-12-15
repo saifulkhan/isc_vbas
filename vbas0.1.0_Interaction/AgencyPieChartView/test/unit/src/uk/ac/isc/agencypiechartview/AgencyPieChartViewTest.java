@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package uk.ac.isc.agencypiechartview;
 
 import java.util.Iterator;
@@ -22,18 +21,18 @@ import uk.ac.isc.seisdata.SeisDataDAO;
  * @author hui
  */
 public class AgencyPieChartViewTest {
-            
+
     PhasesList phasesList = new PhasesList();
-     
+
     public AgencyPieChartViewTest() {
         Integer selectedEvid = 603334701;
         boolean retDAO = SeisDataDAO.retrieveAllPhases(selectedEvid, phasesList.getPhases());
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
@@ -42,33 +41,30 @@ public class AgencyPieChartViewTest {
     // The methods must be annotated with annotation @Test. For example:
     //
     @Test
-    public void TestPieChartData() 
-    {
+    public void TestPieChartData() {
         PieChartData piedata = new PieChartData(phasesList.getPhases());
         Iterator<Map.Entry<String, Double>> entries = piedata.getMap().entrySet().iterator();
-        while(entries.hasNext())
-        {
+        while (entries.hasNext()) {
             Entry entry = entries.next();
             System.out.print(entry.getKey());
             System.out.println(entry.getValue());
         }
     }
-    
+
     @Test
-    public void TestPieChartView() 
-    {
+    public void TestPieChartView() {
         PieChartData piedata = new PieChartData(phasesList.getPhases());
         AgencyPieChartView apcView = new AgencyPieChartView();
         apcView.setData(piedata);
-        
+
         JFrame frame = new JFrame();
         frame.setSize(600, 600);
-        frame.setLocation(0,0);
+        frame.setLocation(0, 0);
         frame.add(apcView);
         frame.setVisible(true);
         frame.repaint();
-        int result = JOptionPane.showConfirmDialog(null,"Is it right?", "Unit Test", JOptionPane.YES_NO_OPTION);
-	org.junit.Assert.assertEquals (JOptionPane.YES_OPTION, result);
-        
+        int result = JOptionPane.showConfirmDialog(null, "Is it right?", "Unit Test", JOptionPane.YES_NO_OPTION);
+        org.junit.Assert.assertEquals(JOptionPane.YES_OPTION, result);
+
     }
 }

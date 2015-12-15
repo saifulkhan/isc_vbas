@@ -5,7 +5,6 @@ package uk.ac.isc.stationazimuthview;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -22,25 +21,25 @@ import uk.ac.isc.seisdata.SeisDataDAO;
  * @author hui
  */
 public class StationViewUnitTest {
-    
+
     HypocentresList hyposList = new HypocentresList();
     PhasesList phasesList = new PhasesList();
     JFrame frame;
-    
+
     public StationViewUnitTest() {
-        
+
         Integer selectedEvid = 603644068;
         boolean retDAO = SeisDataDAO.retrieveAllPhases(selectedEvid, phasesList.getPhases());
-        
+
         retDAO = SeisDataDAO.retrieveAllPhasesAmpMag(phasesList.getPhases());
-        
+
         retDAO = SeisDataDAO.retrieveHypos(selectedEvid, hyposList.getHypocentres());
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
@@ -49,19 +48,18 @@ public class StationViewUnitTest {
     // The methods must be annotated with annotation @Test. For example:
     //
     @Test
-    public void TestStationView() 
-    {
+    public void TestStationView() {
         frame = new JFrame();
         frame.setSize(800, 800);
-        frame.setLocation(0,0);
-        StationAzimuthView sav = new StationAzimuthView(hyposList,phasesList);
+        frame.setLocation(0, 0);
+        StationAzimuthView sav = new StationAzimuthView(hyposList, phasesList);
         sav.setMapDegree(30);
         JScrollPane scrollPane = new JScrollPane(sav);
         frame.add(scrollPane);
         frame.setVisible(true);
         frame.repaint();
-        int result = JOptionPane.showConfirmDialog(null,"The station azimuth coverage view", "Unit Test", JOptionPane.YES_NO_OPTION);
-	Assert.assertEquals (JOptionPane.YES_OPTION, result);
+        int result = JOptionPane.showConfirmDialog(null, "The station azimuth coverage view", "Unit Test", JOptionPane.YES_NO_OPTION);
+        Assert.assertEquals(JOptionPane.YES_OPTION, result);
     }
 
 }

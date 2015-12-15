@@ -1,4 +1,3 @@
-
 package uk.ac.isc.hypooverview;
 
 import javax.swing.ImageIcon;
@@ -8,29 +7,30 @@ import javax.swing.JSlider;
 /**
  *
  * Control panel for controlling the things shown on the main map
+ *
  * @author hui
  */
 public class OverviewControlPanel3 extends javax.swing.JPanel {
 
     private final HypoOverviewPanel2 hop;
-    
+
     private final JCheckBox[] checkBoxRef = new JCheckBox[8];
-    
+
     /**
      * Creates new form OverviewControlPanel3
      */
     public OverviewControlPanel3(final HypoOverviewPanel2 hop) {
         initComponents();
-        
+
         this.hop = hop;
-        
+
         jRadioButton1.setSelected(true);
-        
+
         setAllBandsSelected();
-        
+
         jRadioButton8.setSelected(true);
         jRadioButton11.setSelected(true);
-        
+
         //get the refs point to the static boxes
         checkBoxRef[0] = jCheckBox1;
         checkBoxRef[1] = jCheckBox2;
@@ -39,27 +39,26 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
         checkBoxRef[4] = jCheckBox5;
         checkBoxRef[5] = jCheckBox6;
         checkBoxRef[6] = jCheckBox7;
-        checkBoxRef[7] = jCheckBox8;    
-        
+        checkBoxRef[7] = jCheckBox8;
+
         jLabel5.setIcon(new ImageIcon(hop.getMiniMap()));
     }
 
-    public void resetOrderHypoOption()
-    {
+    public void resetOrderHypoOption() {
         jRadioButton1.setSelected(true);
         jRadioButton8.setSelected(true);
     }
-    
-    public void resetToDefault()
-    {
+
+    public void resetToDefault() {
         jRadioButton1.setSelected(true);
         jRadioButton8.setSelected(true);
         setAllBandsSelected();
-        jSlider2.setValue(7-hop.getCurrentBand());
-        
+        jSlider2.setValue(7 - hop.getCurrentBand());
+
         hop.setDepthBandOrder(4);
         jLabel5.setIcon(new ImageIcon(hop.getMiniMap()));
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -483,11 +482,11 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
 
     private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
         // neighbour bands first
-        
+
         jRadioButton1.setSelected(true);
         setAllBandsSelected();
         hop.setDepthBandOrder(4);
-        jSlider2.setValue(7-hop.getCurrentBand());
+        jSlider2.setValue(7 - hop.getCurrentBand());
     }//GEN-LAST:event_jRadioButton1ActionPerformed
 
     private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
@@ -495,7 +494,7 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
         jRadioButton2.setSelected(true);
         setAllBandsSelected();
         hop.setDepthBandOrder(1);
-        jSlider2.setValue(7-hop.getCurrentBand());
+        jSlider2.setValue(7 - hop.getCurrentBand());
     }//GEN-LAST:event_jRadioButton2ActionPerformed
 
     private void jRadioButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton3ActionPerformed
@@ -503,7 +502,7 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
         jRadioButton3.setSelected(true);
         setAllBandsSelected();
         hop.setDepthBandOrder(2);
-        jSlider2.setValue(7-hop.getCurrentBand());
+        jSlider2.setValue(7 - hop.getCurrentBand());
     }//GEN-LAST:event_jRadioButton3ActionPerformed
 
     private void jRadioButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton4ActionPerformed
@@ -511,7 +510,7 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
         jRadioButton4.setSelected(true);
         setAllBandsSelected();
         hop.setDepthBandOrder(3);
-        jSlider2.setValue(7-hop.getCurrentBand());
+        jSlider2.setValue(7 - hop.getCurrentBand());
     }//GEN-LAST:event_jRadioButton4ActionPerformed
 
     private void jRadioButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton5ActionPerformed
@@ -519,8 +518,8 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
         jRadioButton5.setSelected(true);
         setAllBandsSelected();
         hop.setDepthBandOrder(5);
-        
-        jSlider2.setValue(7-hop.getCurrentBand());
+
+        jSlider2.setValue(7 - hop.getCurrentBand());
         //set hypo anim to non
         jRadioButton8.setSelected(true);
         hop.setHypoVisOptions(2);
@@ -530,56 +529,47 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
         // TODO add your handling code here:
         //jSlider2.setValue(7-hop.getCurrentBand());
         jRadioButton6.setSelected(true);
-        
-        int fps = (int)jSlider2.getValue();
+
+        int fps = (int) jSlider2.getValue();
         boolean[] visible = new boolean[8];
-        for(int i = 0; i<8; i++)
-        {
-            if(i==fps)
-            {
-                visible[7-i] = true;
-                checkBoxRef[7-i].setSelected(true);
-            }
-            else
-            {
-                visible[7-i] = false;
-                checkBoxRef[7-i].setSelected(false);
+        for (int i = 0; i < 8; i++) {
+            if (i == fps) {
+                visible[7 - i] = true;
+                checkBoxRef[7 - i].setSelected(true);
+            } else {
+                visible[7 - i] = false;
+                checkBoxRef[7 - i].setSelected(false);
             }
         }
-            
+
         hop.setMultiDepthBandVisible(visible);
-        
+
         hop.setDepthBandOrder(6);
     }//GEN-LAST:event_jRadioButton6ActionPerformed
-        
+
     private void jSlider2StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider2StateChanged
         // single selection and disable other bands
-        JSlider source = (JSlider)evt.getSource();
+        JSlider source = (JSlider) evt.getSource();
         if (!source.getValueIsAdjusting()) {
-            int fps = (int)source.getValue();
+            int fps = (int) source.getValue();
             boolean[] visible = new boolean[8];
-            for(int i = 0; i<8; i++)
-            {
-                if(i==fps)
-                {
-                    visible[7-i] = true;
-                    checkBoxRef[7-i].setSelected(true);
-                }
-                else
-                {
-                    visible[7-i] = false;
-                    checkBoxRef[7-i].setSelected(false);
+            for (int i = 0; i < 8; i++) {
+                if (i == fps) {
+                    visible[7 - i] = true;
+                    checkBoxRef[7 - i].setSelected(true);
+                } else {
+                    visible[7 - i] = false;
+                    checkBoxRef[7 - i].setSelected(false);
                 }
             }
-            
+
             hop.setMultiDepthBandVisible(visible);
-        }    
-        
+        }
+
         jRadioButton6.setSelected(true);
     }//GEN-LAST:event_jSlider2StateChanged
 
-    private void setAllBandsSelected()
-    {
+    private void setAllBandsSelected() {
         jCheckBox1.setSelected(true);
         jCheckBox2.setSelected(true);
         jCheckBox3.setSelected(true);
@@ -589,7 +579,7 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
         jCheckBox7.setSelected(true);
         jCheckBox8.setSelected(true);
     }
-    
+
     //this set of buttons for setting the dot size of seismicity
     private void jRadioButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton10ActionPerformed
         // TODO add your handling code here:
@@ -619,109 +609,84 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
 
     private void jRadioButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton9ActionPerformed
         // TODO add your handling code here:
-        
+
         jRadioButton1.setSelected(true);
         hop.setDepthBandOrder(4);
-        
+
         hop.setHypoVisOptions(3);
     }//GEN-LAST:event_jRadioButton9ActionPerformed
 
     private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
 
-        if(hop.getDepthBandVisible(0)==true)
-        {
+        if (hop.getDepthBandVisible(0) == true) {
             hop.setSingleDepthBandVisible(0, false);
-        }
-        else
-        {
+        } else {
             hop.setSingleDepthBandVisible(0, true);
         }
     }//GEN-LAST:event_jCheckBox1ActionPerformed
 
     private void jCheckBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox2ActionPerformed
 
-        if(hop.getDepthBandVisible(1)==true)
-        {
+        if (hop.getDepthBandVisible(1) == true) {
             hop.setSingleDepthBandVisible(1, false);
-        }
-        else
-        {
+        } else {
             hop.setSingleDepthBandVisible(1, true);
         }
     }//GEN-LAST:event_jCheckBox2ActionPerformed
 
     private void jCheckBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox3ActionPerformed
-        
-        if(hop.getDepthBandVisible(2)==true)
-        {
+
+        if (hop.getDepthBandVisible(2) == true) {
             hop.setSingleDepthBandVisible(2, false);
-        }
-        else
-        {
+        } else {
             hop.setSingleDepthBandVisible(2, true);
         }
     }//GEN-LAST:event_jCheckBox3ActionPerformed
 
     private void jCheckBox4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox4ActionPerformed
-        
-        if(hop.getDepthBandVisible(3)==true)
-        {
+
+        if (hop.getDepthBandVisible(3) == true) {
             hop.setSingleDepthBandVisible(3, false);
-        }
-        else
-        {
+        } else {
             hop.setSingleDepthBandVisible(3, true);
         }
     }//GEN-LAST:event_jCheckBox4ActionPerformed
 
     private void jCheckBox5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox5ActionPerformed
-        
-        if(hop.getDepthBandVisible(4)==true)
-        {
+
+        if (hop.getDepthBandVisible(4) == true) {
             hop.setSingleDepthBandVisible(4, false);
-        }
-        else
-        {
+        } else {
             hop.setSingleDepthBandVisible(4, true);
         }
     }//GEN-LAST:event_jCheckBox5ActionPerformed
 
     private void jCheckBox6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox6ActionPerformed
-        
-        if(hop.getDepthBandVisible(5)==true)
-        {
+
+        if (hop.getDepthBandVisible(5) == true) {
             hop.setSingleDepthBandVisible(5, false);
-        }
-        else
-        {
+        } else {
             hop.setSingleDepthBandVisible(5, true);
         }
     }//GEN-LAST:event_jCheckBox6ActionPerformed
 
     private void jCheckBox7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox7ActionPerformed
-        
-        if(hop.getDepthBandVisible(6)==true)
-        {
+
+        if (hop.getDepthBandVisible(6) == true) {
             hop.setSingleDepthBandVisible(6, false);
-        }
-        else
-        {
+        } else {
             hop.setSingleDepthBandVisible(6, true);
         }
     }//GEN-LAST:event_jCheckBox7ActionPerformed
 
     private void jCheckBox8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox8ActionPerformed
-        
-        if(hop.getDepthBandVisible(7)==true)
-        {
+
+        if (hop.getDepthBandVisible(7) == true) {
             hop.setSingleDepthBandVisible(7, false);
-        }
-        else
-        {
+        } else {
             hop.setSingleDepthBandVisible(7, true);
         }
     }//GEN-LAST:event_jCheckBox8ActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;

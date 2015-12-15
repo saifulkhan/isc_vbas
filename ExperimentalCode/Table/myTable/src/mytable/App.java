@@ -23,6 +23,8 @@ public class App {
 */
 
 public class App {
+   
+    /*
     private JScrollPane getContent() {
         JTable table = new JTable(getModel());
         Dimension d = table.getPreferredSize();
@@ -30,11 +32,12 @@ public class App {
         table.setPreferredScrollableViewportSize(d);
         table.setCellSelectionEnabled(true);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
         new PopupManager(table);
         return new JScrollPane(table);
-    }
+    }*/
   
-    private AbstractTableModel getModel() {
+    private static AbstractTableModel getModel() {
         
         return new AbstractTableModel() {
             
@@ -49,8 +52,26 @@ public class App {
     public static void main(String[] args) {
         JFrame f = new JFrame("middle column popup");
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        f.setContentPane(new App().getContent());
-        f.pack();
+        
+        
+        //f.setContentPane(new App().getContent());
+        //f.pack();
+        
+        
+        
+        
+        JTable table = new JTable(getModel());
+        Dimension d = table.getPreferredSize();
+        d.width = 360;
+        table.setPreferredScrollableViewportSize(d);
+        table.setCellSelectionEnabled(true);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
+        new PopupManager(table);
+        f.add(new JScrollPane(table));
+        
+        
+        
         f.setLocation(200,200);
         f.setVisible(true);
     }

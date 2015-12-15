@@ -1,4 +1,3 @@
-
 package uk.ac.isc.stationmagnitudeview;
 
 import java.awt.BorderLayout;
@@ -43,45 +42,42 @@ public final class StationMagnitudeViewTopComponent extends TopComponent impleme
 
     //hypo list data
     private final HypocentresList hyposList;
-    
+
     //get control window to retrieve data
     private final TopComponent tc = WindowManager.getDefault().findTopComponent("EventsControlViewTopComponent");
-    
+
     private JScrollPane scrollPane = null;
-    
+
     //prime hypo
-    private Hypocentre ph; 
-    
+    private Hypocentre ph;
+
     //the key object of the view    
     private StationMagnitudeView smView;
-    
+
     public StationMagnitudeViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_StationMagnitudeViewTopComponent());
         setToolTipText(Bundle.HINT_StationMagnitudeViewTopComponent());
 
         hyposList = ((EventsControlViewTopComponent) tc).getControlPanel().getHyposList();
-             
-        for(int i = 0; i<hyposList.getHypocentres().size();i++)
-        {
-            if(hyposList.getHypocentres().get(i).getIsPrime())
-            {
+
+        for (int i = 0; i < hyposList.getHypocentres().size(); i++) {
+            if (hyposList.getHypocentres().get(i).getIsPrime()) {
                 ph = hyposList.getHypocentres().get(i);
             }
         }
-        
+
         smView = new StationMagnitudeView(ph);
-        
+
         scrollPane = new JScrollPane(smView);
-        
+
         //if(!"ISC".equals(ph.getAgency()) || ph.getAgency()==null)
         //{
         //   return;
         //}
-                
         this.setLayout(new BorderLayout());
-        this.add(scrollPane,BorderLayout.CENTER);
-        
+        this.add(scrollPane, BorderLayout.CENTER);
+
     }
 
     /**
@@ -133,20 +129,17 @@ public final class StationMagnitudeViewTopComponent extends TopComponent impleme
     //when the hypolist fire a data change event, this function will be called to update the view
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
-        
-        for(int i = 0; i<hyposList.getHypocentres().size();i++)
-        {
-            if(hyposList.getHypocentres().get(i).getIsPrime())
-            {
+
+        for (int i = 0; i < hyposList.getHypocentres().size(); i++) {
+            if (hyposList.getHypocentres().get(i).getIsPrime()) {
                 ph = hyposList.getHypocentres().get(i);
             }
         }
-             
+
         //if(!"ISC".equals(ph.getAgency()) || ph.getAgency()==null)
         //{
         //    return;
         //}
-        
         //scrollPane.removeAll();
         smView.reset(ph);
         //scrollPane.add(smView);

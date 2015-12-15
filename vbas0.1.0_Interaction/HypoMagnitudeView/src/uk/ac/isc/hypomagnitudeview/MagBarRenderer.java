@@ -1,4 +1,3 @@
-
 package uk.ac.isc.hypomagnitudeview;
 
 import java.awt.Color;
@@ -17,30 +16,30 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.ui.RectangleEdge;
 
 /**
- *  customed bar renderer
+ * customed bar renderer
+ *
  * @author hui
  */
 public class MagBarRenderer extends BarRenderer {
 
     private String label;
-        
-    MagBarRenderer(String label)
-    {
+
+    MagBarRenderer(String label) {
         this.label = label;
     }
-    
+
     //overide function for drawing each bar
     @Override
     public void drawItem(Graphics2D g2,
-                         CategoryItemRendererState state,
-                         Rectangle2D dataArea,
-                         CategoryPlot plot,
-                         CategoryAxis domainAxis,
-                         ValueAxis rangeAxis,
-                         CategoryDataset dataset,
-                         int row,
-                         int column,
-                         int pass) {
+            CategoryItemRendererState state,
+            Rectangle2D dataArea,
+            CategoryPlot plot,
+            CategoryAxis domainAxis,
+            ValueAxis rangeAxis,
+            CategoryDataset dataset,
+            int row,
+            int column,
+            int pass) {
 
         // nothing is drawn if the row index is not included in the list with
         // the indices of the visible rows...
@@ -66,23 +65,19 @@ public class MagBarRenderer extends BarRenderer {
         RectangleEdge edge = plot.getRangeAxisEdge();
         double transL0 = rangeAxis.valueToJava2D(barL0L1[0], dataArea, edge);
         double transL1 = rangeAxis.valueToJava2D(barL0L1[1], dataArea, edge);
-          
-                
+
         //label region
         //double upperBound = rangeAxis.valueToJava2D(10.0,dataArea,edge);
         //double lowerBound = rangeAxis.valueToJava2D(9.0,dataArea,edge);
         //float labelX =(float)(dataArea.getX() + dataArea.getWidth()/2);
         //float labelY = (float) ((upperBound+lowerBound)/2);
         //only draw the label once
-        
         Paint savedTextPaint = g2.getPaint();
         //draw background strips
-        if(column==0)
-        {
-            g2.setPaint(new Color(240,240,240));
-            for(int i = 0; i<10; i=i+2)
-            {
-                g2.fillRect((int)rangeAxis.valueToJava2D(i,dataArea,edge), (int)dataArea.getY(), (int)(rangeAxis.valueToJava2D(i+1,dataArea,edge)-rangeAxis.valueToJava2D(i,dataArea,edge)), (int)dataArea.getHeight());
+        if (column == 0) {
+            g2.setPaint(new Color(240, 240, 240));
+            for (int i = 0; i < 10; i = i + 2) {
+                g2.fillRect((int) rangeAxis.valueToJava2D(i, dataArea, edge), (int) dataArea.getY(), (int) (rangeAxis.valueToJava2D(i + 1, dataArea, edge) - rangeAxis.valueToJava2D(i, dataArea, edge)), (int) dataArea.getHeight());
             }
             //FontMetrics fm = g2.getFontMetrics();
             //Rectangle2D labelBounds = TextUtilities.getTextBounds(label, g2, fm);
@@ -111,17 +106,14 @@ public class MagBarRenderer extends BarRenderer {
             if (positive && inverted || !positive && !inverted) {
                 barL0Adj = barLengthAdj;
                 barBase = RectangleEdge.RIGHT;
-            }
-            else {
+            } else {
                 barBase = RectangleEdge.LEFT;
             }
-        }
-        else {
+        } else {
             if (positive && !inverted || !positive && inverted) {
                 barL0Adj = barLengthAdj;
                 barBase = RectangleEdge.BOTTOM;
-            }
-            else {
+            } else {
                 barBase = RectangleEdge.TOP;
             }
         }
@@ -131,8 +123,7 @@ public class MagBarRenderer extends BarRenderer {
         if (orientation == PlotOrientation.HORIZONTAL) {
             bar = new Rectangle2D.Double(barL0 - barL0Adj, barW0,
                     barLength + barLengthAdj, state.getBarWidth());
-        }
-        else {
+        } else {
             bar = new Rectangle2D.Double(barW0, barL0 - barL0Adj,
                     state.getBarWidth(), barLength + barLengthAdj);
         }
@@ -140,37 +131,28 @@ public class MagBarRenderer extends BarRenderer {
         //    getBarPainter().paintBarShadow(g2, this, row, column, bar, barBase,
         //        true);
         //}
-        
-        if("mb".equals(label))
-        {
+
+        if ("mb".equals(label)) {
             //dark blue
-            g2.setPaint(new Color(0,153,255));
-        }
-        else if("MS".equals(label))
-        {
+            g2.setPaint(new Color(0, 153, 255));
+        } else if ("MS".equals(label)) {
             //scalet
-            g2.setPaint(new Color(197,100,100));
-        }
-        else if("MW".equals(label))
-        {
+            g2.setPaint(new Color(197, 100, 100));
+        } else if ("MW".equals(label)) {
             //wine
-            g2.setPaint(new Color(148,0,107));
-        }
-        else if("local".equals(label))
-        {
+            g2.setPaint(new Color(148, 0, 107));
+        } else if ("local".equals(label)) {
             //lavender
-            g2.setPaint(new Color(40,150,40));
+            g2.setPaint(new Color(40, 150, 40));
+        } else {
+            g2.setPaint(new Color(227, 127, 28));
         }
-        else
-        {
-            g2.setPaint(new Color(227,127,28));
-        }
-        
+
         g2.fill(bar);
         //getBarPainter().paintBar(g2, this, row, column, bar, barBase);
 
         g2.setPaint(savedTextPaint);
-                
+
         CategoryItemLabelGenerator generator = getItemLabelGenerator(row,
                 column);
         if (generator != null && isItemLabelVisible(row, column)) {
@@ -191,5 +173,5 @@ public class MagBarRenderer extends BarRenderer {
         }
 
     }
-   
+
 }

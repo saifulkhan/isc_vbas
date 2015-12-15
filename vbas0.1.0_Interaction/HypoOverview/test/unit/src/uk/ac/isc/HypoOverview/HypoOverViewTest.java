@@ -5,7 +5,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package uk.ac.isc.HypoOverview;
 
 import javax.swing.JFrame;
@@ -17,7 +16,6 @@ import uk.ac.isc.hypooverview.HypoOverviewPanel2;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.SeisUtils;
-
 
 public class HypoOverViewTest {
 
@@ -101,8 +99,6 @@ public class HypoOverViewTest {
      int result = JOptionPane.showConfirmDialog(null,"Is it right?", "Unit Test", JOptionPane.YES_NO_OPTION);
      Assert.assertEquals (JOptionPane.YES_OPTION, result);
      }*/
-    
-    
     @Test
     public void TestAnimMap() {
         frame = new JFrame();

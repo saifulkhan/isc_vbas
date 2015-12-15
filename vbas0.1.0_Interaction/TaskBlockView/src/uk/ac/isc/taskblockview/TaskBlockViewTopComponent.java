@@ -1,4 +1,3 @@
-
 package uk.ac.isc.taskblockview;
 
 import java.awt.BorderLayout;
@@ -40,31 +39,32 @@ import uk.ac.isc.seisdata.BlockTableModel;
 public final class TaskBlockViewTopComponent extends TopComponent {
 
     private JScrollPane scrollPane;
-    
+
     //model reference
     private BlockTableModel btm;
-    
+
     //the table to show the blocks
     private JTable blockTable;
-    
+
     private final TopComponent tc = WindowManager.getDefault().findTopComponent("EventsControlViewTopComponent");
-    
+
     public TaskBlockViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_TaskBlockViewTopComponent());
         setToolTipText(Bundle.HINT_TaskBlockViewTopComponent());
 
         btm = ((EventsControlViewTopComponent) tc).getControlPanel().getBlockTableModel();
-        
+
         blockTable = new JTable(btm);
-        
+
         scrollPane = new JScrollPane(blockTable);
-        
+
         this.setLayout(new BorderLayout());
         this.add(scrollPane, BorderLayout.CENTER);
-        
+
     }
     /*EventsControlViewTopComponent*/
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

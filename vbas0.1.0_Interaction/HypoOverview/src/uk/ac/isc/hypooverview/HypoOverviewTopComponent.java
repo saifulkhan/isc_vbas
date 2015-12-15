@@ -47,20 +47,20 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
 
     //keep the hypo list
     private final HypocentresList hyposList;
-     
+
     private final JScrollPane scrollPane;
-    
+
     //private final HypoOverviewPanel hop;
     //the main view
     private final HypoOverviewPanel2 hop;
-    
+
     //the control panel
     //private final OverviewControlPanel ocp;
     private final OverviewControlPanel3 ocp;
-    
+
     //get control window to retrieve data
     private final TopComponent tc = WindowManager.getDefault().findTopComponent("EventsControlViewTopComponent");
-    
+
     public HypoOverviewTopComponent() {
         initComponents();
         setName(Bundle.CTL_HypoOverviewTopComponent());
@@ -68,15 +68,15 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
 
         hyposList = ((EventsControlViewTopComponent) tc).getControlPanel().getHyposList();
-        
+
         //hop = new HypoOverviewPanel(hyposList);
         hop = new HypoOverviewPanel2(hyposList);
-        
+
         scrollPane = new JScrollPane(hop);
-        
+
         //ocp = new OverviewControlPanel(hop);       
         ocp = new OverviewControlPanel3(hop);
-        
+
         this.setLayout(new BorderLayout());
         this.add(ocp, BorderLayout.NORTH);
         this.add(scrollPane, BorderLayout.CENTER);
@@ -131,7 +131,7 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
     //repaint when the data changes
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
-         
+
         //if(ocp.getReverseChecked())
         //{
         //    ocp.setDepthCutoff(0);
@@ -140,24 +140,21 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
         //{
         //    ocp.setDepthCutoff(8);
         //}
-        
-        for(Hypocentre hypo:hyposList.getHypocentres())
-        {
-            if(hypo.getIsPrime()==true)
-            {
-                hop.setCentLatLon(hypo.getLat(),hypo.getLon());
+        for (Hypocentre hypo : hyposList.getHypocentres()) {
+            if (hypo.getIsPrime() == true) {
+                hop.setCentLatLon(hypo.getLat(), hypo.getLon());
                 hop.setCentDepth(hypo.getDepth());
                 hop.loadSeisData(hypo.getLat(), hypo.getLon(), hop.getRangeDelta());
             }
         }
-        
+
         //hop.setHypoVisOptions(2);
         //hop.setDepthBandOrder(4);
         ocp.resetToDefault();
-        
+
         //hop.repaint();
         ocp.repaint();
-        
+
         scrollPane.setViewportView(hop);
     }
 }

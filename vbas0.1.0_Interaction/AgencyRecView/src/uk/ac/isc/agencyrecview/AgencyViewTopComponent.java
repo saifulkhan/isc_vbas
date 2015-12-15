@@ -1,4 +1,3 @@
-
 package uk.ac.isc.agencyrecview;
 
 import java.awt.BorderLayout;
@@ -25,10 +24,11 @@ import uk.ac.isc.seisdata.SeisDataChangeListener;
 import uk.ac.isc.seisdata.SeisDataDAO;
 
 /**
- * Top component which displays three tables of agencies, they are reported and expected agencies, unexpected agencies
- * and missed agencies
- * This is bit messy, the view was proposed but not been tested as the data is not ready, we can only get some artificial data 
- * need write renderers for showing different things in the tables
+ * Top component which displays three tables of agencies, they are reported and
+ * expected agencies, unexpected agencies and missed agencies This is bit messy,
+ * the view was proposed but not been tested as the data is not ready, we can
+ * only get some artificial data need write renderers for showing different
+ * things in the tables
  */
 @ConvertAsProperties(
         dtd = "-//uk.ac.isc.agencyrecview//AgencyRecView//EN",
@@ -58,49 +58,49 @@ public final class AgencyViewTopComponent extends TopComponent implements SeisDa
 
     //save all the name of reporting agencies
     private final HashSet<String> reportedAgency = new HashSet<String>();
-    
+
     //a map to keep agency likelihood
-    private final HashMap<String, LikeliTriplet> agencyLikelihood = new HashMap<String,LikeliTriplet>();
-    
+    private final HashMap<String, LikeliTriplet> agencyLikelihood = new HashMap<String, LikeliTriplet>();
+
     //the likelihood for all teh reported agencies
     private Map<String, LikeliTriplet> completeList;
-    
+
     //the likelihood of expected agencies but not in the report list
     private Map<String, LikeliTriplet> expectList;
-    
-    private HashSet<String> newSet; 
-            
+
+    private HashSet<String> newSet;
+
     private Integer evid;
     //get control window to retrieve data
     private final TopComponent tc = WindowManager.getDefault().findTopComponent("EventsControlViewTopComponent");
-        
+
     //panes for structure
     private final JSplitPane leftRightPane;
-    
+
     private final JSplitPane topBottomPane;
-    
+
     private final JScrollPane leftScrollPane;
-            
+
     private final JScrollPane topScrollPane;
-    
+
     private final JScrollPane bottomScrollPane;
-    
+
     private final JTable normalTable;
-    
+
     private final JTable expectTable;
-    
+
     private final JTable unexpectTable;
-    
+
     private DefaultTableModel model1;
-    
+
     private DefaultTableModel model2;
-    
+
     private DefaultTableModel model3;
-    
+
     private final BackgroundRenderer renderer1 = new BackgroundRenderer();
-    
-    private final String[] columnName = {"Agency", "Dist. Poss.", "Mag. Poss.", "Time Poss.","Expectation"};
-        
+
+    private final String[] columnName = {"Agency", "Dist. Poss.", "Mag. Poss.", "Time Poss.", "Expectation"};
+
     public AgencyViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_AgencyRecViewTopComponent());
@@ -108,64 +108,56 @@ public final class AgencyViewTopComponent extends TopComponent implements SeisDa
 
         phasesList = ((EventsControlViewTopComponent) tc).getControlPanel().getPhasesList();
         evid = ((EventsControlViewTopComponent) tc).getControlPanel().getSelectedSeisEvent().getEvid();
-        
+
         //get recommended list, sometime the recommendation list is empty, maybe will be sorted in future from database side
         SeisDataDAO.retrieveAgencyLikelihood(agencyLikelihood, evid);
-        
+
         //get reported list
-        for(Phase phase:phasesList.getPhases())
-        {
+        for (Phase phase : phasesList.getPhases()) {
             reportedAgency.add(phase.getReportAgency());
         }
-        
+
         //get the ordered complete list
-        completeList = new TreeMap<String,LikeliTriplet>();/*(new Comparator<Object>(){
+        completeList = new TreeMap<String, LikeliTriplet>();/*(new Comparator<Object>(){
 
-            @Override
-            public int compare(Object o1, Object o2) {
-              return ((LikeliTriplet)o1).getWeightedLike().compareTo(((LikeliTriplet)o1).getWeightedLike());
-            }
+         @Override
+         public int compare(Object o1, Object o2) {
+         return ((LikeliTriplet)o1).getWeightedLike().compareTo(((LikeliTriplet)o1).getWeightedLike());
+         }
 
-        });*/
+         });*/
+
         //completeList.putAll(agencyLikelihood);
-        if(agencyLikelihood.size()>0)
-        {
-            for(Map.Entry<String, LikeliTriplet> entry: agencyLikelihood.entrySet())
-            {
-            if(reportedAgency.contains(entry.getKey()))
-            {
-                completeList.put(entry.getKey(), entry.getValue());
+
+        if (agencyLikelihood.size() > 0) {
+            for (Map.Entry<String, LikeliTriplet> entry : agencyLikelihood.entrySet()) {
+                if (reportedAgency.contains(entry.getKey())) {
+                    completeList.put(entry.getKey(), entry.getValue());
+                }
             }
+        } else //make some artificial data at this stage, need be re-written in future
+        {
+            for (String s : reportedAgency) {
+                completeList.put(s, new LikeliTriplet(1.0, 1.0, 1.0));
             }
         }
-        else //make some artificial data at this stage, need be re-written in future
-        {
-            for(String s:reportedAgency)
-            {
-                completeList.put(s, new LikeliTriplet(1.0,1.0,1.0));
-            }
-        }
-                
+
         Object[][] dataTable1 = new Object[completeList.size()][5];
         int i = 0;
-        for(Map.Entry<String, LikeliTriplet> entry: completeList.entrySet())
-        {
+        for (Map.Entry<String, LikeliTriplet> entry : completeList.entrySet()) {
             dataTable1[i][0] = entry.getKey();
             dataTable1[i][1] = entry.getValue().getDistLike();
             dataTable1[i][2] = entry.getValue().getMagLike();
             dataTable1[i][3] = entry.getValue().getTimeLike();
-            if(!reportedAgency.contains(entry.getKey()))
-            {
+            if (!reportedAgency.contains(entry.getKey())) {
                 dataTable1[i][4] = 2;
-            }
-            else
-            {
+            } else {
                 dataTable1[i][4] = 1;
             }
             //model1.addRow(dataTable1[i]);
             i++;
         }
-        model1 = new DefaultTableModel(dataTable1,columnName);
+        model1 = new DefaultTableModel(dataTable1, columnName);
         normalTable = new JTable(model1);
 
         //set column width and height
@@ -185,27 +177,21 @@ public final class AgencyViewTopComponent extends TopComponent implements SeisDa
 
         //renderer1.setHorizontalAlignment(JLabel.CENTER);
         //renderer1.setVerticalAlignment(JLabel.CENTER);
-        
         //normalTable.getColumnModel().getColumn(0).setCellRenderer(renderer1);
-        
         //normalTable.getColumnModel().getColumn(1).setCellRenderer(new PictureRenderer());
         //normalTable.getColumnModel().getColumn(2).setCellRenderer(new PictureRenderer());
         //normalTable.getColumnModel().getColumn(3).setCellRenderer(new PictureRenderer());
-        
         //get the expectation table
         expectList = new TreeMap<String, LikeliTriplet>();
-        for(Map.Entry<String, LikeliTriplet> entry: agencyLikelihood.entrySet())
-        {
-            if(!reportedAgency.contains(entry.getKey()))
-            {
+        for (Map.Entry<String, LikeliTriplet> entry : agencyLikelihood.entrySet()) {
+            if (!reportedAgency.contains(entry.getKey())) {
                 expectList.put(entry.getKey(), entry.getValue());
             }
         }
-        
+
         Object[][] dataTable2 = new Object[5][5];
         i = 0;
-        for(Map.Entry<String, LikeliTriplet> entry: expectList.entrySet())
-        {
+        for (Map.Entry<String, LikeliTriplet> entry : expectList.entrySet()) {
             dataTable2[i][0] = entry.getKey();
             dataTable2[i][1] = entry.getValue().getDistLike();
             dataTable2[i][2] = entry.getValue().getMagLike();
@@ -213,56 +199,50 @@ public final class AgencyViewTopComponent extends TopComponent implements SeisDa
             dataTable2[i][4] = 2;
             //model2.addRow(dataTable2[i]);
             i++;
-            if(i>4)
-            {
+            if (i > 4) {
                 break;
             }
         }
-                
-        model2 = new DefaultTableModel(dataTable2,columnName);
-        expectTable = new JTable(model2);
-        
-        if(expectList.size()>0)
-        {
-        //set column width and height
-        expectTable.setRowHeight(60);
-        expectTable.getColumnModel().getColumn(1).setResizable(false);
-        expectTable.getColumnModel().getColumn(1).setMinWidth(60);
-        expectTable.getColumnModel().getColumn(1).setMaxWidth(60);
-        expectTable.getColumnModel().getColumn(2).setResizable(false);
-        expectTable.getColumnModel().getColumn(2).setMinWidth(60);
-        expectTable.getColumnModel().getColumn(2).setMaxWidth(60);
-        expectTable.getColumnModel().getColumn(3).setResizable(false);
-        expectTable.getColumnModel().getColumn(3).setMinWidth(60);
-        expectTable.getColumnModel().getColumn(3).setMaxWidth(60);
 
-        expectTable.getColumnModel().getColumn(4).setMinWidth(0);
-        expectTable.getColumnModel().getColumn(4).setMaxWidth(0);
-        
-        //BackgroundRenderer renderer1 = new BackgroundRenderer();
-        //renderer1.setHorizontalAlignment(JLabel.CENTER);
-        //renderer1.setVerticalAlignment(JLabel.CENTER);
-        //expectTable.getColumnModel().getColumn(0).setCellRenderer(renderer1);
-        
-        //expectTable.getColumnModel().getColumn(1).setCellRenderer(new PictureRenderer());
-        //expectTable.getColumnModel().getColumn(2).setCellRenderer(new PictureRenderer());
-        //expectTable.getColumnModel().getColumn(3).setCellRenderer(new PictureRenderer());
+        model2 = new DefaultTableModel(dataTable2, columnName);
+        expectTable = new JTable(model2);
+
+        if (expectList.size() > 0) {
+            //set column width and height
+            expectTable.setRowHeight(60);
+            expectTable.getColumnModel().getColumn(1).setResizable(false);
+            expectTable.getColumnModel().getColumn(1).setMinWidth(60);
+            expectTable.getColumnModel().getColumn(1).setMaxWidth(60);
+            expectTable.getColumnModel().getColumn(2).setResizable(false);
+            expectTable.getColumnModel().getColumn(2).setMinWidth(60);
+            expectTable.getColumnModel().getColumn(2).setMaxWidth(60);
+            expectTable.getColumnModel().getColumn(3).setResizable(false);
+            expectTable.getColumnModel().getColumn(3).setMinWidth(60);
+            expectTable.getColumnModel().getColumn(3).setMaxWidth(60);
+
+            expectTable.getColumnModel().getColumn(4).setMinWidth(0);
+            expectTable.getColumnModel().getColumn(4).setMaxWidth(0);
+
+            //BackgroundRenderer renderer1 = new BackgroundRenderer();
+            //renderer1.setHorizontalAlignment(JLabel.CENTER);
+            //renderer1.setVerticalAlignment(JLabel.CENTER);
+            //expectTable.getColumnModel().getColumn(0).setCellRenderer(renderer1);
+            //expectTable.getColumnModel().getColumn(1).setCellRenderer(new PictureRenderer());
+            //expectTable.getColumnModel().getColumn(2).setCellRenderer(new PictureRenderer());
+            //expectTable.getColumnModel().getColumn(3).setCellRenderer(new PictureRenderer());
         }
         //get values for the unexpected table
         newSet = new HashSet<String>();
-        for(String agency: reportedAgency)
-        {
-            if(!agencyLikelihood.containsKey(agency))
-            {
+        for (String agency : reportedAgency) {
+            if (!agencyLikelihood.containsKey(agency)) {
                 newSet.add(agency);
             }
         }
-        
+
         Object[][] dataTable3 = new Object[newSet.size()][5];
         i = 0;
-        
-        for(String s:newSet)
-        {
+
+        for (String s : newSet) {
             dataTable3[i][0] = s;
             dataTable3[i][1] = 0.0;
             dataTable3[i][2] = 0.0;
@@ -270,47 +250,45 @@ public final class AgencyViewTopComponent extends TopComponent implements SeisDa
             dataTable3[i][4] = 3;
             //model3.addRow(dataTable3[i]);
         }
-        model3 = new DefaultTableModel(dataTable3,columnName);
+        model3 = new DefaultTableModel(dataTable3, columnName);
         unexpectTable = new JTable(model3);
-        
-        //set column width and height
-        if(newSet.size()>0)
-        {
-        unexpectTable.setRowHeight(60);
-        unexpectTable.getColumnModel().getColumn(1).setResizable(false);
-        unexpectTable.getColumnModel().getColumn(1).setMinWidth(60);
-        unexpectTable.getColumnModel().getColumn(1).setMaxWidth(60);
-        unexpectTable.getColumnModel().getColumn(2).setResizable(false);
-        unexpectTable.getColumnModel().getColumn(2).setMinWidth(60);
-        unexpectTable.getColumnModel().getColumn(2).setMaxWidth(60);
-        unexpectTable.getColumnModel().getColumn(3).setResizable(false);
-        unexpectTable.getColumnModel().getColumn(3).setMinWidth(60);
-        unexpectTable.getColumnModel().getColumn(3).setMaxWidth(60);
 
-        unexpectTable.getColumnModel().getColumn(4).setMinWidth(0);
-        unexpectTable.getColumnModel().getColumn(4).setMaxWidth(0);
-        
-        //BackgroundRenderer renderer1 = new BackgroundRenderer();
-        //renderer1.setHorizontalAlignment(JLabel.CENTER);
-        //renderer1.setVerticalAlignment(JLabel.CENTER);
-        //unexpectTable.getColumnModel().getColumn(0).setCellRenderer(renderer1);
-        
-        //unexpectTable.getColumnModel().getColumn(1).setCellRenderer(new PictureRenderer());
-        //unexpectTable.getColumnModel().getColumn(2).setCellRenderer(new PictureRenderer());
-        //unexpectTable.getColumnModel().getColumn(3).setCellRenderer(new PictureRenderer());
+        //set column width and height
+        if (newSet.size() > 0) {
+            unexpectTable.setRowHeight(60);
+            unexpectTable.getColumnModel().getColumn(1).setResizable(false);
+            unexpectTable.getColumnModel().getColumn(1).setMinWidth(60);
+            unexpectTable.getColumnModel().getColumn(1).setMaxWidth(60);
+            unexpectTable.getColumnModel().getColumn(2).setResizable(false);
+            unexpectTable.getColumnModel().getColumn(2).setMinWidth(60);
+            unexpectTable.getColumnModel().getColumn(2).setMaxWidth(60);
+            unexpectTable.getColumnModel().getColumn(3).setResizable(false);
+            unexpectTable.getColumnModel().getColumn(3).setMinWidth(60);
+            unexpectTable.getColumnModel().getColumn(3).setMaxWidth(60);
+
+            unexpectTable.getColumnModel().getColumn(4).setMinWidth(0);
+            unexpectTable.getColumnModel().getColumn(4).setMaxWidth(0);
+
+            //BackgroundRenderer renderer1 = new BackgroundRenderer();
+            //renderer1.setHorizontalAlignment(JLabel.CENTER);
+            //renderer1.setVerticalAlignment(JLabel.CENTER);
+            //unexpectTable.getColumnModel().getColumn(0).setCellRenderer(renderer1);
+            //unexpectTable.getColumnModel().getColumn(1).setCellRenderer(new PictureRenderer());
+            //unexpectTable.getColumnModel().getColumn(2).setCellRenderer(new PictureRenderer());
+            //unexpectTable.getColumnModel().getColumn(3).setCellRenderer(new PictureRenderer());
         }
         leftScrollPane = new JScrollPane(normalTable);
         topScrollPane = new JScrollPane(expectTable);
         bottomScrollPane = new JScrollPane(unexpectTable);
-        
-        topBottomPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,topScrollPane,bottomScrollPane);
+
+        topBottomPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, topScrollPane, bottomScrollPane);
         topBottomPane.setResizeWeight(0.5);
-        
-        leftRightPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,leftScrollPane,topBottomPane);
+
+        leftRightPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftScrollPane, topBottomPane);
         leftRightPane.setResizeWeight(0.5);
-        
+
         this.setLayout(new BorderLayout());
-        this.add(leftRightPane,BorderLayout.CENTER);
+        this.add(leftRightPane, BorderLayout.CENTER);
     }
 
     /**
@@ -362,135 +340,121 @@ public final class AgencyViewTopComponent extends TopComponent implements SeisDa
     //if data changes, update the three tables
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
-        
+
         evid = ((EventsControlViewTopComponent) tc).getControlPanel().getSelectedSeisEvent().getEvid();
-        
+
         agencyLikelihood.clear();
         SeisDataDAO.retrieveAgencyLikelihood(agencyLikelihood, evid);
-        
-         //get the ordered complete list
-        completeList = new TreeMap<String,LikeliTriplet>();/*(new Comparator<Object>(){
 
-            @Override
-            public int compare(Object o1, Object o2) {
-              return ((LikeliTriplet)o1).getWeightedLike().compareTo(((LikeliTriplet)o1).getWeightedLike());
-            }
+        //get the ordered complete list
+        completeList = new TreeMap<String, LikeliTriplet>();/*(new Comparator<Object>(){
 
-        });*/
+         @Override
+         public int compare(Object o1, Object o2) {
+         return ((LikeliTriplet)o1).getWeightedLike().compareTo(((LikeliTriplet)o1).getWeightedLike());
+         }
+
+         });*/
+
         //completeList.putAll(agencyLikelihood);
-        for(Map.Entry<String, LikeliTriplet> entry: agencyLikelihood.entrySet())
-        {
-            if(reportedAgency.contains(entry.getKey()))
-            {
+
+        for (Map.Entry<String, LikeliTriplet> entry : agencyLikelihood.entrySet()) {
+            if (reportedAgency.contains(entry.getKey())) {
                 completeList.put(entry.getKey(), entry.getValue());
             }
         }
-        
+
         reportedAgency.clear();
-        for(Phase phase:phasesList.getPhases())
-        {
+        for (Phase phase : phasesList.getPhases()) {
             reportedAgency.add(phase.getReportAgency());
         }
-            
+
         expectList = new TreeMap<String, LikeliTriplet>();
-        for(Map.Entry<String, LikeliTriplet> entry: agencyLikelihood.entrySet())
-        {
-            if(!reportedAgency.contains(entry.getKey()))
-            {
+        for (Map.Entry<String, LikeliTriplet> entry : agencyLikelihood.entrySet()) {
+            if (!reportedAgency.contains(entry.getKey())) {
                 expectList.put(entry.getKey(), entry.getValue());
             }
         }
-        
-        if(expectList.size()>0)
-        {
-        //set column width and height
-        expectTable.setRowHeight(60);
-        expectTable.getColumnModel().getColumn(1).setResizable(false);
-        expectTable.getColumnModel().getColumn(1).setMinWidth(60);
-        expectTable.getColumnModel().getColumn(1).setMaxWidth(60);
-        expectTable.getColumnModel().getColumn(2).setResizable(false);
-        expectTable.getColumnModel().getColumn(2).setMinWidth(60);
-        expectTable.getColumnModel().getColumn(2).setMaxWidth(60);
-        expectTable.getColumnModel().getColumn(3).setResizable(false);
-        expectTable.getColumnModel().getColumn(3).setMinWidth(60);
-        expectTable.getColumnModel().getColumn(3).setMaxWidth(60);
 
-        expectTable.getColumnModel().getColumn(4).setMinWidth(0);
-        expectTable.getColumnModel().getColumn(4).setMaxWidth(0);
-        
-        //BackgroundRenderer renderer1 = new BackgroundRenderer();
-        //renderer1.setHorizontalAlignment(JLabel.CENTER);
-        //renderer1.setVerticalAlignment(JLabel.CENTER);
-        //expectTable.getColumnModel().getColumn(0).setCellRenderer(renderer1);
-        
-        //expectTable.getColumnModel().getColumn(1).setCellRenderer(new PictureRenderer());
-        //expectTable.getColumnModel().getColumn(2).setCellRenderer(new PictureRenderer());
-        //expectTable.getColumnModel().getColumn(3).setCellRenderer(new PictureRenderer());
+        if (expectList.size() > 0) {
+            //set column width and height
+            expectTable.setRowHeight(60);
+            expectTable.getColumnModel().getColumn(1).setResizable(false);
+            expectTable.getColumnModel().getColumn(1).setMinWidth(60);
+            expectTable.getColumnModel().getColumn(1).setMaxWidth(60);
+            expectTable.getColumnModel().getColumn(2).setResizable(false);
+            expectTable.getColumnModel().getColumn(2).setMinWidth(60);
+            expectTable.getColumnModel().getColumn(2).setMaxWidth(60);
+            expectTable.getColumnModel().getColumn(3).setResizable(false);
+            expectTable.getColumnModel().getColumn(3).setMinWidth(60);
+            expectTable.getColumnModel().getColumn(3).setMaxWidth(60);
+
+            expectTable.getColumnModel().getColumn(4).setMinWidth(0);
+            expectTable.getColumnModel().getColumn(4).setMaxWidth(0);
+
+            //BackgroundRenderer renderer1 = new BackgroundRenderer();
+            //renderer1.setHorizontalAlignment(JLabel.CENTER);
+            //renderer1.setVerticalAlignment(JLabel.CENTER);
+            //expectTable.getColumnModel().getColumn(0).setCellRenderer(renderer1);
+            //expectTable.getColumnModel().getColumn(1).setCellRenderer(new PictureRenderer());
+            //expectTable.getColumnModel().getColumn(2).setCellRenderer(new PictureRenderer());
+            //expectTable.getColumnModel().getColumn(3).setCellRenderer(new PictureRenderer());
         }
-                
+
         newSet = new HashSet<String>();
-        for(String agency: reportedAgency)
-        {
-            if(!agencyLikelihood.containsKey(agency))
-            {
+        for (String agency : reportedAgency) {
+            if (!agencyLikelihood.containsKey(agency)) {
                 newSet.add(agency);
             }
         }
-        
-                //set column width and height
-        if(newSet.size()>0)
-        {
-        unexpectTable.setRowHeight(60);
-        unexpectTable.getColumnModel().getColumn(1).setResizable(false);
-        unexpectTable.getColumnModel().getColumn(1).setMinWidth(60);
-        unexpectTable.getColumnModel().getColumn(1).setMaxWidth(60);
-        unexpectTable.getColumnModel().getColumn(2).setResizable(false);
-        unexpectTable.getColumnModel().getColumn(2).setMinWidth(60);
-        unexpectTable.getColumnModel().getColumn(2).setMaxWidth(60);
-        unexpectTable.getColumnModel().getColumn(3).setResizable(false);
-        unexpectTable.getColumnModel().getColumn(3).setMinWidth(60);
-        unexpectTable.getColumnModel().getColumn(3).setMaxWidth(60);
 
-        unexpectTable.getColumnModel().getColumn(4).setMinWidth(0);
-        unexpectTable.getColumnModel().getColumn(4).setMaxWidth(0);
-        
-        //BackgroundRenderer renderer1 = new BackgroundRenderer();
-        //renderer1.setHorizontalAlignment(JLabel.CENTER);
-        //renderer1.setVerticalAlignment(JLabel.CENTER);
-        //unexpectTable.getColumnModel().getColumn(0).setCellRenderer(renderer1);
-        
-        //unexpectTable.getColumnModel().getColumn(1).setCellRenderer(new PictureRenderer());
-        //unexpectTable.getColumnModel().getColumn(2).setCellRenderer(new PictureRenderer());
-        //unexpectTable.getColumnModel().getColumn(3).setCellRenderer(new PictureRenderer());
+        //set column width and height
+        if (newSet.size() > 0) {
+            unexpectTable.setRowHeight(60);
+            unexpectTable.getColumnModel().getColumn(1).setResizable(false);
+            unexpectTable.getColumnModel().getColumn(1).setMinWidth(60);
+            unexpectTable.getColumnModel().getColumn(1).setMaxWidth(60);
+            unexpectTable.getColumnModel().getColumn(2).setResizable(false);
+            unexpectTable.getColumnModel().getColumn(2).setMinWidth(60);
+            unexpectTable.getColumnModel().getColumn(2).setMaxWidth(60);
+            unexpectTable.getColumnModel().getColumn(3).setResizable(false);
+            unexpectTable.getColumnModel().getColumn(3).setMinWidth(60);
+            unexpectTable.getColumnModel().getColumn(3).setMaxWidth(60);
+
+            unexpectTable.getColumnModel().getColumn(4).setMinWidth(0);
+            unexpectTable.getColumnModel().getColumn(4).setMaxWidth(0);
+
+            //BackgroundRenderer renderer1 = new BackgroundRenderer();
+            //renderer1.setHorizontalAlignment(JLabel.CENTER);
+            //renderer1.setVerticalAlignment(JLabel.CENTER);
+            //unexpectTable.getColumnModel().getColumn(0).setCellRenderer(renderer1);
+            //unexpectTable.getColumnModel().getColumn(1).setCellRenderer(new PictureRenderer());
+            //unexpectTable.getColumnModel().getColumn(2).setCellRenderer(new PictureRenderer());
+            //unexpectTable.getColumnModel().getColumn(3).setCellRenderer(new PictureRenderer());
         }
-        
+
         //update model
         model1.setRowCount(0);
         Object[][] dataTable1 = new Object[completeList.size()][5];
         int i = 0;
-        for(Map.Entry<String, LikeliTriplet> entry: completeList.entrySet())
-        {
+        for (Map.Entry<String, LikeliTriplet> entry : completeList.entrySet()) {
             dataTable1[i][0] = entry.getKey();
             dataTable1[i][1] = entry.getValue().getDistLike();
             dataTable1[i][2] = entry.getValue().getMagLike();
             dataTable1[i][3] = entry.getValue().getTimeLike();
-            if(!reportedAgency.contains(entry.getKey()))
-            {
+            if (!reportedAgency.contains(entry.getKey())) {
                 dataTable1[i][4] = 2;
-            }
-            else
-            {
+            } else {
                 dataTable1[i][4] = 1;
             }
             model1.addRow(dataTable1[i]);
             i++;
         }
-        
+
         model2.setRowCount(0);
         Object[][] dataTable2 = new Object[5][5];
         i = 0;
-        for(Map.Entry<String, LikeliTriplet> entry: expectList.entrySet())
-        {
+        for (Map.Entry<String, LikeliTriplet> entry : expectList.entrySet()) {
             dataTable2[i][0] = entry.getKey();
             dataTable2[i][1] = entry.getValue().getDistLike();
             dataTable2[i][2] = entry.getValue().getMagLike();
@@ -498,18 +462,16 @@ public final class AgencyViewTopComponent extends TopComponent implements SeisDa
             dataTable2[i][4] = 2;
             model2.addRow(dataTable2[i]);
             i++;
-            if(i>4)
-            {
+            if (i > 4) {
                 break;
             }
         }
-        
+
         model3.setRowCount(0);
         Object[][] dataTable3 = new Object[newSet.size()][5];
         i = 0;
-        
-        for(String s:newSet)
-        {
+
+        for (String s : newSet) {
             dataTable3[i][0] = s;
             dataTable3[i][1] = 0.0;
             dataTable3[i][2] = 0.0;
@@ -517,11 +479,11 @@ public final class AgencyViewTopComponent extends TopComponent implements SeisDa
             dataTable3[i][4] = 3;
             model3.addRow(dataTable3[i]);
         }
-        
+
         model1.fireTableDataChanged();
         model2.fireTableDataChanged();
         model3.fireTableDataChanged();
-        
+
         this.repaint();
     }
 }

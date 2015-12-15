@@ -1,8 +1,6 @@
-
 package uk.ac.isc.seisdata;
 
 import java.util.Date;
-
 
 public class ActionHistory extends AbstractSeisData {
 
@@ -14,9 +12,9 @@ public class ActionHistory extends AbstractSeisData {
     private String status;  // the status (?)
 
     public ActionHistory() {
-        
+
     }
-    
+
     public Integer getEvid() {
         return evid;
     }
@@ -64,5 +62,5 @@ public class ActionHistory extends AbstractSeisData {
     public void setStatus(String status) {
         this.status = status;
     }
-    
+
 }

@@ -1,8 +1,8 @@
-
 package uk.ac.isc.eventscontrolview;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
+import javax.swing.BoxLayout;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -12,9 +12,10 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 
 /**
- * Top component which displays the events control list that the analyst can select for the review.
- * multi-selection is disabled as the current review is based on single selection 
- * use this class to load data and make changes and the view cannot be closed
+ * Top component which displays the events control list that the analyst can
+ * select for the review. multi-selection is disabled as the current review is
+ * based on single selection use this class to load data and make changes and
+ * the view cannot be closed
  */
 @ConvertAsProperties(
         dtd = "-//uk.ac.isc.eventscontrolview//EventsControlView//EN",
@@ -38,44 +39,44 @@ import org.openide.windows.TopComponent;
     "HINT_EventsControlViewTopComponent=This is a EventsControlView window"
 })
 
-
 public final class EventsControlViewTopComponent extends TopComponent {
-    
+
     EventsControlPanel eventsTable;         // Event Table
     EventSearchPanel eventsSearchPanel;     // Search Panel
-    ActionHistoryTable actionHistoryTable;            // Action Hostory Table
-    
+    ActionHistoryTable actionHistoryTable;  // Action Hostory Table
+
     public EventsControlViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_EventsControlViewTopComponent());
         setToolTipText(Bundle.HINT_EventsControlViewTopComponent());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
-        
- 
+
         eventsTable = new EventsControlPanel();
         eventsSearchPanel = new EventSearchPanel(eventsTable);
         actionHistoryTable = new ActionHistoryTable();
-        
+
         JScrollPane scrollPane = new JScrollPane(eventsTable.getTable());
         
+        /*
         this.setLayout(new BorderLayout());
         this.add(eventsSearchPanel, BorderLayout.PAGE_START);
         this.add(scrollPane, BorderLayout.CENTER);
         this.add(actionHistoryTable, BorderLayout.PAGE_END);
-        
-        
-        
+        */
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.add(eventsSearchPanel);
+        this.add(scrollPane);
+        this.add(actionHistoryTable);     
     }
-    
+
     /* 
      * return of the control panel, all the data is in this class.
      */
     public EventsControlPanel getControlPanel() {
         return this.eventsTable;
     }
-    
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -101,8 +102,8 @@ public final class EventsControlViewTopComponent extends TopComponent {
     @Override
     public void componentOpened() {
         // TODO add custom code on component opening
-        UIManager.put("ToolTip.font", new Font("Arial", Font.BOLD,18));
-        
+        UIManager.put("ToolTip.font", new Font("Arial", Font.BOLD, 18));
+
     }
 
     @Override

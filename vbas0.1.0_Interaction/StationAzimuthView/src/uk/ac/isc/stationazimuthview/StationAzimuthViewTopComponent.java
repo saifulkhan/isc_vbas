@@ -1,4 +1,3 @@
-
 package uk.ac.isc.stationazimuthview;
 
 import java.awt.BorderLayout;
@@ -43,41 +42,41 @@ public final class StationAzimuthViewTopComponent extends TopComponent implement
 
     //phase list 
     private final PhasesList phasesList;
-    
+
     //hypo list
     private final HypocentresList hyposList;
-    
+
     //get control window to retrieve data
     private final TopComponent tc = WindowManager.getDefault().findTopComponent("EventsControlViewTopComponent");
-    
+
     private final JScrollPane scrollPane;
-    
+
     //control panel of the view
     private final StationAzimuthControlPanel sacp;
-    
+
     //the main view 
     private final StationAzimuthView saView;
-        
+
     public StationAzimuthViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_StationAzimuthViewTopComponent());
         setToolTipText(Bundle.HINT_StationAzimuthViewTopComponent());
 
         phasesList = ((EventsControlViewTopComponent) tc).getControlPanel().getPhasesList();
-        
+
         hyposList = ((EventsControlViewTopComponent) tc).getControlPanel().getHyposList();
-              
+
         saView = new StationAzimuthView(hyposList, phasesList);
-        
+
         sacp = new StationAzimuthControlPanel(saView);
-        
+
         scrollPane = new JScrollPane(saView);
-        
+
         this.setLayout(new BorderLayout());
-        this.add(scrollPane,BorderLayout.CENTER);
-        this.add(sacp,BorderLayout.NORTH);
+        this.add(scrollPane, BorderLayout.CENTER);
+        this.add(sacp, BorderLayout.NORTH);
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -130,6 +129,6 @@ public final class StationAzimuthViewTopComponent extends TopComponent implement
 
         saView.updateData();
         scrollPane.setViewportView(saView);
-        
+
     }
 }

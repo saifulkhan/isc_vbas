@@ -27,40 +27,36 @@ import java.util.TreeMap;
  */
 public final class SeisDataDAO {
 
-    
     /**
      * Loading user name, password and scheme from system environment
      */
     static {
-        
+
         //will load from from bashrc for personal login later, here is for testing
         Map<String, String> env = System.getenv();
         url = "jdbc:postgresql://" + env.get("PGHOSTADDR") + ":" + env.get("PGPORT") + "/" + env.get("PGDATABASE");
         user = env.get("PGUSER");
         password = env.get("PGPASSWORD");
-        
+
         /*
-        // Saiful home laptop
-        url = "jdbc:postgresql://127.0.0.1:5432/isc";
-        user = "saiful";
-        password = "saiful";
-        */
-        
+         // Saiful home laptop
+         url = "jdbc:postgresql://127.0.0.1:5432/isc";
+         user = "saiful";
+         password = "saiful";
+         */
         String osName = System.getProperty("os.name");
         System.out.println(osName);
-            
+
     }
 
     private static final String url; //= "jdbc:postgresql://192.168.37.91:5432/isc";      
     //private static final String url = "jdbc:postgresql://127.0.0.1:5432/isc"; 
     private static final String user; //= "hui";
     private static final String password; //= "njustga"; 
-    
-    
+
     private SeisDataDAO() {
     }
 
-    
     /**
      * retrieve all the events in a user's schema
      *
@@ -367,62 +363,62 @@ public final class SeisDataDAO {
      * @return all the events filling with magnitude
      */
     /*
-    public static boolean retrieveAllEventsMagnitude(ArrayList<SeisEvent> evList) 
-    {
-        Connection con = null;
-        Statement st = null;
-        ResultSet rs = null;
+     public static boolean retrieveAllEventsMagnitude(ArrayList<SeisEvent> evList) 
+     {
+     Connection con = null;
+     Statement st = null;
+     ResultSet rs = null;
         
-        try {
+     try {
             
-            con = DriverManager.getConnection(url, user, password);
-            st = con.createStatement();
+     con = DriverManager.getConnection(url, user, password);
+     st = con.createStatement();
                 
-            String query = "SELECT n.magtype, n.magnitude, e.evid"
-                        + " FROM  event e, netmag n"
-                        + " WHERE n.hypid = e.prime_hyp" 
-                        + " AND n.deprecated is NULL;";
+     String query = "SELECT n.magtype, n.magnitude, e.evid"
+     + " FROM  event e, netmag n"
+     + " WHERE n.hypid = e.prime_hyp" 
+     + " AND n.deprecated is NULL;";
 
-            rs = st.executeQuery(query);
+     rs = st.executeQuery(query);
 
-            while (rs.next()) 
-            {       
-                //check this later, do I need add the event magnitude into hypo?                
-                for (SeisEvent ev:evList)
-                {        
-                    if(rs.getString(3).equals(ev.getEvid()))
-                    {                      
-                        ev.getPrimeHypo().addMagnitude(rs.getString(1),rs.getDouble(2));
-                        //ev.setMagnitude(rs.getDouble(2));
-                        break;
-                    }
-                }
-            }
+     while (rs.next()) 
+     {       
+     //check this later, do I need add the event magnitude into hypo?                
+     for (SeisEvent ev:evList)
+     {        
+     if(rs.getString(3).equals(ev.getEvid()))
+     {                      
+     ev.getPrimeHypo().addMagnitude(rs.getString(1),rs.getDouble(2));
+     //ev.setMagnitude(rs.getDouble(2));
+     break;
+     }
+     }
+     }
                 
-            rs.close();
+     rs.close();
                 
-        }
-        catch (SQLException ex) {
-                 return false;
-        } finally {
-                try {
-                    if (rs != null) {
-                        rs.close();
-                    }
-                    if (st != null) {
-                        st.close();
-                    }
-                    if (con != null) {
-                        con.close();
-                    }
+     }
+     catch (SQLException ex) {
+     return false;
+     } finally {
+     try {
+     if (rs != null) {
+     rs.close();
+     }
+     if (st != null) {
+     st.close();
+     }
+     if (con != null) {
+     con.close();
+     }
 
-                } catch (SQLException ex) {
-                    return false;
-                }
-            }
+     } catch (SQLException ex) {
+     return false;
+     }
+     }
         
-        return true;
-    }
+     return true;
+     }
      */
     /**
      * fill events' location in the control panel
@@ -541,7 +537,7 @@ public final class SeisDataDAO {
     }
 
     /* this one is under deveopment, once James finishs his procedure in the database side, we could start
-        calling it for the likelihood values
+     calling it for the likelihood values
      */
     public static boolean retrieveAgencyLikelihood(HashMap<String, LikeliTriplet> map, Integer evid) {
         Connection con = null;
@@ -788,100 +784,100 @@ public final class SeisDataDAO {
      * @return
      */
     /*public static boolean retrieveHypos(ArrayList<String> evids, ArrayList<Hypocentre> HypoList) {
-        Connection con = null;
-        Statement st = null;
-        ResultSet rs = null;
+     Connection con = null;
+     Statement st = null;
+     ResultSet rs = null;
         
-        HypoList.clear();
-        Iterator<String> iter = evids.iterator();
+     HypoList.clear();
+     Iterator<String> iter = evids.iterator();
 
-        try {
-            con = DriverManager.getConnection(url, user, password);
-            st = con.createStatement();
+     try {
+     con = DriverManager.getConnection(url, user, password);
+     st = con.createStatement();
             
-            while(iter.hasNext())
-            {
-                String evid = iter.next();
+     while(iter.hasNext())
+     {
+     String evid = iter.next();
                 
-                String query = "SELECT h.author, h.day, h.lat, h.lon, h.depth, h.prime, h.hypid, x.sdepth, h.epifix, x.stime, x.strike, x.smajax, x.sminax,h.nass, h.ndef, h.nsta, h.ndefsta "
-                + " FROM hypocenter h, hypoc_err x "
-                + " WHERE h.deprecated is NULL AND h.hypid = h.pref_hypid AND x.hypid = h.hypid AND h.isc_evid = " 
-                + evid 
-                + " ORDER BY h.prime DESC, h.author";
+     String query = "SELECT h.author, h.day, h.lat, h.lon, h.depth, h.prime, h.hypid, x.sdepth, h.epifix, x.stime, x.strike, x.smajax, x.sminax,h.nass, h.ndef, h.nsta, h.ndefsta "
+     + " FROM hypocenter h, hypoc_err x "
+     + " WHERE h.deprecated is NULL AND h.hypid = h.pref_hypid AND x.hypid = h.hypid AND h.isc_evid = " 
+     + evid 
+     + " ORDER BY h.prime DESC, h.author";
 
-                rs = st.executeQuery(query);
+     rs = st.executeQuery(query);
 
-                while (rs.next()) {
+     while (rs.next()) {
                 
-                    Hypocentre tmp = new Hypocentre();
+     Hypocentre tmp = new Hypocentre();
                     
-                    tmp.setEvid(evid);
-                    tmp.setAgency(rs.getString(1));
+     tmp.setEvid(evid);
+     tmp.setAgency(rs.getString(1));
                 
-                    Date dd = null;
-                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    try {
-                        dd = df.parse(rs.getString(2));
-                    } catch (ParseException e)
-                    {
-                        return false;
-                    }
-                    tmp.setOrigTime(dd);
+     Date dd = null;
+     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+     try {
+     dd = df.parse(rs.getString(2));
+     } catch (ParseException e)
+     {
+     return false;
+     }
+     tmp.setOrigTime(dd);
                 
-                    tmp.setLat(rs.getDouble(3));
-                    tmp.setLon(rs.getDouble(4));
-                    tmp.setDepth(rs.getInt(5));
-                    tmp.setHypid(rs.getString(7));
+     tmp.setLat(rs.getDouble(3));
+     tmp.setLon(rs.getDouble(4));
+     tmp.setDepth(rs.getInt(5));
+     tmp.setHypid(rs.getString(7));
                     
-                    if (rs.getString(6) != null)
-                    {
-                        tmp.setIsPrime(true);
-                    }
+     if (rs.getString(6) != null)
+     {
+     tmp.setIsPrime(true);
+     }
                  
-                    tmp.setErrDepth(rs.getDouble(8));
+     tmp.setErrDepth(rs.getDouble(8));
                     
-                    if (rs.getString(9) != null)
-                    {
-                        tmp.setIsFixed(true);
-                    }
+     if (rs.getString(9) != null)
+     {
+     tmp.setIsFixed(true);
+     }
                     
-                    tmp.setStime(rs.getDouble(10));
-                    tmp.setStrike(rs.getDouble(11));
-                    tmp.setSmajax(rs.getDouble(12));
-                    tmp.setSminax(rs.getDouble(13));
+     tmp.setStime(rs.getDouble(10));
+     tmp.setStrike(rs.getDouble(11));
+     tmp.setSmajax(rs.getDouble(12));
+     tmp.setSminax(rs.getDouble(13));
                     
-                    tmp.setNumPhases(rs.getInt(14));
-                    tmp.setNumDefPhases(rs.getInt(15));
-                    tmp.setNumStations(rs.getInt(16));
-                    tmp.setNumDefStations(rs.getInt(17));
+     tmp.setNumPhases(rs.getInt(14));
+     tmp.setNumDefPhases(rs.getInt(15));
+     tmp.setNumStations(rs.getInt(16));
+     tmp.setNumDefStations(rs.getInt(17));
                     
-                    HypoList.add(tmp);
+     HypoList.add(tmp);
 
-                }
-                rs.close();
-            }
+     }
+     rs.close();
+     }
 
-        } catch (SQLException ex) {
-               return false;
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (st != null) {
-                    st.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
+     } catch (SQLException ex) {
+     return false;
+     } finally {
+     try {
+     if (rs != null) {
+     rs.close();
+     }
+     if (st != null) {
+     st.close();
+     }
+     if (con != null) {
+     con.close();
+     }
 
-            } catch (SQLException ex) {
-                return false;
-            }
-        }
-        return true;
+     } catch (SQLException ex) {
+     return false;
+     }
+     }
+     return true;
         
-    }*/
+     }*/
     /**
      * Get all the hypocentres
      *
@@ -1083,7 +1079,7 @@ public final class SeisDataDAO {
     }
 
     /*
-       This is for retrieving Default Grid Depth in the region by give latitude and longitude
+     This is for retrieving Default Grid Depth in the region by give latitude and longitude
      */
     public static Double retrieveDefaultGridDepth(Integer hypid) {
         Double depth = null;
@@ -1251,108 +1247,108 @@ public final class SeisDataDAO {
     }
 
     /*public static boolean retrieveAllPhases(ArrayList<String> evids, ArrayList<Phase> PhaseList)
-    {
-        Connection con = null;
-        Statement st = null;
-        ResultSet rs = null;
+     {
+     Connection con = null;
+     Statement st = null;
+     ResultSet rs = null;
         
-        PhaseList.clear();
-        Iterator<String> iter = evids.iterator();
+     PhaseList.clear();
+     Iterator<String> iter = evids.iterator();
 
-        try {
-            con = DriverManager.getConnection(url, user, password);
-            st = con.createStatement();
+     try {
+     con = DriverManager.getConnection(url, user, password);
+     st = con.createStatement();
             
-            while(iter.hasNext())
-            {
-                String evid = iter.next();
+     while(iter.hasNext())
+     {
+     String evid = iter.next();
                 
-                //String query = "SELECT DISTINCT r.reporter, p.sta, p.day, a.delta, a.esaz, a.phase, a.timeres, p.phid, p.phase, a.timedef, "
-                //+ "t.amp, t.per, g.magnitude "
-                //+ "FROM event e, association a, phase p, report r, amplitude t, ampmag g "
-                //+ "WHERE e.prime_hyp = a.hypid AND p.reporter = r.repid "
-                //+ "AND t.phid = p.phid AND t.ampid = p.ampid AND g.ampid = t.ampid "
-                //+ "AND a.phid = p.phid  AND a.author = 'ISC' AND e.evid = " + evid 
-                //+ " ORDER BY a.delta ASC;";
+     //String query = "SELECT DISTINCT r.reporter, p.sta, p.day, a.delta, a.esaz, a.phase, a.timeres, p.phid, p.phase, a.timedef, "
+     //+ "t.amp, t.per, g.magnitude "
+     //+ "FROM event e, association a, phase p, report r, amplitude t, ampmag g "
+     //+ "WHERE e.prime_hyp = a.hypid AND p.reporter = r.repid "
+     //+ "AND t.phid = p.phid AND t.ampid = p.ampid AND g.ampid = t.ampid "
+     //+ "AND a.phid = p.phid  AND a.author = 'ISC' AND e.evid = " + evid 
+     //+ " ORDER BY a.delta ASC;";
                 
-                String query = "SELECT DISTINCT r.reporter, p.sta, p.day, a.delta, a.esaz, a.phase, a.timeres, p.phid, p.phase, a.timedef, p.rdid, s.staname "
-                + "FROM event e, association a, phase p, report r, site s "
-                + "WHERE e.prime_hyp = a.hypid AND p.reporter = r.repid "
-                + "AND a.phid = p.phid  AND a.author = 'ISC' AND p.sta = s.sta AND e.evid = " + evid 
-                + " ORDER BY a.delta ASC;";
+     String query = "SELECT DISTINCT r.reporter, p.sta, p.day, a.delta, a.esaz, a.phase, a.timeres, p.phid, p.phase, a.timedef, p.rdid, s.staname "
+     + "FROM event e, association a, phase p, report r, site s "
+     + "WHERE e.prime_hyp = a.hypid AND p.reporter = r.repid "
+     + "AND a.phid = p.phid  AND a.author = 'ISC' AND p.sta = s.sta AND e.evid = " + evid 
+     + " ORDER BY a.delta ASC;";
                 
-                rs = st.executeQuery(query);
+     rs = st.executeQuery(query);
 
-                while (rs.next()) {
+     while (rs.next()) {
                 
-                    //PrimeHypocentre primetmp = null;
-                    Phase tmp = new Phase();
+     //PrimeHypocentre primetmp = null;
+     Phase tmp = new Phase();
                     
-                    tmp.setReportAgency(rs.getString(1));
-                    tmp.setReportStation(rs.getString(2));
-                    tmp.setDistance(rs.getDouble(4));
-                    tmp.setAzimuth(rs.getDouble(5));
-                    tmp.setIscPhaseType(rs.getString(6));//.setOrigPhaseType(rs.getString(5));
-                    tmp.setTimeResidual(rs.getDouble(7));
-                    tmp.setPhid(rs.getString(8));
-                    tmp.setOrigPhaseType(rs.getString(9));
+     tmp.setReportAgency(rs.getString(1));
+     tmp.setReportStation(rs.getString(2));
+     tmp.setDistance(rs.getDouble(4));
+     tmp.setAzimuth(rs.getDouble(5));
+     tmp.setIscPhaseType(rs.getString(6));//.setOrigPhaseType(rs.getString(5));
+     tmp.setTimeResidual(rs.getDouble(7));
+     tmp.setPhid(rs.getString(8));
+     tmp.setOrigPhaseType(rs.getString(9));
                     
-                    if(rs.getString(10) == null)
-                    {
-                        tmp.setDefining(false);
-                    }
-                    else
-                    {
-                        tmp.setDefining(true);
-                    }
+     if(rs.getString(10) == null)
+     {
+     tmp.setDefining(false);
+     }
+     else
+     {
+     tmp.setDefining(true);
+     }
                     
-                    tmp.setRdid(rs.getString(11));
-                    tmp.setStationFullName(rs.getString(12));
-                    //tmp.setAmplitude(rs.getDouble(11));
-                    //tmp.setPeriod(rs.getDouble(12));
-                    //tmp.setAmpMag(rs.getDouble(13));
+     tmp.setRdid(rs.getString(11));
+     tmp.setStationFullName(rs.getString(12));
+     //tmp.setAmplitude(rs.getDouble(11));
+     //tmp.setPeriod(rs.getDouble(12));
+     //tmp.setAmpMag(rs.getDouble(13));
                     
-                    Date dd = null;
-                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    try {
-                        dd = df.parse(rs.getString(3));
-                    } catch (ParseException e)
-                    {
+     Date dd = null;
+     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+     try {
+     dd = df.parse(rs.getString(3));
+     } catch (ParseException e)
+     {
 
-                    }
-                    catch (NullPointerException ne)
-                    {
-                        //System.out.println(rs.getString(3));
-                    }
+     }
+     catch (NullPointerException ne)
+     {
+     //System.out.println(rs.getString(3));
+     }
                                         
-                    tmp.setArrivalTime(dd);
+     tmp.setArrivalTime(dd);
                     
-                    PhaseList.add(tmp);
+     PhaseList.add(tmp);
 
-                }
-                rs.close();
-            }
+     }
+     rs.close();
+     }
 
-        } catch (SQLException ex) {
+     } catch (SQLException ex) {
 
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (st != null) {
-                    st.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
+     } finally {
+     try {
+     if (rs != null) {
+     rs.close();
+     }
+     if (st != null) {
+     st.close();
+     }
+     if (con != null) {
+     con.close();
+     }
 
-            } catch (SQLException ex) {
-            }
-        }
-        return true;
+     } catch (SQLException ex) {
+     }
+     }
+     return true;
     
-    }*/
+     }*/
     /**
      *
      * @param evid all phases associated to the event id
@@ -1567,64 +1563,64 @@ public final class SeisDataDAO {
     }
 
     /*
-    public static boolean retrieveAllPhasesAmpMag(ArrayList<Phase> PhaseList)
-    {
-        Connection con = null;
-        Statement st = null;
-        ResultSet rs = null;
+     public static boolean retrieveAllPhasesAmpMag(ArrayList<Phase> PhaseList)
+     {
+     Connection con = null;
+     Statement st = null;
+     ResultSet rs = null;
                 
-        try {
-            con = DriverManager.getConnection(url, user, password);
-            st = con.createStatement();
+     try {
+     con = DriverManager.getConnection(url, user, password);
+     st = con.createStatement();
             
-            for(int i = 0; i<PhaseList.size(); i++)
-            {
-                Integer phid = PhaseList.get(i).getPhid();
+     for(int i = 0; i<PhaseList.size(); i++)
+     {
+     Integer phid = PhaseList.get(i).getPhid();
                                                 
-                String query = "SELECT p.amp, p.per, s.magnitude, s.ampdef "
-                + "FROM ampmag s, amplitude p "
-                + "WHERE s.author = 'ISC' AND p.ampid = s.ampid "
-                + "AND p.phid = " + phid;
+     String query = "SELECT p.amp, p.per, s.magnitude, s.ampdef "
+     + "FROM ampmag s, amplitude p "
+     + "WHERE s.author = 'ISC' AND p.ampid = s.ampid "
+     + "AND p.phid = " + phid;
                 
-                rs = st.executeQuery(query);
+     rs = st.executeQuery(query);
 
-                while (rs.next()) {
-                    PhaseList.get(i).setAmplitude(rs.getDouble(1));
-                    PhaseList.get(i).setPeriod(rs.getDouble(2));
-                    PhaseList.get(i).setAmpMag(rs.getDouble(3));
+     while (rs.next()) {
+     PhaseList.get(i).setAmplitude(rs.getDouble(1));
+     PhaseList.get(i).setPeriod(rs.getDouble(2));
+     PhaseList.get(i).setAmpMag(rs.getDouble(3));
                     
-                    if(rs.getInt(4)==1)
-                    {
-                        PhaseList.get(i).setAmpmagDefining(true);
-                    }
-                    else if(rs.getInt(4)==0)
-                    {
-                        PhaseList.get(i).setAmpmagDefining(false);
-                    }
-                }
-                rs.close();
-            }
+     if(rs.getInt(4)==1)
+     {
+     PhaseList.get(i).setAmpmagDefining(true);
+     }
+     else if(rs.getInt(4)==0)
+     {
+     PhaseList.get(i).setAmpmagDefining(false);
+     }
+     }
+     rs.close();
+     }
 
-        } catch (SQLException ex) {
+     } catch (SQLException ex) {
 
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (st != null) {
-                    st.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
+     } finally {
+     try {
+     if (rs != null) {
+     rs.close();
+     }
+     if (st != null) {
+     st.close();
+     }
+     if (con != null) {
+     con.close();
+     }
 
-            } catch (SQLException ex) {
-            }
-        }
-        return true;
+     } catch (SQLException ex) {
+     }
+     }
+     return true;
     
-    }*/
+     }*/
     /**
      * Retrieve all the phase ampmag and save them back to each phase in the
      * list
@@ -1803,9 +1799,9 @@ public final class SeisDataDAO {
         allStations.clear();
 
         /*String query = "SELECT DISTINCT m.sta, s.lat, s.lon, m.magnitude, m.magtype, a.esaz, a.delta FROM site s, stamag m, association a"
-                + " WHERE m.hypid = " + hypid +
-                " AND m.sta = s.sta" +
-                " AND s.net IS NULL AND m.hypid = a.hypid AND a.author = 'ISC' ORDER BY m.magtype";
+         + " WHERE m.hypid = " + hypid +
+         " AND m.sta = s.sta" +
+         " AND s.net IS NULL AND m.hypid = a.hypid AND a.author = 'ISC' ORDER BY m.magtype";
          */
         String query = "SELECT DISTINCT m.sta, s.lat, s.lon, m.magnitude, m.magtype FROM site s, stamag m"
                 + " WHERE m.hypid = " + hypid
@@ -2524,12 +2520,10 @@ public final class SeisDataDAO {
         return true;
     }
 
-    
     /*
      * Retrieve all the action histories .
      * Check SeisDataDAO.retrieveHypos()
      */
-    
     public static boolean retrieveActionHistory(Integer evid, ArrayList<ActionHistory> actionHistoryList) {
 
         Connection con = null;
@@ -2541,7 +2535,7 @@ public final class SeisDataDAO {
         try {
             con = DriverManager.getConnection(url, user, password);
             st = con.createStatement();
-            
+
             // TODO
             String query = "";
 
@@ -2577,5 +2571,5 @@ public final class SeisDataDAO {
         return true;
 
     }
-  
+
 }

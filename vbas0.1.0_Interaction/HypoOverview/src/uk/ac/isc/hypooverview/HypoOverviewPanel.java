@@ -731,7 +731,7 @@ public final class HypoOverviewPanel extends JPanel implements TileLoaderListene
                         barYPos = (int) (getHeight() / 2 + (tileSource.LatToY(latHigh, zoom) - center.y));
                     }
 
-                        //draw the rail rectangle
+                    //draw the rail rectangle
                     //left
                     g2.fillRect((getWidth() - mapWidth) / 2 - borderWidth, barYPos,
                             borderWidth, labelY - barYPos);
@@ -932,7 +932,7 @@ public final class HypoOverviewPanel extends JPanel implements TileLoaderListene
         /**
          * get the seismicity data based on the visible range from zoom level
          */
-            //SeisDataDAO.retrieveHistEvents(seisList, latN, latS, lonW, lonE);           
+        //SeisDataDAO.retrieveHistEvents(seisList, latN, latS, lonW, lonE);           
         //}
         Paint savedPaint = g2.getPaint();
         int xpos, ypos;

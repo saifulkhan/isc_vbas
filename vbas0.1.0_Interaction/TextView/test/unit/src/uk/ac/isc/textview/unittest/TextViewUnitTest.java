@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package uk.ac.isc.textview.unittest;
 
 import org.junit.AfterClass;
@@ -16,15 +15,15 @@ import static org.junit.Assert.*;
  * @author hui
  */
 public class TextViewUnitTest {
-    
+
     public TextViewUnitTest() {
-        
+
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
@@ -33,8 +32,7 @@ public class TextViewUnitTest {
     // The methods must be annotated with annotation @Test. For example:
     // the first test is for testing the loading speed of seisevents under one database schema
     @Test
-    public void TestSeisEventsLoadingSpeed() 
-    {
-        
+    public void TestSeisEventsLoadingSpeed() {
+
     }
 }

@@ -1,4 +1,3 @@
-
 package uk.ac.isc.phaseview;
 
 import java.awt.BasicStroke;
@@ -22,45 +21,43 @@ import uk.ac.isc.seisdata.Phase;
 import uk.ac.isc.seisdata.SeisUtils;
 
 /**
- * New dot renderer to render the glyphs on the plot, can be re-written for complicated glyphs
- * 
+ * New dot renderer to render the glyphs on the plot, can be re-written for
+ * complicated glyphs
+ *
  * @author hui
  */
 public class TravelViewRenderer extends XYDotRenderer {
-    
+
     private final String[][] phaseTypes = SeisUtils.getGroupedPhaseTypes();
-    
+
     //default color scheme for Crustal, Mantle, Core and depth pahses. 
     //Crustal - cyan,  Mantle - melon, Core cherry,depth - denim(dark blue)
-    
-    private static final Paint [] DEFAULT_PAINT = {new Color(0,255,255),new Color(252,189,181),
-            new Color(222,48,99), new Color(71,61,140), new Color(196,196,196)};
-    
+    private static final Paint[] DEFAULT_PAINT = {new Color(0, 255, 255), new Color(252, 189, 181),
+        new Color(222, 48, 99), new Color(71, 61, 140), new Color(196, 196, 196)};
+
     //private static final int DEPTH_DOT_RADIUS = 11;
-    
     private final double dotSize = 4;
-    
+
     private final ArrayList<Phase> pslist;
-    
-    public TravelViewRenderer(ArrayList<Phase> pslist)
-    {
+
+    public TravelViewRenderer(ArrayList<Phase> pslist) {
         this.pslist = pslist;
     }
-   
+
     //draw each phase glyph
     @Override
     public void drawItem(Graphics2D g2,
-                         XYItemRendererState state,
-                         Rectangle2D dataArea,
-                         PlotRenderingInfo info,
-                         XYPlot plot,
-                         ValueAxis domainAxis,
-                         ValueAxis rangeAxis,
-                         XYDataset dataset,
-                         int series,
-                         int item,
-                         CrosshairState crosshairState,
-                         int pass) {
+            XYItemRendererState state,
+            Rectangle2D dataArea,
+            PlotRenderingInfo info,
+            XYPlot plot,
+            ValueAxis domainAxis,
+            ValueAxis rangeAxis,
+            XYDataset dataset,
+            int series,
+            int item,
+            CrosshairState crosshairState,
+            int pass) {
 
         // do nothing if item is not visible
         if (!getItemVisible(series, item)) {
@@ -71,7 +68,7 @@ public class TravelViewRenderer extends XYDotRenderer {
         double x = dataset.getXValue(series, item);
         double y = dataset.getYValue(series, item);
         double radius = dotSize;
-        
+
         //double adjx = (4 - 1) / 2.0;
         //double adjy = (4 - 1) / 2.0;
         if (!Double.isNaN(y)) {
@@ -87,12 +84,11 @@ public class TravelViewRenderer extends XYDotRenderer {
             if (orientation == PlotOrientation.HORIZONTAL) {
                 //g2.fillOval((int) transY, (int) transX, (int)(radius*2),
                 //        (int) (radius*2));
-                drawGlyph(g2,(int) transY, (int) transX, (int) radius, x, y);
-                
-            }
-            else if (orientation == PlotOrientation.VERTICAL) {
-                g2.fillOval((int) transX, (int) transY, (int) (radius*2),
-                        (int) (radius*2));
+                drawGlyph(g2, (int) transY, (int) transX, (int) radius, x, y);
+
+            } else if (orientation == PlotOrientation.VERTICAL) {
+                g2.fillOval((int) transX, (int) transY, (int) (radius * 2),
+                        (int) (radius * 2));
             }
 
             int domainAxisIndex = plot.getDomainAxisIndex(domainAxis);
@@ -104,8 +100,7 @@ public class TravelViewRenderer extends XYDotRenderer {
     }
 
     //item is the idx fro retrieving triplet
-    private void drawGlyph(Graphics2D g2, int transHor, int transVer, int radius, double x, double y) 
-    {
+    private void drawGlyph(Graphics2D g2, int transHor, int transVer, int radius, double x, double y) {
         //get all the atttributes
         //PhaseTriplet pt = ptlist.get(item);
 
@@ -114,13 +109,11 @@ public class TravelViewRenderer extends XYDotRenderer {
         //String stationName = null;
         Boolean defining = null;
         //Double residual = null;
-        
-        for(Phase p:pslist)
-        {
+
+        for (Phase p : pslist) {
             //double aa = (double)p.getArrivalTime().getTime();
             //double bb = p.getDistance();
-            if( (p.getArrivalTime() != null) && (Math.abs((double)p.getArrivalTime().getTime()-x))<0.0001 && Math.abs((p.getDistance()-y))<0.0001)
-            {
+            if ((p.getArrivalTime() != null) && (Math.abs((double) p.getArrivalTime().getTime() - x)) < 0.0001 && Math.abs((p.getDistance() - y)) < 0.0001) {
                 reportPhaseType = p.getOrigPhaseType();
                 iscPhaseType = p.getIscPhaseType();
                 //stationName = p.getReportStation();
@@ -128,95 +121,76 @@ public class TravelViewRenderer extends XYDotRenderer {
                 defining = p.getDefining();
                 break;
             }
-            
-        } 
-        
+
+        }
+
         Paint savedPaint = g2.getPaint();
         Stroke savedStroke = g2.getStroke();
         //Stroke solidStroke = new BasicStroke(1);
         Stroke hollowStroke = new BasicStroke(2);
-        
-        if(iscPhaseType == null || iscPhaseType.equals("x"))
-        {
+
+        if (iscPhaseType == null || iscPhaseType.equals("x")) {
             g2.setPaint(Color.BLACK);
-        }
-        else
-        {
+        } else {
             g2.setPaint(DEFAULT_PAINT[4]);
             //get the paint color
-            for(int i = 0; i<phaseTypes.length; i++)
-            {
+            for (int i = 0; i < phaseTypes.length; i++) {
                 String[] sub = phaseTypes[i];
-                for(int j = 0; j<sub.length; j++)
-                {
-                    if(iscPhaseType.equals(sub[j]))
-                    {
+                for (int j = 0; j < sub.length; j++) {
+                    if (iscPhaseType.equals(sub[j])) {
                         g2.setPaint(DEFAULT_PAINT[i]);
                     }
                 }
             }
         }
         //g2.fillOval(transHor, transVer, radius*2, radius*2);
-        
+
         //new code to set different shapes and colors for different cases
         g2.setStroke(hollowStroke);
-        if(reportPhaseType == null || iscPhaseType == null)
-        {
+        if (reportPhaseType == null || iscPhaseType == null) {
             //g2.setStroke(hollowStroke);
             //draw plus
-            g2.drawLine(transHor-2, transVer, transHor+2, transVer);
-            g2.drawLine(transHor, transVer-2, transHor, transVer+2);
-        }
-        else
-        {
-            if(reportPhaseType.equals("x")||iscPhaseType.equals("x"))
-            {
+            g2.drawLine(transHor - 2, transVer, transHor + 2, transVer);
+            g2.drawLine(transHor, transVer - 2, transHor, transVer + 2);
+        } else {
+            if (reportPhaseType.equals("x") || iscPhaseType.equals("x")) {
                 //g2.setStroke(hollowStroke);
                 //draw cross
-                g2.drawLine(transHor-2, transVer-2, transHor+2, transVer+2);
-                g2.drawLine(transHor-2, transVer+2, transHor+2, transVer-2);
-            }
-            else if(reportPhaseType.equals("LR"))
-            {
+                g2.drawLine(transHor - 2, transVer - 2, transHor + 2, transVer + 2);
+                g2.drawLine(transHor - 2, transVer + 2, transHor + 2, transVer - 2);
+            } else if (reportPhaseType.equals("LR")) {
                 //g2.setStroke(hollowStroke);
-                g2.drawRect(transHor-2, transVer-2, 5, 5);
-            }
-            else if(reportPhaseType.equals(iscPhaseType)&&defining) //same and defining
+                g2.drawRect(transHor - 2, transVer - 2, 5, 5);
+            } else if (reportPhaseType.equals(iscPhaseType) && defining) //same and defining
             {
                 //g2.setStroke(solidStroke);
                 //solid circle
-                g2.fillOval(transHor, transVer, radius*2, radius*2);
-            }
-            else if(reportPhaseType.equals(iscPhaseType)&&!defining)
-            {
+                g2.fillOval(transHor, transVer, radius * 2, radius * 2);
+            } else if (reportPhaseType.equals(iscPhaseType) && !defining) {
                 //g2.setStroke(hollowStroke);
                 //hollow circle
-                g2.drawOval(transHor, transVer, radius*2, radius*2);
-            }
-            else if(!reportPhaseType.equals(iscPhaseType)&&defining)
-            {
+                g2.drawOval(transHor, transVer, radius * 2, radius * 2);
+            } else if (!reportPhaseType.equals(iscPhaseType) && defining) {
                 //g2.setStroke(solidStroke);
                 //solid triangle
-                int[] trix = {transHor, transHor-4, transHor+4};
-                int[] triy = {transVer-4, transVer+4, transVer+4};
-                Polygon p = new Polygon(trix,triy,3);
+                int[] trix = {transHor, transHor - 4, transHor + 4};
+                int[] triy = {transVer - 4, transVer + 4, transVer + 4};
+                Polygon p = new Polygon(trix, triy, 3);
                 g2.fillPolygon(p);
-            }
-            else if(!reportPhaseType.equals(iscPhaseType)&&!defining)
-            {
+            } else if (!reportPhaseType.equals(iscPhaseType) && !defining) {
                 //g2.setStroke(hollowStroke);
                 //hollow triangle
-                int[] trix = {transHor, transHor-4, transHor+4};
-                int[] triy = {transVer-4, transVer+4, transVer+4};
-                Polygon p = new Polygon(trix,triy,3);
+                int[] trix = {transHor, transHor - 4, transHor + 4};
+                int[] triy = {transVer - 4, transVer + 4, transVer + 4};
+                Polygon p = new Polygon(trix, triy, 3);
                 g2.drawPolygon(p);
             }
 
         }
-        
+
         g2.setPaint(savedPaint);
         g2.setStroke(savedStroke);
 
     }
-    
+
 }

@@ -14,6 +14,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
+import uk.ac.isc.seisdata.ActionHistoryList;
 import uk.ac.isc.seisdata.BlockTableModel;
 import uk.ac.isc.seisdata.EventsTableModel;
 import uk.ac.isc.seisdata.Hypocentre;
@@ -29,7 +30,6 @@ import uk.ac.isc.seisdata.SeisEventsList;
  */
 public class EventsControlPanel extends JPanel implements ListSelectionListener {
 
-
     //the main table of the event list
     private JTable eventsTable = null;
 
@@ -44,6 +44,9 @@ public class EventsControlPanel extends JPanel implements ListSelectionListener 
     private static final SeisEventsList eventsList = new SeisEventsList();
     private static final HypocentresList hyposList = new HypocentresList();
     private static final PhasesList phasesList = new PhasesList();
+    
+    // Saiful
+    private static final ActionHistoryList actionHistoryList = new ActionHistoryList();
 
     /*for tracking the region of each station*/
     TreeMap<String, String> stations = new TreeMap<String, String>();
@@ -108,7 +111,7 @@ public class EventsControlPanel extends JPanel implements ListSelectionListener 
         eventsTable.setColumnSelectionAllowed(false);
         //eventsTable.setSelectionBackground(new Color(255,255,153));
         eventsTable.setRowSelectionInterval(0, 0);
-        
+
 
         /*Change the skin and appearance of the control panel*/
         //eventsTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -205,9 +208,8 @@ public class EventsControlPanel extends JPanel implements ListSelectionListener 
     }
 
     /*
-    * When another event is selected or selection changes then it  trigger the change of all the regestered listeners (observers)
-    */
-     
+     * When another event is selected or selection changes then it  trigger the change of all the regestered listeners (observers)
+     */
     @Override
     public void valueChanged(ListSelectionEvent e) {
 
@@ -217,14 +219,13 @@ public class EventsControlPanel extends JPanel implements ListSelectionListener 
         if (e.getValueIsAdjusting()) {
             return;
         }
-        
+
         int selectedRowNum = eventsTable.getSelectedRow();
         // Step 1. get selected evid.
         selectedEvid = (Integer) eventsTable.getValueAt(selectedRowNum, 0);
         System.out.println("Selected evid: " + selectedEvid);
-        
+
         // Update the hypocentres and phases lists
-        
         boolean retDAO = SeisDataDAO.retrieveHypos(selectedEvid, hyposList.getHypocentres());
         retDAO = SeisDataDAO.retrieveHyposMagnitude(hyposList.getHypocentres());
 

@@ -1,4 +1,3 @@
-
 package uk.ac.isc.phaseview;
 
 import org.jfree.chart.util.ParamChecks;
@@ -7,22 +6,23 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesDataItem;
 
 /**
- * As the orignial timeseries does not allow duplicated data and we do have many duplicates, 
- * this class is to extend that class for allowing duplicates
+ * As the orignial timeseries does not allow duplicated data and we do have many
+ * duplicates, this class is to extend that class for allowing duplicates
+ *
  * @author hui
  */
 public class DuplicateUnorderTimeSeries extends TimeSeries {
 
-     //bad encapsulation in the base class so I have to  redefine the boundary
+    //bad encapsulation in the base class so I have to  redefine the boundary
     private double minY;
 
     private double maxY;
 
     //for time range
     private double minX;
-    
+
     private double maxX;
-    
+
     public DuplicateUnorderTimeSeries(Comparable name) {
         super(name);
         this.minY = Double.NaN;
@@ -30,43 +30,41 @@ public class DuplicateUnorderTimeSeries extends TimeSeries {
         this.minX = Double.NaN;
         this.maxX = Double.NaN;
     }
-    
+
     @Override
     public double getMinY() {
         return this.minY;
     }
 
-   
     @Override
     public double getMaxY() {
         return this.maxY;
     }
-    
+
     public long getMinX() {
-        return (long)this.minX;
+        return (long) this.minX;
     }
-    
+
     public long getMaxX() {
-        return (long)this.maxX;
+        return (long) this.maxX;
     }
-    
-    
+
     public void setMinY(double minY) {
         this.minY = minY;
     }
-    
+
     public void setMaxY(double maxY) {
         this.maxY = maxY;
     }
-    
+
     public void setMinX(long minX) {
         this.minX = minX;
     }
-    
+
     public void setMaxX(long maxX) {
         this.maxX = maxX;
     }
-    
+
     //actually, we just allow to add duplicate data
     @Override
     public void add(TimeSeriesDataItem item, boolean notify) {
@@ -75,8 +73,7 @@ public class DuplicateUnorderTimeSeries extends TimeSeries {
         Class c = item.getPeriod().getClass();
         if (this.timePeriodClass == null) {
             this.timePeriodClass = c;
-        }
-        else if (!this.timePeriodClass.equals(c)) {
+        } else if (!this.timePeriodClass.equals(c)) {
             StringBuilder b = new StringBuilder();
             b.append("You are trying to add data where the time period class ");
             b.append("is ");
@@ -93,12 +90,11 @@ public class DuplicateUnorderTimeSeries extends TimeSeries {
         if (count == 0) {
             this.data.add(item);
             added = true;
-        }
-        else {
+        } else {
             //RegularTimePeriod last = getTimePeriod(getItemCount() - 1);
             //if (item.getPeriod().compareTo(last) > 0) {
-                this.data.add(item);
-                added = true;
+            this.data.add(item);
+            added = true;
             //}
             //else {
             //    int index = Collections.binarySearch(this.data, item);
@@ -115,7 +111,7 @@ public class DuplicateUnorderTimeSeries extends TimeSeries {
             //        b.append(" for that time period. Duplicates are not ");
             //        b.append("permitted.  Try using the addOrUpdate() method.");
             //        throw new SeriesException(b.toString());
-             //   }
+            //   }
             //}
         }
         if (added) {
@@ -123,16 +119,16 @@ public class DuplicateUnorderTimeSeries extends TimeSeries {
             // check if this addition will exceed the maximum item count...
 
             removeAgedItems(false);  // remove old items if necessary, but
-                                     // don't notify anyone, because that
-                                     // happens next anyway...
+            // don't notify anyone, because that
+            // happens next anyway...
             if (notify) {
                 fireSeriesChanged();
             }
         }
 
     }
-    
-   private void updateBoundsForAddedItem(TimeSeriesDataItem item) {
+
+    private void updateBoundsForAddedItem(TimeSeriesDataItem item) {
         Number yN = item.getValue();
         double x = (double) item.getPeriod().getFirstMillisecond();
         if (item.getValue() != null) {
@@ -143,8 +139,8 @@ public class DuplicateUnorderTimeSeries extends TimeSeries {
             this.maxX = maxIgnoreNaN(this.maxX, x);
         }
     }
-        
-   private double minIgnoreNaN(double a, double b) {
+
+    private double minIgnoreNaN(double a, double b) {
         if (Double.isNaN(a)) {
             return b;
         }
@@ -160,10 +156,9 @@ public class DuplicateUnorderTimeSeries extends TimeSeries {
         }
         if (Double.isNaN(b)) {
             return a;
-        }
-        else {
+        } else {
             return Math.max(a, b);
         }
     }
-    
+
 }

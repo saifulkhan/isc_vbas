@@ -1,76 +1,66 @@
-
 package uk.ac.isc.seisdata;
 
 /**
- * This is for future likelihood view, representing the likelihood values based on distance, magnitude and time.
+ * This is for future likelihood view, representing the likelihood values based
+ * on distance, magnitude and time.
+ *
  * @author hui
  */
 public class LikeliTriplet {
-    
+
     private Double distanceLike;
-    
+
     private Double magnitudeLike;
-    
+
     private Double timeLike;
-    
-    public LikeliTriplet(Double dist, Double mag, Double time)
-    {
+
+    public LikeliTriplet(Double dist, Double mag, Double time) {
         this.distanceLike = dist;
         this.magnitudeLike = mag;
         this.timeLike = time;
     }
-    
-    public void setDistLike(Double distLike)
-    {
+
+    public void setDistLike(Double distLike) {
         this.distanceLike = distLike;
     }
-    
-    public void setMagLike(Double magLike)
-    {
+
+    public void setMagLike(Double magLike) {
         this.magnitudeLike = magLike;
     }
-    
-    public void setTimeLike(Double timeLike)
-    {
+
+    public void setTimeLike(Double timeLike) {
         this.timeLike = timeLike;
     }
-    
-    public double getDistLike()
-    {
+
+    public double getDistLike() {
         return this.distanceLike;
-    
+
     }
-    
-    public double getMagLike()
-    {
+
+    public double getMagLike() {
         return this.magnitudeLike;
     }
-    
-    public double getTimeLike()
-    {
+
+    public double getTimeLike() {
         return this.timeLike;
     }
-    
-    public Double getWeightedLike()
-    {
+
+    public Double getWeightedLike() {
         Double weightLike = 0.0;
-        
-        if(distanceLike != null)
-        {
+
+        if (distanceLike != null) {
             weightLike += 0.33 * distanceLike;
         }
-        
-        if(magnitudeLike != null)
-        {
+
+        if (magnitudeLike != null) {
             weightLike += 0.33 * magnitudeLike;
         }
-        
-        if(timeLike != null)
-        {
+
+        if (timeLike != null) {
             weightLike += 0.33 * timeLike;
         }
-        
+
         return weightLike;
     }
-    
+
 }

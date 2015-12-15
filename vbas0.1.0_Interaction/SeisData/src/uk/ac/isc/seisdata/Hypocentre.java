@@ -1,4 +1,3 @@
-
 package uk.ac.isc.seisdata;
 
 import java.util.Date;
@@ -9,344 +8,300 @@ import java.util.Objects;
 
 /**
  * The data structure for hypocentre, currently we have 21 attributes
+ *
  * @author hui
  */
 public class Hypocentre extends AbstractSeisData implements Cloneable {
-   
+
     /*keep a reference of event*/
     private Integer evid;
-    
+
     //hypocentre id
     private Integer hypid;
-    
+
     //prime hypocentre
-    private Hypocentre pHypo; 
+    private Hypocentre pHypo;
 
     //latitude
     private Double lat;
-    
+
     //longitude
     private Double lon;
-    
+
     //depth
     private Integer depth;
-    
+
     //agency who reports
     private String agency;
-    
+
     //the origin time
     private Date origTime;
-    
+
     //with millisecond
     private Integer msec;
-    
+
     /* get the std errors for depth, magnitude (I might ignore the err of magnitude for others), location */
     private Double errDepth;
-    
+
     //the number of stations 
     private Integer numStations;
-    
+
     //the number of defining stations
     private Integer numDefStations;
-    
+
     //the number of phases
     private Integer numPhases;
-    
+
     //the number of defining phases
     private Integer numDefPhases;
-    
+
     //flag to show if the hypocentre depth is fixed or not
     private Boolean isFixed;
-    
+
     //flag to show if the hypocetre is the prime hypocentre
     private Boolean isPrime;
-    
+
     //all the magnitudes reported 
     private LinkedHashMap<String, Double> magMap;
-    
+
     /*add one boolean value for indicating if it is selected for interaction*/
     private Boolean isSelected = false;
-    
+
     //here are some data from hypoc_err table for the reliablility of the hypocentre
     private Double stime;
-    
+
     private Double strike;
-    
+
     private Double smajax;
-    
+
     private Double sminax;
-    
-        
-    public Hypocentre()
-    {        
+
+    public Hypocentre() {
         magMap = new LinkedHashMap<String, Double>();
     }
 
     Hypocentre(String agency, Date dd, double lat, double lon, int depth) {
-        
+
         setOrigTime(dd);
         setAgency(agency);
         setLat(lat);
         setLon(lon);
         setDepth(depth);
     }
-    
-    public void setEvid(Integer evid)
-    {
+
+    public void setEvid(Integer evid) {
         this.evid = evid;
     }
-    
-    public Integer getEvid()
-    {
+
+    public Integer getEvid() {
         return this.evid;
     }
-    
-    public void setHypid(Integer hypid)
-    {
+
+    public void setHypid(Integer hypid) {
         this.hypid = hypid;
     }
-    
-    public Integer getHypid()
-    {
+
+    public Integer getHypid() {
         return this.hypid;
     }
-    
-    public void setLat(double latitude)
-    {
+
+    public void setLat(double latitude) {
         this.lat = latitude;
     }
-    
-    public Double getLat()
-    {
+
+    public Double getLat() {
         return lat;
     }
-    
-    public void setLon(double longitude)
-    {
+
+    public void setLon(double longitude) {
         this.lon = longitude;
     }
-    
-    public Double getLon()
-    {
+
+    public Double getLon() {
         return lon;
     }
-    
-    public Date getOrigTime()
-    {
+
+    public Date getOrigTime() {
         return this.origTime;
     }
-    
-    public void setOrigTime(Date dt)
-    {
+
+    public void setOrigTime(Date dt) {
         this.origTime = dt;
     }
 
-    public Integer getMsec()
-    {
+    public Integer getMsec() {
         return this.msec;
     }
-    
-    public void setMsec(Integer msec)
-    {
+
+    public void setMsec(Integer msec) {
         this.msec = msec;
     }
-    
-    public void setMagMap(LinkedHashMap<String,Double> magMap)
-    {
+
+    public void setMagMap(LinkedHashMap<String, Double> magMap) {
         this.magMap = magMap;
     }
-    
-    public void addMagnitude(String magType, Double magValue)
-    {
-        if(magType != null && magValue != null)
+
+    public void addMagnitude(String magType, Double magValue) {
+        if (magType != null && magValue != null) {
             magMap.put(magType, magValue);
+        }
     }
-    
-    public HashMap<String, Double> getMagnitude()
-    {
+
+    public HashMap<String, Double> getMagnitude() {
         return this.magMap;
     }
-    
-    /** set and get the agency of hypocentre
+
+    /**
+     * set and get the agency of hypocentre
+     *
      * @param agency String to define the reported agency
-     */ 
-    
-    public void setAgency(String agency)
-    {
-            this.agency = agency;
+     */
+    public void setAgency(String agency) {
+        this.agency = agency;
     }
-   
-    public String getAgency()
-    {
+
+    public String getAgency() {
         return agency;
     }
 
-    public void setDepth(Integer depth)
-    {
-           this.depth = depth;
+    public void setDepth(Integer depth) {
+        this.depth = depth;
     }
-   
+
     //a lot of getters and setters
-    public Integer getDepth()
-    {
+    public Integer getDepth() {
         return this.depth;
     }
-    
-    public void setErrDepth(Double errDepth)
-    {
+
+    public void setErrDepth(Double errDepth) {
         this.errDepth = errDepth;
         //fireSeisDataChanged();
     }
-    
-    public Double getErrDepth()
-    {
+
+    public Double getErrDepth() {
         return this.errDepth;
     }
-       
-    public void setNumStations(Integer numStations)
-    {
+
+    public void setNumStations(Integer numStations) {
         this.numStations = numStations;
     }
-    
-    public Integer getNumStations()
-    {
+
+    public Integer getNumStations() {
         return this.numStations;
     }
-    
-    public void setNumDefStations(Integer numDefStations)
-    {
+
+    public void setNumDefStations(Integer numDefStations) {
         this.numDefStations = numDefStations;
         //fireSeisDataChanged();
     }
-    
-    public Integer getNumDefStations()
-    {
+
+    public Integer getNumDefStations() {
         return numDefStations;
     }
-    
-    public void setNumPhases(Integer numPhases)
-    {
+
+    public void setNumPhases(Integer numPhases) {
         this.numPhases = numPhases;
         //fireSeisDataChanged();
     }
-    
-    public Integer getNumPhases()
-    {
+
+    public Integer getNumPhases() {
         return this.numPhases;
     }
-    
-    public void setNumDefPhases(Integer numDefPhases)
-    {
+
+    public void setNumDefPhases(Integer numDefPhases) {
         this.numDefPhases = numDefPhases;
         //fireSeisDataChanged();
     }
-    
-    public Integer getNumDefPhases()
-    {
+
+    public Integer getNumDefPhases() {
         return numDefPhases;
     }
-    
-    public void setIsFixed(Boolean isFixed)
-    {
+
+    public void setIsFixed(Boolean isFixed) {
         this.isFixed = isFixed;
         //fireSeisDataChanged();
-        
+
     }
-    
-    public Boolean getIsFixed()
-    {
+
+    public Boolean getIsFixed() {
         return this.isFixed;
     }
-    
-    /** set and get prime and historic flags of hypocentre
-     * @param isPrime */    
-    public void setIsPrime(Boolean isPrime)
-    {
+
+    /**
+     * set and get prime and historic flags of hypocentre
+     *
+     * @param isPrime
+     */
+    public void setIsPrime(Boolean isPrime) {
         this.isPrime = isPrime;
         //fireSeisDataChanged();
     }
-    
-    public Boolean getIsPrime()
-    {
+
+    public Boolean getIsPrime() {
         return isPrime;
     }
-    
-    public void setPrime(Hypocentre ph)
-    {
+
+    public void setPrime(Hypocentre ph) {
         this.pHypo = ph;
     }
-    
-    public Hypocentre getPrime()
-    {
+
+    public Hypocentre getPrime() {
         return this.pHypo;
     }
-    
-    public void setIsSelected(Boolean isSelected)
-    {
+
+    public void setIsSelected(Boolean isSelected) {
         this.isSelected = isSelected;
         fireSeisDataChanged();
     }
-    
-    public Boolean getIsSelected()
-    {
+
+    public Boolean getIsSelected() {
         return isSelected;
     }
-        
-    public Double getStime()
-    {
+
+    public Double getStime() {
         return this.stime;
     }
-    
-    public void setStime(Double strime)
-    {
+
+    public void setStime(Double strime) {
         this.stime = strime;
     }
-    
-    public Double getStrike()
-    {
+
+    public Double getStrike() {
         return this.strike;
     }
-    
-    public void setStrike(Double strike)
-    {
+
+    public void setStrike(Double strike) {
         this.strike = strike;
     }
-    
-    public Double getSmajax()
-    {
+
+    public Double getSmajax() {
         return this.smajax;
     }
-    
-    public void setSmajax(Double smajax)
-    {
+
+    public void setSmajax(Double smajax) {
         this.smajax = smajax;
     }
-    
-    public Double getSminax()
-    {
+
+    public Double getSminax() {
         return this.sminax;
     }
-    
-    public void setSminax(Double sminax)
-    {
+
+    public void setSminax(Double sminax) {
         this.sminax = sminax;
     }
-    
+
     @Override
-    public boolean equals(Object obj)
-    {
-        if(obj==this)
-        {
+    public boolean equals(Object obj) {
+        if (obj == this) {
             return true;
         }
-        
-        if(!(obj instanceof Hypocentre))
-        {
+
+        if (!(obj instanceof Hypocentre)) {
             return false;
         }
         Hypocentre that = (Hypocentre) obj;
-        
-        return this.getAgency().equals(that.getAgency()) && this.getDepth().equals(that.getDepth()) 
+
+        return this.getAgency().equals(that.getAgency()) && this.getDepth().equals(that.getDepth())
                 && this.lat.equals(that.getLat()) && this.lon.equals(that.getLon());
     }
 
@@ -365,57 +320,70 @@ public class Hypocentre extends AbstractSeisData implements Cloneable {
     }
 
     @Override
-    public String toString()
-    {
-       String ret = "Agency: " + this.agency + " Depth: "+ this.depth + " Lat: "
-               + this.lat + " Lon: " + this.lon;
-       return ret;
+    public String toString() {
+        String ret = "Agency: " + this.agency + " Depth: " + this.depth + " Lat: "
+                + this.lat + " Lon: " + this.lon;
+        return ret;
     }
-    
+
     @Override
     public Object clone() throws CloneNotSupportedException {
-        
+
         Hypocentre clone = (Hypocentre) super.clone();
-        
-        if(this.agency != null)
+
+        if (this.agency != null) {
             clone.setAgency(this.agency);
-        if(this.depth != null)
+        }
+        if (this.depth != null) {
             clone.setDepth(this.depth);
-        if(this.lat != null)
+        }
+        if (this.lat != null) {
             clone.setLat(this.lat);
-        if(this.lon != null)
+        }
+        if (this.lon != null) {
             clone.setLon(this.lon);
-        if(this.origTime != null)
+        }
+        if (this.origTime != null) {
             clone.setOrigTime(this.origTime);
-        if(this.errDepth != null)
+        }
+        if (this.errDepth != null) {
             clone.setErrDepth(this.errDepth);
-        if(this.evid != null)
+        }
+        if (this.evid != null) {
             clone.setEvid(this.evid);
-        if(this.hypid != null)
+        }
+        if (this.hypid != null) {
             clone.setHypid(this.hypid);
-        if(this.isFixed != null)
+        }
+        if (this.isFixed != null) {
             clone.setIsFixed(this.isFixed);
-        if(this.isPrime != null)
+        }
+        if (this.isPrime != null) {
             clone.setIsPrime(this.isPrime);
-        if(this.numDefPhases!=null)
+        }
+        if (this.numDefPhases != null) {
             clone.setNumDefPhases(this.numDefPhases);
-        if(this.numDefStations!=null)
+        }
+        if (this.numDefStations != null) {
             clone.setNumDefStations(this.numDefStations);
-        if(this.numPhases!=null)
+        }
+        if (this.numPhases != null) {
             clone.setNumPhases(this.numPhases);
-        if(this.numStations!=null)
+        }
+        if (this.numStations != null) {
             clone.setNumStations(numStations);
-        if(this.pHypo!=null)
+        }
+        if (this.pHypo != null) {
             clone.setPrime(this.pHypo);
-        
-        clone.magMap = new LinkedHashMap<String,Double>();
-        for(Map.Entry<String,Double> entry: this.magMap.entrySet())
-        {
+        }
+
+        clone.magMap = new LinkedHashMap<String, Double>();
+        for (Map.Entry<String, Double> entry : this.magMap.entrySet()) {
             clone.magMap.put(entry.getKey(), entry.getValue());
         }
-        
+
         return clone;
-        
+
     }
-    
+
 }

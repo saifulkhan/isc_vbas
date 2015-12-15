@@ -1,5 +1,3 @@
-
-
 package uk.ac.isc.hypomagnitudeview;
 
 import java.awt.BorderLayout;
@@ -43,25 +41,25 @@ public final class HypoMagnitudeViewTopComponent extends TopComponent implements
 
     //hypolist which keeps all the magnitudes
     private final HypocentresList hyposList;
-     
+
     private final JScrollPane scrollPane;
-    
+
     //the panel to have the figure
     HypoMagnitudeViewPanel hmag = null;
-    
+
     //get control window to retrieve data
     private final TopComponent tc = WindowManager.getDefault().findTopComponent("EventsControlViewTopComponent");
-    
+
     public HypoMagnitudeViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_HypoMagnitudeViewTopComponent());
         setToolTipText(Bundle.HINT_HypoMagnitudeViewTopComponent());
 
         hyposList = ((EventsControlViewTopComponent) tc).getControlPanel().getHyposList();
-        
+
         hmag = new HypoMagnitudeViewPanel(hyposList.getHypocentres());
         scrollPane = new JScrollPane(hmag);
-        
+
         this.setLayout(new BorderLayout());
         this.add(scrollPane, BorderLayout.CENTER);
     }
@@ -115,9 +113,9 @@ public final class HypoMagnitudeViewTopComponent extends TopComponent implements
     //repaint the view when data chages
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
-        
+
         hmag.UpdateData(hyposList.getHypocentres());
-             
+
         hmag.repaint();
         scrollPane.setViewportView(hmag);
     }

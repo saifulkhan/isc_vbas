@@ -3,27 +3,26 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package uk.ac.isc.hypooverview;
 
 /**
  *
  * @author hui
- * @deprecated 
+ * @deprecated
  */
 public class OverviewControlPanel2 extends javax.swing.JPanel {
 
     private final HypoOverviewPanel2 hop;
-        
+
     /**
      * Creates new form OverviewControlPanel2
      */
     public OverviewControlPanel2(final HypoOverviewPanel2 hop) {
         initComponents();
         this.hop = hop;
-        
+
         closeTopRB.setSelected(true);
-        
+
         band1CheckBox.setSelected(true);
         band2CheckBox.setSelected(true);
         band3CheckBox.setSelected(true);
@@ -32,7 +31,7 @@ public class OverviewControlPanel2 extends javax.swing.JPanel {
         band6CheckBox.setSelected(true);
         band7CheckBox.setSelected(true);
         band8CheckBox.setSelected(true);
-        
+
         dotSize1Button.setSelected(true);
     }
 
@@ -454,96 +453,72 @@ public class OverviewControlPanel2 extends javax.swing.JPanel {
 
     private void band8CheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_band8CheckBoxActionPerformed
         // TODO add your handling code here:
-        if(hop.getDepthBandVisible(7)==true)
-        {
+        if (hop.getDepthBandVisible(7) == true) {
             hop.setSingleDepthBandVisible(7, false);
-        }
-        else
-        {
+        } else {
             hop.setSingleDepthBandVisible(7, true);
         }
     }//GEN-LAST:event_band8CheckBoxActionPerformed
 
     private void band7CheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_band7CheckBoxActionPerformed
         // TODO add your handling code here:
-        if(hop.getDepthBandVisible(6)==true)
-        {
+        if (hop.getDepthBandVisible(6) == true) {
             hop.setSingleDepthBandVisible(6, false);
-        }
-        else
-        {
+        } else {
             hop.setSingleDepthBandVisible(6, true);
         }
     }//GEN-LAST:event_band7CheckBoxActionPerformed
 
     private void band6CheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_band6CheckBoxActionPerformed
         // TODO add your handling code here:
-        if(hop.getDepthBandVisible(5)==true)
-        {
+        if (hop.getDepthBandVisible(5) == true) {
             hop.setSingleDepthBandVisible(5, false);
-        }
-        else
-        {
+        } else {
             hop.setSingleDepthBandVisible(5, true);
         }
     }//GEN-LAST:event_band6CheckBoxActionPerformed
 
     private void band5CheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_band5CheckBoxActionPerformed
         // TODO add your handling code here:
-        if(hop.getDepthBandVisible(4)==true)
-        {
+        if (hop.getDepthBandVisible(4) == true) {
             hop.setSingleDepthBandVisible(4, false);
-        }
-        else
-        {
+        } else {
             hop.setSingleDepthBandVisible(4, true);
         }
     }//GEN-LAST:event_band5CheckBoxActionPerformed
 
     private void band4CheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_band4CheckBoxActionPerformed
         // TODO add your handling code here:
-        if(hop.getDepthBandVisible(3)==true)
-        {
+        if (hop.getDepthBandVisible(3) == true) {
             hop.setSingleDepthBandVisible(3, false);
-        }
-        else
-        {
+        } else {
             hop.setSingleDepthBandVisible(3, true);
         }
     }//GEN-LAST:event_band4CheckBoxActionPerformed
 
     private void band3CheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_band3CheckBoxActionPerformed
         // TODO add your handling code here:
-        if(hop.getDepthBandVisible(2)==true)
-        {
+        if (hop.getDepthBandVisible(2) == true) {
             hop.setSingleDepthBandVisible(2, false);
-        }
-        else
-        {
+        } else {
             hop.setSingleDepthBandVisible(2, true);
         }
     }//GEN-LAST:event_band3CheckBoxActionPerformed
 
     private void band2CheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_band2CheckBoxActionPerformed
         // TODO add your handling code here:
-        if(hop.getDepthBandVisible(1)==true)
-        {
+        if (hop.getDepthBandVisible(1) == true) {
             hop.setSingleDepthBandVisible(1, false);
-        }
-        else
-        {
+        } else {
             hop.setSingleDepthBandVisible(1, true);
         }
     }//GEN-LAST:event_band2CheckBoxActionPerformed
 
     private void band1CheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_band1CheckBoxActionPerformed
         // TODO add your handling code here:
-        if(hop.getDepthBandVisible(0)==true)
-        {
+        if (hop.getDepthBandVisible(0) == true) {
             hop.setSingleDepthBandVisible(0, false);
-        }
-        else
-        {
+        } else {
             hop.setSingleDepthBandVisible(0, true);
         }
     }//GEN-LAST:event_band1CheckBoxActionPerformed

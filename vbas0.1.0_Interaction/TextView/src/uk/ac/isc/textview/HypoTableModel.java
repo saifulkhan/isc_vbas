@@ -7,14 +7,12 @@ import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 import uk.ac.isc.seisdata.Hypocentre;
 
-
-
 class HypoTableModel extends AbstractTableModel {
 
-    private final String[] columnNames = {"Agency", "Time", "Lat.", "Long.", 
+    private final String[] columnNames = {"Agency", "Time", "Lat.", "Long.",
         "Depth", "Depth Error", "Magnitude 1", "Magnitude 2", "RMS", "Hypid"};
 
-    private final Class[] columns = new Class[]{String.class, String.class, 
+    private final Class[] columns = new Class[]{String.class, String.class,
         String.class, String.class, Double.class, Integer.class,
         String.class, String.class, Double.class, Integer.class};
 
@@ -137,15 +135,15 @@ class HypoTableModel extends AbstractTableModel {
     public boolean isCellEditable(int row, int col) {
         //Note that the data/cell address is constant, no matter where the cell appears onscreen.
         /*
-        if (col < 1) {
-            return false;
-        } else {
-            return true;
-        }*/
-        
+         if (col < 1) {
+         return false;
+         } else {
+         return true;
+         }*/
+
         return false;
     }
-    
+
     public void setValueAt(Object value, int row, int col) {
         /*  
          if (DEBUG) {
@@ -163,6 +161,6 @@ class HypoTableModel extends AbstractTableModel {
          printDebugData();
          }
          */
-    }          
+    }
 
 }

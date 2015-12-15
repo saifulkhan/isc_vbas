@@ -1,4 +1,3 @@
-
 package uk.ac.isc.phaseview;
 
 import java.awt.BorderLayout;
@@ -51,70 +50,70 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
 
     //references to access to the data model
     private final HypocentresList hyposList;
-    
+
     private Hypocentre ph;
-    
+
     private final PhasesList phasesList;
-    
+
     //pane and panels for views
     private JSplitPane pairViewsPane = null;
-    
+
     private PhaseViewControlPanel pvcp = null;
-    
+
     private JScrollPane leftPane = null;
-    
+
     private JScrollPane rightPane = null;
-    
+
     private PhaseTravelViewPanel pgvp = null;
-    
+
     private PhaseDetailViewPanel pdvp = null;
-    
+
     //get control window to retrieve data
     private final TopComponent tc = WindowManager.getDefault().findTopComponent("EventsControlViewTopComponent");
-    
-    /**this is for saving the theoretical travel time points */
+
+    /**
+     * this is for saving the theoretical travel time points
+     */
     private final DuplicateUnorderTimeSeriesCollection ttdData = new DuplicateUnorderTimeSeriesCollection();
-    
+
     private boolean showTTDFlag = true;
-    
+
     public PhaseViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_PhaseViewTopComponent());
         setToolTipText(Bundle.HINT_PhaseViewTopComponent());
 
         phasesList = ((EventsControlViewTopComponent) tc).getControlPanel().getPhasesList();
-        
+
         hyposList = ((EventsControlViewTopComponent) tc).getControlPanel().getHyposList();
         loadTTDData(hyposList.getHypocentres().get(0).getEvid());
-        
-        for(int i = 0; i<hyposList.getHypocentres().size();i++)
-        {
-            if(hyposList.getHypocentres().get(i).getIsPrime())
-            {
+
+        for (int i = 0; i < hyposList.getHypocentres().size(); i++) {
+            if (hyposList.getHypocentres().get(i).getIsPrime()) {
                 ph = hyposList.getHypocentres().get(i);
             }
         }
-        
-        pgvp = new PhaseTravelViewPanel(phasesList,ph,ttdData);
-        
+
+        pgvp = new PhaseTravelViewPanel(phasesList, ph, ttdData);
+
         pdvp = new PhaseDetailViewPanel(pgvp, ttdData);
-        
+
         //handle general view first
         pgvp.setPrime(ph);
         //pgvp.setTTDData(ttdData);
-        
+
         pvcp = new PhaseViewControlPanel(pgvp, pdvp);
-        
+
         leftPane = new JScrollPane(pgvp);
         rightPane = new JScrollPane(pdvp);
-         
-        pairViewsPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,leftPane,rightPane);
+
+        pairViewsPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPane, rightPane);
         pairViewsPane.setResizeWeight(0.5d);
-                
+
         this.setLayout(new BorderLayout());
-        this.add(pvcp,BorderLayout.NORTH);
+        this.add(pvcp, BorderLayout.NORTH);
         this.add(pairViewsPane, BorderLayout.CENTER);
-        
+
     }
 
     /**
@@ -165,111 +164,95 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
 
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
-        
-        if(showTTDFlag == true)
-        {
+
+        if (showTTDFlag == true) {
             loadTTDData(hyposList.getHypocentres().get(0).getEvid());
         }
-           
-        for(int i = 0; i<hyposList.getHypocentres().size();i++)
-        {
-            if(hyposList.getHypocentres().get(i).getIsPrime())
-            {
+
+        for (int i = 0; i < hyposList.getHypocentres().size(); i++) {
+            if (hyposList.getHypocentres().get(i).getIsPrime()) {
                 ph = hyposList.getHypocentres().get(i);
             }
-        } 
+        }
         pgvp.setPrime(ph);
         pgvp.setTTDData(ttdData);
-        
+
         pvcp.reset();
         pgvp.UpdateData();
-        
+
         pdvp.setRange(pgvp.getRange());
         pdvp.UpdateData();
-        
+
     }
-    
+
     //@Override
     //public void paintComponent(Graphics g)
     //{
     //    super.paint(g);
-        //pairViewsPane.setSize(getWidth(),getHeight());
-        
+    //pairViewsPane.setSize(getWidth(),getHeight());
     //    leftPane.setSize(pairViewsPane.getLeftComponent().getWidth(),pairViewsPane.getLeftComponent().getHeight());
     //    rightPane.setSize(pairViewsPane.getRightComponent().getWidth(), pairViewsPane.getRightComponent().getHeight());
     //}
-
     /**
      * helper function to call perl for calculating ttd curves based on evid
-     * 
-     * @param evid 
+     *
+     * @param evid
      */
     private void loadTTDData(Integer evid) {
-        
+
         ttdData.removeAllSeries();
-        
+
         ArrayList<TTDTriplet> ttdList = new ArrayList<TTDTriplet>();
-        
-        /**call perl script to get the theoretical time curves */
+
+        /**
+         * call perl script to get the theoretical time curves
+         */
         String commandLine = "perl /export/home/james/VBAS/TT/ttimes.pl " + evid.toString();
 
         //execute the perl script and read the data into ttdList
-        try
-        {
+        try {
             Process proc = Runtime.getRuntime().exec(commandLine);
-            
+
             BufferedInputStream in = new BufferedInputStream(proc.getInputStream());
             Scanner bscanner = new Scanner(in);
-            
-            while (bscanner.hasNextLine())
-            {
+
+            while (bscanner.hasNextLine()) {
                 String temp = bscanner.nextLine();
                 TTDTriplet tempTriplet = new TTDTriplet(temp);
                 ttdList.add(tempTriplet);
-                        //System.out.println(tempTriplet);
-                        //if(!pnameList.contains(tempTriplet.getPhaseType()))
-                        //{
-                        //    pnameList.add(tempTriplet.getPhaseType());
-                        //}
+                //System.out.println(tempTriplet);
+                //if(!pnameList.contains(tempTriplet.getPhaseType()))
+                //{
+                //    pnameList.add(tempTriplet.getPhaseType());
+                //}
             }
             proc.waitFor();
- 
-        }
-        catch(IOException ioe)
-        {
-            System.out.println("Exception: "+ ioe.toString());
+
+        } catch (IOException ioe) {
+            System.out.println("Exception: " + ioe.toString());
         } catch (InterruptedException ex) {
-             Exceptions.printStackTrace(ex);
-        } 
-        
+            Exceptions.printStackTrace(ex);
+        }
+
         //iterate the ttdlist and put them into different seriers based on their phase types
         //return time series collections
         DuplicateUnorderTimeSeries dts = null;
-        for(int i = 0; i< ttdList.size(); i++)
-        {
-            if(i==0)
-            {
+        for (int i = 0; i < ttdList.size(); i++) {
+            if (i == 0) {
                 dts = new DuplicateUnorderTimeSeries(ttdList.get(0).getPhaseType());
-                dts.add(new Second(ttdList.get(0).getArrivalTime()),ttdList.get(0).getDelta());
-            }
-            else if(i==ttdList.size()-1)
-            {
+                dts.add(new Second(ttdList.get(0).getArrivalTime()), ttdList.get(0).getDelta());
+            } else if (i == ttdList.size() - 1) {
                 ttdData.addSeries(dts);
-            }
-            else
-            {
-                if(ttdList.get(i).getPhaseType().equals(ttdList.get(i-1).getPhaseType()))
-                {
-                   dts.add(new Second(ttdList.get(i).getArrivalTime()),ttdList.get(i).getDelta()); 
-                }
-                else
-                {
+            } else {
+                if (ttdList.get(i).getPhaseType().equals(ttdList.get(i - 1).getPhaseType())) {
+                    dts.add(new Second(ttdList.get(i).getArrivalTime()), ttdList.get(i).getDelta());
+                } else {
                     ttdData.addSeries(dts);
                     dts = new DuplicateUnorderTimeSeries(ttdList.get(i).getPhaseType());
-                    dts.add(new Second(ttdList.get(i).getArrivalTime()),ttdList.get(i).getDelta()); 
+                    dts.add(new Second(ttdList.get(i).getArrivalTime()), ttdList.get(i).getDelta());
                 }
             }
         }
-        
+
     }
 }

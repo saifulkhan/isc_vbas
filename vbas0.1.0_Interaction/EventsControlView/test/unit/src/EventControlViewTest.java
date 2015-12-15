@@ -13,13 +13,12 @@ import uk.ac.isc.eventscontrolview.EventsControlPanel;
  * @author saiful
  */
 public class EventControlViewTest {
-    
+
     EventsControlPanel eventControlPanel;
-    
+
     public EventControlViewTest() {
         eventControlPanel = new EventsControlPanel();
-        
-        
+
     }
 
     // TODO add test methods here.

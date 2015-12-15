@@ -1,4 +1,3 @@
-
 package uk.ac.isc.phaseview;
 
 import java.awt.AlphaComposite;
@@ -33,45 +32,41 @@ import org.jfree.ui.RectangleInsets;
 
 /**
  * customed plot with curves
+ *
  * @author hui
  */
 public class PhasesWithCurvePlot extends XYPlot {
-    
+
     //default color scheme for P, S and K.   
     //private static final Paint DEFAULT_PPHASE_PAINT = new Color(100,0,255);
-    
     //private static final Paint DEFAULT_SPHASE_PAINT = new Color(210,80,80);
-    
     //private static final Paint DEFAULT_KPHASE_PAINT = new Color(110,220,0);
-    
     private static final Stroke DEFAULT_STROKE = new BasicStroke(1);
-    
+
     DuplicateUnorderTimeSeriesCollection ttdData;
-    
+
     public PhasesWithCurvePlot(XYDataset dataset,
-                  ValueAxis domainAxis,
-                  ValueAxis rangeAxis,
-                  XYItemRenderer renderer)
-    {
-        super(dataset,domainAxis,rangeAxis,renderer);
+            ValueAxis domainAxis,
+            ValueAxis rangeAxis,
+            XYItemRenderer renderer) {
+        super(dataset, domainAxis, rangeAxis, renderer);
     }
-    
+
     public PhasesWithCurvePlot(XYDataset dataset,
-                  ValueAxis domainAxis,
-                  ValueAxis rangeAxis,
-                  XYItemRenderer renderer,
-                  DuplicateUnorderTimeSeriesCollection ttdData)
-    {
-        super(dataset,domainAxis,rangeAxis,renderer);
+            ValueAxis domainAxis,
+            ValueAxis rangeAxis,
+            XYItemRenderer renderer,
+            DuplicateUnorderTimeSeriesCollection ttdData) {
+        super(dataset, domainAxis, rangeAxis, renderer);
         this.ttdData = ttdData;
     }
-    
+
     //override function for drawing the plot
     @Override
     @SuppressWarnings("empty-statement")
     public void draw(Graphics2D g2, Rectangle2D area, Point2D anchor,
             PlotState parentState, PlotRenderingInfo info) {
-      
+
         //draw the background curves 
         //super.draw(g2, area, anchor, parentState, info);
         // if the plot area is too small, just return...
@@ -127,8 +122,7 @@ public class PhasesWithCurvePlot extends XYPlot {
                 if (orient == PlotOrientation.VERTICAL) {
                     x = domainAxis.java2DToValue(anchor.getX(), dataArea,
                             getDomainAxisEdge());
-                }
-                else {
+                } else {
                     x = domainAxis.java2DToValue(anchor.getY(), dataArea,
                             getDomainAxisEdge());
                 }
@@ -140,8 +134,7 @@ public class PhasesWithCurvePlot extends XYPlot {
                 if (orient == PlotOrientation.VERTICAL) {
                     y = rangeAxis.java2DToValue(anchor.getY(), dataArea,
                             getRangeAxisEdge());
-                }
-                else {
+                } else {
                     y = rangeAxis.java2DToValue(anchor.getX(), dataArea,
                             getRangeAxisEdge());
                 }
@@ -192,7 +185,7 @@ public class PhasesWithCurvePlot extends XYPlot {
         BufferedImage dataImage = null;
         if (super.getShadowGenerator() != null) {
             dataImage = new BufferedImage((int) dataArea.getWidth(),
-                    (int)dataArea.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                    (int) dataArea.getHeight(), BufferedImage.TYPE_INT_ARGB);
             g2 = dataImage.createGraphics();
             g2.translate(-dataArea.getX(), -dataArea.getY());
             g2.setRenderingHints(savedG2.getRenderingHints());
@@ -210,36 +203,33 @@ public class PhasesWithCurvePlot extends XYPlot {
         Paint savedPaint = g2.getPaint();
         Stroke savedStroke = g2.getStroke();
         g2.setStroke(DEFAULT_STROKE);
-        g2.setPaint(new Color(128,128,128));
-        if(ttdData!=null)
-        {
-            for (int i = 0; i < ttdData.getSeriesCount(); i++)
-            {
-            String phaseType = (String) ttdData.getSeriesKey(i);
-                        
-            for (int j = 0; j < ttdData.getItemCount(i)-1; j++)
-            {
-                //double x1 = ttdData.getXValue(i, j);
-                //double x2 = ttdData.getXValue(i, j+1);
-                //double y1 = ttdData.getYValue(i, j);
-                //double y2 = ttdData.getYValue(i, j+1);
-                int y1 = (int) getDomainAxis().valueToJava2D(ttdData.getXValue(i, j), dataArea,
+        g2.setPaint(new Color(128, 128, 128));
+        if (ttdData != null) {
+            for (int i = 0; i < ttdData.getSeriesCount(); i++) {
+                String phaseType = (String) ttdData.getSeriesKey(i);
+
+                for (int j = 0; j < ttdData.getItemCount(i) - 1; j++) {
+                    //double x1 = ttdData.getXValue(i, j);
+                    //double x2 = ttdData.getXValue(i, j+1);
+                    //double y1 = ttdData.getYValue(i, j);
+                    //double y2 = ttdData.getYValue(i, j+1);
+                    int y1 = (int) getDomainAxis().valueToJava2D(ttdData.getXValue(i, j), dataArea,
                             getDomainAxisEdge());
-                int y2 = (int) getDomainAxis().valueToJava2D(ttdData.getXValue(i, j+1), dataArea,
+                    int y2 = (int) getDomainAxis().valueToJava2D(ttdData.getXValue(i, j + 1), dataArea,
                             getDomainAxisEdge());
-                int x1 = (int) getRangeAxis().valueToJava2D(ttdData.getYValue(i, j), dataArea,
+                    int x1 = (int) getRangeAxis().valueToJava2D(ttdData.getYValue(i, j), dataArea,
                             getRangeAxisEdge());
-                int x2 = (int) getRangeAxis().valueToJava2D(ttdData.getYValue(i, j+1), dataArea,
+                    int x2 = (int) getRangeAxis().valueToJava2D(ttdData.getYValue(i, j + 1), dataArea,
                             getRangeAxisEdge());
-                g2.drawLine(x1, y1, x2, y2);
-               
-            }
-            
+                    g2.drawLine(x1, y1, x2, y2);
+
+                }
+
             }
         }
         g2.setPaint(savedPaint);
         g2.setStroke(savedStroke);
-        
+
         // now draw annotations and render data items...
         boolean foundData = false;
         DatasetRenderingOrder order = getDatasetRenderingOrder();
@@ -260,7 +250,7 @@ public class PhasesWithCurvePlot extends XYPlot {
             // render data items...
             for (int i = 0; i < getDatasetCount(); i++) {
                 foundData = render(g2, dataArea, i, info, crosshairState)
-                    || foundData;
+                        || foundData;
             }
 
             // draw foreground annotations
@@ -274,8 +264,7 @@ public class PhasesWithCurvePlot extends XYPlot {
                 }
             }
 
-        }
-        else if (order == DatasetRenderingOrder.REVERSE) {
+        } else if (order == DatasetRenderingOrder.REVERSE) {
 
             // draw background annotations
             int rendererCount = super.getRendererCount();;
@@ -294,7 +283,7 @@ public class PhasesWithCurvePlot extends XYPlot {
 
             for (int i = getDatasetCount() - 1; i >= 0; i--) {
                 foundData = render(g2, dataArea, i, info, crosshairState)
-                    || foundData;
+                        || foundData;
             }
 
             // draw foreground annotations
@@ -321,8 +310,7 @@ public class PhasesWithCurvePlot extends XYPlot {
             double xx;
             if (orient == PlotOrientation.VERTICAL) {
                 xx = xAxis.java2DToValue(anchor.getX(), dataArea, xAxisEdge);
-            }
-            else {
+            } else {
                 xx = xAxis.java2DToValue(anchor.getY(), dataArea, xAxisEdge);
             }
             crosshairState.setCrosshairX(xx);
@@ -384,11 +372,11 @@ public class PhasesWithCurvePlot extends XYPlot {
 
         drawOutline(g2, dataArea);
     }
-    
-        /**
+
+    /**
      * Trims a rectangle to integer coordinates.
      *
-     * @param rect  the incoming rectangle.
+     * @param rect the incoming rectangle.
      *
      * @return A rectangle with integer coordinates.
      */

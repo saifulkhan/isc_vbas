@@ -20,7 +20,7 @@ import uk.ac.isc.seisdata.SeisDataChangeListener;
 
 /**
  * Top component which displays hypocentre depth panel.
- * 
+ *
  */
 @ConvertAsProperties(
         dtd = "-//uk.ac.isc.hypodepthview//HypoDepthView//EN",
@@ -47,25 +47,25 @@ public final class HypoDepthViewTopComponent extends TopComponent implements Sei
 
     //data reference for hypocentre list
     private final HypocentresList hyposList;
-     
+
     private final JScrollPane scrollPane;
-    
+
     //get control window to retrieve data
     private final TopComponent tc = WindowManager.getDefault().findTopComponent("EventsControlViewTopComponent");
-    
+
     //the panel to show depth of hypocentres
     HypoDepthViewPanel hdp = null;
-    
+
     public HypoDepthViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_HypoDepthViewTopComponent());
         setToolTipText(Bundle.HINT_HypoDepthViewTopComponent());
 
         hyposList = ((EventsControlViewTopComponent) tc).getControlPanel().getHyposList();
-        
+
         hdp = new HypoDepthViewPanel(hyposList.getHypocentres());
         scrollPane = new JScrollPane(hdp);
-        
+
         this.setLayout(new BorderLayout());
         this.add(scrollPane, BorderLayout.CENTER);
     }
@@ -117,16 +117,15 @@ public final class HypoDepthViewTopComponent extends TopComponent implements Sei
         String version = p.getProperty("version");
         // TODO read your settings according to their version
     }
-    
 
     //repaint the view when data changes
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
-        
+
         hdp.UpdateData(hyposList.getHypocentres());
-        
+
         hdp.getJFreeChart().fireChartChanged();
-        
+
         hdp.repaint();
         scrollPane.setViewportView(hdp);
     }

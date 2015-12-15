@@ -1,22 +1,16 @@
-
 package uk.ac.isc.eventscontrolview;
 
 import javax.swing.table.AbstractTableModel;
 
-
-
-
-/** 
- * Hint: SiesData/.../EvensTable|Model.java 
+/**
+ * Hint: SiesData/.../EvensTable|Model.java
  */
-
-
 public class ActionHistoryTableModel extends AbstractTableModel {
 
     private final String[] columnNames = {"Select", "Analyst", "Command"};
     private final Class[] columns = new Class[]{Boolean.class, String.class, String.class};
     //private final ArrayList<SeisEvent> events;
-    
+
     Object[][] data = {
         {false, "Smith", "Snowboarding"},
         {true, "Doe", "Rowing"},
@@ -24,15 +18,13 @@ public class ActionHistoryTableModel extends AbstractTableModel {
         {false, "White", "Speed reading"},
         {false, "Brown", "Pool"}
     };
-    public final Object[] longValues = {"Jane", "Kathy", "None of the above", new Integer(20), Boolean.TRUE };
+    public final Object[] longValues = {"Jane", "Kathy", "None of the above", new Integer(20), Boolean.TRUE};
 
-    
-/*    
-    public ActionHistoryModel(ArrayList<ActionHistoryList> actionHistoryList) {
-        this.actionHistoryList = actionHistoryList;
-    }
-  */
-    
+    /*    
+     public ActionHistoryModel(ArrayList<ActionHistoryList> actionHistoryList) {
+     this.actionHistoryList = actionHistoryList;
+     }
+     */
     @Override
     public int getRowCount() {
         //return actionHistoryList.size();
@@ -46,20 +38,17 @@ public class ActionHistoryTableModel extends AbstractTableModel {
     }
 
     @Override
-    public String getColumnName(int col)
-    {
+    public String getColumnName(int col) {
         return columnNames[col];
     }
-    
+
     //overide it for setting values in each row and each column
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        
-       return data[rowIndex][columnIndex];
+
+        return data[rowIndex][columnIndex];
     }
-     
-    
-  
+
     /*
      * JTable uses this method to determine the default renderer/editor for each cell.  
      * If we didn't implement this method,
@@ -69,7 +58,7 @@ public class ActionHistoryTableModel extends AbstractTableModel {
     public Class getColumnClass(int c) {
         return getValueAt(0, c).getClass();
     }
-  
+
     /*
      * Don't need to implement this method unless your table's editable.
      */
@@ -88,20 +77,18 @@ public class ActionHistoryTableModel extends AbstractTableModel {
      */
     @Override
     public void setValueAt(Object value, int row, int col) {
-        
-            System.out.println("Setting value at " + row + "," + col
-                    + " to " + value
-                    + " (an instance of "
-                    + value.getClass() + ")");
-       
+
+        System.out.println("Setting value at " + row + "," + col
+                + " to " + value
+                + " (an instance of "
+                + value.getClass() + ")");
 
         data[row][col] = value;
         fireTableCellUpdated(row, col);
 
-       
-            System.out.println("New value of data:");
-            printDebugData();
-       
+        System.out.println("New value of data:");
+        printDebugData();
+
     }
 
     private void printDebugData() {
@@ -118,5 +105,4 @@ public class ActionHistoryTableModel extends AbstractTableModel {
         System.out.println("--------------------------");
     }
 
-    
 }
