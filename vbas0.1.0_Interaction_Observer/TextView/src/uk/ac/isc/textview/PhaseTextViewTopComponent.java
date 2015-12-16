@@ -278,10 +278,17 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         longTable.getColumnModel().getColumn(10).setCellRenderer(rightRenderer);
         longTable.getColumnModel().getColumn(11).setCellRenderer(rightRenderer);
 
+        longTable.setRowHeight(25);
+        longTable.setFont(new Font("Sans-serif", Font.PLAIN, 14));
+        longTable.setShowGrid(false);
+        longTable.setShowVerticalLines(false);
+        longTable.setShowHorizontalLines(false);
+
+        /*
         for (int i = 9; i < 13; i++) {
             longTable.getColumnModel().getColumn(i).setPreferredWidth(60);
         }
-        longTable.getColumnModel().getColumn(13).setPreferredWidth(120);
-
+        longTable.getColumnModel().getColumn(13).setPreferredWidth(120);*/
+                
     }
 }

@@ -51,8 +51,7 @@ public class EventsTableModel extends AbstractTableModel {
         numFormat.setMaximumFractionDigits(1);
         numFormat.setMinimumFractionDigits(1);
 
-        //DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        DateFormat formatter = new SimpleDateFormat("dd-MM HH:mm:ss");
+        DateFormat formatter = new SimpleDateFormat("HH:mm:ss");
 
         if (columnIndex == 0) {
             retObject = events.get(rowIndex).getEvid();
@@ -61,19 +60,25 @@ public class EventsTableModel extends AbstractTableModel {
         } else if (columnIndex == 2) {
             retObject = events.get(rowIndex).getLocation();
         } else if (columnIndex == 3) {
-            Date datetmp = events.get(rowIndex).getPrimeHypo().getOrigTime();
-            //DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.DEFAULT,DateFormat.DEFAULT);
+            Date datetmp = events.get(rowIndex).getPrimeHypo().getOrigTime();            
             String dateOut = formatter.format(datetmp);
             retObject = dateOut;
         } else if (columnIndex == 4) {
             if (events.get(rowIndex).getPrimeHypo().getLat() != null) {
-                retObject = numFormat.format(events.get(rowIndex).getPrimeHypo().getLat());
+                Double lat = events.get(rowIndex).getPrimeHypo().getLat();
+                String sign = lat > 0 ? "N" : "S";
+                retObject = numFormat.format(Math.abs(lat)) + sign;
+                
             } else {
                 retObject = null;
             }
         } else if (columnIndex == 5) {
             if (events.get(rowIndex).getPrimeHypo().getLon() != null) {
-                retObject = numFormat.format(events.get(rowIndex).getPrimeHypo().getLon());
+                Double lon = events.get(rowIndex).getPrimeHypo().getLon();
+                String sign = lon > 0 ? "E" : "W";
+                retObject = numFormat.format(Math.abs(lon)) + sign;
+                //retObject = numFormat.format(events.get(rowIndex).getPrimeHypo().getLon());
+                
             } else {
                 retObject = null;
             }

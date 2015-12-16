@@ -16,7 +16,7 @@ import uk.ac.isc.seisdata.Phase;
 public class PhaseTextViewTableModel extends AbstractTableModel {
 
     private final String[] columnNames = {"Edit", "Agency", "Code", "Time",
-        "Region Name", "Delta. Deg.", "ES. Az.", "Op. ID", "ISC ID", "ISC Res", "Def.", "AmpMag", "Slowness", "SNR", "SE. Az.", "Phase ID", "Reading ID"};
+           "Region Name", "Delta. Deg.", "ES. Az.", "Op. ID", "ISC ID", "ISC Res", "Def.", "AmpMag", "Slowness", "SNR", "SE. Az.", "Phase ID", "Reading ID"};
 
     private final Class[] columns = new Class[]{JButton.class, String.class, String.class, String.class, String.class, Double.class, Double.class,
         String.class, String.class, String.class, String.class, String.class, Double.class, Double.class, Double.class, Integer.class, Integer.class};
@@ -59,25 +59,26 @@ public class PhaseTextViewTableModel extends AbstractTableModel {
         numFormat.setMaximumFractionDigits(1);
         numFormat.setMinimumFractionDigits(1);
 
-        //editor button
+        // There was a button in first colum pf phase 
         if (columnIndex == 0) {
-            JButton button = new JButton();
-
+        JButton button = new JButton();
             //button.addActionListener(new ActionListener() {
-            //     @Override
-            //     public void actionPerformed(ActionEvent e) {
-            //        System.out.println();
-            //     }    
-            //});
-            retObject = button;//ImageIcon("/export/home/hui/NetBeansProjects/VBAS1/SeisData/src/uk/ac/isc/SeisData/edited.png");
-        } else if (columnIndex == 1) //Agency
-        {
+        //     @Override
+        //     public void actionPerformed(ActionEvent e) {
+        //        System.out.println();
+        //     }    
+        //});
+        retObject = button;//ImageIcon("/export/home/hui/NetBeansProjects/VBAS1/SeisData/src/uk/ac/isc/SeisData/edited.png");
+        } else if (columnIndex == 1) {
+            // Agency
             retObject = phasesList.get(rowIndex).getReportAgency();
-        } else if (columnIndex == 2)//staion code
+        } else if (columnIndex == 2)
         {
+            //staion code
             retObject = phasesList.get(rowIndex).getReportStation();
-        } else if (columnIndex == 3)//arrival time
+        } else if (columnIndex == 3)
         {
+            
             SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
             if (phasesList.get(rowIndex).getArrivalTime() != null) {
                 retObject = dateFormat.format(phasesList.get(rowIndex).getArrivalTime()) + "." + phasesList.get(rowIndex).getMsec() / 100;
@@ -115,15 +116,15 @@ public class PhaseTextViewTableModel extends AbstractTableModel {
             } else {
                 retObject = null;
             }
-        } else if (columnIndex == 10) //defining or not
-        {
+        } else if (columnIndex == 10) {
+            //defining or not
             if (phasesList.get(rowIndex).getDefining() == true) {
                 retObject = "T";
             } else {
                 retObject = null;
             }
-        } else if (columnIndex == 11) //ampmap
-        {
+        } else if (columnIndex == 11) {
+            //ampmap
             if (phasesList.get(rowIndex).getAmpMag() != null) {
                 if (phasesList.get(rowIndex).getAmpmagDefining() == null) {
                     retObject = numFormat.format(phasesList.get(rowIndex).getAmpMag());

@@ -3,6 +3,7 @@ package uk.ac.isc.eventscontrolview;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -10,6 +11,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.JTableHeader;
 import uk.ac.isc.seisdata.ActionHistoryList;
 import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
@@ -46,16 +49,33 @@ public class ActionHistoryTable extends JPanel implements SeisDataChangeListener
 
     private void initLayout() {
 
+        // TODO: fetch from the database 
+        // Passit to the ActionHistoryModel
         // Table    
         table = new JTable(new ActionHistoryTableModel());
-        table.setPreferredScrollableViewportSize(new Dimension(450, 120));
-        table.setFillsViewportHeight(true);
-
-        table.getColumnModel().getColumn(0).setPreferredWidth(25);
-        table.getColumnModel().getColumn(1).setPreferredWidth(25);
+        table.setRowSelectionAllowed(true);     
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setColumnSelectionAllowed(false);
+        table.setRowSelectionInterval(0, 0);
+        
+        //table.setPreferredScrollableViewportSize(new Dimension(450, 120));
+        //table.setFillsViewportHeight(true);
+        table.getColumnModel().getColumn(0).setPreferredWidth(50);
+        table.getColumnModel().getColumn(0).setMinWidth(50);
+        table.getColumnModel().getColumn(1).setPreferredWidth(100);
+        table.getColumnModel().getColumn(1).setMinWidth(100);
         table.getColumnModel().getColumn(2).setPreferredWidth(350);
-        //initColumnSizes(); 
-
+        table.getColumnModel().getColumn(2).setMinWidth(350);
+        
+        //table.setRowHeight(30);
+        //table.setFont(new Font("Consolas", Font.PLAIN, 14));
+        //table.setShowGrid(false);
+        //table.setShowVerticalLines(false);
+        //table.setShowHorizontalLines(false); 
+         
+        JTableHeader th = table.getTableHeader();
+        th.setFont(new Font("Consolas", Font.PLAIN, 16));
+        
         // Table: listener
         //table.getModel().addTableModelListener(this);
 
@@ -77,11 +97,11 @@ public class ActionHistoryTable extends JPanel implements SeisDataChangeListener
         buttonDone = new JButton("Done");
         buttonAssess = new JButton("Assess");
         buttonCommit = new JButton("Commit");
-
+        /*    
         bottomPanel.add(buttonBanish);
         bottomPanel.add(buttonDone);
         bottomPanel.add(buttonAssess);
-        bottomPanel.add(buttonCommit);
+        bottomPanel.add(buttonCommit);*/
 
     }
 

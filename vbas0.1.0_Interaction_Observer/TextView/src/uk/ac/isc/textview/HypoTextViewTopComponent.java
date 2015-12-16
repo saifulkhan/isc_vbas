@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.text.SimpleAttributeSet;
@@ -21,8 +22,6 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import org.openide.windows.WindowManager;
-import uk.ac.isc.eventscontrolview.EventsControlViewTopComponent;
 import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
@@ -114,13 +113,14 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
 
         hptvtModel = new HypoTableModel(hypocentresList.getHypocentres());
         hyposTable = new JTable(hptvtModel);
-
-        hyposTable.setRowHeight(40);
-        hyposTable.setFont(new Font("monospaced", Font.PLAIN, 16));
-
+        hyposTable.setRowSelectionAllowed(true);
+        hyposTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        hyposTable.setColumnSelectionAllowed(false);
+        hyposTable.setRowHeight(25);
+        hyposTable.setFont(new Font("Sans-serif", Font.PLAIN, 14));
         hyposTable.setShowGrid(false);
         hyposTable.setShowVerticalLines(false);
-        hyposTable.setShowHorizontalLines(false);
+        hyposTable.setShowHorizontalLines(false);       
 
         DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
         //DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();

@@ -66,7 +66,7 @@ public class EventsControlPanel extends JPanel implements ListSelectionListener,
      */
     public EventsControlPanel() {
 
-        /*1. set the table and tooltips*/
+        // 1. set the table and tooltips
         eventsTable = new JTable() {
             @Override
             public String getToolTipText(MouseEvent e) {
@@ -76,28 +76,26 @@ public class EventsControlPanel extends JPanel implements ListSelectionListener,
                 int colIndex = columnAtPoint(p);
 
                 try {
-                    //comment row, exclude heading
+                    // comment row, exclude heading
                     if (rowIndex != 0) {
                         tip = getValueAt(rowIndex, colIndex).toString();
                     }
                 } catch (RuntimeException e1) {
-                    //catch null pointer exception if mouse is over an empty line
+                    // catch null pointer exception if mouse is over an empty line
                     logger.log(Level.FINE, "Empty value for tooltip");
                 }
-
                 return tip;
             }
         };
         
-        /*fill in the events number*/
+        // fill in the events number
         boolean retDAO = SeisDataDAO.retrieveBlockEventNumber(blockTableModel.getTaskBlocks());
         retDAO = SeisDataDAO.retrieveBlockReviewedEventNumber(blockTableModel.getTaskBlocks());
         if (retDAO == false) {
             logger.log(Level.SEVERE, "Fail to load task block list from database.");
         }
 
-        /*2.add data into evets list*/
-        /*retrieve the events from the database*/
+        // 2. add data into evets list : retrieve the events from the database
         retDAO = SeisDataDAO.retrieveAllEvents(eventsList.getEvents());
         retDAO = SeisDataDAO.retrieveEventsMagnitude(eventsList.getEvents());
         retDAO = SeisDataDAO.retrieveAllPhaseNumber(eventsList.getEvents());
@@ -120,7 +118,7 @@ public class EventsControlPanel extends JPanel implements ListSelectionListener,
         eventsTable.setRowSelectionInterval(0, 0);
 
 
-        /*Change the skin and appearance of the control panel*/
+        // Change the skin and appearance of the control panel
         //eventsTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         eventsTable.getColumnModel().getColumn(0).setPreferredWidth(120);
         eventsTable.getColumnModel().getColumn(0).setMinWidth(120);
@@ -137,14 +135,15 @@ public class EventsControlPanel extends JPanel implements ListSelectionListener,
         eventsTable.getColumnModel().getColumn(5).setPreferredWidth(100);
         eventsTable.getColumnModel().getColumn(6).setPreferredWidth(80);
         eventsTable.getColumnModel().getColumn(7).setPreferredWidth(80);
-        eventsTable.setRowHeight(40);
-        eventsTable.setFont(new Font("monospaced", Font.BOLD, 16));
+        
+        eventsTable.setRowHeight(25);
+        eventsTable.setFont(new Font("Sans-serif", Font.PLAIN, 14));
         eventsTable.setShowGrid(false);
         eventsTable.setShowVerticalLines(false);
         eventsTable.setShowHorizontalLines(false);
 
         JTableHeader th = eventsTable.getTableHeader();
-        th.setFont(new Font("monospaced", Font.PLAIN, 16));
+        th.setFont(new Font("Consolas", Font.PLAIN, 16));
         //th.setBackground(new Color(255,255,153));
 
         //make the evid right aligned

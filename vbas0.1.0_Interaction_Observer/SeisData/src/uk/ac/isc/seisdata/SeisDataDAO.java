@@ -31,22 +31,20 @@ public final class SeisDataDAO {
      * Loading user name, password and scheme from system environment
      */
     static {
-        /*
-        //will load from from bashrc for personal login later, here is for testing
-        Map<String, String> env = System.getenv();
-        url = "jdbc:postgresql://" + env.get("PGHOSTADDR") + ":" + env.get("PGPORT") + "/" + env.get("PGDATABASE");
-        user = env.get("PGUSER");
-        password = env.get("PGPASSWORD");
-        */
-        
-         // Saiful home laptop
-         url = "jdbc:postgresql://127.0.0.1:5432/isc";
-         user = "saiful";
-         password = "saiful";
-         
         String osName = System.getProperty("os.name");
+        if(osName.equals("Linux")) {
+            // ISC machine: will load from from bashrc for personal login later, here is for testing
+            Map<String, String> env = System.getenv();
+            url = "jdbc:postgresql://" + env.get("PGHOSTADDR") + ":" + env.get("PGPORT") + "/" + env.get("PGDATABASE");
+            user = env.get("PGUSER");
+            password = env.get("PGPASSWORD");
+        } else {
+            // Saiful: Windows 10 laptop
+            url = "jdbc:postgresql://127.0.0.1:5432/isc";
+            user = "saiful";
+            password = "saiful";
+        }
         System.out.println(osName);
-
     }
 
     private static final String url; //= "jdbc:postgresql://192.168.37.91:5432/isc";      
