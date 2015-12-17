@@ -48,56 +48,29 @@ import uk.ac.isc.seisdata.SeisDataChangeListener;
 
 public final class PhaseTextViewTopComponent extends TopComponent implements SeisDataChangeListener {
 
-    //reference of phase list
-    private final PhasesList phasesList;
-
+    private final PhasesList phasesList; // reference of phase list
     private final TreeMap<String, String> stations;
-
-    // phase table model for the table
-    private PhaseTextViewTableModel ptvtModel = null;
-
-    //we have two format, one is short list and the other is long list. They are switchable in the JTabbedPane
-    private JTable shortTable = null;
+    
+    private PhaseTextViewTableModel ptvtModel = null; // phase table model for the table
     private JTable longTable = null;
-    private JScrollPane shortScrollPane = null;
     private JScrollPane longScrollPane = null;
-
-    //This bit is for setting panes for full list representationa dn short list representation
-    private JTabbedPane tabPane = new JTabbedPane();
-
-    //get control window to retrieve data
-    private final TopComponent tc = WindowManager.getDefault().findTopComponent("EventsControlViewTopComponent");
 
     public PhaseTextViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_PhaseTextViewTopComponent());
         setToolTipText(Bundle.HINT_PhaseTextViewTopComponent());
-        //this.setOpaque(true);
-
-        //set up the table model
-        //phasesList = ((EventsControlViewTopComponent) tc).getControlPanel().getPhasesList();
-        //stations = ((EventsControlViewTopComponent) tc).getControlPanel().getStationsForRegion();
+        
         phasesList = Global.getPhasesList();
         stations = Global.getStations();
         
         ptvtModel = new PhaseTextViewTableModel(phasesList.getPhases());
-
-        //set up the two table with the same model
-        shortTable = new JTable(ptvtModel);
-        setupShortTableVisualAttributes(shortTable);
-
         longTable = new JTable(ptvtModel);
         setupLongTableVisualAttributes(longTable);
 
-        shortScrollPane = new JScrollPane(shortTable);
+
         longScrollPane = new JScrollPane(longTable);
-
-        tabPane.addTab("Full List", longScrollPane);
-        tabPane.addTab("Short List", shortScrollPane);
-
         this.setLayout(new BorderLayout());
-        this.add(tabPane, BorderLayout.CENTER);
-
+        this.add(longScrollPane, BorderLayout.CENTER);
     }
 
     /**
@@ -146,104 +119,30 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         // TODO read your settings according to their version
     }
 
-    /*@Override
-     public void paint(Graphics g) {
-     Paint p = Color.WHITE;//new GradientPaint(0, 0, Color.BLUE, getWidth(), 0, Color.RED);
-     Graphics2D g2d = (Graphics2D) g;
-     g2d.setPaint(p);
-     g2d.fillRect(0, 0, getWidth(), getHeight());
-     }*/
     //repaint when data changes
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
 
         ptvtModel = new PhaseTextViewTableModel(phasesList.getPhases());
-        //phasesTable = new JTable(ptvtModel);
-        //put the region name into the pahseList
+        
+        // put the region name into the pahseList
         for (int i = 0; i < phasesList.getPhases().size(); i++) {
             phasesList.getPhases().get(i).setRegionName(stations.get(phasesList.getPhases().get(i).getReportStation()));
         }
-
-        shortTable.setModel(ptvtModel);
-        shortTable.clearSelection();
-        setupShortTableVisualAttributes(shortTable);
 
         longTable.setModel(ptvtModel);
         longTable.clearSelection();
         setupLongTableVisualAttributes(longTable);
 
-        shortScrollPane.setViewportView(shortTable);
         longScrollPane.setViewportView(longTable);
-
-        //phasesTable.repaint();
-        //this.repaint();
-        tabPane.repaint();
+        longScrollPane.repaint();
     }
 
-    //set short table format, e.g. column width etc.
-    private void setupShortTableVisualAttributes(JTable sTable) {
-        sTable.setRowHeight(40);
-        sTable.setFont(new Font("monospaced", Font.PLAIN, 16));
-
-        TableCellRenderer buttonRenderer = new JTableButtonRenderer();
-        sTable.getColumn("Edit").setCellRenderer(buttonRenderer);
-        sTable.addMouseListener(new JTableButtonMouseListener(shortTable));
-
-        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-        //DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
-        rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
-        //leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
-
-        sTable.setShowGrid(false);
-        sTable.setShowVerticalLines(false);
-        sTable.setShowHorizontalLines(false);
-        sTable.setAutoCreateRowSorter(true);
-        sTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        sTable.getColumnModel().getColumn(0).setResizable(false);
-        sTable.getColumnModel().getColumn(0).setMinWidth(50);
-        sTable.getColumnModel().getColumn(0).setMaxWidth(50);
-        sTable.getColumnModel().getColumn(1).setPreferredWidth(60);
-        sTable.getColumnModel().getColumn(2).setPreferredWidth(80); //station code
-        sTable.getColumnModel().getColumn(3).setPreferredWidth(120); //time
-        sTable.getColumnModel().getColumn(4).setPreferredWidth(200); //region name
-
-        sTable.getColumnModel().getColumn(5).setPreferredWidth(60);
-        sTable.getColumnModel().getColumn(6).setPreferredWidth(60);
-
-        sTable.getColumnModel().getColumn(7).setPreferredWidth(60); //phase name
-        sTable.getColumnModel().getColumn(8).setPreferredWidth(60); //isc phase name
-
-        sTable.getColumnModel().getColumn(10).setMinWidth(40);
-        sTable.getColumnModel().getColumn(10).setMaxWidth(40);
-
-        sTable.getColumnModel().getColumn(7).setCellRenderer(rightRenderer);
-        sTable.getColumnModel().getColumn(8).setCellRenderer(rightRenderer);
-        sTable.getColumnModel().getColumn(9).setCellRenderer(rightRenderer);
-        sTable.getColumnModel().getColumn(10).setCellRenderer(rightRenderer);
-        sTable.getColumnModel().getColumn(11).setCellRenderer(rightRenderer);
-
-        //hide the columns
-        sTable.getColumnModel().getColumn(12).setMinWidth(0);
-        sTable.getColumnModel().getColumn(12).setMaxWidth(0);
-        sTable.getColumnModel().getColumn(13).setMinWidth(0);
-        sTable.getColumnModel().getColumn(13).setMaxWidth(0);
-        sTable.getColumnModel().getColumn(14).setMinWidth(0);
-        sTable.getColumnModel().getColumn(14).setMaxWidth(0);
-        sTable.getColumnModel().getColumn(15).setMinWidth(0);
-        sTable.getColumnModel().getColumn(15).setMaxWidth(0);
-        sTable.getColumnModel().getColumn(16).setMinWidth(0);
-        sTable.getColumnModel().getColumn(16).setMaxWidth(0);
-
-    }
 
     //set long table format, e.g. column width etc.
     private void setupLongTableVisualAttributes(JTable longTable) {
         longTable.setRowHeight(40);
-        longTable.setFont(new Font("monospaced", Font.PLAIN, 16));
-
-        TableCellRenderer buttonRenderer = new JTableButtonRenderer();
-        longTable.getColumn("Edit").setCellRenderer(buttonRenderer);
-        longTable.addMouseListener(new JTableButtonMouseListener(longTable));
+        longTable.setFont(new Font("Sans-serif", Font.BOLD, 14));
 
         DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
         //DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
@@ -283,12 +182,6 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         longTable.setShowGrid(false);
         longTable.setShowVerticalLines(false);
         longTable.setShowHorizontalLines(false);
-
-        /*
-        for (int i = 9; i < 13; i++) {
-            longTable.getColumnModel().getColumn(i).setPreferredWidth(60);
-        }
-        longTable.getColumnModel().getColumn(13).setPreferredWidth(120);*/
-                
+                 
     }
 }

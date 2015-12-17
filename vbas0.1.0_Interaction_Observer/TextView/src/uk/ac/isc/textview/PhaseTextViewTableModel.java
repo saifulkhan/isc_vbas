@@ -15,11 +15,15 @@ import uk.ac.isc.seisdata.Phase;
  */
 public class PhaseTextViewTableModel extends AbstractTableModel {
 
-    private final String[] columnNames = {"Edit", "Agency", "Code", "Time",
-           "Region Name", "Delta. Deg.", "ES. Az.", "Op. ID", "ISC ID", "ISC Res", "Def.", "AmpMag", "Slowness", "SNR", "SE. Az.", "Phase ID", "Reading ID"};
+    private final String[] columnNames = {"Agency", "Code", "Time", "Region Name", 
+        "Delta. Deg.", "ES. Az.",  "Op. ID", "ISC ID", "ISC Res", 
+        "Def.", "AmpMag", "Slowness", "SNR", "SE. Az.", 
+        "Phase ID", "Reading ID"};
 
-    private final Class[] columns = new Class[]{JButton.class, String.class, String.class, String.class, String.class, Double.class, Double.class,
-        String.class, String.class, String.class, String.class, String.class, Double.class, Double.class, Double.class, Integer.class, Integer.class};
+    private final Class[] columns = new Class[] {String.class, String.class, String.class, String.class,
+        Double.class, Double.class, String.class, String.class, String.class, 
+        String.class, String.class, Double.class, Double.class, Double.class, 
+        Integer.class, Integer.class};
 
     private ArrayList<Phase> phasesList;
 
@@ -38,7 +42,7 @@ public class PhaseTextViewTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return 17;
+        return columns.length;
     }
 
     @Override
@@ -59,52 +63,42 @@ public class PhaseTextViewTableModel extends AbstractTableModel {
         numFormat.setMaximumFractionDigits(1);
         numFormat.setMinimumFractionDigits(1);
 
-        // There was a button in first colum pf phase 
         if (columnIndex == 0) {
-        JButton button = new JButton();
-            //button.addActionListener(new ActionListener() {
-        //     @Override
-        //     public void actionPerformed(ActionEvent e) {
-        //        System.out.println();
-        //     }    
-        //});
-        retObject = button;//ImageIcon("/export/home/hui/NetBeansProjects/VBAS1/SeisData/src/uk/ac/isc/SeisData/edited.png");
-        } else if (columnIndex == 1) {
             // Agency
             retObject = phasesList.get(rowIndex).getReportAgency();
-        } else if (columnIndex == 2)
-        {
-            //staion code
+        } else if (columnIndex == 1) {
+            // staion code
             retObject = phasesList.get(rowIndex).getReportStation();
-        } else if (columnIndex == 3)
-        {
+        } else if (columnIndex == 2) {
             
             SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
             if (phasesList.get(rowIndex).getArrivalTime() != null) {
-                retObject = dateFormat.format(phasesList.get(rowIndex).getArrivalTime()) + "." + phasesList.get(rowIndex).getMsec() / 100;
+                retObject = dateFormat.format(phasesList.get(rowIndex).getArrivalTime()) 
+                        + "." 
+                        + phasesList.get(rowIndex).getMsec() / 100;
             } else {
                 retObject = null;
             }
-        } else if (columnIndex == 4) //station region 
-        {
-            /*TODO: change it to station region instead of full name*/
+        } else if (columnIndex == 3) {
+             // station region 
+            // TODO: change it to station region instead of full name.
             retObject = phasesList.get(rowIndex).getRegionName();
-        } else if (columnIndex == 5) //distance
-        {
+        } else if (columnIndex == 4) {
+            // distance
             //retObject = Double.valueOf(numFormat.format(phasesList.get(rowIndex).getDistance()));
             retObject = Math.round(phasesList.get(rowIndex).getDistance());
-        } else if (columnIndex == 6) //event to station azimuth
-        {
+        } else if (columnIndex == 5) {
+            // event to station azimuth
             //retObject = Double.valueOf(numFormat.format(phasesList.get(rowIndex).getAzimuth()));
             retObject = Math.round(phasesList.get(rowIndex).getAzimuth());
-        } else if (columnIndex == 7) //reported phase type
-        {
+        } else if (columnIndex == 6) {
+             // reported phase type
             retObject = phasesList.get(rowIndex).getOrigPhaseType();
-        } else if (columnIndex == 8) //isc phase type
-        {
+        } else if (columnIndex == 7) {
+            // isc phase type
             retObject = phasesList.get(rowIndex).getIscPhaseType();
-        } else if (columnIndex == 9) //residual
-        {
+        } else if (columnIndex == 8) {
+             // residual
             if (phasesList.get(rowIndex).getTimeResidual() != null) {
                 //retObject = Double.valueOf(numFormat.format(phasesList.get(rowIndex).getTimeResidual()));
                 if (phasesList.get(rowIndex).getTimeResidual() > 0) {
@@ -116,15 +110,15 @@ public class PhaseTextViewTableModel extends AbstractTableModel {
             } else {
                 retObject = null;
             }
-        } else if (columnIndex == 10) {
-            //defining or not
+        } else if (columnIndex == 9) {
+            // defining or not
             if (phasesList.get(rowIndex).getDefining() == true) {
                 retObject = "T";
             } else {
                 retObject = null;
             }
-        } else if (columnIndex == 11) {
-            //ampmap
+        } else if (columnIndex == 10) {
+            // ampmap
             if (phasesList.get(rowIndex).getAmpMag() != null) {
                 if (phasesList.get(rowIndex).getAmpmagDefining() == null) {
                     retObject = numFormat.format(phasesList.get(rowIndex).getAmpMag());
@@ -136,15 +130,15 @@ public class PhaseTextViewTableModel extends AbstractTableModel {
                 retObject = null;
             }
 
-        } else if (columnIndex == 12) {
+        } else if (columnIndex == 11) {
             retObject = phasesList.get(rowIndex).getSlowness();
-        } else if (columnIndex == 13) {
+        } else if (columnIndex == 12) {
             retObject = phasesList.get(rowIndex).getSNRRate();
-        } else if (columnIndex == 14) {
+        } else if (columnIndex == 13) {
             retObject = phasesList.get(rowIndex).getSeAzimuth();
-        } else if (columnIndex == 15) {
+        } else if (columnIndex == 14) {
             retObject = phasesList.get(rowIndex).getPhid();
-        } else if (columnIndex == 16) {
+        } else if (columnIndex == 15) {
             retObject = phasesList.get(rowIndex).getRdid();
         }
 
