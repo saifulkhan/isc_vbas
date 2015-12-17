@@ -139,11 +139,9 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
     }
 
 
-    //set long table format, e.g. column width etc.
+    // set long table format, e.g. column width etc.
     private void setupLongTableVisualAttributes(JTable longTable) {
-        longTable.setRowHeight(40);
-        longTable.setFont(new Font("Sans-serif", Font.BOLD, 14));
-
+ 
         DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
         //DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
         rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);

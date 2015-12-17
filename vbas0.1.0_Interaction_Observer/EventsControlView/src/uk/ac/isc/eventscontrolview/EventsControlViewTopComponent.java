@@ -36,7 +36,7 @@ import org.openide.windows.TopComponent;
 @Messages({
     "CTL_EventsControlViewAction=EventsControlView",
     "CTL_EventsControlViewTopComponent=EventsControlView Window",
-    "HINT_EventsControlViewTopComponent=This is a EventsControlView window"
+    "HINT_EventsControlViewTopComponent=This is a EventsControlView window" 
 })
 
 public final class EventsControlViewTopComponent extends TopComponent {

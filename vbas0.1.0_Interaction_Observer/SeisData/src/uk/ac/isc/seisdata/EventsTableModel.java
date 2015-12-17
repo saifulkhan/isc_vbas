@@ -11,15 +11,41 @@ import javax.swing.table.AbstractTableModel;
 /**
  * This is an extended class for saving events list showing in an table data in
  * rows are events, columns are Evid, lat, region, lon and Orig time
- *
  * Just need to override some standard functions to make the table model working
- *
- * @author hui
  */
+
 public class EventsTableModel extends AbstractTableModel {
 
-    private final String[] columnNames = {"Event ID.", "Prime", "Region", "Origin Time", "Lat.", "Long.", "Mag.", "Phase No."};
-    private final Class[] columns = new Class[]{Integer.class, String.class, String.class, String.class, String.class, String.class, String.class, Integer.class};
+    private final String[] columnNames = {
+        "Event ID.", 
+        "Prime", 
+        "Region", 
+        "Origin Time", 
+        "Lat.", 
+        "Long.", 
+        "Mag.()", 
+        "Nass"};
+    
+    private final Class[] columns = new Class[] {
+        Integer.class, 
+        String.class, 
+        String.class, 
+        String.class, 
+        String.class, 
+        String.class, 
+        String.class, 
+        Integer.class};
+    
+    public final Object[] longValues = {
+        new Integer(999999999), 
+        "WWWWW", 
+        "The alean iland xxxxxxxxxxxxxxxx", 
+        "00:00:00",
+        "",
+        "",
+        "9.9",
+        new Integer(9999)};
+ 
     private final ArrayList<SeisEvent> events;
 
     public EventsTableModel(ArrayList<SeisEvent> events) {
@@ -33,7 +59,7 @@ public class EventsTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return 8;
+        return columnNames.length;
     }
 
     @Override
@@ -41,7 +67,7 @@ public class EventsTableModel extends AbstractTableModel {
         return columnNames[col];
     }
 
-    //overide it for setting values in each row and each column
+    // overide it for setting values in each row and each column
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
 

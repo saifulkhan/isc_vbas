@@ -8,6 +8,8 @@
         </group>
         <group>
             <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_Interaction_Observer/EventsControlView/src/uk/ac/isc/eventscontrolview/ActionHistoryTable.java</file>
+            <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_Interaction_Observer/EventsControlView/src/uk/ac/isc/eventscontrolview/ActionHistoryTableModel.java</file>
+            <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_Interaction_Observer/EventsControlView/src/uk/ac/isc/eventscontrolview/EventsControlPanel.java</file>
             <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_Interaction_Observer/EventsControlView/src/uk/ac/isc/eventscontrolview/EventsControlViewTopComponent.java</file>
         </group>
     </open-files>

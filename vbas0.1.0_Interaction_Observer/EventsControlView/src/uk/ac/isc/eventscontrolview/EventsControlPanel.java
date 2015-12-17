@@ -1,5 +1,7 @@
 package uk.ac.isc.eventscontrolview;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseEvent;
@@ -15,6 +17,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import uk.ac.isc.seisdata.ActionHistoryList;
 import uk.ac.isc.seisdata.BlockTableModel;
 import uk.ac.isc.seisdata.Command;
@@ -35,35 +39,30 @@ import uk.ac.isc.seisdata.SeisEventsList;
  */
 public class EventsControlPanel extends JPanel implements ListSelectionListener, SeisDataChangeListener{
 
-    private JTable eventsTable = null; // the main table of the event list
-
-    //the selected event id
-    private int selectedEvid = 0;
-
+    private JTable eventsTable = null;          // the main table of the event list
+    EventsTableModel eventsTableModel;
+            
+    private int selectedEvid = 0;               // the selected event id 
     private static SeisEvent selectedSeisEvent;
 
-    /*The space to keep all the data*/
+    // The space to keep all the data
     private final BlockTableModel blockTableModel = new BlockTableModel();
 
     private static final SeisEventsList eventsList = new SeisEventsList();
     private static final HypocentresList hypocentresList = new HypocentresList();
     private static final PhasesList phasesList = new PhasesList();
     
-   
-
-    /*for tracking the region of each station*/
+    // for tracking the region of each station
     TreeMap<String, String> stations = new TreeMap<String, String>();
-
-    //private static Handler handler = null;
-    //each class may need logger to keep log file, too rush to follow the good practice 
+    
+    // each class may need logger to keep log file, too rush to follow the good practice 
     private static final Logger logger = Logger.getLogger(EventsControlPanel.class.getName());
 
+    // Provenance: action history, command etc.
     private final ActionHistoryList actionHistoryList = new ActionHistoryList();
     private final Command command;
     
-    /*
-     * Methods
-     */
+    
     public EventsControlPanel() {
 
         // 1. set the table and tooltips
@@ -109,55 +108,11 @@ public class EventsControlPanel extends JPanel implements ListSelectionListener,
         selectedSeisEvent = eventsList.getEvents().get(0);
         Global.setSelectedSeisEvent(selectedSeisEvent);
         
-        EventsTableModel etm = new EventsTableModel(eventsList.getEvents());
-        eventsTable.setModel(etm);
-        eventsTable.setRowSelectionAllowed(true);
-        eventsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        eventsTable.setColumnSelectionAllowed(false);
-        //eventsTable.setSelectionBackground(new Color(255,255,153));
-        eventsTable.setRowSelectionInterval(0, 0);
-
-
-        // Change the skin and appearance of the control panel
-        //eventsTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        eventsTable.getColumnModel().getColumn(0).setPreferredWidth(120);
-        eventsTable.getColumnModel().getColumn(0).setMinWidth(120);
-        eventsTable.getColumnModel().getColumn(0).setMaxWidth(120);
-
-        eventsTable.getColumnModel().getColumn(1).setPreferredWidth(100);
-        eventsTable.getColumnModel().getColumn(2).setPreferredWidth(180);
-
-        eventsTable.getColumnModel().getColumn(3).setPreferredWidth(180);//origin time
-        eventsTable.getColumnModel().getColumn(3).setMinWidth(180);
-        eventsTable.getColumnModel().getColumn(3).setMaxWidth(180);
-
-        eventsTable.getColumnModel().getColumn(4).setPreferredWidth(100);
-        eventsTable.getColumnModel().getColumn(5).setPreferredWidth(100);
-        eventsTable.getColumnModel().getColumn(6).setPreferredWidth(80);
-        eventsTable.getColumnModel().getColumn(7).setPreferredWidth(80);
+        eventsTableModel = new EventsTableModel(eventsList.getEvents());
+        eventsTable.setModel(eventsTableModel);
+        setupTableVisualAttributes();
         
-        eventsTable.setRowHeight(25);
-        eventsTable.setFont(new Font("Sans-serif", Font.PLAIN, 14));
-        eventsTable.setShowGrid(false);
-        eventsTable.setShowVerticalLines(false);
-        eventsTable.setShowHorizontalLines(false);
-
-        JTableHeader th = eventsTable.getTableHeader();
-        th.setFont(new Font("Consolas", Font.PLAIN, 16));
-        //th.setBackground(new Color(255,255,153));
-
-        //make the evid right aligned
-        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-        DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
-        rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
-        leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
-        eventsTable.getColumnModel().getColumn(0).setCellRenderer(leftRenderer);
-        //eventsTable.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
-        eventsTable.getColumnModel().getColumn(3).setCellRenderer(rightRenderer);
-        eventsTable.getColumnModel().getColumn(4).setCellRenderer(rightRenderer);
-        eventsTable.getColumnModel().getColumn(5).setCellRenderer(rightRenderer);
-        eventsTable.getColumnModel().getColumn(6).setCellRenderer(rightRenderer);
-
+       
         /*3.add data into hypocentres and phases list*/
         retDAO = SeisDataDAO.retrieveHypos(eventsList.getEvents().get(0).getEvid(), hypocentresList.getHypocentres());
         retDAO = SeisDataDAO.retrieveHyposMagnitude(hypocentresList.getHypocentres());
@@ -203,6 +158,101 @@ public class EventsControlPanel extends JPanel implements ListSelectionListener,
         
     }
 
+    
+    private void setupTableVisualAttributes() {
+        
+        eventsTable.setRowSelectionAllowed(true);
+        eventsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        eventsTable.setColumnSelectionAllowed(false);
+        eventsTable.setSelectionBackground(new Color(45,137,239));
+        eventsTable.setSelectionForeground(Color.WHITE);
+        eventsTable.setRowSelectionInterval(0, 0);
+        
+        JTableHeader th = eventsTable.getTableHeader();
+        th.setFont(new Font("Sans-serif", Font.PLAIN, 14));
+        th.setBackground(new Color(43,87,151));            // Blue
+        th.setForeground(Color.white);
+        
+        eventsTable.setRowHeight(25);
+        eventsTable.setFont(new Font("Sans-serif", Font.PLAIN, 14));
+        eventsTable.setShowGrid(false);
+        eventsTable.setShowVerticalLines(false);
+        eventsTable.setShowHorizontalLines(false);
+        
+        /*
+        //eventsTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        eventsTable.getColumnModel().getColumn(0).setPreferredWidth(120);
+        eventsTable.getColumnModel().getColumn(0).setMinWidth(120);
+        eventsTable.getColumnModel().getColumn(0).setMaxWidth(120);
+
+        eventsTable.getColumnModel().getColumn(1).setPreferredWidth(100);
+        eventsTable.getColumnModel().getColumn(2).setPreferredWidth(180);
+
+        eventsTable.getColumnModel().getColumn(3).setPreferredWidth(180);//origin time
+        eventsTable.getColumnModel().getColumn(3).setMinWidth(180);
+        eventsTable.getColumnModel().getColumn(3).setMaxWidth(180);
+
+        eventsTable.getColumnModel().getColumn(4).setPreferredWidth(100);
+        eventsTable.getColumnModel().getColumn(5).setPreferredWidth(100);
+        eventsTable.getColumnModel().getColumn(6).setPreferredWidth(80);
+        eventsTable.getColumnModel().getColumn(7).setPreferredWidth(80);
+        */
+
+   
+
+        // Set: Left or Right aligned
+        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+        DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+        leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        eventsTable.getColumnModel().getColumn(0).setCellRenderer(leftRenderer);
+        eventsTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+        eventsTable.getColumnModel().getColumn(2).setCellRenderer(leftRenderer);
+        eventsTable.getColumnModel().getColumn(3).setCellRenderer(rightRenderer);
+        eventsTable.getColumnModel().getColumn(4).setCellRenderer(rightRenderer);
+        eventsTable.getColumnModel().getColumn(5).setCellRenderer(rightRenderer);
+        eventsTable.getColumnModel().getColumn(6).setCellRenderer(rightRenderer);
+
+        
+        /*
+         * This part of the code picks good column sizes. 
+         * If all column heads are wider than the column's cells'
+         * contents, then you can just use column.sizeWidthToFit().
+         */
+        
+        // EventsTableModel model = (EventsTableModel) eventsTable.getModel();
+        
+        TableColumn column = null;
+        Component comp = null;
+        int headerWidth = 0;
+        int cellWidth = 0;
+        
+        Object[] longValues = eventsTableModel.longValues;
+        TableCellRenderer headerRenderer = eventsTable.getTableHeader().getDefaultRenderer();
+
+        for (int i = 0; i < eventsTableModel.getColumnCount(); i++) {
+            column = eventsTable.getColumnModel().getColumn(i);
+
+            comp = headerRenderer.getTableCellRendererComponent(
+                                 null, column.getHeaderValue(),
+                                 false, false, 0, 0);
+            headerWidth = comp.getPreferredSize().width;
+
+            comp = eventsTable.getDefaultRenderer(eventsTableModel.getColumnClass(i))
+                    .getTableCellRendererComponent(eventsTable, longValues[i], false, false, 0, i);
+            
+            cellWidth = comp.getPreferredSize().width;
+
+           column.setPreferredWidth(Math.max(headerWidth, cellWidth));
+        }
+        
+    }
+    
+    
+    
     /*
     public PhasesList getPhasesList() {
         return phasesList;
@@ -230,8 +280,8 @@ public class EventsControlPanel extends JPanel implements ListSelectionListener,
 
     
     /*
-     * new row/event selected 
-     * When another event is selected or selection changes then it  trigger the change of all the regestered listeners (observers)
+     * Table's new row or new event is selected 
+     * Trigger the change of all the regestered listeners (observers)
      */
     @Override
     public void valueChanged(ListSelectionEvent e) {
@@ -295,4 +345,5 @@ public class EventsControlPanel extends JPanel implements ListSelectionListener,
     public void SeisDataChanged(SeisDataChangeEvent event) {
          JOptionPane.showMessageDialog(null, "SeisDataChanged() : command (event from HypoTable) received by the EventsTable: " + Global.getCommand() );
     }
+
 }

@@ -7,9 +7,17 @@ import javax.swing.table.AbstractTableModel;
  */
 public class ActionHistoryTableModel extends AbstractTableModel {
 
-    private final String[] columnNames = {"Select", "Analyst", "Command"};
-    private final Class[] columns = new Class[]{Boolean.class, String.class, String.class};
-    //private final ArrayList<SeisEvent> events;
+    private final String[] columnNames = {
+        "Select", 
+        "Analyst", 
+        "Command"};
+    
+    private final Class[] columns = new Class[]{
+        Boolean.class, 
+        String.class, 
+        String.class};
+    
+//private final ArrayList<SeisEvent> events;
 
     Object[][] data = {
         {false, "Smith", "Snowboarding"},
@@ -33,7 +41,6 @@ public class ActionHistoryTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        //return 3;
         return columnNames.length;
     }
 
@@ -42,10 +49,10 @@ public class ActionHistoryTableModel extends AbstractTableModel {
         return columnNames[col];
     }
 
-    //overide it for setting values in each row and each column
+    // overide it for setting values in each row and each column
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-
+        // See EventTableModel
         return data[rowIndex][columnIndex];
     }
 
@@ -59,36 +66,19 @@ public class ActionHistoryTableModel extends AbstractTableModel {
         return getValueAt(0, c).getClass();
     }
 
-    /*
-     * Don't need to implement this method unless your table's editable.
-     */
+    // cell is editable.
+    // only the select column is editable.
     @Override
     public boolean isCellEditable(int row, int col) {
-        //Note that the data/cell address is constant, no matter where the cell appears onscreen.
-        if (col < 2) {
-            return false;
-        } else {
-            return true;
-        }
+        return (col == 0) ? true : false;
     }
 
-    /*
-     * Don't need to implement this method unless your table's data can change.
-     */
+    // when something is selected.
     @Override
     public void setValueAt(Object value, int row, int col) {
-
-        System.out.println("Setting value at " + row + "," + col
-                + " to " + value
-                + " (an instance of "
-                + value.getClass() + ")");
-
         data[row][col] = value;
         fireTableCellUpdated(row, col);
-
-        System.out.println("New value of data:");
-        printDebugData();
-
+        //printDebugData();
     }
 
     private void printDebugData() {
