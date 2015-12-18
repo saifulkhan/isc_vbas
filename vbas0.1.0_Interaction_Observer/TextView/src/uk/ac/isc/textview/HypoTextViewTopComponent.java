@@ -6,6 +6,8 @@
 package uk.ac.isc.textview;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.text.SimpleDateFormat;
 import javax.swing.JScrollPane;
@@ -14,6 +16,9 @@ import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
@@ -56,27 +61,21 @@ import uk.ac.isc.seisdata.SeisEvent;
 })
 public final class HypoTextViewTopComponent extends TopComponent implements SeisDataChangeListener {
 
-    //hypo list
-    private final HypocentresList hypocentresList;
-
-    //the string to show overall information
+    private final HypocentresList hypocentresList;      // hypo list
+    private static JTextPane header = new JTextPane();  // the Pane to show the headerString
     private String headerString;
-    //the Pane to show the headerString
-    private static JTextPane header;
-
-    //table model for the hypo table
-    private HypoTableModel hptvtModel = null;
-
-    //hypocentre table
+    
+    private HypoTableModel hptvtModel = null;           //table model for the hypo table
+  
     private JTable hyposTable = null;
-
     private JScrollPane scrollPane = null;
 
-    //get control window to retrieve data
+    // get control window to retrieve data
     //private final TopComponent tc = WindowManager.getDefault().findTopComponent("EventsControlViewTopComponent");
-
-    private static SeisEvent currentEvent;// = ((EventsControlViewTopComponent) tc).getSelectedSeisEvent();
-
+    //private static SeisEvent currentEvent = ((EventsControlViewTopComponent) tc).getSelectedSeisEvent();
+    private static SeisEvent currentEvent; 
+    
+    
     public HypoTextViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_HypoTextViewTopComponent());
@@ -86,50 +85,13 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         //hypocentresList = ((EventsControlViewTopComponent) tc).getControlPanel().getHyposList();
         currentEvent = Global.getSelectedSeisEvent();
         hypocentresList = Global.getHypocentresList();
-
-        
-        //start concatenating the header string
-        headerString = "";
-        headerString += currentEvent.getLocation();
-        headerString += "  ";
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        headerString += sdf.format(currentEvent.getPrimeHypo().getOrigTime());
-        headerString += "\n Default Grid Depth: ";
-        if (SeisDataDAO.retrieveDefaultGridDepth(currentEvent.getPrimeHypo().getHypid()) != null) {
-            headerString += SeisDataDAO.retrieveDefaultGridDepth(currentEvent.getPrimeHypo().getHypid()).toString();
-        } else {
-            headerString += "N/A";
-        }
-
-        header = new JTextPane();
-        header.setText(headerString);
-        header.setEditable(false);
-        Font font1 = new Font("SansSerif", Font.BOLD, 20);
-        header.setFont(font1);
-        StyledDocument doc = header.getStyledDocument();
-        SimpleAttributeSet center = new SimpleAttributeSet();
-        StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-        doc.setParagraphAttributes(0, doc.getLength(), center, false);
-
+       
         hptvtModel = new HypoTableModel(hypocentresList.getHypocentres());
         hyposTable = new JTable(hptvtModel);
-        hyposTable.setRowSelectionAllowed(true);
-        hyposTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        hyposTable.setColumnSelectionAllowed(false);
-        hyposTable.setRowHeight(25);
-        hyposTable.setFont(new Font("Sans-serif", Font.PLAIN, 14));
-        hyposTable.setShowGrid(false);
-        hyposTable.setShowVerticalLines(false);
-        hyposTable.setShowHorizontalLines(false);       
-
-        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-        //DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
-        rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
-        //leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
-        hyposTable.getColumnModel().getColumn(6).setCellRenderer(rightRenderer);
-        hyposTable.getColumnModel().getColumn(7).setCellRenderer(rightRenderer);
-
+        setupTableVisualAttributes();
+        setHeaderText();
         
+        // add the popup-menu
         new HypoTablePopupManager(hyposTable);
         
         scrollPane = new JScrollPane(hyposTable);
@@ -138,6 +100,59 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         this.add(scrollPane, BorderLayout.CENTER);
     }
 
+    
+    private void setupTableVisualAttributes() {
+             
+        JTableHeader th = hyposTable.getTableHeader();
+        th.setFont(new Font("Sans-serif", Font.PLAIN, 14));
+        th.setBackground(new Color(43,87,151));            // Blue
+        th.setForeground(Color.white);
+        
+        hyposTable.setRowSelectionAllowed(true);
+        hyposTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        hyposTable.setColumnSelectionAllowed(false);
+        hyposTable.setSelectionBackground(new Color(45,137,239));
+        hyposTable.setSelectionForeground(Color.WHITE);
+        hyposTable.setRowSelectionInterval(0, 0);
+        
+        hyposTable.setRowHeight(25);
+        hyposTable.setFont(new Font("Sans-serif", Font.PLAIN, 14));
+        hyposTable.setShowGrid(false);
+        hyposTable.setShowVerticalLines(false);
+        hyposTable.setShowHorizontalLines(false);
+        
+        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+        rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+        hyposTable.getColumnModel().getColumn(6).setCellRenderer(rightRenderer);
+        hyposTable.getColumnModel().getColumn(7).setCellRenderer(rightRenderer);
+        
+    }
+    
+    private void setHeaderText() {
+         // The hypocentre table header: shows overall information
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        headerString = currentEvent.getLocation() 
+                + "  "
+                + dateFormat.format(currentEvent.getPrimeHypo().getOrigTime())
+                + "\n "
+                + "Default Grid Depth: ";
+        
+        if (SeisDataDAO.retrieveDefaultGridDepth(currentEvent.getPrimeHypo().getHypid()) != null) {
+            headerString += SeisDataDAO.retrieveDefaultGridDepth(currentEvent.getPrimeHypo().getHypid()).toString();
+        } else {
+            headerString += "N/A";
+        }
+
+        //header = new JTextPane();
+        header.setText(headerString);
+        header.setEditable(false);
+        header.setFont(new Font("Sans-Serif", Font.BOLD, 14));
+        StyledDocument doc = header.getStyledDocument();
+        SimpleAttributeSet center = new SimpleAttributeSet();
+        StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+        doc.setParagraphAttributes(0, doc.getLength(), center, false);
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -197,24 +212,7 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         //currentEvent = ((EventsControlViewTopComponent) tc).getControlPanel().getSelectedSeisEvent();
         currentEvent = Global.getSelectedSeisEvent();
          
-        headerString = "";
-        headerString += currentEvent.getLocation();
-        headerString += "  ";
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        headerString += sdf.format(currentEvent.getPrimeHypo().getOrigTime());
-        headerString += "\n Default Grid Depth: ";
-        if (SeisDataDAO.retrieveDefaultGridDepth(currentEvent.getPrimeHypo().getHypid()) != null) {
-            headerString += SeisDataDAO.retrieveDefaultGridDepth(currentEvent.getPrimeHypo().getHypid()).toString();
-        } else {
-            headerString += "N/A";
-        }
-
-        header.setText(headerString);
-        header.setEditable(false);
-        //Font font1 = new Font("SansSerif", Font.BOLD, 20);
-        //header.setFont(font1);
-        //header.setHorizontalAlignment(JTextField.CENTER);
-
+        setHeaderText();
         header.repaint();
 
         hyposTable.clearSelection();

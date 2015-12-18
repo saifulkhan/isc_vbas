@@ -1,6 +1,8 @@
 package uk.ac.isc.eventscontrolview;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -13,6 +15,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import uk.ac.isc.seisdata.ActionHistoryList;
 import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
@@ -21,7 +25,8 @@ import uk.ac.isc.seisdata.SeisEvent;
 
 public class ActionHistoryTable extends JPanel implements SeisDataChangeListener {
 
-    private JTable table;
+    private JTable actionHistoryTable;
+    private ActionHistoryTableModel actionHistoryTableModel;
     private JButton buttonBanish;
     private JButton buttonDone;
     private JButton buttonAssess;
@@ -35,58 +40,33 @@ public class ActionHistoryTable extends JPanel implements SeisDataChangeListener
     
     
     public ActionHistoryTable() {
-        initLayout();
+        
+        
+        setupLayout();                  // 1 
+        setupTableVisualAttributes();   // 2
         initActionListeners();
-        
+       
         //actionHistoryList.addChangeListener(this);
-        
-        //currentEvent = ((EventsControlViewTopComponent) tc).getControlPanel().getSelectedSeisEvent();
+           
         System.out.println("DEBUG: " + Thread.currentThread().getStackTrace()[1].getLineNumber() + ", " + "ActionHistoryTable::ActionHistoryTable() : currentEvent = " + currentEvent);
         
         actionHistoryList = Global.getActionHistoryList();
         actionHistoryList.addChangeListener(this);
    }
 
-    private void initLayout() {
-
-        // TODO: fetch from the database 
-        // Passit to the ActionHistoryModel
-        // Table    
-        table = new JTable(new ActionHistoryTableModel());
-        table.setRowSelectionAllowed(true);     
-        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.setColumnSelectionAllowed(false);
-        table.setRowSelectionInterval(0, 0);
+    
+    private void setupLayout() {
         
-        //table.setPreferredScrollableViewportSize(new Dimension(450, 120));
-        //table.setFillsViewportHeight(true);
-        table.getColumnModel().getColumn(0).setPreferredWidth(50);
-        table.getColumnModel().getColumn(0).setMinWidth(50);
-        table.getColumnModel().getColumn(1).setPreferredWidth(100);
-        table.getColumnModel().getColumn(1).setMinWidth(100);
-        table.getColumnModel().getColumn(2).setPreferredWidth(350);
-        table.getColumnModel().getColumn(2).setMinWidth(350);
-        
-        //table.setRowHeight(30);
-        //table.setFont(new Font("Consolas", Font.PLAIN, 14));
-        //table.setShowGrid(false);
-        //table.setShowVerticalLines(false);
-        //table.setShowHorizontalLines(false); 
+        actionHistoryTableModel = new ActionHistoryTableModel();
+        actionHistoryTable = new JTable(actionHistoryTableModel);
          
-        JTableHeader th = table.getTableHeader();
-        th.setFont(new Font("Consolas", Font.PLAIN, 16));
-        
-        // Table: listener
-        //table.getModel().addTableModelListener(this);
-
-        // Layout    
         JPanel topPanel = new JPanel();
         JPanel bottomPanel = new JPanel();
         this.add(topPanel, BorderLayout.CENTER);
         this.add(bottomPanel, BorderLayout.LINE_END);
 
         // Layout : add table in the top panel
-        JScrollPane scrollPane = new JScrollPane(table);
+        JScrollPane scrollPane = new JScrollPane(actionHistoryTable);
         topPanel.add(scrollPane, BorderLayout.CENTER);
 
         //add(bottomPanel, BorderLayout.SOUTH);
@@ -97,14 +77,70 @@ public class ActionHistoryTable extends JPanel implements SeisDataChangeListener
         buttonDone = new JButton("Done");
         buttonAssess = new JButton("Assess");
         buttonCommit = new JButton("Commit");
-        /*    
+            
         bottomPanel.add(buttonBanish);
         bottomPanel.add(buttonDone);
         bottomPanel.add(buttonAssess);
-        bottomPanel.add(buttonCommit);*/
-
+        bottomPanel.add(buttonCommit);
     }
+    
+    
+    private void setupTableVisualAttributes() {
 
+        JTableHeader th = actionHistoryTable.getTableHeader();
+        th.setFont(new Font("Sans-serif", Font.PLAIN, 14));
+        th.setBackground(new Color(43,87,151));            // Blue
+        th.setForeground(Color.white);
+        
+        actionHistoryTable.setRowSelectionAllowed(true);
+        actionHistoryTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        actionHistoryTable.setColumnSelectionAllowed(false);
+        actionHistoryTable.setSelectionBackground(new Color(45,137,239));
+        actionHistoryTable.setSelectionForeground(Color.WHITE);
+        actionHistoryTable.setRowSelectionInterval(0, 0);
+        
+        
+        actionHistoryTable.setRowHeight(25);
+        actionHistoryTable.setFont(new Font("Sans-serif", Font.PLAIN, 14));
+        actionHistoryTable.setShowGrid(false);
+        actionHistoryTable.setShowVerticalLines(false);
+        actionHistoryTable.setShowHorizontalLines(false);
+        
+        
+        // This part of the code picks good column sizes. 
+        // If all column heads are wider than the column's cells'
+        // contents, then you can just use column.sizeWidthToFit().
+                
+        TableColumn column = null;
+        Component comp = null;
+        int headerWidth = 0;
+        int cellWidth = 0;
+        
+        
+        Object[] longValues = actionHistoryTableModel.longValues;
+        TableCellRenderer headerRenderer = actionHistoryTable.getTableHeader().getDefaultRenderer();
+
+        for (int i = 0; i < actionHistoryTableModel.getColumnCount(); i++) {
+            column = actionHistoryTable.getColumnModel().getColumn(i);
+
+            comp = headerRenderer.getTableCellRendererComponent(
+                                 null, column.getHeaderValue(),
+                                 false, false, 0, 0);
+            headerWidth = comp.getPreferredSize().width;
+
+            comp = actionHistoryTable.getDefaultRenderer(actionHistoryTableModel.getColumnClass(i))
+                    .getTableCellRendererComponent(actionHistoryTable, 
+                            longValues[i], false, false, 0, i);
+            
+            cellWidth = comp.getPreferredSize().width;
+
+           column.setPreferredWidth(Math.max(headerWidth, cellWidth));
+        }
+        
+    }
+    
+    
+    
     public void initActionListeners() {
 
         buttonAssess.addActionListener(new ActionListener() {
@@ -117,43 +153,6 @@ public class ActionHistoryTable extends JPanel implements SeisDataChangeListener
 
     }
 
-    /*
-     * This method picks good column sizes. 
-     * If all column heads are wider than the column's cells' contents, then you can just use column.sizeWidthToFit().
-     */
-    public void initColumnSizes() {
-        /* ActionHistory model = (ActionHistory) table.getModel();
-         TableColumn column = null;
-         Component comp = null;
-         int headerWidth = 0;
-         int cellWidth = 0;
-        
-         Object[] longValues = model.longValues;
-         TableCellRenderer headerRenderer = table.getTableHeader().getDefaultRenderer();
-
-         for (int i = 0; i < 5; i++) {
-         column = table.getColumnModel().getColumn(i);
-
-         comp = headerRenderer.getTableCellRendererComponent(
-         null, column.getHeaderValue(),
-         false, false, 0, 0);
-         headerWidth = comp.getPreferredSize().width;
-
-         comp = table.getDefaultRenderer(model.getColumnClass(i)).
-         getTableCellRendererComponent(
-         table, longValues[i],
-         false, false, 0, i);
-         cellWidth = comp.getPreferredSize().width;
-
-
-         System.out.println("Initializing width of column "
-         + i + ". "
-         + "headerWidth = " + headerWidth
-         + "; cellWidth = " + cellWidth);
-
-         column.setPreferredWidth(Math.max(headerWidth, cellWidth));
-         }   */
-    }
 
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
@@ -164,6 +163,5 @@ public class ActionHistoryTable extends JPanel implements SeisDataChangeListener
        //actionHistoryList = Global.getActionHistoryList();
        
     }
-
 
 }

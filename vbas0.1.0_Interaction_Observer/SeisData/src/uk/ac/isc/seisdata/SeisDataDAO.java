@@ -434,7 +434,7 @@ public final class SeisDataDAO {
             st = con.createStatement();
 
             for (SeisEvent ev : evList) {
-                String query = "SELECT r.gr_name, r.gr_number, r.sr_number "
+                String query = "SELECT r.gr_short, r.gr_number, r.sr_number "
                         + " FROM  region r, event e, hypocenter h"
                         + " WHERE h.isc_evid = " + ev.getEvid()
                         + " AND e.evid = h.isc_evid AND h.hypid = e.prime_hyp"
@@ -488,7 +488,7 @@ public final class SeisDataDAO {
             con = DriverManager.getConnection(url, user, password);
             st = con.createStatement();
 
-            String query = "SELECT r.gr_name, r.gr_number, r.sr_number, e.evid "
+            String query = "SELECT r.gr_short, r.gr_number, r.sr_number, e.evid "
                     + " FROM  region r, event e, hypocenter h"
                     + " WHERE e.ready IS NOT NULL AND e.evid = h.isc_evid AND h.hypid = e.prime_hyp"
                     + " AND r.gr_number = COALESCE(h.grn,grn_ll(h.lat,h.lon));";
@@ -1698,7 +1698,7 @@ public final class SeisDataDAO {
         Statement st = null;
         ResultSet rs = null;
 
-        String query = "SELECT s.sta, r.gr_name "
+        String query = "SELECT s.sta, r.gr_short "
                 + "FROM site s, site_grn g, region r "
                 + "WHERE s.net IS NULL AND s.lat IS NOT NULL AND s.lon IS NOT NULL "
                 + "AND s.sta = g.sta AND g.net IS NULL AND g.grn_ll = r.gr_number;";

@@ -37,9 +37,9 @@ public class EventsTableModel extends AbstractTableModel {
         Integer.class};
     
     public final Object[] longValues = {
-        new Integer(999999999), 
-        "WWWWW", 
-        "The alean iland xxxxxxxxxxxxxxxx", 
+        new Integer(0), 
+        new String(new char[5]), 
+        new String(new char[20]),
         "00:00:00",
         "",
         "",

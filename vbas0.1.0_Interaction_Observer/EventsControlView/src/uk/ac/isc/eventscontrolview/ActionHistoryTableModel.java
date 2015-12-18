@@ -26,7 +26,11 @@ public class ActionHistoryTableModel extends AbstractTableModel {
         {false, "White", "Speed reading"},
         {false, "Brown", "Pool"}
     };
-    public final Object[] longValues = {"Jane", "Kathy", "None of the above", new Integer(20), Boolean.TRUE};
+    
+    public final Object[] longValues = {
+        Boolean.TRUE, 
+        new String(new char[15]), 
+        new String(new char[200])};
 
     /*    
      public ActionHistoryModel(ArrayList<ActionHistoryList> actionHistoryList) {

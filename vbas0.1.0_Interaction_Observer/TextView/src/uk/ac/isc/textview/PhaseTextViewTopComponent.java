@@ -1,13 +1,16 @@
 package uk.ac.isc.textview;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Font;
 import java.util.TreeMap;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -52,7 +55,7 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
     private final TreeMap<String, String> stations;
     
     private PhaseTextViewTableModel ptvtModel = null; // phase table model for the table
-    private JTable longTable = null;
+    private JTable phaseTable = null;
     private JScrollPane longScrollPane = null;
 
     public PhaseTextViewTopComponent() {
@@ -64,11 +67,11 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         stations = Global.getStations();
         
         ptvtModel = new PhaseTextViewTableModel(phasesList.getPhases());
-        longTable = new JTable(ptvtModel);
-        setupLongTableVisualAttributes(longTable);
+        phaseTable = new JTable(ptvtModel);
+        setupTableVisualAttributes();
 
 
-        longScrollPane = new JScrollPane(longTable);
+        longScrollPane = new JScrollPane(phaseTable);
         this.setLayout(new BorderLayout());
         this.add(longScrollPane, BorderLayout.CENTER);
     }
@@ -127,18 +130,48 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         
         // put the region name into the pahseList
         for (int i = 0; i < phasesList.getPhases().size(); i++) {
-            phasesList.getPhases().get(i).setRegionName(stations.get(phasesList.getPhases().get(i).getReportStation()));
+            phasesList.getPhases()
+                    .get(i)
+                    .setRegionName(stations.get(phasesList.getPhases().get(i).getReportStation()));
         }
 
-        longTable.setModel(ptvtModel);
-        longTable.clearSelection();
-        setupLongTableVisualAttributes(longTable);
 
-        longScrollPane.setViewportView(longTable);
+        phaseTable.clearSelection();
+        //setupLongTableVisualAttributes(phaseTable);
+
+        longScrollPane.setViewportView(phaseTable);
         longScrollPane.repaint();
     }
 
-
+     
+    private void setupTableVisualAttributes() {
+             
+        JTableHeader th = phaseTable.getTableHeader();
+        th.setFont(new Font("Sans-serif", Font.PLAIN, 14));
+        th.setBackground(new Color(43,87,151));            // Blue
+        th.setForeground(Color.white);
+        
+        phaseTable.setRowSelectionAllowed(true);
+        phaseTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        phaseTable.setColumnSelectionAllowed(false);
+        phaseTable.setSelectionBackground(new Color(45,137,239));
+        phaseTable.setSelectionForeground(Color.WHITE);
+        phaseTable.setRowSelectionInterval(0, 0);
+        
+        phaseTable.setRowHeight(25);
+        phaseTable.setFont(new Font("Sans-serif", Font.PLAIN, 14));
+        phaseTable.setShowGrid(false);
+        phaseTable.setShowVerticalLines(false);
+        phaseTable.setShowHorizontalLines(false);
+        
+        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+        rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+        phaseTable.getColumnModel().getColumn(6).setCellRenderer(rightRenderer);
+        phaseTable.getColumnModel().getColumn(7).setCellRenderer(rightRenderer);
+        
+    }
+    
+    
     // set long table format, e.g. column width etc.
     private void setupLongTableVisualAttributes(JTable longTable) {
  
@@ -182,4 +215,5 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         longTable.setShowHorizontalLines(false);
                  
     }
+    
 }
