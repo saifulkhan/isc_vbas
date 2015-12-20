@@ -1,25 +1,15 @@
 package uk.ac.isc.seisdata;
 
 /**
- * Inteface for the seismicity data to inherit
- *
- * @author hui
+ * Observer Design Pattern: Interface for the seismicity data to inherit
  */
+
 public interface SeisData {
 
-    /**
-     * Add an object for notifying the change from the data
-     *
-     * @param listener
-     */
-    public void addChangeListener(SeisDataChangeListener listener);
-
-    /**
-     * Remove an object for notifying the data change
-     *
-     * @param listener
-     */
-    public void removeChangeListener(SeisDataChangeListener listener);
+    public static char TYPE_A='A';
+    public static char TYPE_B='B';
     
+    public void addChangeListener(SeisDataChangeListener listener);
+    public void removeChangeListener(SeisDataChangeListener listener);
     public void fireSeisDataChanged();
 }
