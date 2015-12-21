@@ -17,29 +17,29 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import uk.ac.isc.seisdata.ActionHistoryList;
+import uk.ac.isc.seisdata.CommandList;
 import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
 import uk.ac.isc.seisdata.SeisEvent;
 
-public class ActionHistoryTable extends JPanel implements SeisDataChangeListener {
+public class CommandTable extends JPanel implements SeisDataChangeListener {
 
     private JTable actionHistoryTable;
-    private ActionHistoryTableModel actionHistoryTableModel;
+    private CommandTableModel actionHistoryTableModel;
     private JButton buttonBanish;
     private JButton buttonDone;
     private JButton buttonAssess;
     private JButton buttonCommit;
 
-    private final ActionHistoryList actionHistoryList; 
+    private final CommandList actionHistoryList; 
 
     // used to fetch event from the EventTable / EventControlView
     private static SeisEvent currentEvent;
     //private final TopComponent tc = WindowManager.getDefault().findTopComponent("EventsControlViewTopComponent");
     
     
-    public ActionHistoryTable() {
+    public CommandTable() {
         
         
         setupLayout();                  // 1 
@@ -57,7 +57,7 @@ public class ActionHistoryTable extends JPanel implements SeisDataChangeListener
     
     private void setupLayout() {
         
-        actionHistoryTableModel = new ActionHistoryTableModel();
+        actionHistoryTableModel = new CommandTableModel();
         actionHistoryTable = new JTable(actionHistoryTableModel);
          
         JPanel topPanel = new JPanel();
@@ -139,7 +139,9 @@ public class ActionHistoryTable extends JPanel implements SeisDataChangeListener
         
     }
     
-    
+    public JTable getActionHistoryTable() {
+        return actionHistoryTable;
+    }  
     
     public void initActionListeners() {
 

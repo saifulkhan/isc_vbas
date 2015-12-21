@@ -19,7 +19,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import uk.ac.isc.seisdata.ActionHistoryList;
+import uk.ac.isc.seisdata.CommandList;
 import uk.ac.isc.seisdata.BlockTableModel;
 import uk.ac.isc.seisdata.Command;
 import uk.ac.isc.seisdata.EventsTableModel;
@@ -59,7 +59,7 @@ public class EventsTable extends JPanel implements ListSelectionListener, SeisDa
     private static final Logger logger = Logger.getLogger(EventsTable.class.getName());
 
     // Provenance: action history, command etc.
-    private final ActionHistoryList actionHistoryList = new ActionHistoryList();
+    private final CommandList actionHistoryList = new CommandList();
     private final Command command;
     
     

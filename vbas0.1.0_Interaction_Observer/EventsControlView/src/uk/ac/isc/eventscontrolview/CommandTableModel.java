@@ -5,7 +5,7 @@ import javax.swing.table.AbstractTableModel;
 /**
  * Hint: SiesData/.../EvensTable|Model.java
  */
-public class ActionHistoryTableModel extends AbstractTableModel {
+public class CommandTableModel extends AbstractTableModel {
 
     private final String[] columnNames = {
         "Select", 

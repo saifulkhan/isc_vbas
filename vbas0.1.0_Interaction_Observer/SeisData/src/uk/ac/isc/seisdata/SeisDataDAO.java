@@ -2522,7 +2522,7 @@ public final class SeisDataDAO {
      * Retrieve all the action histories .
      * Check SeisDataDAO.retrieveHypos()
      */
-    public static boolean retrieveActionHistory(Integer evid, ArrayList<ActionHistory> actionHistoryList) {
+    public static boolean retrieveActionHistory(Integer evid, ArrayList<Command> actionHistoryList) {
 
         Connection con = null;
         Statement st = null;
@@ -2541,7 +2541,7 @@ public final class SeisDataDAO {
 
             while (rs.next()) {
 
-                ActionHistory actionHistory = new ActionHistory();
+                Command actionHistory = new Command();
                 // TODO    
                 actionHistoryList.add(actionHistory);
             }
