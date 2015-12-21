@@ -11,7 +11,17 @@ import javax.swing.table.AbstractTableModel;
  */
 public class BlockTableModel extends AbstractTableModel {
 
-    private final String[] columnNames = {"Block ID.", "Start Date", "End Date", "Region", "Analyst 1", "Analyst 2", "Analyst 3", "Status", "Events Num.", "Reviewed Number"};
+    private final String[] columnNames = {
+        "Block ID.", 
+        "Start Date", 
+        "End Date", 
+        "Region", 
+        "Analyst 1", 
+        "Analyst 2", 
+        "Analyst 3", 
+        "Status", 
+        "Events Num.", 
+        "Reviewed Number"};
 
     private final Class[] columns = new Class[]{Integer.class, String.class, String.class, Integer.class, String.class, String.class, String.class, String.class, Integer.class,
         Integer.class};

@@ -33,13 +33,13 @@ public class CommandTableModel extends AbstractTableModel {
         new String(new char[200])};
 
     /*    
-     public ActionHistoryModel(ArrayList<ActionHistoryList> actionHistoryList) {
-     this.actionHistoryList = actionHistoryList;
+     public ActionHistoryModel(ArrayList<ActionHistoryList> commandList) {
+     this.commandList = commandList;
      }
      */
     @Override
     public int getRowCount() {
-        //return actionHistoryList.size();
+        //return commandList.size();
         return data.length;
     }
 

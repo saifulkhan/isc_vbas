@@ -25,14 +25,14 @@ import uk.ac.isc.seisdata.SeisEvent;
 
 public class CommandTable extends JPanel implements SeisDataChangeListener {
 
-    private JTable actionHistoryTable;
-    private CommandTableModel actionHistoryTableModel;
+    private JTable commandTable;
+    private CommandTableModel commandTableModel;
     private JButton buttonBanish;
     private JButton buttonDone;
     private JButton buttonAssess;
     private JButton buttonCommit;
 
-    private final CommandList actionHistoryList; 
+    private final CommandList commandList; 
 
     // used to fetch event from the EventTable / EventControlView
     private static SeisEvent currentEvent;
@@ -46,19 +46,19 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
         setupTableVisualAttributes();   // 2
         initActionListeners();
        
-        //actionHistoryList.addChangeListener(this);
+        //commandList.addChangeListener(this);
            
         System.out.println("DEBUG: " + Thread.currentThread().getStackTrace()[1].getLineNumber() + ", " + "ActionHistoryTable::ActionHistoryTable() : currentEvent = " + currentEvent);
         
-        actionHistoryList = Global.getActionHistoryList();
-        actionHistoryList.addChangeListener(this);
+        commandList = Global.getActionHistoryList();
+        commandList.addChangeListener(this);
    }
 
     
     private void setupLayout() {
         
-        actionHistoryTableModel = new CommandTableModel();
-        actionHistoryTable = new JTable(actionHistoryTableModel);
+        commandTableModel = new CommandTableModel();
+        commandTable = new JTable(commandTableModel);
          
         JPanel topPanel = new JPanel();
         JPanel bottomPanel = new JPanel();
@@ -66,7 +66,7 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
         this.add(bottomPanel, BorderLayout.LINE_END);
 
         // Layout : add table in the top panel
-        JScrollPane scrollPane = new JScrollPane(actionHistoryTable);
+        JScrollPane scrollPane = new JScrollPane(commandTable);
         topPanel.add(scrollPane, BorderLayout.CENTER);
 
         //add(bottomPanel, BorderLayout.SOUTH);
@@ -87,24 +87,24 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
     
     private void setupTableVisualAttributes() {
 
-        JTableHeader th = actionHistoryTable.getTableHeader();
+        JTableHeader th = commandTable.getTableHeader();
         th.setFont(new Font("Sans-serif", Font.PLAIN, 14));
         th.setBackground(new Color(43,87,151));            // Blue
         th.setForeground(Color.white);
         
-        actionHistoryTable.setRowSelectionAllowed(true);
-        actionHistoryTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        actionHistoryTable.setColumnSelectionAllowed(false);
-        actionHistoryTable.setSelectionBackground(new Color(45,137,239));
-        actionHistoryTable.setSelectionForeground(Color.WHITE);
-        actionHistoryTable.setRowSelectionInterval(0, 0);
+        commandTable.setRowSelectionAllowed(true);
+        commandTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        commandTable.setColumnSelectionAllowed(false);
+        commandTable.setSelectionBackground(new Color(45,137,239));
+        commandTable.setSelectionForeground(Color.WHITE);
+        commandTable.setRowSelectionInterval(0, 0);
         
         
-        actionHistoryTable.setRowHeight(25);
-        actionHistoryTable.setFont(new Font("Sans-serif", Font.PLAIN, 14));
-        actionHistoryTable.setShowGrid(false);
-        actionHistoryTable.setShowVerticalLines(false);
-        actionHistoryTable.setShowHorizontalLines(false);
+        commandTable.setRowHeight(25);
+        commandTable.setFont(new Font("Sans-serif", Font.PLAIN, 14));
+        commandTable.setShowGrid(false);
+        commandTable.setShowVerticalLines(false);
+        commandTable.setShowHorizontalLines(false);
         
         
         // This part of the code picks good column sizes. 
@@ -117,19 +117,19 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
         int cellWidth = 0;
         
         
-        Object[] longValues = actionHistoryTableModel.longValues;
-        TableCellRenderer headerRenderer = actionHistoryTable.getTableHeader().getDefaultRenderer();
+        Object[] longValues = commandTableModel.longValues;
+        TableCellRenderer headerRenderer = commandTable.getTableHeader().getDefaultRenderer();
 
-        for (int i = 0; i < actionHistoryTableModel.getColumnCount(); i++) {
-            column = actionHistoryTable.getColumnModel().getColumn(i);
+        for (int i = 0; i < commandTableModel.getColumnCount(); i++) {
+            column = commandTable.getColumnModel().getColumn(i);
 
             comp = headerRenderer.getTableCellRendererComponent(
                                  null, column.getHeaderValue(),
                                  false, false, 0, 0);
             headerWidth = comp.getPreferredSize().width;
 
-            comp = actionHistoryTable.getDefaultRenderer(actionHistoryTableModel.getColumnClass(i))
-                    .getTableCellRendererComponent(actionHistoryTable, 
+            comp = commandTable.getDefaultRenderer(commandTableModel.getColumnClass(i))
+                    .getTableCellRendererComponent(commandTable, 
                             longValues[i], false, false, 0, i);
             
             cellWidth = comp.getPreferredSize().width;
@@ -139,8 +139,8 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
         
     }
     
-    public JTable getActionHistoryTable() {
-        return actionHistoryTable;
+    public JTable getCommandTable() {
+        return commandTable;
     }  
     
     public void initActionListeners() {
@@ -162,7 +162,7 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
         //currentEvent = ((EventsControlViewTopComponent) tc).getControlPanel().getSelectedSeisEvent();
         
        System.out.println("DEBUG: " + Thread.currentThread().getStackTrace()[1].getLineNumber() + ", " + "ActionHistoryTable::SeisDataChanged() : currentEvent = " + currentEvent); 
-       //actionHistoryList = Global.getActionHistoryList();
+       //commandList = Global.getActionHistoryList();
        
     }
 

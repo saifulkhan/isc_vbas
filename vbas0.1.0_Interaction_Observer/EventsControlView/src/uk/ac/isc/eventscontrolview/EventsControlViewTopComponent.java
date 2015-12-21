@@ -43,7 +43,7 @@ public final class EventsControlViewTopComponent extends TopComponent {
 
     EventsTable eventsTable;         // Event Table
     EventSearchPanel eventsSearchPanel;     // Search Panel
-    CommandTable actionHistoryTable;  // Action Hostory Table
+    CommandTable commandTable;  // Action Hostory Table
 
     public EventsControlViewTopComponent() {
         initComponents();
@@ -54,7 +54,7 @@ public final class EventsControlViewTopComponent extends TopComponent {
 
         eventsTable = new EventsTable();
         eventsSearchPanel = new EventSearchPanel(eventsTable);
-        actionHistoryTable = new CommandTable();
+        commandTable = new CommandTable();
 
         JScrollPane scrollPane = new JScrollPane(eventsTable.getTable());
         
@@ -62,12 +62,12 @@ public final class EventsControlViewTopComponent extends TopComponent {
         this.setLayout(new BorderLayout());
         this.add(eventsSearchPanel, BorderLayout.PAGE_START);
         this.add(scrollPane, BorderLayout.CENTER);
-        this.add(actionHistoryTable, BorderLayout.PAGE_END);
+        this.add(commandTable, BorderLayout.PAGE_END);
         */
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.add(eventsSearchPanel);
         this.add(scrollPane);
-        this.add(actionHistoryTable);     
+        this.add(commandTable);     
     }
 
     /* 

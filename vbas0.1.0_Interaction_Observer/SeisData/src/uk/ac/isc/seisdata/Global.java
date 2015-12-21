@@ -9,7 +9,7 @@ public class Global {
     private static SeisEvent selectedSeisEvent;
     private static HypocentresList hypocentresList;
     private static PhasesList phasesList; 
-    private static CommandList actionHistoryList; 
+    private static CommandList commandList; 
     private static Command command; 
 
     public static void setCommand(Command command) {
@@ -21,11 +21,11 @@ public class Global {
     }
 
     public static CommandList getActionHistoryList() {
-        return actionHistoryList;
+        return commandList;
     }
 
-    public static void setActionHistoryList(CommandList actionHistoryList) {
-        Global.actionHistoryList = actionHistoryList;
+    public static void setActionHistoryList(CommandList commandList) {
+        Global.commandList = commandList;
     }
 
     public static void setPhasesList(PhasesList phasesList) {
