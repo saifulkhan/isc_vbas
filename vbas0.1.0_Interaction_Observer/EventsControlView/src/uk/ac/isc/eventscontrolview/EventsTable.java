@@ -37,7 +37,7 @@ import uk.ac.isc.seisdata.SeisEventsList;
  * It holds all the "phases", "hypocentres", and "events" data and passes
  * reference to other views.
  */
-public class EventsControlPanel extends JPanel implements ListSelectionListener, SeisDataChangeListener {
+public class EventsTable extends JPanel implements ListSelectionListener, SeisDataChangeListener {
 
     private JTable eventsTable = null;          // the main table of the event list
     EventsTableModel eventsTableModel;
@@ -56,14 +56,14 @@ public class EventsControlPanel extends JPanel implements ListSelectionListener,
     TreeMap<String, String> stations = new TreeMap<String, String>();
     
     // each class may need logger to keep log file, too rush to follow the good practice 
-    private static final Logger logger = Logger.getLogger(EventsControlPanel.class.getName());
+    private static final Logger logger = Logger.getLogger(EventsTable.class.getName());
 
     // Provenance: action history, command etc.
     private final ActionHistoryList actionHistoryList = new ActionHistoryList();
     private final Command command;
     
     
-    public EventsControlPanel() {
+    public EventsTable() {
 
         // 1. set the table and tooltips
         eventsTable = new JTable() {
@@ -200,7 +200,7 @@ public class EventsControlPanel extends JPanel implements ListSelectionListener,
         // contents, then you can just use column.sizeWidthToFit().
         
         // EventsTableModel model = (EventsTableModel) eventsTable.getModel();
-        /*
+        
         TableColumn column = null;
         Component comp = null;
         int headerWidth = 0;
@@ -224,7 +224,7 @@ public class EventsControlPanel extends JPanel implements ListSelectionListener,
             cellWidth = comp.getPreferredSize().width;
 
            column.setPreferredWidth(Math.max(headerWidth, cellWidth));
-        }*/
+        }
         
     }
     

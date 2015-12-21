@@ -41,7 +41,7 @@ import org.openide.windows.TopComponent;
 
 public final class EventsControlViewTopComponent extends TopComponent {
 
-    EventsControlPanel eventsTable;         // Event Table
+    EventsTable eventsTable;         // Event Table
     EventSearchPanel eventsSearchPanel;     // Search Panel
     ActionHistoryTable actionHistoryTable;  // Action Hostory Table
 
@@ -52,7 +52,7 @@ public final class EventsControlViewTopComponent extends TopComponent {
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
 
-        eventsTable = new EventsControlPanel();
+        eventsTable = new EventsTable();
         eventsSearchPanel = new EventSearchPanel(eventsTable);
         actionHistoryTable = new ActionHistoryTable();
 
@@ -73,7 +73,7 @@ public final class EventsControlViewTopComponent extends TopComponent {
     /* 
      * return of the control panel, all the data is in this class.
      */
-    public EventsControlPanel getControlPanel() {
+    public EventsTable getControlPanel() {
         return this.eventsTable;
     }
 

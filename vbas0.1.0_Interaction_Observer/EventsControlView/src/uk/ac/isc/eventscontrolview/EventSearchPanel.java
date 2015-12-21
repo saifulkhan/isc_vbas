@@ -25,11 +25,11 @@ public class EventSearchPanel extends JPanel {
     private final JButton searchButton;
 
     //reference of the control view
-    private final EventsControlPanel ecp;
+    private final EventsTable ecp;
 
     private boolean searchFlag = false;
 
-    public EventSearchPanel(final EventsControlPanel ecp) {
+    public EventSearchPanel(final EventsTable ecp) {
         this.ecp = ecp;
 
         Font font = new Font("SansSerif", Font.PLAIN, 16);
