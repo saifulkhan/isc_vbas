@@ -97,7 +97,7 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
         commandTable.setColumnSelectionAllowed(false);
         commandTable.setSelectionBackground(new Color(45,137,239));
         commandTable.setSelectionForeground(Color.WHITE);
-        commandTable.setRowSelectionInterval(0, 0);
+        //commandTable.setRowSelectionInterval(0, 0);
         
         
         commandTable.setRowHeight(25);

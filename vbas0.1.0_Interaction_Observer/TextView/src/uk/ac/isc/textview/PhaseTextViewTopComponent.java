@@ -156,7 +156,7 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         phaseTable.setColumnSelectionAllowed(false);
         phaseTable.setSelectionBackground(new Color(45,137,239));
         phaseTable.setSelectionForeground(Color.WHITE);
-        phaseTable.setRowSelectionInterval(0, 0);
+        //phaseTable.setRowSelectionInterval(0, 0);
         
         phaseTable.setRowHeight(25);
         phaseTable.setFont(new Font("Sans-serif", Font.PLAIN, 14));

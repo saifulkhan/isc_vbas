@@ -2,58 +2,79 @@
 package uk.ac.isc.textview;
 
  
-
- 
+import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
-import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
+import uk.ac.isc.seisdata.Global;
 
  
-
 class HypoTablePopupManager extends MouseAdapter implements ActionListener {
+    
     JTable table;
     JPopupMenu popupMenu;
-    JDialog dialog;
+    HypoTableRelocateDialog relocateDialog;
+    HypoEditDialog editDialog;
     
-    JWindow window;
-    JDialog jd;
-    HypoTableRelocateDialog relocatePanel;
   
     public HypoTablePopupManager(JTable table) {
         this.table = table;
         this.table.addMouseListener(this);
-        initPopup();
-        initDialog();
+        setPopupMenuVisualAttributes();
         
+        relocateDialog = new HypoTableRelocateDialog();
+        editDialog = new HypoEditDialog();
     }
     
-      
-    private void initPopup() {
+    
+    private void setPopupMenuVisualAttributes() {
         popupMenu = new JPopupMenu();
-
+                    
         JMenuItem menuItem_setprime = new JMenuItem("Set Prime"); 
+        menuItem_setprime.setBackground(new Color(218,83,44));
+        menuItem_setprime.setForeground(Color.WHITE);
+        menuItem_setprime.setFont(new Font("Sans-serif", Font.PLAIN, 14));
         JMenuItem menuItem_relocate = new JMenuItem("Relocate..");
+        menuItem_relocate.setBackground(new Color(218,83,44));
+        menuItem_relocate.setForeground(Color.WHITE);
+        menuItem_relocate.setFont(new Font("Sans-serif", Font.PLAIN, 14));
         JMenuItem menuItem_depricate = new JMenuItem("Depricate");
+        menuItem_depricate.setBackground(new Color(218,83,44));
+        menuItem_depricate.setForeground(Color.WHITE);
+        menuItem_depricate.setFont(new Font("Sans-serif", Font.PLAIN, 14));
         JMenuItem menuItem_edit = new JMenuItem("Edit..");
+        menuItem_edit.setBackground(new Color(218,83,44));
+        menuItem_edit.setForeground(Color.WHITE);
+        menuItem_edit.setFont(new Font("Sans-serif", Font.PLAIN, 14));
         JMenuItem menuItem_create = new JMenuItem("Create..");
+        menuItem_create.setBackground(new Color(218,83,44));
+        menuItem_create.setForeground(Color.WHITE);
+        menuItem_create.setFont(new Font("Sans-serif", Font.PLAIN, 14));
         JMenuItem menuItem_move = new JMenuItem("Move..");
-
+        menuItem_move.setBackground(new Color(218,83,44));
+        menuItem_move.setForeground(Color.WHITE);
+        menuItem_move.setFont(new Font("Sans-serif", Font.PLAIN, 14));
+        
         popupMenu.add(menuItem_setprime);
+        //popupMenu.addSeparator();
         popupMenu.add(menuItem_relocate);
+        //popupMenu.addSeparator();
         popupMenu.add(menuItem_depricate);
+        //popupMenu.addSeparator();
         popupMenu.add(menuItem_edit);
+        //popupMenu.addSeparator();
         popupMenu.add(menuItem_create);
+        //popupMenu.addSeparator();
         popupMenu.add(menuItem_move);
         
        
@@ -69,24 +90,6 @@ class HypoTablePopupManager extends MouseAdapter implements ActionListener {
     }
   
     
-    // TODO: add more dialogs
-    private void initDialog() {
-        
-        relocatePanel = new HypoTableRelocateDialog();
-         
-        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //jd.add(relocatePanel);
-        //window.setSize(300, 200);
-        //frame.setVisible(true);
-        
-        //Frame owner = (Frame)table.getTopLevelAncestor();
-        //dialog = new JDialog(null, "title", false);
-        //dialog = new JOptionPane();
-        //JList list = new JList(new DefaultListModel());
-        //dialog.add(list);
-    }
-    
-    
     /*
      * right click a row for a 'popup menu'.
      */
@@ -101,12 +104,10 @@ class HypoTablePopupManager extends MouseAdapter implements ActionListener {
         int selectedRow = table.getSelectedRow();
         int selectedCol = table.getSelectedColumn();
         
-        // close the opened dialog
-        // Saiful: it should be "modal".
+        // no need to close the opened dialog, its modal
         //if(dialog.isShowing())
-            //dialog.dispose();
-        
-        
+        //dialog.dispose();
+       
         if(popupMenu.isVisible())
             popupMenu.setVisible(false);
         
@@ -140,23 +141,43 @@ class HypoTablePopupManager extends MouseAdapter implements ActionListener {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-     
-        // TODO: 
-        //showDialog();  
         
+        // Selected row values
+        int selectedRow = table.getSelectedRow();
+        int selectedColumn = table.getSelectedColumn();
+        
+        // TODO: get the selected SeiesEvent from HypoTextViewTopComponent   
+        String evid = Global.getSelectedSeisEvent().getEvid().toString();
+        String hypid = table.getValueAt(selectedRow, 9).toString();
+        String time = table.getValueAt(selectedRow, 1).toString();
+        String coord = table.getValueAt(selectedRow, 2).toString() + " " + table.getValueAt(selectedRow, 3).toString();
+        String depth = table.getValueAt(selectedRow, 4).toString();
+        // TODO: get HypocentresList from HypoTextViewTopComponent   
+        String prime = Global.getHypocentresList().getHypocentres().get(selectedRow).getIsPrime().toString();     
+        
+        // Debug 
+        //System.out.println("Selected row/col"+ " "+ selectedRow+ "  " + selectedColumn);
+        //Object selectedCellValue=table.getValueAt(selectedRow, selectedColumn);
+        //System.out.println("selectedCellValue "+" "+selectedCellValue);
+  
+        // Location of the dialog
+        // TODO: not working
+        Rectangle r = table.getCellRect(selectedRow, selectedColumn, true);
+        Point p = r.getLocation();
+
         if("Set Prime".equals(e.getActionCommand())){
             JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand());
         }
         if("Relocate..".equals(e.getActionCommand())){
-            //JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand());
-            relocatePanel.setVisible(true);
+            relocateDialog.setLocation(p.x, p.y + r.height);
+            relocateDialog.showHypoTableRelocateDialog(evid, hypid, time, coord, depth, prime);
         }
-        
         if("Depricate".equals(e.getActionCommand())){
             JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand());
         }
         if("Edit..".equals(e.getActionCommand())){
-            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand());
+            editDialog.setLocation(p);
+            editDialog.showHypoEditDialog(evid, hypid, time, coord, depth, prime);         
         }
         if("Create..".equals(e.getActionCommand())){
             JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand());
@@ -166,27 +187,6 @@ class HypoTablePopupManager extends MouseAdapter implements ActionListener {
         }
         
     }
-  
-    /*
-    private void showDialog() {
-        int row = table.getSelectedRow();
-        int col = table.getSelectedColumn();
-        Rectangle r = table.getCellRect(row, col, true);
-        Point p = r.getLocation();
-        SwingUtilities.convertPointToScreen(p, table);
-
-         
-        JList list = (JList) dialog.getContentPane().getComponent(0);
-        DefaultListModel model = (DefaultListModel) list.getModel();
-        model.removeAllElements();
-        model.addElement("You selected row " + row);
-        model.addElement("You selected column " + col);
-        dialog.pack();
-        
-
-        dialog.setLocation(p.x, p.y + r.height);
-        dialog.setVisible(true);
-    }*/
-    
+     
 }
 

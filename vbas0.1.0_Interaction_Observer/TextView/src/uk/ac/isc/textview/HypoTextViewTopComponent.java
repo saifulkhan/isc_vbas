@@ -113,7 +113,7 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         hyposTable.setColumnSelectionAllowed(false);
         hyposTable.setSelectionBackground(new Color(45,137,239));
         hyposTable.setSelectionForeground(Color.WHITE);
-        hyposTable.setRowSelectionInterval(0, 0);
+        //hyposTable.setRowSelectionInterval(0, 0);
         
         hyposTable.setRowHeight(25);
         hyposTable.setFont(new Font("Sans-serif", Font.PLAIN, 14));
