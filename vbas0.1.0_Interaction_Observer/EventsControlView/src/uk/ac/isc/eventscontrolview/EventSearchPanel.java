@@ -1,5 +1,6 @@
 package uk.ac.isc.eventscontrolview;
 
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Rectangle;
@@ -15,9 +16,8 @@ import javax.swing.JViewport;
 /**
  *
  * A search panel for searching event
- *
- * @author hui
  */
+
 public class EventSearchPanel extends JPanel {
 
     private final JLabel inputLabel;
@@ -32,11 +32,13 @@ public class EventSearchPanel extends JPanel {
     public EventSearchPanel(final EventsTable ecp) {
         this.ecp = ecp;
 
-        Font font = new Font("SansSerif", Font.PLAIN, 16);
+        Font font = new Font("Sans-serif", Font.PLAIN, 14);
         inputLabel = new JLabel("Event Number: ");
-        inputField = new JTextField("", 8);
+        inputField = new JTextField("", 10);
         searchButton = new JButton("Search");
-
+        searchButton.setBackground(new Color(45, 137, 239));
+        searchButton.setForeground(new Color(255, 255, 255));
+        
         inputLabel.setFont(font);
         inputField.setFont(font);
         searchButton.setFont(font);

@@ -1,37 +1,42 @@
 package uk.ac.isc.eventscontrolview;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
 
 /**
  * Hint: SiesData/.../EvensTable|Model.java
+ * See bitbucket commit Hui's code: 
+ * https://bitbucket.org/saifulkhan/vbas/commits/60877119fe05304042e21df0740df50531acc209
  */
-public class CommandTableModel extends AbstractTableModel {
+
+
+public class AssessedCommandTableModel extends AbstractTableModel {
 
     private final String[] columnNames = {
-        "Select", 
-        "Command ID",
-        "Analyst", 
-        "Command"};
+        "Select",
+        "Assessed Commands", 
+        "Analyst",
+        "Report"};
     
     private final Class[] columns = new Class[]{
         Boolean.class, 
-        Integer.class,
         String.class, 
-        String.class};
+        String.class, 
+        JButton.class};
     
 //private final ArrayList<SeisEvent> events;
 
     Object[][] data = {
-        {false, 1, "Smith", "Relocate ..."},
-        {true, 2, "Doe", "Edit Hypocentre ..."},
-        {false, 3, "Black", "Set Prime ..."},
-        {false, 4, "White", "Edit Phase"},
-        {false, 5, "Brown", "Other Command ..."}
+        {false, "1,2", "Smith", "file location"},
+        {false, "3", "Brown", "file location"},
+        {false, "3,4,5", "Black","file location"}
     };
     
     public final Object[] longValues = {
-        Boolean.TRUE,
-        new Integer(0),
+        Boolean.TRUE, 
         new String(new char[100]), 
         new String(new char[500])};
 
@@ -59,8 +64,27 @@ public class CommandTableModel extends AbstractTableModel {
     // overide it for setting values in each row and each column
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        // See EventTableModel
-        return data[rowIndex][columnIndex];
+        // Hint: See EventTableModel
+        
+        Object retObject = null;
+        
+        switch (columnIndex) {
+
+            case 0:
+                return data[rowIndex][columnIndex];
+            case 1:
+                return data[rowIndex][columnIndex];
+            case 2:
+                return data[rowIndex][columnIndex];
+            case 3:
+                final JButton button = new JButton();              
+                return button;
+            
+            default:    
+                return "Error";
+        }
+      
+
     }
 
     /*
@@ -70,7 +94,8 @@ public class CommandTableModel extends AbstractTableModel {
      */
     @Override
     public Class getColumnClass(int c) {
-        return getValueAt(0, c).getClass();
+        //return getValueAt(0, c).getClass();
+         return columns[c];
     }
 
     // cell is editable.

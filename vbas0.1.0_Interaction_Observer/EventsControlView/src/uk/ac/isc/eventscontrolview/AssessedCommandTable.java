@@ -6,15 +6,21 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
@@ -25,32 +31,30 @@ import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
 import uk.ac.isc.seisdata.SeisEvent;
 
-public class CommandTable extends JPanel implements SeisDataChangeListener {
+public class AssessedCommandTable extends JPanel implements SeisDataChangeListener {
 
     private JTable table = null;
-    private CommandTableModel tableModel;
-    //private JButton buttonBanish;
-    //private JButton buttonDone;
-    //private JButton buttonAssess;
-    //private JButton buttonCommit;
-
+    private AssessedCommandTableModel model;
+  
     private final CommandList commandList; 
     // used to fetch event from the EventTable / EventControlView
     private static SeisEvent currentEvent;
 
+    private ImageIcon errorIcon = (ImageIcon) UIManager.getIcon("OptionPane.errorIcon");
+    private ImageIcon infoIcon = (ImageIcon) UIManager.getIcon("OptionPane.informationIcon");
+    private ImageIcon warnIcon = (ImageIcon) UIManager.getIcon("OptionPane.warningIcon");
+    private ImageIcon questIcon = (ImageIcon) UIManager.getIcon("OptionPane.questionIcon");
+
    
-    public CommandTable() {
-      
-        //setupLayout();                  // 1 
+    public AssessedCommandTable() {
+ 
+        model = new AssessedCommandTableModel();
         table = new JTable();
-        tableModel = new CommandTableModel();
-        table.setModel(tableModel);
+        
+        table.setModel(model);
         
         setupTableVisualAttributes();   // 2
-        //initActionListeners();
-       
-        //commandList.addChangeListener(this);
-           
+                 
         System.out.println("DEBUG: " + Thread.currentThread().getStackTrace()[1].getLineNumber() + ", " + "ActionHistoryTable::ActionHistoryTable() : currentEvent = " + currentEvent);
         
         commandList = Global.getActionHistoryList();
@@ -61,6 +65,11 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
     
     
     private void setupTableVisualAttributes() {
+
+         TableCellRenderer buttonRenderer = new JTableButtonRenderer();
+         table.getColumn("Report").setCellRenderer(buttonRenderer);
+         table.addMouseListener(new JTableButtonMouseListener(table));
+
 
         JTableHeader th = table.getTableHeader();
         th.setFont(new Font("Sans-serif", Font.PLAIN, 14));
@@ -73,26 +82,24 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
         table.setSelectionBackground(new Color(45,137,239));
         table.setSelectionForeground(Color.WHITE);
         //commandTable.setRowSelectionInterval(0, 0);
-        
-        
+                
         table.setRowHeight(25);
         table.setFont(new Font("Sans-serif", Font.PLAIN, 14));
         table.setShowGrid(false);
         table.setShowVerticalLines(false);
         table.setShowHorizontalLines(false);
         
-         // Set: Left or Right aligned
+          // Set: Left or Right aligned
         DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
         DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
         leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-        
-        //table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
-        table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+       
+        table.getColumnModel().getColumn(1).setCellRenderer(leftRenderer);
         table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
-        table.getColumnModel().getColumn(3).setCellRenderer(leftRenderer);
+                     
         
         // This part of the code picks good column sizes. 
         // If all column heads are wider than the column's cells'
@@ -104,10 +111,10 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
         int cellWidth = 0;
         
         
-        Object[] longValues = tableModel.longValues;
+        Object[] longValues = model.longValues;
         TableCellRenderer headerRenderer = table.getTableHeader().getDefaultRenderer();
 
-        for (int i = 0; i < tableModel.getColumnCount(); i++) {
+        for (int i = 0; i < model.getColumnCount(); i++) {
             column = table.getColumnModel().getColumn(i);
 
             comp = headerRenderer.getTableCellRendererComponent(
@@ -115,7 +122,7 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
                                  false, false, 0, 0);
             headerWidth = comp.getPreferredSize().width;
 
-            comp = table.getDefaultRenderer(tableModel.getColumnClass(i))
+            comp = table.getDefaultRenderer(model.getColumnClass(i))
                     .getTableCellRendererComponent(table, 
                             longValues[i], false, false, 0, i);
             
@@ -129,20 +136,6 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
     public JTable getTable() {
         return this.table;
     }  
-    
-    
-    /*
-    public void initActionListeners() {
-
-        buttonAssess.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Asses: clicked!", " ", JOptionPane.WARNING_MESSAGE);
-            }
-        });
-
-    }*/
 
 
     @Override
@@ -155,4 +148,63 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
        
     }
 
+}
+
+
+
+class JTableButtonRenderer implements TableCellRenderer {
+
+    /*the three reference variables for the use of the actionlistener*/
+    //private JTable lctable = null;
+    //private int lcRow;
+    //private int lcColumn;
+    private JButton button;
+    
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        button = (JButton) value;
+        ImageIcon icon = new ImageIcon(getClass().getClassLoader()
+                .getResource("uk/ac/isc/eventscontrolview/pdf-icon.png"));
+        // Resize the image
+        Image img = icon.getImage() ;  
+        Image newimg = img.getScaledInstance(20, 20,  java.awt.Image.SCALE_SMOOTH) ;  
+        icon = new ImageIcon(newimg);
+        
+        button.setIcon(icon);
+        
+        //this.lctable = table;
+        //this.lcRow = row;
+        //this.lcColumn = column;
+        
+        return button;
+    }
+    
+}
+
+
+
+class JTableButtonMouseListener extends MouseAdapter {
+
+    private final JTable table;
+    
+    public JTableButtonMouseListener(JTable phasesTable) {
+        this.table = phasesTable;
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        int column = table.getColumnModel().getColumnIndexAtX(e.getX());
+        int row    = e.getY()/table.getRowHeight(); 
+        
+        if(column == 0)
+        {
+            Object value = table.getValueAt(row,column);
+            if (value instanceof JButton) {
+                /**Here is the code for popup a dialog to edit the phase reading*/
+                //((JButton)value).doClick(); 
+                System.out.println("JTableButtonMouseListener: Mouse Clicked." + this.table.getValueAt(row, 2));
+            }
+        }
+    }
+    
 }

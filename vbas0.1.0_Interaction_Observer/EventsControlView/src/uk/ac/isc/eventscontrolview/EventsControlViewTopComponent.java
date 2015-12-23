@@ -3,7 +3,9 @@ package uk.ac.isc.eventscontrolview;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import javax.swing.BoxLayout;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -41,10 +43,12 @@ import org.openide.windows.TopComponent;
 
 public final class EventsControlViewTopComponent extends TopComponent {
 
-    EventsTable eventsTable;         // Event Table
-    EventSearchPanel eventsSearchPanel;     // Search Panel
-    CommandTable commandTable;  // Action Hostory Table
-
+    EventSearchPanel eventsSearchPanel;         // Search Panel
+    EventsTable eventsTable;                    // Event Table
+    CommandTable commandTable;                  // Action Hostory Table
+    AssessedCommandTable assessedCommandTable;
+    ActionPanel actionPanel;
+    
     public EventsControlViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_EventsControlViewTopComponent());
@@ -52,137 +56,46 @@ public final class EventsControlViewTopComponent extends TopComponent {
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
 
-        eventsTable = new EventsTable();
-        eventsSearchPanel = new EventSearchPanel(eventsTable);
-        commandTable = new CommandTable();
-
-        JScrollPane scrollPane = new JScrollPane(eventsTable.getTable());
         
-        /*
+        eventsSearchPanel = new EventSearchPanel(eventsTable);
+        eventsTable = new EventsTable();
+        commandTable = new CommandTable();
+        assessedCommandTable = new AssessedCommandTable();
+        actionPanel = new ActionPanel(assessedCommandTable);
+        
+        JScrollPane spEventsTable = new JScrollPane(eventsTable.getTable());
+        JScrollPane spCommandTable = new JScrollPane(commandTable.getTable());
+        JScrollPane spAssesedCommandTable = new JScrollPane(assessedCommandTable.getTable());
+        
+        
         this.setLayout(new BorderLayout());
         this.add(eventsSearchPanel, BorderLayout.PAGE_START);
-        this.add(scrollPane, BorderLayout.CENTER);
-        this.add(commandTable, BorderLayout.PAGE_END);
-        */
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        this.add(eventsSearchPanel);
-        this.add(scrollPane);
-        this.add(commandTable);    
+        this.add(actionPanel, BorderLayout.PAGE_END);
+
+        //this.add(spEventsTable, BorderLayout.CENTER);
+        //this.add(spCommandTable, BorderLayout.CENTER);
+        //this.add(spAssesedCommandTable, BorderLayout.CENTER);
         
         
-        ////////////////////////////////////////////
+        ////////
         
-    // Variables declaration - do not modify                     
-    javax.swing.JButton button_cancel;
-    javax.swing.JButton button_ok;
-    javax.swing.JPanel jPanel1;
-    javax.swing.JPanel jPanel2;
-    javax.swing.JPanel jPanel3;
-    // End of variables declaration   
+        JSplitPane split;
         
-        button_ok = new javax.swing.JButton();
-        button_cancel = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
-        jPanel1 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
+        JSplitPane spLeft = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spEventsTable, null);
+        spLeft.setDividerSize(4);
+        spLeft.setContinuousLayout(true);
 
-        button_ok.setBackground(new java.awt.Color(45, 137, 239));
-        button_ok.setForeground(new java.awt.Color(255, 255, 255));
-        button_ok.setText("OK");
-        button_ok.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                //button_okActionPerformed(evt);
-            }
-        });
+        JSplitPane spRight = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spCommandTable, spAssesedCommandTable);
+        spRight.setDividerSize(4);
+        spRight.setContinuousLayout(true);
 
-        button_cancel.setBackground(new java.awt.Color(45, 137, 239));
-        button_cancel.setForeground(new java.awt.Color(255, 255, 255));
-        button_cancel.setText("Cancel");
-        button_cancel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                //button_cancelActionPerformed(evt);
-            }
-        });
+        split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spLeft, spRight);
+        split.setContinuousLayout(false);
+        split.setOneTouchExpandable(true);
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Original Value"));
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 144, Short.MAX_VALUE)
-        );
-
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Edit"));
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 462, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 63, Short.MAX_VALUE)
-        );
-
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Reason"));
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 462, Short.MAX_VALUE)
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 64, Short.MAX_VALUE)
-        );
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(button_ok, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(button_cancel))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(button_ok)
-                    .addComponent(button_cancel))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
+        this.add(split, BorderLayout.CENTER);
         
         
-        
-        
-        
-        
-        ///////////////////////////////////////////
         
         
         
