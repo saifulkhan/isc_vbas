@@ -12,10 +12,11 @@ import java.util.TreeMap;
 public class Global {
     
     // Selected Seies Event
-    private static SeisEvent seisEvent = new SeisEvent();
+    private static SeisEvent selectedSeisEvent = new SeisEvent();
     // Selected Hypocentre
-    
+    private static Hypocentre selectedHypocentre = new Hypocentre();
     // Selected Phase
+    private static Phase selectedPhase = new Phase();
     
     private static HypocentresList hypocentresList = new HypocentresList();
     private static PhasesList phasesList = new PhasesList(); 
@@ -26,12 +27,21 @@ public class Global {
     public static SeisEvent getSelectedSeisEvent() {
        
         // needed when the hypocentre & phase table loads for the first time.
-        if (seisEvent.getEvid() == 0) {
+        if (selectedSeisEvent.getEvid() == 0) {
             SeisEventsList eventsList = new SeisEventsList();
             SeisDataDAO.retrieveAllEvents(eventsList.getEvents());
-            seisEvent.setValues(eventsList.getEvents().get(0));
+            selectedSeisEvent.setValues(eventsList.getEvents().get(0));
         }
-        return seisEvent;
+        return selectedSeisEvent;
+    }
+
+    public static Hypocentre getSelectedHypocentre() {
+        return selectedHypocentre;
+    }
+  
+    
+    public static Phase getSelectedPhase() {
+        return selectedPhase;
     }
                 
     public static CommandList getCommandList() {
@@ -50,6 +60,7 @@ public class Global {
         return assessedCommandList;
     }
     
+    
     public static String debugAt() {
         // Debug
         String fullClassName = Thread.currentThread().getStackTrace()[2].getClassName();
@@ -59,5 +70,8 @@ public class Global {
         return "Debug At-->> " + lineNumber + ":" + className + "." + methodName + "()-->> ";
         // Debug
     }
+
+  
+    
        
 }

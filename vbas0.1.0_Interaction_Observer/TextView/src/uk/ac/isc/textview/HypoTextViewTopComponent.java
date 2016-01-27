@@ -76,20 +76,20 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
     private JTable table = null;
     private JScrollPane scrollPane = null;
 
-    private static SeisEvent seisEvent = Global.getSelectedSeisEvent();
+    private static final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
     private final HypocentresList hypocentresList = Global.getHypocentresList();
-
+    private static final Hypocentre selectedHypocentre = Global.getSelectedHypocentre();
     private final HypoTablePopupManager htPopupManager;
     
-    ListSelectionListener  lsl = null;
-
+    private ListSelectionListener  lsl = null;
+    
               
     public HypoTextViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_HypoTextViewTopComponent());
         setToolTipText(Bundle.HINT_HypoTextViewTopComponent());
 
-        seisEvent.addChangeListener(this);
+        selectedSeisEvent.addChangeListener(this);
 
         lsl= new ListSelectionListener() {
             @Override
@@ -134,11 +134,11 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
 
         int selectedRowNum = table.getSelectedRow();
         System.out.println(Global.debugAt() + " selectedRowNum= " + selectedRowNum);
-        int selectedHypocentre = (Integer) table.getValueAt(selectedRowNum, 9); // get selected hypo id.
-        //seisEvent.setValues(eventsList.getEvents().get(selectedRowNum));   
+        int hypocentre = (Integer) table.getValueAt(selectedRowNum, 9); // get selected hypo id.
+        selectedHypocentre.setValues(hypocentresList.getHypocentres().get(selectedRowNum));   
 
-        System.out.println("Selected Hypocentre= " + selectedHypocentre + ". Fire an event.");
-        //seisEvent.fireSeisDataChanged();
+        System.out.println("Selected Hypocentre= " + hypocentre + ". Fire an event.");
+        selectedHypocentre.fireSeisDataChanged();
     }
     
     
@@ -189,7 +189,8 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
         System.out.println(Global.debugAt() + " Event received from " + event.getData().getClass().getName());
-        
+        // Types of event: Selected Event, Selected Hypocentre (?).
+                
         updateSeisData();
         
         table.clearSelection();
@@ -207,14 +208,13 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
     public void updateSeisData() {
         System.out.println(Global.debugAt());
         
-        seisEvent = Global.getSelectedSeisEvent();
-        SeisDataDAO.retrieveHypos(seisEvent.getEvid(), hypocentresList.getHypocentres());
+        SeisDataDAO.retrieveHypos(selectedSeisEvent.getEvid(), hypocentresList.getHypocentres());
         SeisDataDAO.retrieveHyposMagnitude(hypocentresList.getHypocentres());
         // as I remove all the hypos when clicking an event to retrieve the hypos, so need reset prime hypo every time
         // TODO: Saiful, What is this?
         for (Hypocentre hypo : hypocentresList.getHypocentres()) {
             if (hypo.getIsPrime() == true) {
-                seisEvent.setPrimeHypo(hypo);
+                selectedSeisEvent.setPrimeHypo(hypo);
             }
         }
         
@@ -254,14 +254,14 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
     private void setHeaderText() {
         // The hypocentre table header: shows overall information
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        headerString = seisEvent.getLocation()
+        headerString = selectedSeisEvent.getLocation()
                 + "  "
-                + dateFormat.format(seisEvent.getPrimeHypo().getOrigTime())
+                + dateFormat.format(selectedSeisEvent.getPrimeHypo().getOrigTime())
                 + "\n "
                 + "Default Grid Depth: ";
 
-        if (SeisDataDAO.retrieveDefaultGridDepth(seisEvent.getPrimeHypo().getHypid()) != null) {
-            headerString += SeisDataDAO.retrieveDefaultGridDepth(seisEvent.getPrimeHypo().getHypid()).toString();
+        if (SeisDataDAO.retrieveDefaultGridDepth(selectedSeisEvent.getPrimeHypo().getHypid()) != null) {
+            headerString += SeisDataDAO.retrieveDefaultGridDepth(selectedSeisEvent.getPrimeHypo().getHypid()).toString();
         } else {
             headerString += "N/A";
         }

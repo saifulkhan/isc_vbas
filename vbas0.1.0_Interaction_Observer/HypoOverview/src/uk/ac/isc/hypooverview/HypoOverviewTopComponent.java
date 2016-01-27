@@ -47,14 +47,14 @@ import uk.ac.isc.seisdata.SeisEvent;
 })
 public final class HypoOverviewTopComponent extends TopComponent implements SeisDataChangeListener {
 
-    private final HypocentresList hypocentresList; 
-    private static SeisEvent seisEvent = Global.getSelectedSeisEvent();  // to receive events
-    
+    private final HypocentresList hypocentresList;
+    private static final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();       // to receive events
+    private static final Hypocentre selectedHypocentre = Global.getSelectedHypocentre();    // to receive events
+
     private final JScrollPane scrollPane;
     private final HypoOverviewPanel2 hop;           // the main view
     private final OverviewControlPanel3 ocp;        // the control panel
 
-    
     public HypoOverviewTopComponent() {
         initComponents();
         setName(Bundle.CTL_HypoOverviewTopComponent());
@@ -63,46 +63,56 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
 
         //hypocentresList = ((EventsControlViewTopComponent) tc).getControlPanel().getHyposList();
         hypocentresList = Global.getHypocentresList();
-        seisEvent.addChangeListener(this);
-        
-        
-        //hop = new HypoOverviewPanel(hypocentresList);
+
+        selectedSeisEvent.addChangeListener(this);
+        selectedHypocentre.addChangeListener(this);
+
         hop = new HypoOverviewPanel2(hypocentresList);
-
         scrollPane = new JScrollPane(hop);
-
-        //ocp = new OverviewControlPanel(hop);       
         ocp = new OverviewControlPanel3(hop);
 
         this.setLayout(new BorderLayout());
         this.add(ocp, BorderLayout.NORTH);
         this.add(scrollPane, BorderLayout.CENTER);
     }
-    
+
     // repaint when the data changes
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
 
-        System.out.println(Global.debugAt() + " Event received from " + event.getData().getClass().getName());
+        String eventName = event.getData().getClass().getName();
+
+        System.out.println(Global.debugAt() + " Event received from " + eventName);
         
-        for (Hypocentre hypo : hypocentresList.getHypocentres()) {
-            if (hypo.getIsPrime() == true) {
-                hop.setCentLatLon(hypo.getLat(), hypo.getLon());
-                hop.setCentDepth(hypo.getDepth());
-                hop.loadSeisData(hypo.getLat(), hypo.getLon(), hop.getRangeDelta());
-            }
+        
+        switch (eventName) {
+            case "uk.ac.isc.seisdata.SeisEvent":
+                
+                SeisEvent seisEvent= (SeisEvent) event.getData();
+                
+                System.out.println(Global.debugAt() + " SeisEvent= " + selectedSeisEvent.getEvid());
+                
+                for (Hypocentre hypo : hypocentresList.getHypocentres()) {
+                    if (hypo.getIsPrime() == true) {
+                        hop.setCentLatLon(hypo.getLat(), hypo.getLon());
+                        hop.setCentDepth(hypo.getDepth());
+                        hop.loadSeisData(hypo.getLat(), hypo.getLon(), hop.getRangeDelta());
+                    }
+                }   //hop.setHypoVisOptions(2);
+                //hop.setDepthBandOrder(4);
+                //hop.repaint();
+                ocp.resetToDefault();
+                ocp.repaint();
+                scrollPane.setViewportView(hop);
+                break;
+                
+            case "uk.ac.isc.seisdata.Hypocentre":
+                Hypocentre hypocentre= (Hypocentre) event.getData();
+                System.out.println(Global.debugAt() + " Hypocentre= " + selectedHypocentre.getHypid());
+                break;
         }
 
-        //hop.setHypoVisOptions(2);
-        //hop.setDepthBandOrder(4);
-        ocp.resetToDefault();
-
-        //hop.repaint();
-        ocp.repaint();
-
-        scrollPane.setViewportView(hop);
     }
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -148,5 +158,5 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
         String version = p.getProperty("version");
         // TODO read your settings according to their version
     }
-    
+
 }
