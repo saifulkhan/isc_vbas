@@ -20,12 +20,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
 import uk.ac.isc.seisdata.Command;
+import uk.ac.isc.seisdata.CommandList;
 import uk.ac.isc.seisdata.Global;
 
 
 public class HypoTableRelocateDialog extends JDialog {
 
-    private final Command command;
+    private final CommandList commandList;
     
     private JButton button_ok;
     private JButton button_cancel;
@@ -58,7 +59,7 @@ public class HypoTableRelocateDialog extends JDialog {
     
     
     public HypoTableRelocateDialog() {
-            command = Global.getCommand();  
+            commandList = Global.getCommandList();  
             
             setTitle("Relocate");
             setModal(true);
@@ -361,18 +362,14 @@ public class HypoTableRelocateDialog extends JDialog {
 
   
     private void button_okActionPerformed(java.awt.event.ActionEvent evt) {                                         
-
         if (this.formattedTextFieldDepth.getText().equals(" ") && this.radio_fix.isSelected()) {
             JOptionPane.showMessageDialog(null, "Enter Depth.");
         }
 
-        //double area, perimeter, length, width;
-        //length = Double.parseDouble(this.jTextFieldLength.getText());
-        //this.jTextFieldArea.setText(String.format("%f", length));          
-        command.setCmdName("New Command from the Relocate Event Dialog...");
-        Global.setCommand(command);
-        command.fireSeisDataChanged();
-        System.out.println("Fired: New Command from the Relocate Event Dialog...");
+        
+        
+        commandList.fireSeisDataChanged();  // Notify the Command table to update from the database.
+        System.out.println("Fired: New Command from the 'Relocate Event' dialog...");
         this.dispose();
     }                        
 

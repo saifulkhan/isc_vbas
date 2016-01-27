@@ -11,7 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import org.junit.Assert;
 import org.junit.Test;
-import uk.ac.isc.hypooverview.HypoOverviewPanel;
+import uk.ac.isc.hypooverview.HypoOverviewPanel2;
 import uk.ac.isc.hypooverview.HypoOverviewPanel2;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
@@ -21,7 +21,7 @@ public class HypoOverViewTest {
 
     JFrame frame;
     HypocentresList hypoList = new HypocentresList();
-    HypoOverviewPanel hp;
+    HypoOverviewPanel2 hp;
     HypoOverviewPanel2 hp2;
 
     public HypoOverViewTest() {

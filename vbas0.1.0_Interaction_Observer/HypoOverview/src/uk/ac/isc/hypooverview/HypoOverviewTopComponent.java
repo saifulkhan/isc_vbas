@@ -19,6 +19,7 @@ import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
+import uk.ac.isc.seisdata.SeisEvent;
 
 /**
  * Top component which displays seismicity map and hypocentre position.
@@ -46,22 +47,14 @@ import uk.ac.isc.seisdata.SeisDataChangeListener;
 })
 public final class HypoOverviewTopComponent extends TopComponent implements SeisDataChangeListener {
 
-    //keep the hypo list
-    private final HypocentresList hypocentresList;
-
+    private final HypocentresList hypocentresList; 
+    private static SeisEvent seisEvent = Global.getSelectedSeisEvent();  // to receive events
+    
     private final JScrollPane scrollPane;
+    private final HypoOverviewPanel2 hop;           // the main view
+    private final OverviewControlPanel3 ocp;        // the control panel
 
-    //private final HypoOverviewPanel hop;
-    //the main view
-    private final HypoOverviewPanel2 hop;
-
-    //the control panel
-    //private final OverviewControlPanel ocp;
-    private final OverviewControlPanel3 ocp;
-
-    //get control window to retrieve data
-    private final TopComponent tc = WindowManager.getDefault().findTopComponent("EventsControlViewTopComponent");
-
+    
     public HypoOverviewTopComponent() {
         initComponents();
         setName(Bundle.CTL_HypoOverviewTopComponent());
@@ -70,6 +63,7 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
 
         //hypocentresList = ((EventsControlViewTopComponent) tc).getControlPanel().getHyposList();
         hypocentresList = Global.getHypocentresList();
+        seisEvent.addChangeListener(this);
         
         
         //hop = new HypoOverviewPanel(hypocentresList);
@@ -84,6 +78,31 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
         this.add(ocp, BorderLayout.NORTH);
         this.add(scrollPane, BorderLayout.CENTER);
     }
+    
+    // repaint when the data changes
+    @Override
+    public void SeisDataChanged(SeisDataChangeEvent event) {
+
+        System.out.println(Global.debugAt() + " Event received from " + event.getData().getClass().getName());
+        
+        for (Hypocentre hypo : hypocentresList.getHypocentres()) {
+            if (hypo.getIsPrime() == true) {
+                hop.setCentLatLon(hypo.getLat(), hypo.getLon());
+                hop.setCentDepth(hypo.getDepth());
+                hop.loadSeisData(hypo.getLat(), hypo.getLon(), hop.getRangeDelta());
+            }
+        }
+
+        //hop.setHypoVisOptions(2);
+        //hop.setDepthBandOrder(4);
+        ocp.resetToDefault();
+
+        //hop.repaint();
+        ocp.repaint();
+
+        scrollPane.setViewportView(hop);
+    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -110,13 +129,12 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
     @Override
     public void componentOpened() {
         // TODO add custom code on component opening
-        hypocentresList.addChangeListener(this);
     }
 
     @Override
     public void componentClosed() {
         // TODO add custom code on component closing
-        hypocentresList.removeChangeListener(this);
+        // hypocentresList.removeChangeListener(this);
     }
 
     void writeProperties(java.util.Properties p) {
@@ -130,34 +148,5 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
         String version = p.getProperty("version");
         // TODO read your settings according to their version
     }
-
-    //repaint when the data changes
-    @Override
-    public void SeisDataChanged(SeisDataChangeEvent event) {
-
-        //if(ocp.getReverseChecked())
-        //{
-        //    ocp.setDepthCutoff(0);
-        //}
-        //else
-        //{
-        //    ocp.setDepthCutoff(8);
-        //}
-        for (Hypocentre hypo : hypocentresList.getHypocentres()) {
-            if (hypo.getIsPrime() == true) {
-                hop.setCentLatLon(hypo.getLat(), hypo.getLon());
-                hop.setCentDepth(hypo.getDepth());
-                hop.loadSeisData(hypo.getLat(), hypo.getLon(), hop.getRangeDelta());
-            }
-        }
-
-        //hop.setHypoVisOptions(2);
-        //hop.setDepthBandOrder(4);
-        ocp.resetToDefault();
-
-        //hop.repaint();
-        ocp.repaint();
-
-        scrollPane.setViewportView(hop);
-    }
+    
 }

@@ -9,35 +9,35 @@ package uk.ac.isc.seisdata;
  */
 public class SeisEvent extends AbstractSeisData {
 
-    //event id
-    private Integer evid;
-
-    //reference of prime hypocentre
-    private Hypocentre primeHypo;
-
-    //phse number associated with this event
-    private Integer phaseNumber;
-
-    //a reference magnitude    
-    private Double magnitude;
-
-    //the region name
-    private String location;
-
-    //these two ref, please ask James
-    private Integer grn;
-
+    private Integer evid;           //event id
+    private Hypocentre primeHypo;   //reference of prime hypocentre
+    private Integer phaseNumber;    //phse number associated with this event
+    private Double magnitude;       //a reference magnitude    
+    private String location;        //the region name
+    private Integer grn;            //these two ref, please ask James
     private Integer srn;
+    private Integer defaultDepth;   //default Depth of the event
 
-    //default Depth of the event
-    private Integer defaultDepth;
+    public SeisEvent() {
+        this.evid = 0;
+    }
 
- 
     public SeisEvent(Integer evid) {
         this.evid = evid;
         this.phaseNumber = 0;
     }
 
+    public void setValues(SeisEvent another) {
+        this.evid = another.evid;
+        this.primeHypo = another.primeHypo;
+        this.phaseNumber = another.defaultDepth;
+        this.magnitude = another.magnitude;
+        this.location = another.location;
+        this.grn = another.defaultDepth;
+        this.srn = another.defaultDepth;
+        this.defaultDepth = another.defaultDepth;
+    }
+    
     public void setEvid(Integer evid) {
         this.evid = evid;
     }

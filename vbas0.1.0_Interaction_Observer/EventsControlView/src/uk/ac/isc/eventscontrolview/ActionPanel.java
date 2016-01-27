@@ -3,21 +3,14 @@ package uk.ac.isc.eventscontrolview;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JViewport;
 
 /**
- *
- *Hint: see the search panel
- * 
+ * The buttons: Asses, Commit, ... 
+ * Hint: see the search panel
  */
+
 public class ActionPanel extends JPanel {
 
     private final JButton button_banish;

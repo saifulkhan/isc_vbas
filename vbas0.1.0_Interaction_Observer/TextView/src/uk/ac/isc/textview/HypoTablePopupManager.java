@@ -3,37 +3,94 @@ package uk.ac.isc.textview;
 
  
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
-import javax.swing.SwingUtilities;
 import uk.ac.isc.seisdata.Global;
 
  
-class HypoTablePopupManager extends MouseAdapter implements ActionListener {
+class HypoTablePopupManager implements ActionListener {
     
     JTable table;
     JPopupMenu popupMenu;
+
     HypoTableRelocateDialog relocateDialog;
     HypoEditDialog editDialog;
     
   
-    public HypoTablePopupManager(JTable table) {
-        this.table = table;
-        this.table.addMouseListener(this);
+    public HypoTablePopupManager(JTable hypoTable) {
+        table = hypoTable;
+        //table.addMouseListener(this);
+                
         setPopupMenuVisualAttributes();
         
         relocateDialog = new HypoTableRelocateDialog();
         editDialog = new HypoEditDialog();
+    }
+
+    
+    public JPopupMenu getPopupMenu() {
+        return popupMenu;
+    }
+
+    
+    /*
+     * Menu item selected.
+     */
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        System.out.println(Global.debugAt());
+        
+        // Selected row values
+        int selectedRow = table.getSelectedRow();
+        int selectedColumn = table.getSelectedColumn();
+        
+        // TODO: get the selected SeiesEvent from HypoTextViewTopComponent   
+        String evid = Global.getSelectedSeisEvent().getEvid().toString();
+        String hypid = table.getValueAt(selectedRow, 9).toString();
+        String time = table.getValueAt(selectedRow, 1).toString();
+        String coord = table.getValueAt(selectedRow, 2).toString() + " " + table.getValueAt(selectedRow, 3).toString();
+        String depth = table.getValueAt(selectedRow, 4).toString();
+        // TODO: get HypocentresList from HypoTextViewTopComponent   
+        String prime = Global.getHypocentresList().getHypocentres().get(selectedRow).getIsPrime().toString();     
+        
+        // Debug 
+        //System.out.println("Selected row/col"+ " "+ selectedRow+ "  " + selectedColumn);
+        //Object selectedCellValue=table.getValueAt(selectedRow, selectedColumn);
+        //System.out.println("selectedCellValue "+" "+selectedCellValue);
+  
+        // Location of the dialog
+        // TODO: not working
+        Rectangle r = table.getCellRect(selectedRow, selectedColumn, true);
+        Point p = r.getLocation();
+
+        if("Set Prime".equals(e.getActionCommand())){
+            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand());
+        }
+        if("Relocate..".equals(e.getActionCommand())){
+            relocateDialog.setLocation(p.x, p.y + r.height);
+            relocateDialog.showHypoTableRelocateDialog(evid, hypid, time, coord, depth, prime);
+        }
+        if("Depricate".equals(e.getActionCommand())){
+            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand());
+        }
+        if("Edit..".equals(e.getActionCommand())){
+            editDialog.setLocation(p);
+            editDialog.showHypoEditDialog(evid, hypid, time, coord, depth, prime);         
+        }
+        if("Create..".equals(e.getActionCommand())){
+            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand());
+        }
+        if("Move..".equals(e.getActionCommand())){
+            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand());
+        }
+        
     }
     
     
@@ -88,105 +145,7 @@ class HypoTablePopupManager extends MouseAdapter implements ActionListener {
         // this will enable selection of all columns
         this.table.setComponentPopupMenu(popupMenu); 
     }
-  
-    
-    /*
-     * right click a row for a 'popup menu'.
-     */
-    
-    @Override
-    public void mousePressed(MouseEvent e) {
-        System.out.println("Mouse Pressed.");
-        
-        Point p = e.getPoint();
-        final int row = table.rowAtPoint(p);
-        final int col = table.columnAtPoint(p);
-        int selectedRow = table.getSelectedRow();
-        int selectedCol = table.getSelectedColumn();
-        
-        // no need to close the opened dialog, its modal
-        //if(dialog.isShowing())
-        //dialog.dispose();
-       
-        if(popupMenu.isVisible())
-            popupMenu.setVisible(false);
-        
-        // Update the current selection for correct popupMenu behavior
-        // in case a new selection is made with the right mouse button.
-        if(row != selectedRow || col != selectedCol) {
-            EventQueue.invokeLater(new Runnable() {
-                
-                @Override
-                public void run() {
-                    table.changeSelection(row, col, true, false);
-                }
-            });
-        }
-        
-        // Specify the condition(s) you want for popupMenu display.
-        // For Example: show popupMenu only for view column index 1.
-        if(row != -1 && col == 1) {
-            if(SwingUtilities.isRightMouseButton(e)) {
-                Rectangle r = table.getCellRect(row, col, false);
-                popupMenu.show(table, r.x, r.y+r.height);
-            } else {
-                e.consume();
-            }
-        }
-    }
-    
-    
-    /*
-     * Menu item selected.
-     */
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        
-        // Selected row values
-        int selectedRow = table.getSelectedRow();
-        int selectedColumn = table.getSelectedColumn();
-        
-        // TODO: get the selected SeiesEvent from HypoTextViewTopComponent   
-        String evid = Global.getSelectedSeisEvent().getEvid().toString();
-        String hypid = table.getValueAt(selectedRow, 9).toString();
-        String time = table.getValueAt(selectedRow, 1).toString();
-        String coord = table.getValueAt(selectedRow, 2).toString() + " " + table.getValueAt(selectedRow, 3).toString();
-        String depth = table.getValueAt(selectedRow, 4).toString();
-        // TODO: get HypocentresList from HypoTextViewTopComponent   
-        String prime = Global.getHypocentresList().getHypocentres().get(selectedRow).getIsPrime().toString();     
-        
-        // Debug 
-        //System.out.println("Selected row/col"+ " "+ selectedRow+ "  " + selectedColumn);
-        //Object selectedCellValue=table.getValueAt(selectedRow, selectedColumn);
-        //System.out.println("selectedCellValue "+" "+selectedCellValue);
-  
-        // Location of the dialog
-        // TODO: not working
-        Rectangle r = table.getCellRect(selectedRow, selectedColumn, true);
-        Point p = r.getLocation();
-
-        if("Set Prime".equals(e.getActionCommand())){
-            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand());
-        }
-        if("Relocate..".equals(e.getActionCommand())){
-            relocateDialog.setLocation(p.x, p.y + r.height);
-            relocateDialog.showHypoTableRelocateDialog(evid, hypid, time, coord, depth, prime);
-        }
-        if("Depricate".equals(e.getActionCommand())){
-            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand());
-        }
-        if("Edit..".equals(e.getActionCommand())){
-            editDialog.setLocation(p);
-            editDialog.showHypoEditDialog(evid, hypid, time, coord, depth, prime);         
-        }
-        if("Create..".equals(e.getActionCommand())){
-            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand());
-        }
-        if("Move..".equals(e.getActionCommand())){
-            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand());
-        }
-        
-    }
      
+        
 }
 

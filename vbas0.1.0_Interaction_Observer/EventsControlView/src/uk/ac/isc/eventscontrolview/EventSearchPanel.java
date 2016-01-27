@@ -10,6 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JViewport;
 
@@ -25,12 +26,12 @@ public class EventSearchPanel extends JPanel {
     private final JButton searchButton;
 
     //reference of the control view
-    private final EventsTable ecp;
+    private final JTable table;
 
     private boolean searchFlag = false;
 
-    public EventSearchPanel(final EventsTable ecp) {
-        this.ecp = ecp;
+    public EventSearchPanel(final EventsTable eventsTable) {
+        this.table = eventsTable.getTable();
 
         Font font = new Font("Sans-serif", Font.PLAIN, 14);
         inputLabel = new JLabel("Event Number: ");
@@ -52,21 +53,25 @@ public class EventSearchPanel extends JPanel {
                 try {
                     evid = Integer.valueOf(evidString);
                 } catch (NumberFormatException nfe) {
-                    JOptionPane.showMessageDialog(null, "The input Evid should be an integer value", "Search Error", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null, 
+                            "The input Evid should be an integer value", 
+                            "Search Error", 
+                            JOptionPane.WARNING_MESSAGE);
                 }
 
                 if (evid != null) {
                     searchFlag = false;
-                    for (int row = 0; row < ecp.getTable().getRowCount(); row++) {
-                        Integer searchedEv = (Integer) ecp.getTable().getValueAt(row, 0);
+                    
+                    for (int row = 0; row < table.getRowCount(); row++) {
+                        Integer searchedEv = (Integer) table.getValueAt(row, 0);
                         if (evid.equals(searchedEv)) {
-                            ecp.getTable().getSelectionModel().setSelectionInterval(row, row);
+                            table.getSelectionModel().setSelectionInterval(row, row);
 
                             //scroll to the selection
-                            JViewport viewport = (JViewport) ecp.getTable().getParent();
-                            Rectangle rect = ecp.getTable().getCellRect(ecp.getTable().getSelectedRow(), 0, true);
+                            JViewport viewport = (JViewport) table.getParent();
+                            Rectangle rect = table.getCellRect(table.getSelectedRow(), 0, true);
                             Rectangle r2 = viewport.getVisibleRect();
-                            ecp.getTable().scrollRectToVisible(new Rectangle(rect.x, rect.y, (int) r2.getWidth(), (int) r2.getHeight()));
+                            table.scrollRectToVisible(new Rectangle(rect.x, rect.y, (int) r2.getWidth(), (int) r2.getHeight()));
                             searchFlag = true;
                             break;
                         }
@@ -74,7 +79,10 @@ public class EventSearchPanel extends JPanel {
                 }
 
                 if (evid != null && searchFlag == false) {
-                    JOptionPane.showMessageDialog(null, "Cannot find the input Evid, Please check the input!", "Search Error", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null, 
+                            "Cannot find the input Evid, Please check the input!", 
+                            "Search Warning", 
+                            JOptionPane.WARNING_MESSAGE);
                 }
             }
         });

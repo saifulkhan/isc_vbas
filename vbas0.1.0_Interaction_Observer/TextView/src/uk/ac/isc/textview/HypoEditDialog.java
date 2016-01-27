@@ -14,13 +14,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
-import uk.ac.isc.seisdata.Command;
+import uk.ac.isc.seisdata.CommandList;
 import uk.ac.isc.seisdata.Global;
 
  
 public class HypoEditDialog extends JDialog {
    
-    private final Command command;
+    private final CommandList commandList;
            
     private JButton button_cancel;
     private JButton button_ok;
@@ -52,7 +52,7 @@ public class HypoEditDialog extends JDialog {
     private JTextField text_time;
     
     public HypoEditDialog() {
-        command = Global.getCommand();  
+        commandList = Global.getCommandList();  
             
             setTitle("Edit Hypocentre");
             setModal(true);

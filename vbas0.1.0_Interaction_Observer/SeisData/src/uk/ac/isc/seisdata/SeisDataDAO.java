@@ -18,18 +18,26 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+
 
 /**
  * This is the database access object which provides functions to read and write
  * ISC database
- *
- * @author hui
  */
+
+
 public final class SeisDataDAO {
 
-    /**
-     * Loading user name, password and scheme from system environment
-     */
+    private static final Logger logger = Logger.getLogger(SeisDataDAO.class.getName());
+        
+    // Loading user name, password and scheme from system environment
+    private static final String url;
+    private static final String user;
+    private static final String password;
+
     static {
         String osName = System.getProperty("os.name");
         if(osName.equals("Linux")) {
@@ -47,10 +55,6 @@ public final class SeisDataDAO {
         System.out.println(osName);
     }
 
-    private static final String url; //= "jdbc:postgresql://192.168.37.91:5432/isc";      
-    //private static final String url = "jdbc:postgresql://127.0.0.1:5432/isc"; 
-    private static final String user; //= "hui";
-    private static final String password; //= "njustga"; 
 
     private SeisDataDAO() {
     }
@@ -2311,7 +2315,24 @@ public final class SeisDataDAO {
             }
 
         } catch (SQLException ex) {
+            
+            StackTraceElement stack = Thread.currentThread().getStackTrace()[1];
+            String message = stack.getFileName() + ": " +
+                stack.getLineNumber() + ": " + 
+                stack.getClassName() + ": " +
+                stack.getMethodName();
+        
+            JOptionPane.showMessageDialog(null, 
+                    ex.toString() + 
+                            message +
+                            "\n Failed to load task block list from database." +
+                            "\n See the error log file for more information. ", 
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            logger.log(Level.SEVERE, "Failed to load task block list from database." + "\n In {0}", message);
+            
             return false;
+            
         } finally {
             try {
                 if (rs != null) {
@@ -2369,6 +2390,21 @@ public final class SeisDataDAO {
             }
 
         } catch (SQLException ex) {
+            StackTraceElement stack = Thread.currentThread().getStackTrace()[1];
+            String message = stack.getFileName() + ": " +
+                stack.getLineNumber() + ": " + 
+                stack.getClassName() + ": " +
+                stack.getMethodName();
+        
+            JOptionPane.showMessageDialog(null, 
+                    ex.toString() + 
+                            message +
+                            "\n Failed to load task block list from database." +
+                            "\n See the error log file for more information. ", 
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            logger.log(Level.SEVERE, "Failed to load task block list from database." +  "\n In {0}", message);
+            
             return false;
         } finally {
             try {
@@ -2518,37 +2554,57 @@ public final class SeisDataDAO {
         return true;
     }
 
+    
     /*
-     * Retrieve all the action histories .
-     * Check SeisDataDAO.retrieveHypos()
+     * Retrieve all Command history.
      */
-    public static boolean retrieveActionHistory(Integer evid, ArrayList<Command> actionHistoryList) {
+    public static boolean readCommands(Integer evid, ArrayList<Command> commandList) {
 
         Connection con = null;
         Statement st = null;
         ResultSet rs = null;
 
-        actionHistoryList.clear();
+        commandList.clear();
 
         try {
             con = DriverManager.getConnection(url, user, password);
             st = con.createStatement();
 
-            // TODO
-            String query = "";
+            String query = "SELECT ec.id, a.name, ec.command, ba.pass, ec.adddate, ec.type, ec.status \n" +
+                    " FROM analyst a, edit_commands ec, block_allocation ba \n" +
+                    " WHERE ec.evid = " + evid + "\n" +
+                    " AND ba.id = ec.block_allocation_id \n" +
+                    " AND ba.analyst_id = a.id \n" +
+                    " ORDER BY ec.adddate;";
 
             rs = st.executeQuery(query);
-
+            //System.out.println(Global.debugAt() + "\nquery= " + query + "\nrs= " + rs);
+            
             while (rs.next()) {
-
-                Command actionHistory = new Command();
-                // TODO    
-                actionHistoryList.add(actionHistory);
+                Integer id = rs.getInt("id");
+                String analyst = rs.getString("name");
+                String commandStr = rs.getString("command") + " "; // TODO: when command null, the ommandTableModel.getColumnClass() fails.
+                String pass = rs.getString("pass");
+                Date date =  rs.getDate("adddate");      
+                String status = rs.getString("status");
+                String type = rs.getString("type");
+  
+                //System.out.println("\n" + id + " | " +  analyst + " | "+  commandStr + " | " +  pass + " | "+  date + " | " + status + " | " + type);
+                Command command = new Command(evid, id, analyst, commandStr, pass, date, status, type);
+                commandList.add(command);
             }
 
             rs.close();
 
         } catch (SQLException ex) {
+            String message = ex.toString() + "\n\n" +
+                    Global.debugAt() +
+                    "\nFailed to load Command history list from database." +
+                    "\nSee the error log file for more information. ";
+        
+            JOptionPane.showMessageDialog(null, message, "Error",  JOptionPane.ERROR_MESSAGE);
+            logger.log(Level.SEVERE, message);
+            
             return false;
         } finally {
             try {
@@ -2570,4 +2626,168 @@ public final class SeisDataDAO {
 
     }
 
+    
+    /*
+     * Retrieve all Assessed Command history.
+     */
+    public static boolean readAssessedCommands(Integer evid, ArrayList<AssessedCommand> assessedCommandList) {
+
+        Connection con = null;
+        Statement st = null;
+        ResultSet rs = null;
+
+        assessedCommandList.clear();
+
+        try {
+            con = DriverManager.getConnection(url, user, password);
+            st = con.createStatement();
+
+            String query = "SELECT a.name, ba.pass, aec.type, aec.command\n" +
+                    " FROM analyst a, edit_commands ec, block_allocation ba, command_group cg, edit_commands aec\n" +
+                    " WHERE ec.evid = " + evid + "\n" +
+                    " AND ba.id = ec.block_allocation_id\n" +
+                    " AND ba.analyst_id = a.id\n" +
+                    " AND ec.type = 'assess'\n" +
+                    " AND ec.id = cg.id\n" +
+                    " AND aec.id = cg.edit_commands_id\n" +
+                    " ORDER BY aec.adddate;";
+
+            rs = st.executeQuery(query);
+            //System.out.println(Global.debugAt() + "\nquery= " + query + "\nrs= " + rs);
+            
+            while (rs.next()) {
+                //System.out.println(Global.debugAt());
+                
+                String ids = rs.getString("command");
+                String analyst = rs.getString("name");
+                String report = rs.getString("type");
+                
+                // TODO: fix ids and report path.
+                
+                //System.out.println("\n" + ids + " | " +  analyst + " | "+  report);
+                AssessedCommand assessedCommand = new AssessedCommand(evid, ids, analyst, report);
+                assessedCommandList.add(assessedCommand);
+            }
+
+            rs.close();
+
+        } catch (SQLException ex) {
+            String message = ex.toString() + "\n\n" +
+                    Global.debugAt() +
+                    "\nFailed to load Command history list from database." +
+                    "\nSee the error log file for more information. ";
+        
+            JOptionPane.showMessageDialog(null, message, "Error",  JOptionPane.ERROR_MESSAGE);
+            logger.log(Level.SEVERE, message);
+            
+            return false;
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (st != null) {
+                    st.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+
+            } catch (SQLException ex) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    
+    /*
+     * Update the Command table: add new command generated.
+     */
+    public static boolean updateCommandTable(Integer evid, ArrayList<Command> commandList) {
+
+        Connection con = null;
+        Statement st = null;
+        ResultSet rs = null;
+
+        commandList.clear();
+
+        try {
+            con = DriverManager.getConnection(url, user, password);
+            st = con.createStatement();
+
+            String query = "SELECT a.name, ec.status, ec.type, ec.command\n" + 
+                    "FROM edit_commands ec, analyst a, block_allocation b\n" +
+                    "WHERE ec.evid = " + evid + //"\n" +
+                    "AND ec.block_allocation_id = b.id\n" +
+                    "AND a.id = b.analyst_id\n" +
+                    "ORDER BY ec.adddate, ec.id;";
+
+            // Debug:
+            StackTraceElement stack = Thread.currentThread().getStackTrace()[1];
+            String message = stack.getFileName() + ": " +
+                stack.getLineNumber() + ": " + 
+                stack.getClassName() + ": " +
+                stack.getMethodName();
+            
+            System.out.println("\nAt " + message + "\nquery= " + query);
+            
+            rs = st.executeQuery(query);
+            
+            System.out.println("\nAt " + message + "\nrs= " + rs);
+            
+            while (rs.next()) {
+
+                Command command = new Command();
+                
+                System.out.println("name= " + rs.getString(1) + 
+                        ", status= " + rs.getString(2) + 
+                        ", type= " + rs.getString(2) + 
+                        ", command= " + rs.getString(2));
+                
+                // TODO    
+                commandList.add(command);
+            }
+
+            rs.close();
+
+        } catch (SQLException ex) {
+            StackTraceElement stack = Thread.currentThread().getStackTrace()[1];
+            String message = stack.getFileName() + ": " +
+                stack.getLineNumber() + ": " + 
+                stack.getClassName() + ": " +
+                stack.getMethodName();
+        
+            JOptionPane.showMessageDialog(null, 
+                    ex.toString() + 
+                            message +
+                            "\n Failed to load Asssesed Command history list from database." +
+                            "\n See the error log file for more information. ", 
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            logger.log(Level.SEVERE, "Failed to load Asssesed Command history list from database." +  "\n In {0}", message);
+            
+            return false;
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (st != null) {
+                    st.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+
+            } catch (SQLException ex) {
+                return false;
+            }
+        }
+        return true;
+
+    }
+    
+    
+    
 }

@@ -1,54 +1,57 @@
 package uk.ac.isc.eventscontrolview;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
+import java.util.ArrayList;
+import java.util.logging.Level;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
-
-/**
- * Hint: SiesData/.../EvensTable|Model.java
- * See bitbucket commit Hui's code: 
- * https://bitbucket.org/saifulkhan/vbas/commits/60877119fe05304042e21df0740df50531acc209
- */
+import uk.ac.isc.seisdata.AssessedCommand;
+import uk.ac.isc.seisdata.Command;
+import uk.ac.isc.seisdata.Global;
 
 
 public class AssessedCommandTableModel extends AbstractTableModel {
 
     private final String[] columnNames = {
         "Select",
-        "Assessed Commands", 
+        "IDs",
         "Analyst",
         "Report"};
     
     private final Class[] columns = new Class[]{
         Boolean.class, 
+        String.class,
         String.class, 
-        String.class, 
+        String.class,
         JButton.class};
     
-//private final ArrayList<SeisEvent> events;
-
-    Object[][] data = {
-        {false, "1,2", "Smith", "file location"},
-        {false, "3", "Brown", "file location"},
-        {false, "3,4,5", "Black","file location"}
-    };
-    
     public final Object[] longValues = {
-        Boolean.TRUE, 
-        new String(new char[100]), 
-        new String(new char[500])};
+        Boolean.TRUE,
+        new Integer(999999),
+        new String(new char[50]), 
+        new String(new char[500]),
+        new String(new char[10]),
+        new String(new char[10])};
+        
+    private final ArrayList<AssessedCommand> assessedCommandList;
+    
+    Object[][] data = {
+        {false, 1, "Smith", "Relocate ..."},
+        {true, 2, "Doe", "Edit Hypocentre ..."},
+        {false, 3, "Black", "Set Prime ..."},
+        {false, 4, "White", "Edit Phase"},
+        {false, 5, "Brown", "Other Command ..."}
+    };
 
-    /*    
-     public ActionHistoryModel(ArrayList<ActionHistoryList> commandList) {
-     this.commandList = commandList;
-     }
-     */
+    AssessedCommandTableModel(ArrayList<AssessedCommand> assessedCommandList) {
+        this.assessedCommandList = assessedCommandList;
+    }
+
+        
     @Override
     public int getRowCount() {
-        //return commandList.size();
-        return data.length;
+        return assessedCommandList.size();
     }
 
     @Override
@@ -64,27 +67,32 @@ public class AssessedCommandTableModel extends AbstractTableModel {
     // overide it for setting values in each row and each column
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        // Hint: See EventTableModel
-        
+                
         Object retObject = null;
         
-        switch (columnIndex) {
-
+        switch(columnIndex) {
             case 0:
-                return data[rowIndex][columnIndex];
+                retObject = assessedCommandList.get(rowIndex).getSelect();
+                break;
             case 1:
-                return data[rowIndex][columnIndex];
+                retObject = assessedCommandList.get(rowIndex).getIds();
+                break;
             case 2:
-                return data[rowIndex][columnIndex];
+                retObject = assessedCommandList.get(rowIndex).getAnalyst();
+                break;
             case 3:
+                //retObject = assessedCommandList.get(rowIndex).getReport();
                 final JButton button = new JButton();              
                 return button;
+                //break;
+            default:
+                String message = Global.debugAt() + "\nSee the error log file for more information. ";
+                JOptionPane.showMessageDialog(null, message, "Error",  JOptionPane.ERROR_MESSAGE);
             
-            default:    
-                return "Error";
         }
-      
 
+        return retObject;
+       
     }
 
     /*
@@ -94,8 +102,7 @@ public class AssessedCommandTableModel extends AbstractTableModel {
      */
     @Override
     public Class getColumnClass(int c) {
-        //return getValueAt(0, c).getClass();
-         return columns[c];
+        return getValueAt(0, c).getClass();
     }
 
     // cell is editable.

@@ -1,26 +1,40 @@
 package uk.ac.isc.eventscontrolview;
 
-import javax.swing.table.AbstractTableModel;
 
-/**
- * Hint: SiesData/.../EvensTable|Model.java
- */
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import javax.swing.table.AbstractTableModel;
+import uk.ac.isc.seisdata.Command;
+import uk.ac.isc.seisdata.Global;
+
+
 public class CommandTableModel extends AbstractTableModel {
 
     private final String[] columnNames = {
         "Select", 
-        "Command ID",
+        "ID",
         "Analyst", 
-        "Command"};
+        "Command",
+        "Status",
+        "Type"};
     
     private final Class[] columns = new Class[]{
         Boolean.class, 
         Integer.class,
         String.class, 
+        String.class,
         String.class};
     
-//private final ArrayList<SeisEvent> events;
-
+    public final Object[] longValues = {
+        Boolean.TRUE,
+        new Integer(999999),
+        new String(new char[50]), 
+        new String(new char[500]),
+        new String(new char[10]),
+        new String(new char[10])};
+        
+    private final ArrayList<Command> commandList;
+    
     Object[][] data = {
         {false, 1, "Smith", "Relocate ..."},
         {true, 2, "Doe", "Edit Hypocentre ..."},
@@ -28,22 +42,15 @@ public class CommandTableModel extends AbstractTableModel {
         {false, 4, "White", "Edit Phase"},
         {false, 5, "Brown", "Other Command ..."}
     };
-    
-    public final Object[] longValues = {
-        Boolean.TRUE,
-        new Integer(0),
-        new String(new char[100]), 
-        new String(new char[500])};
 
-    /*    
-     public ActionHistoryModel(ArrayList<ActionHistoryList> commandList) {
-     this.commandList = commandList;
-     }
-     */
+    CommandTableModel(ArrayList<Command> commandList) {
+        this.commandList = commandList;
+    }
+
+        
     @Override
     public int getRowCount() {
-        //return commandList.size();
-        return data.length;
+        return commandList.size();
     }
 
     @Override
@@ -59,8 +66,36 @@ public class CommandTableModel extends AbstractTableModel {
     // overide it for setting values in each row and each column
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        // See EventTableModel
-        return data[rowIndex][columnIndex];
+                
+        Object retObject = null;
+        
+        switch(columnIndex) {
+            case 0:
+                retObject = commandList.get(rowIndex).getSelect();
+                break;
+            case 1:
+                retObject = commandList.get(rowIndex).getId();
+                break;
+            case 2:
+                retObject = commandList.get(rowIndex).getAnalyst();
+                break;
+            case 3:
+                retObject = commandList.get(rowIndex).getCommand();
+                break;
+            case 4:
+                retObject = commandList.get(rowIndex).getStatus();
+                break;
+            case 5:
+                retObject = commandList.get(rowIndex).getType();
+                break;    
+            default:
+                String message = Global.debugAt() + "\nSee the error log file for more information. ";
+                JOptionPane.showMessageDialog(null, message, "Error",  JOptionPane.ERROR_MESSAGE);
+            
+        }
+
+        return retObject;
+       
     }
 
     /*
@@ -70,7 +105,8 @@ public class CommandTableModel extends AbstractTableModel {
      */
     @Override
     public Class getColumnClass(int c) {
-        return getValueAt(0, c).getClass();
+        //System.out.println(Global.debugAt() + "c= " + c + ", getValueAt(0, c)=" + getValueAt(0, c));
+        return getValueAt(0, c).getClass();        
     }
 
     // cell is editable.

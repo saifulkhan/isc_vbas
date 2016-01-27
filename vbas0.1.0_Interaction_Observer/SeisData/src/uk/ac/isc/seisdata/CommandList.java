@@ -4,13 +4,13 @@ import java.util.ArrayList;
 
 public class CommandList extends AbstractSeisData {
 
-    private final ArrayList<Command> actionHistoryList;
+    private final ArrayList<Command> commandList;
 
     public CommandList() {
-        actionHistoryList = new ArrayList<Command>();
+        commandList = new ArrayList<Command>();
     }
 
-    public ArrayList<Command> getActionHistory() {
-        return this.actionHistoryList;
+    public ArrayList<Command> getCommandList() {
+        return this.commandList;
     }
 }
