@@ -2,17 +2,24 @@ package uk.ac.isc.textview;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.TreeMap;
-import java.util.logging.Level;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -58,19 +65,20 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
     private JTable table = null;
     private JScrollPane scrollPane = null;
     private PhaseTableSortPanel phaseTableSortPanel = null;
-    
-    private static SeisEvent seisEvent = Global.getSelectedSeisEvent(); 
-    private static final PhasesList phasesList = Global.getPhasesList();
-    private final TreeMap<String, String> stations = new TreeMap<String, String> ();
 
-    
+    private static SeisEvent seisEvent = Global.getSelectedSeisEvent();
+    private static final PhasesList phasesList = Global.getPhasesList();
+    private final TreeMap<String, String> stations = new TreeMap<String, String>();
+
+    private final PhaseTablePopupManager ptPopupManager;
+
     public PhaseTextViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_PhaseTextViewTopComponent());
         setToolTipText(Bundle.HINT_PhaseTextViewTopComponent());
-        
+
         seisEvent.addChangeListener(this);
-        
+
         boolean retDAO = SeisDataDAO.retrieveAllPhases(seisEvent.getEvid(), phasesList.getPhases());
         retDAO = SeisDataDAO.retrieveAllPhasesAmpMag(seisEvent.getEvid(), phasesList.getPhases());
         retDAO = SeisDataDAO.retrieveAllStationsWithRegions(stations);                                  // load the correspondent map into the stataions
@@ -78,11 +86,11 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         for (int i = 0; i < phasesList.getPhases().size(); i++) {
             phasesList.getPhases().get(i).setRegionName(stations.get(phasesList.getPhases().get(i).getReportStation()));
         }
-        
+
         model = new PhaseTextViewTableModel(phasesList.getPhases());
         table = new JTable();
         table.setModel(model);
-        
+
         setupTableVisualAttributes();
 
         // Enable sorting of Phase table
@@ -93,48 +101,132 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         sortKeys.add(new SortKey(0, SortOrder.ASCENDING));
         table.getRowSorter().setSortKeys(sortKeys);
 
+        /*
+         * Table row/col: selection and mouse event related
+         */
+        MyRowSelectionListener rowListener = new MyRowSelectionListener();
+        table.getSelectionModel().addListSelectionListener(rowListener);                          // Selection related
+        //table.getColumnModel().getSelectionModel().addListSelectionListener(new ColumnListener());    // Selection related
+        MyMouseAdapter myMouseAdapter = new MyMouseAdapter();
+        table.addMouseListener(myMouseAdapter);
+
+        // add the popup-menu
+        ptPopupManager = new PhaseTablePopupManager(table);
+
         scrollPane = new JScrollPane(table);
         this.setLayout(new BorderLayout());
         this.add(scrollPane, BorderLayout.CENTER);
 
         phaseTableSortPanel = new PhaseTableSortPanel(table);
         this.add(phaseTableSortPanel, BorderLayout.PAGE_START);
-
     }
 
-    
-    // repaint when event changes
+    // Selection related
+    private class MyRowSelectionListener implements ListSelectionListener {
+
+        @Override
+        public void valueChanged(ListSelectionEvent event) {
+            if (event.getValueIsAdjusting()) {
+                return;
+            }
+            System.out.println("ROW SELECTION EVENT. ");
+
+            System.out.print(String.format("Lead: %d, %d. ",
+                    table.getSelectionModel().getLeadSelectionIndex(),
+                    table.getColumnModel().getSelectionModel().
+                    getLeadSelectionIndex()));
+            System.out.print("Rows:");
+            for (int c : table.getSelectedRows()) {
+                System.out.println(String.format(" %d", c));
+            }
+            System.out.print(". Columns:");
+            for (int c : table.getSelectedColumns()) {
+                System.out.print(String.format(" %d", c));
+            }
+            System.out.print(".\n\n");
+
+        }
+    }
+
+    // Mouse event related
+    private class MyMouseAdapter extends MouseAdapter {
+
+        public void mouseClicked(MouseEvent e) {
+
+            if (SwingUtilities.isLeftMouseButton(e)) {
+                System.out.println(Global.debugAt() + "left-click");
+
+            } else if (SwingUtilities.isRightMouseButton(e)) {
+
+                System.out.println(Global.debugAt() + "right-click");
+
+                Point p = e.getPoint();
+                final int row = table.rowAtPoint(p);
+                final int col = table.columnAtPoint(p);
+                int selectedRow = table.getSelectedRow();
+                int selectedCol = table.getSelectedColumn();
+
+                // no need to close the opened dialog, its modal
+                //if(dialog.isShowing())
+                //dialog.dispose();
+                if (ptPopupManager.getPopupMenu().isVisible()) {
+                    ptPopupManager.getPopupMenu().setVisible(false);
+                }
+
+                // Update the current selection for correct htPopupManager behavior
+                // in case a new selection is made with the right mouse button.
+                if (row != selectedRow || col != selectedCol) {
+                    EventQueue.invokeLater(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            table.changeSelection(row, col, true, false);
+                        }
+                    });
+                }
+
+                // Specify the condition(s) you want for htPopupManager display.
+                // For Example: show htPopupManager only for view column index 1.
+                if (row != -1 && col == 1) {
+                    if (SwingUtilities.isRightMouseButton(e)) {
+                        Rectangle r = table.getCellRect(row, col, false);
+                        ptPopupManager.getPopupMenu().show(table, r.x, r.y + r.height);
+                    } else {
+                        e.consume();
+                    }
+                }
+            }
+        }
+    }
+
+    // Receive SeisEvent changes and redraw the table.
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
-        System.out.println(Global.debugAt() + " Event received from " + event.getData().getClass().getName());             
+        System.out.println(Global.debugAt() + " Event received from " + event.getData().getClass().getName());
         seisEvent = Global.getSelectedSeisEvent();
-        
+
         //phasesList.getPhases().clear();
         //System.out.println(Global.debugAt() + "phasesList.size() = " + phasesList.getPhases().size());
-        
         boolean retDAO = SeisDataDAO.retrieveAllPhases(seisEvent.getEvid(), phasesList.getPhases());
         retDAO = SeisDataDAO.retrieveAllPhasesAmpMag(seisEvent.getEvid(), phasesList.getPhases());
-       
+
         //System.out.println(Global.debugAt() + "phasesList.getPhases().size()= " + phasesList.getPhases().size());
-        
         // put the region name into the pahseList
         for (int i = 0; i < phasesList.getPhases().size(); i++) {
             phasesList.getPhases()
                     .get(i)
                     .setRegionName(stations.get(phasesList.getPhases().get(i).getReportStation()));
         }
-        
+
         //System.out.println(Global.debugAt() + "phasesList.getPhases().size()= " + phasesList.getPhases().size());
-        
         model = new PhaseTextViewTableModel(phasesList.getPhases());
         table.setModel(model);
-                
+
         table.clearSelection();
         scrollPane.setViewportView(table);
         scrollPane.repaint();
     }
 
-    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -189,7 +281,9 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         th.setForeground(Color.white);
 
         table.setRowSelectionAllowed(true);
-        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        //table.setCellSelectionEnabled(false);
+
         table.setColumnSelectionAllowed(false);
         table.setSelectionBackground(new Color(45, 137, 239));
         table.setSelectionForeground(Color.WHITE);

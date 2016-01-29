@@ -13,14 +13,16 @@ import org.openide.awt.ActionReference;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.WindowManager;
-import uk.ac.isc.eventscontrolview.EventsControlViewTopComponent;
+import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
+import uk.ac.isc.seisdata.SeisEvent;
 
-/**
+
+/*
  * Top component which displays hypocentre depth panel.
- *
  */
 @ConvertAsProperties(
         dtd = "-//uk.ac.isc.hypodepthview//HypoDepthView//EN",
@@ -45,15 +47,16 @@ import uk.ac.isc.seisdata.SeisDataChangeListener;
 })
 public final class HypoDepthViewTopComponent extends TopComponent implements SeisDataChangeListener {
 
-    //data reference for hypocentre list
-    private final HypocentresList hyposList;
+    private final HypocentresList hyposList = Global.getHypocentresList();
+    private static final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();       // to receive events
+    private static final Hypocentre selectedHypocentre = Global.getSelectedHypocentre();    // to receive events
 
     private final JScrollPane scrollPane;
 
-    //get control window to retrieve data
+    // Get control window to retrieve data
     private final TopComponent tc = WindowManager.getDefault().findTopComponent("EventsControlViewTopComponent");
 
-    //the panel to show depth of hypocentres
+    // The panel to show depth of hypocentres
     HypoDepthViewPanel hdp = null;
 
     public HypoDepthViewTopComponent() {
@@ -61,7 +64,8 @@ public final class HypoDepthViewTopComponent extends TopComponent implements Sei
         setName(Bundle.CTL_HypoDepthViewTopComponent());
         setToolTipText(Bundle.HINT_HypoDepthViewTopComponent());
 
-        hyposList = ((EventsControlViewTopComponent) tc).getControlPanel().getHyposList();
+        selectedSeisEvent.addChangeListener(this);
+        selectedHypocentre.addChangeListener(this);
 
         hdp = new HypoDepthViewPanel(hyposList.getHypocentres());
         scrollPane = new JScrollPane(hdp);
@@ -97,13 +101,13 @@ public final class HypoDepthViewTopComponent extends TopComponent implements Sei
     @Override
     public void componentOpened() {
         // TODO add custom code on component opening
-        hyposList.addChangeListener(this);
+        //hyposList.addChangeListener(this);
     }
 
     @Override
     public void componentClosed() {
         // TODO add custom code on component closing
-        hyposList.removeChangeListener(this);
+        //hyposList.removeChangeListener(this);
     }
 
     void writeProperties(java.util.Properties p) {
@@ -122,11 +126,27 @@ public final class HypoDepthViewTopComponent extends TopComponent implements Sei
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
 
-        hdp.UpdateData(hyposList.getHypocentres());
+        String eventName = event.getData().getClass().getName();
+        System.out.println(Global.debugAt() + " Event received from " + eventName);
 
-        hdp.getJFreeChart().fireChartChanged();
+        if (eventName.equals("uk.ac.isc.seisdata.SeisEvent")) {
+                SeisEvent seisEvent = (SeisEvent) event.getData();
+                System.out.println(Global.debugAt() + " SeisEvent= " + selectedSeisEvent.getEvid());
+                hdp.UpdateData(hyposList.getHypocentres());
+                hdp.getJFreeChart().fireChartChanged();
+                hdp.repaint();
+                scrollPane.setViewportView(hdp);
+                
+        } else if (eventName.equals("uk.ac.isc.seisdata.Hypocentre")) {
 
-        hdp.repaint();
-        scrollPane.setViewportView(hdp);
-    }
+                Hypocentre hypocentre = (Hypocentre) event.getData();
+                System.out.println(Global.debugAt() + " Hypocentre= " + selectedHypocentre.getHypid());
+
+                hdp.UpdateData(hyposList.getHypocentres());
+                hdp.getJFreeChart().fireChartChanged();
+                hdp.repaint();
+                scrollPane.setViewportView(hdp);
+        }
+        }
+    
 }

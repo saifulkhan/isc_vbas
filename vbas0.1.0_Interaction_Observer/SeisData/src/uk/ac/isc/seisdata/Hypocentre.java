@@ -77,6 +77,7 @@ public class Hypocentre extends AbstractSeisData implements Cloneable {
     private Double sminax;
 
     public Hypocentre() {
+        this.hypid = 0;
         magMap = new LinkedHashMap<String, Double>();
     }
 

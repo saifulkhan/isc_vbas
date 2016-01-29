@@ -9,9 +9,11 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 import uk.ac.isc.eventscontrolview.EventsControlViewTopComponent;
+import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
+import uk.ac.isc.seisdata.SeisEvent;
 
 /**
  * Top component which displays the network magnitudes.
@@ -39,24 +41,26 @@ import uk.ac.isc.seisdata.SeisDataChangeListener;
 })
 public final class HypoMagnitudeViewTopComponent extends TopComponent implements SeisDataChangeListener {
 
-    //hypolist which keeps all the magnitudes
-    private final HypocentresList hyposList;
-
+   
+    private final HypocentresList hyposList = Global.getHypocentresList(); 
+    private static final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();       // to receive events
+      
+    
     private final JScrollPane scrollPane;
 
     //the panel to have the figure
     HypoMagnitudeViewPanel hmag = null;
 
-    //get control window to retrieve data
+    // get control window to retrieve data
     private final TopComponent tc = WindowManager.getDefault().findTopComponent("EventsControlViewTopComponent");
 
     public HypoMagnitudeViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_HypoMagnitudeViewTopComponent());
         setToolTipText(Bundle.HINT_HypoMagnitudeViewTopComponent());
-
-        hyposList = ((EventsControlViewTopComponent) tc).getControlPanel().getHyposList();
-
+        
+        selectedSeisEvent.addChangeListener(this);
+        
         hmag = new HypoMagnitudeViewPanel(hyposList.getHypocentres());
         scrollPane = new JScrollPane(hmag);
 
@@ -89,13 +93,13 @@ public final class HypoMagnitudeViewTopComponent extends TopComponent implements
     @Override
     public void componentOpened() {
         // TODO add custom code on component opening
-        hyposList.addChangeListener(this);
+        //hyposList.addChangeListener(this);
     }
 
     @Override
     public void componentClosed() {
         // TODO add custom code on component closing
-        hyposList.removeChangeListener(this);
+        //hyposList.removeChangeListener(this);
     }
 
     void writeProperties(java.util.Properties p) {

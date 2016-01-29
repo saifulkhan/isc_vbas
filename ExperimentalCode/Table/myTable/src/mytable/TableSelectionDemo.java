@@ -32,10 +32,9 @@ public class TableSelectionDemo extends JPanel
         table.setPreferredScrollableViewportSize(new Dimension(500, 70));
         table.setFillsViewportHeight(true);
         
-        table.getSelectionModel().addListSelectionListener(new RowListener());
-        
-        table.getColumnModel().getSelectionModel().
-            addListSelectionListener(new ColumnListener());
+        table.getSelectionModel().addListSelectionListener(new RowListener());                      // X
+        table.getColumnModel().getSelectionModel().addListSelectionListener(new ColumnListener());  // X
+                
         add(new JScrollPane(table));
  
         add(new JLabel("Selection Mode"));
@@ -71,6 +70,7 @@ public class TableSelectionDemo extends JPanel
         return b;
     }
  
+    @Override
     public void actionPerformed(ActionEvent event) {
         String command = event.getActionCommand();
         //Cell selection is disabled in Multiple Interval Selection

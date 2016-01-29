@@ -32,6 +32,7 @@ import org.openstreetmap.gui.jmapviewer.interfaces.TileLoaderListener;
 import org.openstreetmap.gui.jmapviewer.interfaces.TileSource;
 import org.openstreetmap.gui.jmapviewer.tilesources.OfflineOsmTileSource;
 import uk.ac.isc.seisdata.ColorUtils;
+import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.HistoricEvent;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
@@ -667,7 +668,7 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
 
     }
 
-    //paint function
+    // paint function
     @Override
     protected void paintComponent(Graphics g) {
 
@@ -1307,11 +1308,21 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
         int w2 = mapWidth / 2;
         int h2 = mapHeight / 2;
 
-        //line thickness for drawing the shape
+        // line thickness for drawing the shape
         g2.setStroke(new BasicStroke(2));
         g2.setPaint(Color.BLACK);
 
         for (Hypocentre h : hyposList.getHypocentres()) {
+            
+            // Saiful: if the hypocentre is the selected hypocentre then color it red.
+            if (h.getHypid() == Global.getSelectedHypocentre().getHypid()) {
+                g2.setPaint(Color.RED);
+                System.out.println(Global.debugAt() + "hypid=" + h.getHypid() + ", red");
+            } else {
+                g2.setPaint(Color.BLACK);
+                System.out.println(Global.debugAt() + "hypid=" + h.getHypid() + ", black");
+            }
+            
             xpos = tileSource.LonToX(h.getLon(), seisZoom) - center.x + w2;
             if (xpos > mapSize) {
                 xpos -= mapSize;

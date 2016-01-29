@@ -82,7 +82,7 @@ public class Phase extends AbstractSeisData {
     private boolean deprecated;
 
     public Phase() {
-
+        this.phid = 0;
     }
 
     public Phase(String agcy, String sta, String iscptype) {

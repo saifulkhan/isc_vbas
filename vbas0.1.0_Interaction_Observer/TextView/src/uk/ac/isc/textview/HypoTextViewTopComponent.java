@@ -91,6 +91,8 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
 
         selectedSeisEvent.addChangeListener(this);
 
+        table = new JTable();
+        
         lsl= new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent lse) {
@@ -98,7 +100,6 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
             }
         };
             
-        table = new JTable();
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {

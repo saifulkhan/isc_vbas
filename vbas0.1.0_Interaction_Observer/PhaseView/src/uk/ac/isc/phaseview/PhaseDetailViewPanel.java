@@ -219,7 +219,12 @@ class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListener {
         freechart = new JFreeChart(plot);
 
         freechart.removeLegend();
+       
         phasesImage = freechart.createBufferedImage(imageWidth, imageHeight);
+        // Saiful: Idea
+        //backgroundImage = freechart.createBufferedImage(imageWidth, imageHeight);
+        //phasesImage = backgroundImage.copy
+                
     }
 
     //paint the detail view on the right side

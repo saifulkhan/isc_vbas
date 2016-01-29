@@ -12,8 +12,6 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import org.openide.windows.WindowManager;
-import uk.ac.isc.eventscontrolview.EventsControlViewTopComponent;
 import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
@@ -47,7 +45,7 @@ import uk.ac.isc.seisdata.SeisEvent;
 })
 public final class HypoOverviewTopComponent extends TopComponent implements SeisDataChangeListener {
 
-    private final HypocentresList hypocentresList;
+    private final HypocentresList hypoList = Global.getHypocentresList(); 
     private static final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();       // to receive events
     private static final Hypocentre selectedHypocentre = Global.getSelectedHypocentre();    // to receive events
 
@@ -60,14 +58,11 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
         setName(Bundle.CTL_HypoOverviewTopComponent());
         setToolTipText(Bundle.HINT_HypoOverviewTopComponent());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
-
-        //hypocentresList = ((EventsControlViewTopComponent) tc).getControlPanel().getHyposList();
-        hypocentresList = Global.getHypocentresList();
-
+               
         selectedSeisEvent.addChangeListener(this);
         selectedHypocentre.addChangeListener(this);
 
-        hop = new HypoOverviewPanel2(hypocentresList);
+        hop = new HypoOverviewPanel2(hypoList);
         scrollPane = new JScrollPane(hop);
         ocp = new OverviewControlPanel3(hop);
 
@@ -79,36 +74,36 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
     // repaint when the data changes
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
-
         String eventName = event.getData().getClass().getName();
-
         System.out.println(Global.debugAt() + " Event received from " + eventName);
-        
-        
+       
         switch (eventName) {
             case "uk.ac.isc.seisdata.SeisEvent":
-                
                 SeisEvent seisEvent= (SeisEvent) event.getData();
-                
                 System.out.println(Global.debugAt() + " SeisEvent= " + selectedSeisEvent.getEvid());
                 
-                for (Hypocentre hypo : hypocentresList.getHypocentres()) {
+                for (Hypocentre hypo : hypoList.getHypocentres()) {
                     if (hypo.getIsPrime() == true) {
                         hop.setCentLatLon(hypo.getLat(), hypo.getLon());
                         hop.setCentDepth(hypo.getDepth());
                         hop.loadSeisData(hypo.getLat(), hypo.getLon(), hop.getRangeDelta());
                     }
-                }   //hop.setHypoVisOptions(2);
+                }
+                
+                //hop.setHypoVisOptions(2);
                 //hop.setDepthBandOrder(4);
                 //hop.repaint();
                 ocp.resetToDefault();
                 ocp.repaint();
                 scrollPane.setViewportView(hop);
                 break;
-                
+
             case "uk.ac.isc.seisdata.Hypocentre":
                 Hypocentre hypocentre= (Hypocentre) event.getData();
                 System.out.println(Global.debugAt() + " Hypocentre= " + selectedHypocentre.getHypid());
+                ocp.resetToDefault();
+                ocp.repaint();
+                scrollPane.setViewportView(hop);
                 break;
         }
 
@@ -144,7 +139,7 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
     @Override
     public void componentClosed() {
         // TODO add custom code on component closing
-        // hypocentresList.removeChangeListener(this);
+        // hypoList.removeChangeListener(this);
     }
 
     void writeProperties(java.util.Properties p) {
