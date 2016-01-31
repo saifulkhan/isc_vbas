@@ -99,20 +99,17 @@ public class EventsTable extends JPanel implements ListSelectionListener {
      * Trigger the change of all the regestered listeners (observers)
      */
     @Override
-    public void valueChanged(ListSelectionEvent e) {
-        
+    public void valueChanged(ListSelectionEvent e) {        
         System.out.println(Global.debugAt() + " New SeisEvent is selected.");
         // disable the double calls
-        if (e.getValueIsAdjusting()) {
-            return;
-        }
-
-        int selectedRowNum = table.getSelectedRow();
-        int selectedEvid = (Integer) table.getValueAt(selectedRowNum, 0);     // get selected evid.
-        seisEvent.setValues(eventsList.getEvents().get(selectedRowNum));            // do not change the actual address of the selected SiesEvent.
+        if (!e.getValueIsAdjusting()) {
+            int selectedRowNum = table.getSelectedRow();
+            int selectedEvid = (Integer) table.getValueAt(selectedRowNum, 0);     // get selected evid.
+            seisEvent.setValues(eventsList.getEvents().get(selectedRowNum));            // do not change the actual address of the selected SiesEvent.
         
-        System.out.println(Global.debugAt() + "Selected SiesEventId= " + selectedEvid + ". Fire an event.");
-        seisEvent.fireSeisDataChanged();
+            System.out.println(Global.debugAt() + "Selected SiesEventId= " + selectedEvid + ". Fire an event.");
+            seisEvent.fireSeisDataChanged();
+        }
     }
 
    

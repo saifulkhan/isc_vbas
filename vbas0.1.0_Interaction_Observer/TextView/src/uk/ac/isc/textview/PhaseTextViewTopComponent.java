@@ -126,25 +126,25 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
 
         @Override
         public void valueChanged(ListSelectionEvent event) {
-            if (event.getValueIsAdjusting()) {
-                return;
-            }
-            System.out.println("ROW SELECTION EVENT. ");
 
-            System.out.print(String.format("Lead: %d, %d. ",
-                    table.getSelectionModel().getLeadSelectionIndex(),
-                    table.getColumnModel().getSelectionModel().
-                    getLeadSelectionIndex()));
-            System.out.print("Rows:");
-            for (int c : table.getSelectedRows()) {
-                System.out.println(String.format(" %d", c));
-            }
-            System.out.print(". Columns:");
-            for (int c : table.getSelectedColumns()) {
-                System.out.print(String.format(" %d", c));
-            }
-            System.out.print(".\n\n");
+            // disable the double calls
+            if (!event.getValueIsAdjusting()) {
+                System.out.println("ROW SELECTION EVENT. ");
 
+                System.out.print(String.format("Lead: %d, %d. ",
+                        table.getSelectionModel().getLeadSelectionIndex(),
+                        table.getColumnModel().getSelectionModel().
+                        getLeadSelectionIndex()));
+                System.out.print("Rows:");
+                for (int c : table.getSelectedRows()) {
+                    System.out.println(String.format(" %d", c));
+                }
+                System.out.print(". Columns:");
+                for (int c : table.getSelectedColumns()) {
+                    System.out.print(String.format(" %d", c));
+                }
+                System.out.print(".\n\n");
+            }
         }
     }
 

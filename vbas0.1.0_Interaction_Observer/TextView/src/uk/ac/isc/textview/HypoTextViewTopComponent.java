@@ -96,7 +96,10 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         lsl= new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent lse) {
-                onValueChanged(lse);
+                // disable the double calls
+                if (!lse.getValueIsAdjusting()) {
+                    onValueChanged(lse);
+                }
             }
         };
             

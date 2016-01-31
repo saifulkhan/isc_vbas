@@ -54,11 +54,11 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
     
     // Pane and panels for views
     private JSplitPane pairViewsPane = null;
-    private PhaseViewControlPanel pvcp = null;
+    private PhaseViewControlPanel phaseViewControlPanel = null;
     private JScrollPane leftPane = null;
     private JScrollPane rightPane = null;
-    private PhaseTravelViewPanel pgvp = null;
-    private PhaseDetailViewPanel pdvp = null;
+    private PhaseTravelViewPanel phaseTVPanel = null;
+    private PhaseDetailViewPanel phaseDVPanel = null;
     
     /*
      * This is for saving the theoretical travel time points
@@ -85,24 +85,24 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
             }
         }
 
-        pgvp = new PhaseTravelViewPanel(phasesList, ph, ttdData);
+        phaseTVPanel = new PhaseTravelViewPanel(phasesList, ph, ttdData);
 
-        pdvp = new PhaseDetailViewPanel(pgvp, ttdData);
+        phaseDVPanel = new PhaseDetailViewPanel(phaseTVPanel, ttdData);
 
         //handle general view first
-        pgvp.setPrime(ph);
+        phaseTVPanel.setPrime(ph);
         //pgvp.setTTDData(ttdData);
 
-        pvcp = new PhaseViewControlPanel(pgvp, pdvp);
+        phaseViewControlPanel = new PhaseViewControlPanel(phaseTVPanel, phaseDVPanel);
 
-        leftPane = new JScrollPane(pgvp);
-        rightPane = new JScrollPane(pdvp);
+        leftPane = new JScrollPane(phaseTVPanel);
+        rightPane = new JScrollPane(phaseDVPanel);
 
         pairViewsPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPane, rightPane);
         pairViewsPane.setResizeWeight(0.5d);
 
         this.setLayout(new BorderLayout());
-        this.add(pvcp, BorderLayout.NORTH);
+        this.add(phaseViewControlPanel, BorderLayout.NORTH);
         this.add(pairViewsPane, BorderLayout.CENTER);
 
     }
@@ -120,14 +120,14 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
                 ph = hyposList.getHypocentres().get(i);
             }
         }
-        pgvp.setPrime(ph);
-        pgvp.setTTDData(ttdData);
+        phaseTVPanel.setPrime(ph);
+        phaseTVPanel.setTTDData(ttdData);
 
-        pvcp.reset();
-        pgvp.UpdateData();
+        phaseViewControlPanel.reset();
+        phaseTVPanel.UpdateData();
 
-        pdvp.setRange(pgvp.getRange());
-        pdvp.UpdateData();
+        phaseDVPanel.setRange(phaseTVPanel.getRange());
+        phaseDVPanel.UpdateData();
 
     }
 
