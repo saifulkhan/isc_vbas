@@ -5,7 +5,12 @@
  */
 package uk.ac.isc.textview;
 
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.Checkbox;
+import java.awt.Color;
+import java.awt.Cursor;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
@@ -20,18 +25,22 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
 import uk.ac.isc.seisdata.Command;
-import uk.ac.isc.seisdata.CommandList;
 import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdata.Hypocentre;
+import uk.ac.isc.seisdata.SeisDataDAO;
+import uk.ac.isc.seisdata.SeisEvent;
 
 
 public class HypoTableRelocateDialog extends JDialog {
 
-    private final CommandList commandList;
+    private final Command formulatedCommand = Global.getFormulatedCommand();
+    private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
+    private final Hypocentre selectedHypocentre = Global.getSelectedHypocentre();
     
     private JButton button_ok;
     private JButton button_cancel;
 
-    private Checkbox checkbox1;
+    private Checkbox checkbox_gridSearch;
     private JFormattedTextField formattedTextFieldDepth;
     private JLabel jLabel1;
     private JLabel label_hypid;
@@ -51,7 +60,7 @@ public class HypoTableRelocateDialog extends JDialog {
     private JPanel jPanel2;
     private JPanel jPanel3;
     private JScrollPane jScrollPane1;
-    private JTextArea jTextArea1;
+    private JTextArea text_depth;
     private JRadioButton radio_default;
     private JRadioButton radio_fix;
     private JRadioButton radio_free;
@@ -59,9 +68,8 @@ public class HypoTableRelocateDialog extends JDialog {
     
     
     public HypoTableRelocateDialog() {
-            commandList = Global.getCommandList();  
             
-            setTitle("Relocate");
+            setTitle("Relocate Event");
             setModal(true);
             layoutComponents();
             groupRadioButton();
@@ -74,8 +82,106 @@ public class HypoTableRelocateDialog extends JDialog {
         group.add(this.radio_median);
         group.add(this.radio_free);
     }
+
+    
+    private void radioButtonFixActionPerformed(ActionEvent evt) {                                            
         
+        if(this.radio_fix.isSelected()) {
+            this.formattedTextFieldDepth.setEditable(true);
+            this.formattedTextFieldDepth.setEnabled(true);
+        }   
+    }       
+    
+    private void radioButtonFreeActionPerformed(ActionEvent evt) {                                                
+        // TODO add your handling code here:
+        if(this.radio_free.isSelected()) {
+            this.formattedTextFieldDepth.setEditable(true);
+            this.formattedTextFieldDepth.setEnabled(true);
+        } 
+    }                                               
+
+    
+    private void radioButtonDefaultActionPerformed(ActionEvent evt) {                                                   
+        // TODO add your handling code here:
+        if(this.radio_default.isSelected()) {
+            this.formattedTextFieldDepth.setEditable(false);
+            this.formattedTextFieldDepth.setEnabled(false);
+        } 
+    }                                                  
+
+    
+    private void radioButtonMedianActionPerformed(ActionEvent evt) {                                                  
+        // TODO add your handling code here:
+        if(this.radio_median.isSelected()) {
+            this.formattedTextFieldDepth.setEditable(false);
+            this.formattedTextFieldDepth.setEnabled(false);
+        }
+    }                                                 
+
+                                       
+
+    
+    public void showHypoTableRelocateDialog() {
         
+        label_evid.setText(selectedHypocentre.getEvid().toString());
+        label_hypid.setText(selectedHypocentre.getHypid().toString());
+        label_time.setText(selectedHypocentre.getOrigTime().toString());
+        label_coord.setText(selectedHypocentre.getLat().toString() + "N " + selectedHypocentre.getLon().toString() + "W");
+        label_depth.setText(selectedHypocentre.getDepth().toString());
+        label_prime.setText(selectedHypocentre.getIsPrime().toString());
+        
+        text_depth.setText(selectedHypocentre.getDepth().toString());
+               
+        setVisible(true);
+    }
+    
+    private void button_okActionPerformed(ActionEvent evt) {                                         
+        if (this.formattedTextFieldDepth.getText().equals(" ") && this.radio_fix.isSelected()) {
+            JOptionPane.showMessageDialog(null, "Enter Depth.");
+            return;
+        }
+                String command  = " ";
+                
+                
+                        /*
+                "<hypid> " + selectedHypocentre.getHypid() +
+                    " <attr> " + " time " +  
+                        " <value> " + text_time.getText() + " </value> " +
+                        " <prev_value> " + selectedHypocentre.getOrigTime() +  " </prev_value> " +
+                    " </attr> " +
+                    " <attr> " + " lat " +  
+                        " <value> " + text_lat.getText() + " </value> " +
+                        " <prev_value> " + selectedHypocentre.getLat()+  " </prev_value> " +
+                    " </attr> " +
+                    " <attr> " + " lon " +  
+                        " <value> " + text_lon.getText() + " </value> " +
+                        " <prev_value> " + selectedHypocentre.getLon()+  " </prev_value> " +
+                    " </attr> " +
+                    " <attr> " + " depth " +  
+                        " <value> " + text_depth.getText() + " </value> " +
+                        " <prev_value> " + selectedHypocentre.getDepth()+  " </prev_value> " +
+                    " </attr> " +
+                "</hypid>";*/
+        
+                
+        boolean retDAO = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "iscloc", command);
+        if(retDAO) {
+            // success
+            System.out.println(Global.debugAt() + " \nCommand=" + command + " \nFired: New Command from the 'Relocate Event' dialog.");
+        
+            formulatedCommand.fireSeisDataChanged();  // Notify the Command table to update from the database.
+            this.dispose();
+        } else {
+            JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error",  JOptionPane.ERROR_MESSAGE);
+        }
+    }                        
+
+    
+    private void button_cancelActionPerformed(ActionEvent evt) {                                             
+        this.dispose();
+    }                                            
+
+    
     private void layoutComponents() {
         
         button_ok = new JButton();
@@ -100,27 +206,27 @@ public class HypoTableRelocateDialog extends JDialog {
         radio_median = new JRadioButton();
         radio_free = new JRadioButton();
         jLabel14 = new JLabel();
-        checkbox1 = new java.awt.Checkbox();
+        checkbox_gridSearch = new Checkbox();
         formattedTextFieldDepth = new JFormattedTextField();
         jPanel3 = new JPanel();
         jScrollPane1 = new JScrollPane();
-        jTextArea1 = new JTextArea();
+        text_depth = new JTextArea();
 
-        button_ok.setBackground(new java.awt.Color(45, 137, 239));
-        button_ok.setForeground(new java.awt.Color(255, 255, 255));
+        button_ok.setBackground(new Color(45, 137, 239));
+        button_ok.setForeground(new Color(255, 255, 255));
         button_ok.setText("OK");
-        button_ok.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        button_ok.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 button_okActionPerformed(evt);
             }
         });
 
-        button_cancel.setBackground(new java.awt.Color(45, 137, 239));
-        button_cancel.setForeground(new java.awt.Color(255, 255, 255));
+        button_cancel.setBackground(new Color(45, 137, 239));
+        button_cancel.setForeground(new Color(255, 255, 255));
         button_cancel.setText("Cancel");
         button_cancel.setActionCommand("Cancel");
-        button_cancel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        button_cancel.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 button_cancelActionPerformed(evt);
             }
         });
@@ -204,36 +310,35 @@ public class HypoTableRelocateDialog extends JDialog {
         jLabel13.setText("DEPTH:");
 
         radio_fix.setText("Fix");
-        radio_fix.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        radio_fix.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 radioButtonFixActionPerformed(evt);
             }
         });
 
         radio_default.setText("Default");
-        radio_default.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        radio_default.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 radioButtonDefaultActionPerformed(evt);
             }
         });
 
         radio_median.setText("Median");
-        radio_median.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        radio_median.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 radioButtonMedianActionPerformed(evt);
             }
         });
 
         radio_free.setText("Free");
-        radio_free.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        radio_free.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 radioButtonFreeActionPerformed(evt);
             }
         });
 
-        jLabel14.setText("FIX:");
-
-        checkbox1.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        jLabel14.setText("GRID SEARCH:");
+        checkbox_gridSearch.setCursor(new Cursor(Cursor.TEXT_CURSOR));
 
         //formattedTextFieldDepth.setFormatterFactory(new text.DefaultFormatterFactory(new text.NumberFormatter()));
         //formattedTextFieldDepth.setToolTipText("");
@@ -253,12 +358,12 @@ public class HypoTableRelocateDialog extends JDialog {
                         .addGap(18, 18, 18)
                         .addComponent(radio_fix)
                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(radio_free)
+                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(radio_default)
                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(radio_median)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(radio_free))
-                    .addComponent(checkbox1, GroupLayout.PREFERRED_SIZE, 15, GroupLayout.PREFERRED_SIZE))
+                        .addComponent(radio_median))
+                    .addComponent(checkbox_gridSearch, GroupLayout.PREFERRED_SIZE, 15, GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -267,9 +372,9 @@ public class HypoTableRelocateDialog extends JDialog {
                 .addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
                     .addComponent(radio_fix)
+                    .addComponent(radio_free)
                     .addComponent(radio_default)
                     .addComponent(radio_median)
-                    .addComponent(radio_free)
                     .addComponent(formattedTextFieldDepth, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                 .addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -277,15 +382,15 @@ public class HypoTableRelocateDialog extends JDialog {
                         .addComponent(jLabel14))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(checkbox1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(checkbox_gridSearch, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
         jPanel3.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Comment"));
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        text_depth.setColumns(20);
+        text_depth.setRows(5);
+        jScrollPane1.setViewportView(text_depth);
 
         GroupLayout jPanel3Layout = new GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -334,70 +439,5 @@ public class HypoTableRelocateDialog extends JDialog {
     }
   
     
-    private void radioButtonFreeActionPerformed(java.awt.event.ActionEvent evt) {                                                
-        // TODO add your handling code here:
-        if(this.radio_free.isSelected()) {
-            this.formattedTextFieldDepth.setEditable(false);
-            this.formattedTextFieldDepth.setEnabled(false);
-        } 
-    }                                               
-
-    
-    private void radioButtonDefaultActionPerformed(java.awt.event.ActionEvent evt) {                                                   
-        // TODO add your handling code here:
-        if(this.radio_default.isSelected()) {
-            this.formattedTextFieldDepth.setEditable(false);
-            this.formattedTextFieldDepth.setEnabled(false);
-        } 
-    }                                                  
-
-    
-    private void radioButtonMedianActionPerformed(java.awt.event.ActionEvent evt) {                                                  
-        // TODO add your handling code here:
-        if(this.radio_median.isSelected()) {
-            this.formattedTextFieldDepth.setEditable(false);
-            this.formattedTextFieldDepth.setEnabled(false);
-        }
-    }                                                 
-
-  
-    private void button_okActionPerformed(java.awt.event.ActionEvent evt) {                                         
-        if (this.formattedTextFieldDepth.getText().equals(" ") && this.radio_fix.isSelected()) {
-            JOptionPane.showMessageDialog(null, "Enter Depth.");
-        }
-
-        
-        
-        commandList.fireSeisDataChanged();  // Notify the Command table to update from the database.
-        System.out.println("Fired: New Command from the 'Relocate Event' dialog...");
-        this.dispose();
-    }                        
-
-    
-    private void button_cancelActionPerformed(java.awt.event.ActionEvent evt) {                                             
-        
-        this.dispose();
-    }                                            
-
-    
-    private void radioButtonFixActionPerformed(java.awt.event.ActionEvent evt) {                                            
-        
-        if(this.radio_fix.isSelected()) {
-            this.formattedTextFieldDepth.setEditable(true);
-            this.formattedTextFieldDepth.setEnabled(true);
-        }   
-    }                                              
-
-    
-    public void showHypoTableRelocateDialog(String evid, String hypid, String time, String coord, String depth, String prime) {
-        label_evid.setText(evid);
-        label_hypid.setText(hypid);
-        label_time.setText(time);
-        label_coord.setText(coord);
-        label_depth.setText(depth);
-        label_prime.setText(prime);
-        
-        setVisible(true);
-    }
     
 }

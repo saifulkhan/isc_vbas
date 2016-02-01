@@ -34,7 +34,7 @@ public class EventsTable extends JPanel implements ListSelectionListener {
     private JTable table = new JTable();                                      // the main table of the event list
     EventsTableModel tableModel;
 
-    private static SeisEvent seisEvent = Global.getSelectedSeisEvent();
+    private static SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
     private final BlockTableModel blockTableModel = new BlockTableModel();  // The space to keep all the data
     private static final SeisEventsList eventsList = new SeisEventsList();
       
@@ -83,7 +83,7 @@ public class EventsTable extends JPanel implements ListSelectionListener {
         }
 
         // do not change the actual address of the selected SiesEvent.
-        seisEvent.setValues(eventsList.getEvents().get(0));  
+        selectedSeisEvent.setValues(eventsList.getEvents().get(0));  
                 
         tableModel = new EventsTableModel(eventsList.getEvents());
         table.setModel(tableModel);
@@ -105,10 +105,10 @@ public class EventsTable extends JPanel implements ListSelectionListener {
         if (!e.getValueIsAdjusting()) {
             int selectedRowNum = table.getSelectedRow();
             int selectedEvid = (Integer) table.getValueAt(selectedRowNum, 0);     // get selected evid.
-            seisEvent.setValues(eventsList.getEvents().get(selectedRowNum));            // do not change the actual address of the selected SiesEvent.
+            selectedSeisEvent.setValues(eventsList.getEvents().get(selectedRowNum));            // do not change the actual address of the selected SiesEvent.
         
             System.out.println(Global.debugAt() + "Selected SiesEventId= " + selectedEvid + ". Fire an event.");
-            seisEvent.fireSeisDataChanged();
+            selectedSeisEvent.fireSeisDataChanged();
         }
     }
 

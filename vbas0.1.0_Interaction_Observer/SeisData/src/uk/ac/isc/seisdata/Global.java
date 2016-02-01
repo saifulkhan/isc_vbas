@@ -17,9 +17,13 @@ public class Global {
     private static Hypocentre selectedHypocentre = new Hypocentre();
     // Selected Phase
     private static Phase selectedPhase = new Phase();
+    // Comamnd (String)
+    private static Command formulatedCommand = new Command();
     
     private static HypocentresList hypocentresList = new HypocentresList();
     private static PhasesList phasesList = new PhasesList(); 
+
+    // TODO: Do I need these?
     private static CommandList commandList = new CommandList(); 
     private static AssessedCommandList assessedCommandList = new AssessedCommandList();
 
@@ -43,11 +47,12 @@ public class Global {
     public static Phase getSelectedPhase() {
         return selectedPhase;
     }
-                
-    public static CommandList getCommandList() {
-        return commandList;
-    }
 
+    public static Command getFormulatedCommand() {
+        return formulatedCommand;
+    }
+         
+    
     public static PhasesList getPhasesList() {
         return phasesList;
     }
@@ -56,11 +61,6 @@ public class Global {
         return hypocentresList;
     }
    
-    public static AssessedCommandList getAssessedCommandList() {
-        return assessedCommandList;
-    }
-    
-    
     public static String debugAt() {
         // Debug
         String fullClassName = Thread.currentThread().getStackTrace()[2].getClassName();
@@ -72,6 +72,12 @@ public class Global {
     }
 
   
+    public static AssessedCommandList getAssessedCommandList() {
+        return assessedCommandList;
+    }
     
-       
+    public static CommandList getCommandList() {
+        return commandList;
+    }
+   
 }

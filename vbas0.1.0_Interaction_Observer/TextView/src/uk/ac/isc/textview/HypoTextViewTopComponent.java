@@ -131,17 +131,11 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
      */
     public void onValueChanged(ListSelectionEvent lse) {
         System.out.println(Global.debugAt() + " New Hypocentre is selected.");
-        // disable the double calls
-       /*if (lse.getValueIsAdjusting()) {
-         return;
-         }*/
-
         int selectedRowNum = table.getSelectedRow();
-        System.out.println(Global.debugAt() + " selectedRowNum= " + selectedRowNum);
-        int hypocentre = (Integer) table.getValueAt(selectedRowNum, 9); // get selected hypo id.
-        selectedHypocentre.setValues(hypocentresList.getHypocentres().get(selectedRowNum));   
-
-        System.out.println("Selected Hypocentre= " + hypocentre + ". Fire an event.");
+        
+        Hypocentre hypocentre = hypocentresList.getHypocentres().get(selectedRowNum);
+        selectedHypocentre.setValues(hypocentre);   
+        System.out.println("Selected: row= " + selectedRowNum + "Hypocentre= " + (Integer) table.getValueAt(selectedRowNum, 9) + ". Fire an event.");
         selectedHypocentre.fireSeisDataChanged();
     }
     

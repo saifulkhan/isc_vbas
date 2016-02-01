@@ -75,14 +75,14 @@ class PhaseTablePopupManager implements ActionListener {
         }
         if("Relocate..".equals(e.getActionCommand())){
             relocateDialog.setLocation(p.x, p.y + r.height);
-            relocateDialog.showHypoTableRelocateDialog(evid, hypid, time, coord, depth, prime);
+            relocateDialog.showHypoTableRelocateDialog();
         }
         if("Depricate".equals(e.getActionCommand())){
             JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand());
         }
         if("Edit..".equals(e.getActionCommand())){
             editDialog.setLocation(p);
-            editDialog.showHypoEditDialog(evid, hypid, time, coord, depth, prime);         
+            editDialog.showHypoEditDialog();         
         }
         if("Create..".equals(e.getActionCommand())){
             JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand());

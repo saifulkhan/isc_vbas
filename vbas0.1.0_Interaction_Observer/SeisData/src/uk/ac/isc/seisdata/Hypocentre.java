@@ -13,67 +13,27 @@ import java.util.Objects;
  */
 public class Hypocentre extends AbstractSeisData implements Cloneable {
 
-    /*keep a reference of event*/
-    private Integer evid;
-
-    //hypocentre id
-    private Integer hypid;
-
-    //prime hypocentre
-    private Hypocentre pHypo;
-
-    //latitude
-    private Double lat;
-
-    //longitude
-    private Double lon;
-
-    //depth
-    private Integer depth;
-
-    //agency who reports
-    private String agency;
-
-    //the origin time
-    private Date origTime;
-
-    //with millisecond
-    private Integer msec;
-
-    /* get the std errors for depth, magnitude (I might ignore the err of magnitude for others), location */
-    private Double errDepth;
-
-    //the number of stations 
-    private Integer numStations;
-
-    //the number of defining stations
-    private Integer numDefStations;
-
-    //the number of phases
-    private Integer numPhases;
-
-    //the number of defining phases
-    private Integer numDefPhases;
-
-    //flag to show if the hypocentre depth is fixed or not
-    private Boolean isFixed;
-
-    //flag to show if the hypocetre is the prime hypocentre
-    private Boolean isPrime;
-
-    //all the magnitudes reported 
-    private LinkedHashMap<String, Double> magMap;
-
-    /*add one boolean value for indicating if it is selected for interaction*/
-    private Boolean isSelected = false;
-
-    //here are some data from hypoc_err table for the reliablility of the hypocentre
-    private Double stime;
-
+    private Integer evid;       // keep a reference of event
+    private Integer hypid;      // hypocentre id
+    private Hypocentre pHypo;   // prime hypocentre
+    private Double lat;         // latitude
+    private Double lon;         // longitude
+    private Integer depth;      // depth
+    private String agency;      // agency who reports
+    private Date origTime;      // the origin time
+    private Integer msec;       // with millisecond
+    private Double errDepth;    // get the std errors for depth, magnitude (I might ignore the err of magnitude for others), location 
+    private Integer numStations; // the number of stations 
+    private Integer numDefStations; // the number of defining stations
+    private Integer numPhases;      // the number of phases
+    private Integer numDefPhases;   // the number of defining phases
+    private Boolean isFixed;        // flag to show if the hypocentre depth is fixed or not
+    private Boolean isPrime;                        // flag to show if the hypocetre is the prime hypocentre
+    private LinkedHashMap<String, Double> magMap;   // all the magnitudes reported 
+    private Boolean isSelected = false;             // add one boolean value for indicating if it is selected for interaction
+    private Double stime;                           // here are some data from hypoc_err table for the reliablility of the hypocentre
     private Double strike;
-
     private Double smajax;
-
     private Double sminax;
 
     public Hypocentre() {
@@ -89,10 +49,10 @@ public class Hypocentre extends AbstractSeisData implements Cloneable {
         this.lon = lon;
         this.depth = depth;
         /*setOrigTime(dd);
-        setAgency(agency);
-        setLat(lat);
-        setLon(lon);
-        setDepth(depth);*/
+         setAgency(agency);
+         setLat(lat);
+         setLon(lon);
+         setDepth(depth);*/
     }
 
     public void setEvid(Integer evid) {
@@ -393,16 +353,30 @@ public class Hypocentre extends AbstractSeisData implements Cloneable {
     }
 
     public void setValues(Hypocentre h) {
-        
+
         this.evid = h.evid;
         this.hypid = h.hypid;
-        this.origTime = h.origTime;
-        this.agency = h.agency;
+        this.pHypo = h.pHypo;
         this.lat = h.lat;
         this.lon = h.lon;
         this.depth = h.depth;
+        this.agency = h.agency;
+        this.origTime = h.origTime;
+        this.msec = h.msec;
         this.errDepth = h.errDepth;
+        this.numStations = h.numStations;
+        this.numDefStations = h.numDefStations;
+        this.numPhases = h.numPhases;
+        this.numDefPhases = h.numDefPhases;
+        this.isFixed = h.isFixed;
+        this.isPrime = h.isPrime;
         this.magMap = h.magMap;
+        this.isSelected = h.isSelected;
+        this.stime = h.stime;
+        this.strike = h.strike;
+        this.smajax = h.smajax;
+        this.sminax = h.sminax;
+
     }
 
 }

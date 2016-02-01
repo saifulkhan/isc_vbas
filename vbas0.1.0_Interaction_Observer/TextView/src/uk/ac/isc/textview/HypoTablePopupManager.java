@@ -52,13 +52,14 @@ class HypoTablePopupManager implements ActionListener {
         int selectedColumn = table.getSelectedColumn();
         
         // TODO: get the selected SeiesEvent from HypoTextViewTopComponent   
-        String evid = Global.getSelectedSeisEvent().getEvid().toString();
-        String hypid = table.getValueAt(selectedRow, 9).toString();
-        String time = table.getValueAt(selectedRow, 1).toString();
-        String coord = table.getValueAt(selectedRow, 2).toString() + " " + table.getValueAt(selectedRow, 3).toString();
-        String depth = table.getValueAt(selectedRow, 4).toString();
+        //String evid = Global.getSelectedSeisEvent().getEvid().toString();
+        
+        //String hypid = table.getValueAt(selectedRow, 9).toString();
+        //String time = table.getValueAt(selectedRow, 1).toString();
+        //String coord = table.getValueAt(selectedRow, 2).toString() + " " + table.getValueAt(selectedRow, 3).toString();
+        //String depth = table.getValueAt(selectedRow, 4).toString();
         // TODO: get HypocentresList from HypoTextViewTopComponent   
-        String prime = Global.getHypocentresList().getHypocentres().get(selectedRow).getIsPrime().toString();     
+        //String prime = Global.getHypocentresList().getHypocentres().get(selectedRow).getIsPrime().toString();     
         
         // Debug 
         //System.out.println("Selected row/col"+ " "+ selectedRow+ "  " + selectedColumn);
@@ -75,14 +76,14 @@ class HypoTablePopupManager implements ActionListener {
         }
         if("Relocate..".equals(e.getActionCommand())){
             relocateDialog.setLocation(p.x, p.y + r.height);
-            relocateDialog.showHypoTableRelocateDialog(evid, hypid, time, coord, depth, prime);
+            relocateDialog.showHypoTableRelocateDialog();
         }
         if("Depricate".equals(e.getActionCommand())){
             JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand());
         }
         if("Edit..".equals(e.getActionCommand())){
             editDialog.setLocation(p);
-            editDialog.showHypoEditDialog(evid, hypid, time, coord, depth, prime);         
+            editDialog.showHypoEditDialog();         
         }
         if("Create..".equals(e.getActionCommand())){
             JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand());

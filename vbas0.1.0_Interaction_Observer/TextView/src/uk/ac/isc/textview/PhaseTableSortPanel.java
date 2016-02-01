@@ -50,11 +50,11 @@ public class PhaseTableSortPanel extends JPanel {
         defRadioButton.setText("Default");
  
 
-        jComboBox1.setModel(new DefaultComboBoxModel(new String[] { "AAAAAAAA", "B", "C" }));
+        jComboBox1.setModel(new DefaultComboBoxModel(new String[] { "-", "-", "-" }));
 
-        jComboBox2.setModel(new DefaultComboBoxModel(new String[] { "AAAAAAAA", "B", "C" }));
+        jComboBox2.setModel(new DefaultComboBoxModel(new String[] { "-", "-", "-" }));
 
-        jComboBox3.setModel(new DefaultComboBoxModel(new String[] { "AAAAAAAAA", "B", "C" }));
+        jComboBox3.setModel(new DefaultComboBoxModel(new String[] { "-", "B", "-" }));
 
         GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);

@@ -4,9 +4,10 @@ import java.util.Date;
 
 public class Command extends AbstractSeisData {
 
+
     private Boolean select; // the selection flag of the command
     private Integer evid;   // event id
-    // populate from the database
+    // Read from the database
     private Integer id;     // command id    
     private String analyst; // analyst name
     private String command; // the formulated command
@@ -15,7 +16,9 @@ public class Command extends AbstractSeisData {
     private String status;  // ?
     private String type;    // ?
     
-
+    // Formulated by user.
+    private String formulatedComamnd;
+    
     public Command() {
 
     }
@@ -97,4 +100,14 @@ public class Command extends AbstractSeisData {
     public void setType(String type) {
         this.type = type;
     }
+
+    public String getFormulatedComamnd() {
+        return formulatedComamnd;
+    }
+
+    public void setFormulatedComamnd(String formulatedComamnd) {
+        this.formulatedComamnd = formulatedComamnd;
+    }
+    
+    
 }
