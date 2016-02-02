@@ -15,8 +15,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -2577,14 +2579,14 @@ public final class SeisDataDAO {
 
             while (rs.next()) {
                 Integer id = rs.getInt("id");
-                String analyst = rs.getString("name");
-                String commandStr = rs.getString("command") + " "; // TODO: when command null, the ommandTableModel.getColumnClass() fails.
-                String pass = rs.getString("pass");
+                String analyst = rs.getString("name") + "";
+                String commandStr = rs.getString("command") + ""; // TODO: when command null, the ommandTableModel.getColumnClass() fails.
+                String pass = rs.getString("pass") + "";
                 Date date = rs.getDate("adddate");
-                String status = rs.getString("status");
-                String type = rs.getString("type");
+                String status = rs.getString("status") + "";
+                String type = rs.getString("type") + "";
 
-                //System.out.println("\n" + id + " | " +  analyst + " | "+  commandStr + " | " +  pass + " | "+  date + " | " + status + " | " + type);
+                //System.out.println(id + " | " +  analyst + " | "+  commandStr + " | " +  pass + " | "+  date + " | " + status + " | " + type);
                 Command command = new Command(evid, id, analyst, commandStr, pass, date, status, type);
                 commandList.add(command);
             }
@@ -2636,30 +2638,45 @@ public final class SeisDataDAO {
             con = DriverManager.getConnection(url, user, password);
             st = con.createStatement();
 
-            String query = "SELECT a.name, ba.pass, aec.type, aec.command\n"
-                    + " FROM analyst a, edit_commands ec, block_allocation ba, command_group cg, edit_commands aec\n"
-                    + " WHERE ec.evid = " + evid + "\n"
+            String query = "SELECT ba.pass, a.name, ec.id AS assessid, ec.command AS report, eca.id AS cmdids\n"
+                    + " FROM analyst a, edit_commands ec, block_allocation ba, command_group cg, edit_commands eca\n"
+                    + " WHERE ec.evid = " + evid 
+                    + " AND ec.type = 'assess'\n"
                     + " AND ba.id = ec.block_allocation_id\n"
                     + " AND ba.analyst_id = a.id\n"
-                    + " AND ec.type = 'assess'\n"
-                    + " AND ec.id = cg.id\n"
-                    + " AND aec.id = cg.edit_commands_id\n"
-                    + " ORDER BY aec.adddate;";
+                    + " AND cg.id = ec.id\n"
+                    + " AND cg.edit_commands_id = eca.id\n"
+                    + " ORDER BY ec.adddate;";
 
             rs = st.executeQuery(query);
             //System.out.println(Global.debugAt() + "\nquery= " + query + "\nrs= " + rs);
 
+            Hashtable<String, AssessedCommand> hashtable = new Hashtable<String, AssessedCommand>();;
+
             while (rs.next()) {
-                //System.out.println(Global.debugAt());
-
-                String ids = rs.getString("command");
                 String analyst = rs.getString("name");
-                String report = rs.getString("type");
+                String pass = rs.getString("pass");
+                String report = rs.getString("report");
+                String assessId = rs.getString("assessid");
+                String commandId = rs.getString("cmdids");
 
-                // TODO: fix ids and report path.
-                //System.out.println("\n" + ids + " | " +  analyst + " | "+  report);
-                AssessedCommand assessedCommand = new AssessedCommand(evid, ids, analyst, report);
-                assessedCommandList.add(assessedCommand);
+                //System.out.println(commandId + " | " + analyst + " | " + report + " | " + pass + " | " + assessId);
+
+                AssessedCommand ac = hashtable.get(assessId);
+                if (ac == null) {
+                    ac = new AssessedCommand(evid, commandId, analyst, report);
+                } else {
+                    ac.setIds(ac.getIds() + ", " + commandId);
+                }
+                hashtable.put(assessId, ac);
+            }
+
+            Set<String> keys = hashtable.keySet();
+            Iterator<String> itr = keys.iterator();
+            while (itr.hasNext()) {
+                String str = itr.next();
+                //System.out.println("Key: " + str + " & Value: " + hashtable.get(str));
+                assessedCommandList.add(hashtable.get(str));
             }
 
             rs.close();
@@ -2701,28 +2718,32 @@ public final class SeisDataDAO {
         Connection con = null;
         Statement st = null;
         ResultSet rs = null;
-
+                        
         try {
             con = DriverManager.getConnection(url, user, password);
             st = con.createStatement();
 
             int block_allocation_id = 0;
+            
             String query = "SELECT ba.id\n"
                     + " FROM analyst a, event_allocation ea, block_allocation ba\n"
-                    + " WHERE ea.evid = " + evid + "\n" 
+                    + " WHERE ea.evid = " + evid + "\n"
                     + " AND ba.id = ea.block_allocation_id\n"
                     + " AND ba.analyst_id = a.id\n"
-                    + " AND a.username = '" + user + "'\n"
+                    + " AND a.username = '" + "rose" + "'\n"
                     + " ORDER BY ba.start DESC\n"
                     + " LIMIT 1;";
+            
+            //System.out.println(Global.debugAt() + "\nquery= " + query);
             rs = st.executeQuery(query);
-   
+
             while (rs.next()) {
                 block_allocation_id = rs.getInt("id");
             }
-            
-            System.out.println(Global.debugAt() + "\nquery= " + query + "\nrs= " + rs);
-            
+
+            //System.out.println(Global.debugAt() + block_allocation_id);
+            //System.out.println(Global.debugAt() + "\nquery= " + query + "\nrs= " + rs);
+
             query = "INSERT INTO edit_commands ( "
                     + "id, "
                     + "evid, "
@@ -2736,24 +2757,19 @@ public final class SeisDataDAO {
                     + evid + ", "
                     + "NULL, "
                     + block_allocation_id + ", "
-                    + "NOW(), "
-                    + type + " "
-                    + command;
+                    + "NOW(), '"
+                    + type + "', '"
+                    + command + "');";
 
-            rs = st.executeQuery(query);
-
-            System.out.println(Global.debugAt() + "\nquery= " + query + "\nrs= " + rs);
-
-            while (rs.next()) {
-                // return string check?
-
-            }
+            //System.out.println(Global.debugAt() + "\nquery= " + query);
+            st.executeUpdate(query);
 
             rs.close();
 
         } catch (SQLException ex) {
             String message = ex.toString() + "\n\n"
-                    + Global.debugAt()
+                    + Global.debugAt()      
+                    + "Query= " + ex.getSQLState()
                     + "\nFailed to update Command history table."
                     + "\nSee the error log file for more information. ";
 

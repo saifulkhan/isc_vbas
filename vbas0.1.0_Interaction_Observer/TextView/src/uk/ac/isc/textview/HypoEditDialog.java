@@ -74,13 +74,13 @@ public class HypoEditDialog extends JDialog {
         Date dd = null;
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            dd = df.parse(text_lat.getText());
+            dd = df.parse(text_time.getText());
         } catch (ParseException e) {
-            JOptionPane.showMessageDialog(null, "Incorrect Date.", "Error", JOptionPane.ERROR_MESSAGE);
-            //return;
+            JOptionPane.showMessageDialog(null, "Incorrect date time.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
 
-        String command = null;
+        String command = "";
         command += "<hypid> " + selectedHypocentre.getHypid();
 
         if (Integer.parseInt(text_depth.getText()) != selectedHypocentre.getDepth()) {
@@ -90,7 +90,6 @@ public class HypoEditDialog extends JDialog {
                     + " </attr> ";
         }
 
-        
         //if (dd.compareTo(selectedHypocentre.getOrigTime()) != 0) {
         if (text_lat.getText().equals(selectedHypocentre.getOrigTime().toString())) {
             command += " <attr> " + " time "
@@ -133,9 +132,11 @@ public class HypoEditDialog extends JDialog {
 
     public void showHypoEditDialog() {
 
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         label_evid.setText(selectedHypocentre.getEvid().toString());
         label_hypid.setText(selectedHypocentre.getHypid().toString());
-        label_time.setText(selectedHypocentre.getOrigTime().toString());
+        label_time.setText(df.format(selectedHypocentre.getOrigTime()));
         label_coord.setText(selectedHypocentre.getLat().toString() + "N " + selectedHypocentre.getLon().toString() + "W");
         label_depth.setText(selectedHypocentre.getDepth().toString());
         label_prime.setText(selectedHypocentre.getIsPrime().toString());
@@ -143,7 +144,7 @@ public class HypoEditDialog extends JDialog {
         text_depth.setText(selectedHypocentre.getDepth().toString());
         text_lat.setText(selectedHypocentre.getLat().toString());
         text_lon.setText(selectedHypocentre.getLon().toString());
-        text_time.setText(selectedHypocentre.getOrigTime().toString());
+        text_time.setText(df.format(selectedHypocentre.getOrigTime()));
 
         setVisible(true);
     }

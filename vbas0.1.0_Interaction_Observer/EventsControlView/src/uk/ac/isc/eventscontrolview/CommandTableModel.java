@@ -11,22 +11,22 @@ import uk.ac.isc.seisdata.Global;
 public class CommandTableModel extends AbstractTableModel {
 
     private final String[] columnNames = {
-        "Select", 
-        "ID",
+        "Command ID",
         "Analyst", 
         "Command",
         "Status",
-        "Type"};
+        "Type"
+    };
     
     private final Class[] columns = new Class[]{
-        Boolean.class, 
         Integer.class,
         String.class, 
         String.class,
-        String.class};
+        String.class,
+        String.class
+    };
     
     public final Object[] longValues = {
-        Boolean.TRUE,
         new Integer(999999),
         new String(new char[50]), 
         new String(new char[500]),
@@ -34,14 +34,7 @@ public class CommandTableModel extends AbstractTableModel {
         new String(new char[10])};
         
     private final ArrayList<Command> commandList;
-    
-    Object[][] data = {
-        {false, 1, "Smith", "Relocate ..."},
-        {true, 2, "Doe", "Edit Hypocentre ..."},
-        {false, 3, "Black", "Set Prime ..."},
-        {false, 4, "White", "Edit Phase"},
-        {false, 5, "Brown", "Other Command ..."}
-    };
+
 
     CommandTableModel(ArrayList<Command> commandList) {
         this.commandList = commandList;
@@ -71,31 +64,26 @@ public class CommandTableModel extends AbstractTableModel {
         
         switch(columnIndex) {
             case 0:
-                retObject = commandList.get(rowIndex).getSelect();
-                break;
-            case 1:
                 retObject = commandList.get(rowIndex).getId();
                 break;
-            case 2:
+            case 1:
                 retObject = commandList.get(rowIndex).getAnalyst();
                 break;
-            case 3:
+            case 2:
                 retObject = commandList.get(rowIndex).getCommand();
                 break;
-            case 4:
+            case 3:
                 retObject = commandList.get(rowIndex).getStatus();
                 break;
-            case 5:
+            case 4:
                 retObject = commandList.get(rowIndex).getType();
                 break;    
             default:
                 String message = Global.debugAt() + "\nSee the error log file for more information. ";
                 JOptionPane.showMessageDialog(null, message, "Error",  JOptionPane.ERROR_MESSAGE);
-            
         }
 
         return retObject;
-       
     }
 
     /*
@@ -113,29 +101,14 @@ public class CommandTableModel extends AbstractTableModel {
     // only the select column is editable.
     @Override
     public boolean isCellEditable(int row, int col) {
-        return (col == 0) ? true : false;
+        // return (col == 0) ? true : false; // algorithm: first column is editable.
+        return false;
     }
 
     // when something is selected.
     @Override
     public void setValueAt(Object value, int row, int col) {
-        data[row][col] = value;
         fireTableCellUpdated(row, col);
-        //printDebugData();
-    }
-
-    private void printDebugData() {
-        int numRows = getRowCount();
-        int numCols = getColumnCount();
-
-        for (int i = 0; i < numRows; i++) {
-            System.out.print("    row " + i + ":");
-            for (int j = 0; j < numCols; j++) {
-                System.out.print("  " + data[i][j]);
-            }
-            System.out.println();
-        }
-        System.out.println("--------------------------");
     }
 
 }

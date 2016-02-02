@@ -1,12 +1,13 @@
 package uk.ac.isc.eventscontrolview;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.event.MouseEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
@@ -19,8 +20,6 @@ import javax.swing.table.TableColumn;
 import uk.ac.isc.seisdata.BlockTableModel;
 import uk.ac.isc.seisdata.EventsTableModel;
 import uk.ac.isc.seisdata.Global;
-import uk.ac.isc.seisdata.SeisDataChangeEvent;
-import uk.ac.isc.seisdata.SeisDataChangeListener;
 import uk.ac.isc.seisdata.SeisDataDAO;
 import uk.ac.isc.seisdata.SeisEvent;
 import uk.ac.isc.seisdata.SeisEventsList;
@@ -31,9 +30,10 @@ import uk.ac.isc.seisdata.SeisEventsList;
  */
 public class EventsTable extends JPanel implements ListSelectionListener {
 
-    private JTable table = new JTable();                                      // the main table of the event list
-    EventsTableModel tableModel;
-
+    private JTable table;
+    private EventsTableModel tableModel;
+    private EventSearchPanel eventsSearchPanel;
+ 
     private static SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
     private final BlockTableModel blockTableModel = new BlockTableModel();  // The space to keep all the data
     private static final SeisEventsList eventsList = new SeisEventsList();
@@ -43,28 +43,9 @@ public class EventsTable extends JPanel implements ListSelectionListener {
     
     public EventsTable() {
 
-        // 1. set the table and tooltips
-       /* table = new JTable() {
-            @Override
-            public String getToolTipText(MouseEvent e) {
-                String tip = null;
-                java.awt.Point p = e.getPoint();
-                int rowIndex = rowAtPoint(p);
-                int colIndex = columnAtPoint(p);
-
-                try {
-                    // comment row, exclude heading
-                    if (rowIndex != 0) {
-                        tip = getValueAt(rowIndex, colIndex).toString();
-                    }
-                } catch (RuntimeException e1) {
-                    // catch null pointer exception if mouse is over an empty line
-                    logger.log(Level.FINE, "Empty value for tooltip");
-                }
-                return tip;
-            }
-        };*/
-
+        table = new JTable();  
+        //scrollPane = new JScrollPane(table);
+        
         // fill in the events number
         boolean retDAO = SeisDataDAO.retrieveBlockEventNumber(blockTableModel.getTaskBlocks());
         retDAO = SeisDataDAO.retrieveBlockReviewedEventNumber(blockTableModel.getTaskBlocks());
@@ -92,6 +73,13 @@ public class EventsTable extends JPanel implements ListSelectionListener {
         table.getSelectionModel().addListSelectionListener(this);  
         setupTableVisualAttributes();
        
+        
+        // Action buttons, search panel
+        // layout all together
+        eventsSearchPanel = new EventSearchPanel(table);
+        this.setLayout(new BorderLayout());
+        this.add(eventsSearchPanel, BorderLayout.PAGE_START);
+        this.add(new JScrollPane(table), BorderLayout.CENTER);
    }
 
     /*
@@ -112,23 +100,7 @@ public class EventsTable extends JPanel implements ListSelectionListener {
         }
     }
 
-   
-    /*
-     public PhasesList getPhasesList() {
-     return phasesList;
-     }
-
-     public HypocentresList getHyposList() {
-     return hypocentresList;
-     }
-
-     public SeisEvent getSelectedSeisEvent() {
-     return selectedSeisEvent;
-     }
-
-     public TreeMap<String, String> getStationsForRegion() {
-     return stations;
-     }*/
+    
     
     private void setupTableVisualAttributes() {
 
@@ -197,9 +169,7 @@ public class EventsTable extends JPanel implements ListSelectionListener {
 
     }
 
-    public JTable getTable() {
-        return this.table;
-    }
+ 
 
     public BlockTableModel getBlockTableModel() {
         return this.blockTableModel;

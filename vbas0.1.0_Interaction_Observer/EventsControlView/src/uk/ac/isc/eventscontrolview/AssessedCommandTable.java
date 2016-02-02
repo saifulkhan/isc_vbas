@@ -1,5 +1,6 @@
 package uk.ac.isc.eventscontrolview;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -28,6 +29,8 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
     private JTable table = null;
     private JScrollPane scrollPane = null;
     private AssessedCommandTableModel model;
+    
+    private final AssessedCommandPanel assessedCommandPanel;
 
     private final AssessedCommandList assessedCommandList = Global.getAssessedCommandList();
     private static SeisEvent seisEvent = Global.getSelectedSeisEvent();    // used to fetch event from the EventTable, EventControlView
@@ -44,6 +47,14 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
 
         seisEvent.addChangeListener(this);
         SeisDataDAO.readAssessedCommands(seisEvent.getEvid(), assessedCommandList.getAssessedCommandList());
+        
+        
+         // Action buttons
+        // layout all together
+        assessedCommandPanel = new AssessedCommandPanel(table);
+        this.setLayout(new BorderLayout());
+        this.add(assessedCommandPanel, BorderLayout.PAGE_START);
+        this.add(scrollPane, BorderLayout.CENTER);
     }
 
     
@@ -96,44 +107,11 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
         leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
-        table.getColumnModel().getColumn(1).setCellRenderer(leftRenderer);
+        table.getColumnModel().getColumn(0).setCellRenderer(leftRenderer);
+        table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
         table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
 
-        // This part of the code picks good column sizes. 
-        // If all column heads are wider than the column's cells'
-        // contents, then you can just use column.sizeWidthToFit().
-        /*        
-         TableColumn column = null;
-         Component comp = null;
-         int headerWidth = 0;
-         int cellWidth = 0;
-        
-        
-         Object[] longValues = model.longValues;
-         TableCellRenderer headerRenderer = table.getTableHeader().getDefaultRenderer();
-
-         for (int i = 0; i < model.getColumnCount(); i++) {
-         column = table.getColumnModel().getColumn(i);
-
-         comp = headerRenderer.getTableCellRendererComponent(
-         null, column.getHeaderValue(),
-         false, false, 0, 0);
-         headerWidth = comp.getPreferredSize().width;
-
-         comp = table.getDefaultRenderer(model.getColumnClass(i))
-         .getTableCellRendererComponent(table, 
-         longValues[i], false, false, 0, i);
-            
-         cellWidth = comp.getPreferredSize().width;
-
-         column.setPreferredWidth(Math.max(headerWidth, cellWidth));
-         }*/
     }
-
-    public JScrollPane getTable() {
-        return this.scrollPane;
-    }
-
 }
 
 

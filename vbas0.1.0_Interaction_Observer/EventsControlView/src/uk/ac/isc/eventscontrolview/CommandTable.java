@@ -1,5 +1,6 @@
 package uk.ac.isc.eventscontrolview;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import javax.swing.JPanel;
@@ -9,6 +10,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
+import uk.ac.isc.seisdata.Command;
 import uk.ac.isc.seisdata.CommandList;
 import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
@@ -21,10 +23,12 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
     private JTable table = null;
     private JScrollPane scrollPane = null;
     private CommandTableModel model = null;
-
+    private final CommandPanel commandPanel;
+    
     private final CommandList commandList = Global.getCommandList();
     private static SeisEvent seisEvent = Global.getSelectedSeisEvent();    // used to fetch event from the EventTable, EventControlView
-
+    private final Command formulatedCommand = Global.getFormulatedCommand();
+    
     public CommandTable() {
 
         table = new JTable();
@@ -35,7 +39,17 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
         setupTableVisualAttributes();
 
         seisEvent.addChangeListener(this);
+        formulatedCommand.addChangeListener(this);
+        
         SeisDataDAO.readCommands(seisEvent.getEvid(), commandList.getCommandList());
+        
+        
+        // Action buttons
+        // layout all together
+        commandPanel = new CommandPanel(table);
+        this.setLayout(new BorderLayout());
+        this.add(commandPanel, BorderLayout.PAGE_START);
+        this.add(scrollPane, BorderLayout.CENTER);
     }
     
 
@@ -83,55 +97,13 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
         rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
         leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-
-        //table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
+ 
+        table.getColumnModel().getColumn(0).setCellRenderer(rightRenderer);
         table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
-        table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
-        table.getColumnModel().getColumn(3).setCellRenderer(leftRenderer);
-
-        // This part of the code picks good column sizes. 
-        // If all column heads are wider than the column's cells'
-        // contents, then you can just use column.sizeWidthToFit().
-        /*        
-         TableColumn column = null;
-         Component comp = null;
-         int headerWidth = 0;
-         int cellWidth = 0;
-        
-        
-         Object[] longValues = model.longValues;
-         TableCellRenderer headerRenderer = table.getTableHeader().getDefaultRenderer();
-
-         for (int i = 0; i < model.getColumnCount(); i++) {
-         column = table.getColumnModel().getColumn(i);
-
-         comp = headerRenderer.getTableCellRendererComponent(
-         null, column.getHeaderValue(),
-         false, false, 0, 0);
-         headerWidth = comp.getPreferredSize().width;
-
-         comp = table.getDefaultRenderer(model.getColumnClass(i))
-         .getTableCellRendererComponent(table, 
-         longValues[i], false, false, 0, i);
-            
-         cellWidth = comp.getPreferredSize().width;
-
-         column.setPreferredWidth(Math.max(headerWidth, cellWidth));
-         }*/
+        table.getColumnModel().getColumn(2).setCellRenderer(leftRenderer);
+        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
+    
     }
-
-    public JScrollPane getTable() {
-        return this.scrollPane;
-    }
-
-
-    /*
-     public void initActionListeners() {
-     buttonAssess.addActionListener(new ActionListener() {
-     @Override
-     public void actionPerformed(ActionEvent e) {
-     JOptionPane.showMessageDialog(null, "Asses: clicked!", " ", JOptionPane.WARNING_MESSAGE);
-     }
-     });
-     }*/
+   
 }

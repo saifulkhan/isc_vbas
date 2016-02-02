@@ -43,11 +43,11 @@ public class PhaseEditDialog extends javax.swing.JFrame {
         checkBox_phaseNondef = new javax.swing.JCheckBox();
         textField_timeShift = new javax.swing.JTextField();
         checkBox_deleteAmp = new javax.swing.JCheckBox();
-        comboBox_phaseBreak = new javax.swing.JComboBox<>();
+        comboBox_phaseBreak = new javax.swing.JComboBox<String>();
         textField_putValue = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Relocate Event");
+        setTitle("Edit Phase");
 
         buttonOK.setText("OK");
         buttonOK.addActionListener(new java.awt.event.ActionListener() {
@@ -120,7 +120,7 @@ public class PhaseEditDialog extends javax.swing.JFrame {
             }
         });
 
-        comboBox_phaseBreak.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-", "Take", "Delete", "Put" }));
+        comboBox_phaseBreak.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "-", "Take", "Delete", "Put" }));
         comboBox_phaseBreak.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 comboBox_phaseBreakActionPerformed(evt);

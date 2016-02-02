@@ -2,7 +2,6 @@ package uk.ac.isc.eventscontrolview;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
-import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -41,11 +40,10 @@ import org.openide.windows.TopComponent;
 
 public final class EventsControlViewTopComponent extends TopComponent {
 
-    EventSearchPanel eventsSearchPanel;         // Search Panel
     EventsTable eventsTable;                    // Event Table
     CommandTable commandTable;                  // Action Hostory Table
     AssessedCommandTable assessedCommandTable;
-    ActionPanel actionPanel;
+    
     
     public EventsControlViewTopComponent() {
         initComponents();
@@ -55,24 +53,18 @@ public final class EventsControlViewTopComponent extends TopComponent {
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
 
         eventsTable = new EventsTable();
-        eventsSearchPanel = new EventSearchPanel(eventsTable);
         commandTable = new CommandTable();
         assessedCommandTable = new AssessedCommandTable();
-        actionPanel = new ActionPanel(assessedCommandTable);
         
-        JScrollPane spEventsTable = new JScrollPane(eventsTable.getTable());
-               
         this.setLayout(new BorderLayout());
-        this.add(eventsSearchPanel, BorderLayout.PAGE_START);
-        this.add(actionPanel, BorderLayout.PAGE_END);
         
         JSplitPane split;
         
-        JSplitPane spLeft = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spEventsTable, null);
+        JSplitPane spLeft = new JSplitPane(JSplitPane.VERTICAL_SPLIT, eventsTable, null);
         spLeft.setDividerSize(4);
         spLeft.setContinuousLayout(true);
 
-        JSplitPane spRight = new JSplitPane(JSplitPane.VERTICAL_SPLIT, commandTable.getTable(), assessedCommandTable.getTable());
+        JSplitPane spRight = new JSplitPane(JSplitPane.VERTICAL_SPLIT, commandTable, assessedCommandTable);
         spRight.setDividerSize(4);
         spRight.setContinuousLayout(true);
 
@@ -81,7 +73,6 @@ public final class EventsControlViewTopComponent extends TopComponent {
         split.setOneTouchExpandable(true);
 
         this.add(split, BorderLayout.CENTER);
-        
     }
 
     /* 
