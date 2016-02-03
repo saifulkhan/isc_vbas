@@ -38,17 +38,19 @@ public class PhaseEditDialog extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         table_edit = new javax.swing.JTable();
-        jLabel1 = new javax.swing.JLabel();
-        checkBox_phaseFix = new javax.swing.JCheckBox();
-        checkBox_phaseNondef = new javax.swing.JCheckBox();
         textField_timeShift = new javax.swing.JTextField();
-        checkBox_deleteAmp = new javax.swing.JCheckBox();
-        comboBox_phaseBreak = new javax.swing.JComboBox<String>();
-        textField_putValue = new javax.swing.JTextField();
+        textField_put = new javax.swing.JTextField();
+        button_applyToAll = new javax.swing.JButton();
+        comboBox_fix = new javax.swing.JComboBox();
+        comboBox_nondef = new javax.swing.JComboBox();
+        comboBox_deleteAmp = new javax.swing.JComboBox();
+        comboBox_phaseBreak = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Edit Phase");
 
+        buttonOK.setBackground(new java.awt.Color(45, 137, 239));
+        buttonOK.setForeground(new java.awt.Color(255, 255, 255));
         buttonOK.setText("OK");
         buttonOK.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -56,6 +58,8 @@ public class PhaseEditDialog extends javax.swing.JFrame {
             }
         });
 
+        buttonCancel.setBackground(new java.awt.Color(45, 137, 239));
+        buttonCancel.setForeground(new java.awt.Color(255, 255, 255));
         buttonCancel.setText("Cancel");
         buttonCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -74,7 +78,7 @@ public class PhaseEditDialog extends javax.swing.JFrame {
                 {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Phase No.", "Characters", "Fix", "Nondef", "Time Shift +/- n (mdh)", "Delete Amp", "Phase Break", "Put (Value)"
+                "Phase ID", "Type", "Fix", "Nondef", "Time Shift +/- n (mdh)", "Delete Amp", "Phase Break", "Put (Value)"
             }
         ) {
             Class[] types = new Class [] {
@@ -94,42 +98,52 @@ public class PhaseEditDialog extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(table_edit);
 
-        jLabel1.setText("Apply to all");
-
-        checkBox_phaseFix.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                checkBox_phaseFixActionPerformed(evt);
-            }
-        });
-
-        checkBox_phaseNondef.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                checkBox_phaseNondefActionPerformed(evt);
-            }
-        });
-
         textField_timeShift.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 textField_timeShiftActionPerformed(evt);
             }
         });
 
-        checkBox_deleteAmp.addActionListener(new java.awt.event.ActionListener() {
+        textField_put.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                checkBox_deleteAmpActionPerformed(evt);
+                textField_putActionPerformed(evt);
             }
         });
 
-        comboBox_phaseBreak.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "-", "Take", "Delete", "Put" }));
+        button_applyToAll.setBackground(new java.awt.Color(45, 137, 239));
+        button_applyToAll.setForeground(new java.awt.Color(255, 255, 255));
+        button_applyToAll.setText("Apply to all");
+        button_applyToAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_applyToAllActionPerformed(evt);
+            }
+        });
+
+        comboBox_fix.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Set", "Unset", "NA" }));
+        comboBox_fix.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboBox_fixActionPerformed(evt);
+            }
+        });
+
+        comboBox_nondef.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NA", "Set", "Unset" }));
+        comboBox_nondef.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboBox_nondefActionPerformed(evt);
+            }
+        });
+
+        comboBox_deleteAmp.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NA", "Set", "Unset" }));
+        comboBox_deleteAmp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboBox_deleteAmpActionPerformed(evt);
+            }
+        });
+
+        comboBox_phaseBreak.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NA", "Take", "Delete", "Put" }));
         comboBox_phaseBreak.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 comboBox_phaseBreakActionPerformed(evt);
-            }
-        });
-
-        textField_putValue.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                textField_putValueActionPerformed(evt);
             }
         });
 
@@ -138,39 +152,36 @@ public class PhaseEditDialog extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(91, 91, 91)
-                .addComponent(jLabel1)
-                .addGap(61, 61, 61)
-                .addComponent(checkBox_phaseFix)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 68, Short.MAX_VALUE)
-                .addComponent(checkBox_phaseNondef)
-                .addGap(33, 33, 33)
-                .addComponent(textField_timeShift, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(33, 33, 33)
-                .addComponent(checkBox_deleteAmp)
-                .addGap(33, 33, 33)
-                .addComponent(comboBox_phaseBreak, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addComponent(button_applyToAll)
+                .addGap(78, 78, 78)
+                .addComponent(comboBox_fix, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(textField_putValue, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(6, 6, 6))
+                .addComponent(comboBox_nondef, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(textField_timeShift, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(comboBox_deleteAmp, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(comboBox_phaseBreak, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(textField_put, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(14, Short.MAX_VALUE))
             .addComponent(jScrollPane1)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(checkBox_phaseFix)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(comboBox_phaseBreak, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(textField_putValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(1, 1, 1)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(checkBox_deleteAmp)
-                            .addComponent(textField_timeShift, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(checkBox_phaseNondef))))
-                .addGap(11, 11, 11)
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(button_applyToAll)
+                    .addComponent(comboBox_fix, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(comboBox_nondef, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(textField_timeShift, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(comboBox_deleteAmp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(comboBox_phaseBreak, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(textField_put, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -212,29 +223,33 @@ public class PhaseEditDialog extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_buttonCancelActionPerformed
 
-    private void checkBox_phaseNondefActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBox_phaseNondefActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_checkBox_phaseNondefActionPerformed
-
-    private void checkBox_phaseFixActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBox_phaseFixActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_checkBox_phaseFixActionPerformed
-
-    private void comboBox_phaseBreakActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBox_phaseBreakActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_comboBox_phaseBreakActionPerformed
-
     private void textField_timeShiftActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textField_timeShiftActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_textField_timeShiftActionPerformed
 
-    private void checkBox_deleteAmpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkBox_deleteAmpActionPerformed
+    private void textField_putActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textField_putActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_checkBox_deleteAmpActionPerformed
+    }//GEN-LAST:event_textField_putActionPerformed
 
-    private void textField_putValueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textField_putValueActionPerformed
+    private void button_applyToAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_applyToAllActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_textField_putValueActionPerformed
+    }//GEN-LAST:event_button_applyToAllActionPerformed
+
+    private void comboBox_fixActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBox_fixActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_comboBox_fixActionPerformed
+
+    private void comboBox_nondefActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBox_nondefActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_comboBox_nondefActionPerformed
+
+    private void comboBox_deleteAmpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBox_deleteAmpActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_comboBox_deleteAmpActionPerformed
+
+    private void comboBox_phaseBreakActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBox_phaseBreakActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_comboBox_phaseBreakActionPerformed
 
     
     
@@ -243,16 +258,16 @@ public class PhaseEditDialog extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonCancel;
     private javax.swing.JButton buttonOK;
-    private javax.swing.JCheckBox checkBox_deleteAmp;
-    private javax.swing.JCheckBox checkBox_phaseFix;
-    private javax.swing.JCheckBox checkBox_phaseNondef;
-    private javax.swing.JComboBox<String> comboBox_phaseBreak;
+    private javax.swing.JButton button_applyToAll;
+    private javax.swing.JComboBox comboBox_deleteAmp;
+    private javax.swing.JComboBox comboBox_fix;
+    private javax.swing.JComboBox comboBox_nondef;
+    private javax.swing.JComboBox comboBox_phaseBreak;
     private javax.swing.JFileChooser jFileChooser1;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable table_edit;
-    private javax.swing.JTextField textField_putValue;
+    private javax.swing.JTextField textField_put;
     private javax.swing.JTextField textField_timeShift;
     // End of variables declaration//GEN-END:variables
 }

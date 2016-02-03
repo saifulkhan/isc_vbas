@@ -54,6 +54,12 @@
   <SubComponents>
     <Component class="javax.swing.JButton" name="buttonOK">
       <Properties>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="ef" green="89" red="2d" type="rgb"/>
+        </Property>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="ff" green="ff" red="ff" type="rgb"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="OK"/>
       </Properties>
       <Events>
@@ -62,6 +68,12 @@
     </Component>
     <Component class="javax.swing.JButton" name="buttonCancel">
       <Properties>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="ef" green="89" red="2d" type="rgb"/>
+        </Property>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="ff" green="ff" red="ff" type="rgb"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Cancel"/>
       </Properties>
       <Events>
@@ -85,21 +97,21 @@
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace min="-2" pref="91" max="-2" attributes="0"/>
-                  <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="61" max="-2" attributes="0"/>
-                  <Component id="checkBox_phaseFix" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="68" max="32767" attributes="0"/>
-                  <Component id="checkBox_phaseNondef" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
-                  <Component id="textField_timeShift" min="-2" pref="90" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
-                  <Component id="checkBox_deleteAmp" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
-                  <Component id="comboBox_phaseBreak" min="-2" pref="88" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="textField_putValue" min="-2" pref="83" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+                  <Component id="button_applyToAll" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="78" max="-2" attributes="0"/>
+                  <Component id="comboBox_fix" min="-2" pref="86" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="comboBox_nondef" min="-2" pref="86" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="textField_timeShift" min="-2" pref="80" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="comboBox_deleteAmp" min="-2" pref="86" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="comboBox_phaseBreak" min="-2" pref="86" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="textField_put" min="-2" pref="77" max="-2" attributes="0"/>
+                  <EmptySpace pref="14" max="32767" attributes="0"/>
               </Group>
               <Component id="jScrollPane1" alignment="0" max="32767" attributes="0"/>
           </Group>
@@ -107,23 +119,17 @@
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="1" attributes="0">
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                      <Component id="checkBox_phaseFix" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                          <Component id="comboBox_phaseBreak" alignment="3" min="-2" pref="19" max="-2" attributes="0"/>
-                          <Component id="textField_putValue" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <Group type="102" attributes="0">
-                          <EmptySpace min="1" pref="1" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="checkBox_deleteAmp" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="textField_timeShift" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="checkBox_phaseNondef" alignment="0" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="button_applyToAll" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="comboBox_fix" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="comboBox_nondef" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="textField_timeShift" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="comboBox_deleteAmp" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="comboBox_phaseBreak" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="textField_put" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="jScrollPane1" min="-2" pref="210" max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -141,8 +147,8 @@
               <Properties>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                   <Table columnCount="8" rowCount="5">
-                    <Column editable="false" title="Phase No." type="java.lang.Integer"/>
-                    <Column editable="false" title="Characters" type="java.lang.String"/>
+                    <Column editable="false" title="Phase ID" type="java.lang.Integer"/>
+                    <Column editable="false" title="Type" type="java.lang.String"/>
                     <Column editable="true" title="Fix" type="java.lang.Boolean"/>
                     <Column editable="true" title="Nondef" type="java.lang.Boolean"/>
                     <Column editable="true" title="Time Shift +/- n (mdh)" type="java.lang.String"/>
@@ -202,36 +208,77 @@
             </Component>
           </SubComponents>
         </Container>
-        <Component class="javax.swing.JLabel" name="jLabel1">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Apply to all"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JCheckBox" name="checkBox_phaseFix">
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkBox_phaseFixActionPerformed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JCheckBox" name="checkBox_phaseNondef">
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkBox_phaseNondefActionPerformed"/>
-          </Events>
-        </Component>
         <Component class="javax.swing.JTextField" name="textField_timeShift">
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="textField_timeShiftActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="checkBox_deleteAmp">
+        <Component class="javax.swing.JTextField" name="textField_put">
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="checkBox_deleteAmpActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="textField_putActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="button_applyToAll">
+          <Properties>
+            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="ef" green="89" red="2d" type="rgb"/>
+            </Property>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="ff" green="ff" red="ff" type="rgb"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Apply to all"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="button_applyToAllActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JComboBox" name="comboBox_fix">
+          <Properties>
+            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+              <StringArray count="3">
+                <StringItem index="0" value="Set"/>
+                <StringItem index="1" value="Unset"/>
+                <StringItem index="2" value="NA"/>
+              </StringArray>
+            </Property>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="comboBox_fixActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JComboBox" name="comboBox_nondef">
+          <Properties>
+            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+              <StringArray count="3">
+                <StringItem index="0" value="NA"/>
+                <StringItem index="1" value="Set"/>
+                <StringItem index="2" value="Unset"/>
+              </StringArray>
+            </Property>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="comboBox_nondefActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JComboBox" name="comboBox_deleteAmp">
+          <Properties>
+            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+              <StringArray count="3">
+                <StringItem index="0" value="NA"/>
+                <StringItem index="1" value="Set"/>
+                <StringItem index="2" value="Unset"/>
+              </StringArray>
+            </Property>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="comboBox_deleteAmpActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JComboBox" name="comboBox_phaseBreak">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
               <StringArray count="4">
-                <StringItem index="0" value="-"/>
+                <StringItem index="0" value="NA"/>
                 <StringItem index="1" value="Take"/>
                 <StringItem index="2" value="Delete"/>
                 <StringItem index="3" value="Put"/>
@@ -240,14 +287,6 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="comboBox_phaseBreakActionPerformed"/>
-          </Events>
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
-          </AuxValues>
-        </Component>
-        <Component class="javax.swing.JTextField" name="textField_putValue">
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="textField_putValueActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>

@@ -17,7 +17,9 @@ public class Global {
     private static Hypocentre selectedHypocentre = new Hypocentre();
     // Selected Phase
     private static Phase selectedPhase = new Phase();
-    // Comamnd (String)
+    // Formulated command in: 1. Hypocentre table dialogs and popupmenus, 
+    // 2. Comamnd table, 3. AssessedComamnd table
+    // Not used: Set the comamnd as a java String.
     private static Command formulatedCommand = new Command();
     
     private static HypocentresList hypocentresList = new HypocentresList();

@@ -121,86 +121,6 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         this.add(phaseTableSortPanel, BorderLayout.PAGE_START);
     }
 
-    // Selection related
-    private class MyRowSelectionListener implements ListSelectionListener {
-
-        @Override
-        public void valueChanged(ListSelectionEvent event) {
-
-            // disable the double calls
-            if (!event.getValueIsAdjusting()) {
-                /*
-                System.out.println("ROW SELECTION EVENT. ");
-
-                System.out.print(String.format("Lead: %d, %d. ",
-                        table.getSelectionModel().getLeadSelectionIndex(),
-                        table.getColumnModel().getSelectionModel().
-                        getLeadSelectionIndex()));
-                System.out.print("Rows:");
-                for (int c : table.getSelectedRows()) {
-                    System.out.println(String.format(" %d", c));
-                }
-                System.out.print(". Columns:");
-                for (int c : table.getSelectedColumns()) {
-                    System.out.print(String.format(" %d", c));
-                }
-                System.out.print(".\n\n");
-                */
-            }
-        }
-    }
-
-    // Mouse event related
-    private class MyMouseAdapter extends MouseAdapter {
-
-        public void mouseClicked(MouseEvent e) {
-
-            if (SwingUtilities.isLeftMouseButton(e)) {
-                System.out.println(Global.debugAt() + "left-click");
-
-            } else if (SwingUtilities.isRightMouseButton(e)) {
-
-                System.out.println(Global.debugAt() + "right-click");
-
-                Point p = e.getPoint();
-                final int row = table.rowAtPoint(p);
-                final int col = table.columnAtPoint(p);
-                int selectedRow = table.getSelectedRow();
-                int selectedCol = table.getSelectedColumn();
-
-                // no need to close the opened dialog, its modal
-                //if(dialog.isShowing())
-                //dialog.dispose();
-                if (ptPopupManager.getPopupMenu().isVisible()) {
-                    ptPopupManager.getPopupMenu().setVisible(false);
-                }
-
-                // Update the current selection for correct htPopupManager behavior
-                // in case a new selection is made with the right mouse button.
-                if (row != selectedRow || col != selectedCol) {
-                    EventQueue.invokeLater(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            table.changeSelection(row, col, true, false);
-                        }
-                    });
-                }
-
-                // Specify the condition(s) you want for htPopupManager display.
-                // For Example: show htPopupManager only for view column index 1.
-                if (row != -1 && col == 1) {
-                    if (SwingUtilities.isRightMouseButton(e)) {
-                        Rectangle r = table.getCellRect(row, col, false);
-                        ptPopupManager.getPopupMenu().show(table, r.x, r.y + r.height);
-                    } else {
-                        e.consume();
-                    }
-                }
-            }
-        }
-    }
-
     // Receive SeisEvent changes and redraw the table.
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
@@ -239,7 +159,6 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         table.setRowSelectionAllowed(true);
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         //table.setCellSelectionEnabled(false);
-
         table.setColumnSelectionAllowed(false);
         table.setSelectionBackground(new Color(45, 137, 239));
         table.setSelectionForeground(Color.WHITE);
@@ -299,8 +218,99 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         longTable.setShowGrid(false);
         longTable.setShowVerticalLines(false);
         longTable.setShowHorizontalLines(false);
-
     }
+    
+
+    /*
+     *****************************************************************************************
+     * Mouse event related
+     *****************************************************************************************
+     */
+    private class MyMouseAdapter extends MouseAdapter {
+
+        public void mouseClicked(MouseEvent e) {
+
+            if (SwingUtilities.isLeftMouseButton(e)) {
+                System.out.println(Global.debugAt() + "left-click");
+
+            } else if (SwingUtilities.isRightMouseButton(e)) {
+
+                System.out.println(Global.debugAt() + "right-click");
+
+                Point p = e.getPoint();
+                final int row = table.rowAtPoint(p);
+                final int col = table.columnAtPoint(p);
+                int selectedRow = table.getSelectedRow();
+                int selectedCol = table.getSelectedColumn();
+
+                // no need to close the opened dialog, its modal
+                //if(dialog.isShowing())
+                //dialog.dispose();
+                if (ptPopupManager.getPopupMenu().isVisible()) {
+                    ptPopupManager.getPopupMenu().setVisible(false);
+                }
+
+                // Update the current selection for correct htPopupManager behavior
+                // in case a new selection is made with the right mouse button.
+                if (row != selectedRow || col != selectedCol) {
+                    EventQueue.invokeLater(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            table.changeSelection(row, col, true, false);
+                        }
+                    });
+                }
+
+                // Specify the condition(s) you want for htPopupManager display.
+                // For Example: show htPopupManager only for view column index 1.
+                if (row != -1 && col == 1) {
+                    if (SwingUtilities.isRightMouseButton(e)) {
+                        Rectangle r = table.getCellRect(row, col, false);
+                        ptPopupManager.getPopupMenu().show(table, r.x, r.y + r.height);
+                    } else {
+                        e.consume();
+                    }
+                }
+            }
+        }
+    }
+
+
+    /*
+     *****************************************************************************************
+     * Selection related
+     *****************************************************************************************
+     */
+    private class MyRowSelectionListener implements ListSelectionListener {
+
+        @Override
+        public void valueChanged(ListSelectionEvent event) {
+            // disable the double calls
+            if (!event.getValueIsAdjusting()) {
+                /*
+                 System.out.println("ROW SELECTION EVENT. ");
+
+                 System.out.print(String.format("Lead: %d, %d. ",
+                 table.getSelectionModel().getLeadSelectionIndex(),
+                 table.getColumnModel().getSelectionModel().
+                 getLeadSelectionIndex()));
+                 System.out.print("Rows:");
+                 for (int c : table.getSelectedRows()) {
+                 System.out.println(String.format(" %d", c));
+                 }
+                 System.out.print(". Columns:");
+                 for (int c : table.getSelectedColumns()) {
+                 System.out.print(String.format(" %d", c));
+                 }
+                 System.out.print(".\n\n");
+                 */
+            }
+        }
+    }
+
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -346,7 +356,5 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         String version = p.getProperty("version");
         // TODO read your settings according to their version
     }
-
-    
 
 }

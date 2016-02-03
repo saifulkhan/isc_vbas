@@ -3,12 +3,16 @@ package uk.ac.isc.eventscontrolview;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -29,7 +33,7 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
     private JTable table = null;
     private JScrollPane scrollPane = null;
     private AssessedCommandTableModel model;
-    
+
     private final AssessedCommandPanel assessedCommandPanel;
 
     private final AssessedCommandList assessedCommandList = Global.getAssessedCommandList();
@@ -40,16 +44,15 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
         table = new JTable();
         model = new AssessedCommandTableModel(assessedCommandList.getAssessedCommandList());
         table.setModel(model);
-        
+
         scrollPane = new JScrollPane(table);
 
         setupTableVisualAttributes();
 
         seisEvent.addChangeListener(this);
         SeisDataDAO.readAssessedCommands(seisEvent.getEvid(), assessedCommandList.getAssessedCommandList());
-        
-        
-         // Action buttons
+
+        // Action buttons
         // layout all together
         assessedCommandPanel = new AssessedCommandPanel(table);
         this.setLayout(new BorderLayout());
@@ -57,7 +60,6 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
         this.add(scrollPane, BorderLayout.CENTER);
     }
 
-    
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
         System.out.println(Global.debugAt() + " Event received from " + event.getData().getClass().getName());
@@ -66,13 +68,12 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
 
         model = new AssessedCommandTableModel(assessedCommandList.getAssessedCommandList());
         table.setModel(model);
-        
+
         table.clearSelection();
         scrollPane.setViewportView(table);
         scrollPane.repaint();
     }
-    
-    
+
     private void setupTableVisualAttributes() {
 
         TableCellRenderer buttonRenderer = new JTableButtonRenderer();
@@ -112,59 +113,114 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
         table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
 
     }
-}
 
+    /*
+     *****************************************************************************************
+     * XX
+     *****************************************************************************************
+     */
+    class JTableButtonRenderer implements TableCellRenderer {
 
-class JTableButtonRenderer implements TableCellRenderer {
+        /*the three reference variables for the use of the actionlistener*/
+        //private JTable lctable = null;
+        //private int lcRow;
+        //private int lcColumn;
+        private JButton button;
 
-    /*the three reference variables for the use of the actionlistener*/
-    //private JTable lctable = null;
-    //private int lcRow;
-    //private int lcColumn;
-    private JButton button;
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            button = (JButton) value;
+            ImageIcon icon = new ImageIcon(getClass().getClassLoader()
+                    .getResource("uk/ac/isc/eventscontrolview/pdf-icon.png"));
+            // Resize the image
+            Image img = icon.getImage();
+            Image newimg = img.getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
+            icon = new ImageIcon(newimg);
 
-    @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        button = (JButton) value;
-        ImageIcon icon = new ImageIcon(getClass().getClassLoader()
-                .getResource("uk/ac/isc/eventscontrolview/pdf-icon.png"));
-        // Resize the image
-        Image img = icon.getImage();
-        Image newimg = img.getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
-        icon = new ImageIcon(newimg);
+            button.setIcon(icon);
 
-        button.setIcon(icon);
+            //this.lctable = table;
+            //this.lcRow = row;
+            //this.lcColumn = column;
+            return button;
+        }
 
-        //this.lctable = table;
-        //this.lcRow = row;
-        //this.lcColumn = column;
-        return button;
     }
 
-}
 
-class JTableButtonMouseListener extends MouseAdapter {
+    /*
+     *****************************************************************************************
+     * xx
+     *****************************************************************************************
+     */
+    class JTableButtonMouseListener extends MouseAdapter {
 
-    private final JTable table;
+        private final JTable table;
 
-    public JTableButtonMouseListener(JTable phasesTable) {
-        this.table = phasesTable;
-    }
+        public JTableButtonMouseListener(JTable phasesTable) {
+            this.table = phasesTable;
+        }
 
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        int column = table.getColumnModel().getColumnIndexAtX(e.getX());
-        int row = e.getY() / table.getRowHeight();
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            int column = table.getColumnModel().getColumnIndexAtX(e.getX());
+            int row = e.getY() / table.getRowHeight();
 
-        if (column == 0) {
-            Object value = table.getValueAt(row, column);
-            if (value instanceof JButton) {
-                /**
-                 * Here is the code for popup a dialog to edit the phase reading
-                 */
-                //((JButton)value).doClick(); 
-                System.out.println("JTableButtonMouseListener: Mouse Clicked." + this.table.getValueAt(row, 2));
+            if (column == 0) {
+                Object value = table.getValueAt(row, column);
+                if (value instanceof JButton) {
+                    /**
+                     * Here is the code for popup a dialog to edit the phase
+                     * reading
+                     */
+                    //((JButton)value).doClick(); 
+                    System.out.println("JTableButtonMouseListener: Mouse Clicked." + this.table.getValueAt(row, 2));
+                }
             }
+        }
+
+    }
+
+
+    /*
+     *****************************************************************************************
+     * A panel to 'commit' the assessed command that is selected.
+     *****************************************************************************************
+     */
+    public class AssessedCommandPanel extends JPanel {
+
+        private final JLabel label_total;
+        private final JButton button_commit;
+        private final JTable table;             // reference of the table
+
+        public AssessedCommandPanel(final JTable commandTable) {
+            this.table = commandTable;
+
+            Font font = new Font("Sans-serif", Font.PLAIN, 14);
+
+            button_commit = new JButton("Commit");
+            button_commit.setBackground(new Color(45, 137, 239));
+            button_commit.setForeground(new Color(255, 255, 255));
+            button_commit.setFont(font);
+
+            label_total = new JLabel("");
+            label_total.setFont(font);
+
+            button_commit.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    onButtonCommitActionPerformed(e);
+                }
+            });
+
+            this.setLayout(new FlowLayout());
+
+            this.add(button_commit);
+            this.add(label_total);
+        }
+
+        public void onButtonCommitActionPerformed(ActionEvent e) {
+           
         }
     }
 

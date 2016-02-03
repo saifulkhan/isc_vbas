@@ -142,37 +142,38 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
     
     private void onMouseClicked(MouseEvent e) {
         System.out.println(Global.debugAt());
-         Point p = e.getPoint();
+        
+        Point p = e.getPoint();
         final int row = table.rowAtPoint(p);
         final int col = table.columnAtPoint(p);
         int selectedRow = table.getSelectedRow();
         int selectedCol = table.getSelectedColumn();
-        
-        // no need to close the opened dialog, its modal
-        //if(dialog.isShowing())
-        //dialog.dispose();
        
         if(htPopupManager.getPopupMenu().isVisible())
             htPopupManager.getPopupMenu().setVisible(false);
         
+        /*
         // Update the current selection for correct htPopupManager behavior
         // in case a new selection is made with the right mouse button.
         if(row != selectedRow || col != selectedCol) {
             EventQueue.invokeLater(new Runnable() {
-                
                 @Override
                 public void run() {
                     table.changeSelection(row, col, true, false);
                 }
             });
-        }
+        }*/
+        
+        System.out.println(Global.debugAt() + "1. selectedRow= " + selectedRow + ", selectedCol= " + selectedCol);
         
         // Specify the condition(s) you want for htPopupManager display.
-        // For Example: show htPopupManager only for view column index 1.
-        if(row != -1 && col == 1) {
+        // For Example: show htPopupManager only if a row & column is selected.
+        if(selectedRow >= 0 && selectedCol >= 0) {
+            System.out.println(Global.debugAt() + "2. selectedRow= " + selectedRow + ", selectedCol= " + selectedCol);
             if(SwingUtilities.isRightMouseButton(e)) {
                 Rectangle r = table.getCellRect(row, col, false);
                 htPopupManager.getPopupMenu().show(table, r.x, r.y+r.height);
+                System.out.println(Global.debugAt() + "selectedRow= " + selectedRow + ", selectedCol= " + selectedCol);
             } else {
                 e.consume();
             }

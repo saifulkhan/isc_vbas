@@ -25,7 +25,7 @@ import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.SeisDataDAO;
 import uk.ac.isc.seisdata.SeisEvent;
 
-public class HypoEditDialog extends JDialog {
+public class EditHypocentreDialog extends JDialog {
 
     private final Command formulatedCommand = Global.getFormulatedCommand();
     private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
@@ -61,7 +61,7 @@ public class HypoEditDialog extends JDialog {
     private JTextField text_time;
     private Object OptionPane;
 
-    public HypoEditDialog() {
+    public EditHypocentreDialog() {
 
         setTitle("Edit Hypocentre");
         setModal(true);
@@ -71,6 +71,8 @@ public class HypoEditDialog extends JDialog {
 
     private void button_okActionPerformed(ActionEvent evt) {
 
+        System.out.println(Global.debugAt());
+         
         Date dd = null;
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
@@ -90,9 +92,8 @@ public class HypoEditDialog extends JDialog {
                     + " </attr> ";
         }
 
-        //if (dd.compareTo(selectedHypocentre.getOrigTime()) != 0) {
-        if (text_lat.getText().equals(selectedHypocentre.getOrigTime().toString())) {
-            command += " <attr> " + " time "
+        if (dd.compareTo(selectedHypocentre.getOrigTime()) != 0) {  // same date time
+                command += " <attr> " + " time "
                     + " <value> " + text_time.getText() + " </value> "
                     + " <prev_value> " + selectedHypocentre.getOrigTime() + " </prev_value> "
                     + " </attr> ";
@@ -105,17 +106,17 @@ public class HypoEditDialog extends JDialog {
                     + " </attr> ";
         }
 
-        if (Double.parseDouble(text_lat.getText()) == selectedHypocentre.getLat()) {
+        if (Double.parseDouble(text_lon.getText()) != selectedHypocentre.getLon()) {
             command += " <attr> " + " lon "
                     + " <value> " + text_lon.getText() + " </value> "
                     + " <prev_value> " + selectedHypocentre.getLon() + " </prev_value> "
                     + " </attr> ";
         }
 
-        command += "</hypid>";
-
-        boolean retDAO = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "chhypo", command);
-        if (retDAO) {
+        command += " </hypid>";
+        
+        boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "chhypo", command);
+        if (ret) {
             // success
             System.out.println(Global.debugAt() + " \nCommand=" + command + " \nFired: New Command from the 'Edit Hypocentre' dialog.");
             formulatedCommand.fireSeisDataChanged();  // Notify the Command table to update from the database.

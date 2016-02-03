@@ -13,6 +13,9 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JViewport;
+import uk.ac.isc.seisdata.Command;
+import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdata.SeisDataDAO;
 
 /**
  *
@@ -28,6 +31,8 @@ public class EventSearchPanel extends JPanel {
     private final JButton button_unbanish;
     private final JButton button_done;
 
+    private final Command formulatedCommand = Global.getFormulatedCommand();
+    
     // reference of the control view
     private final JTable table;
 
@@ -138,11 +143,30 @@ public class EventSearchPanel extends JPanel {
     }
 
     private void onButtonBanishActionPerformed(ActionEvent ae) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+       String cmd = "NULL";
+
+        System.out.print(Global.debugAt());
+        int row = table.getSelectedRow();
+        int seisEventId = (Integer) table.getValueAt(row, 0);
+             
+        System.out.print(cmd + "\n\n");
+
+            if (cmd.equals("")) {
+                JOptionPane.showMessageDialog(null, "Select command(s) to assess.", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                boolean ret = SeisDataDAO.updateCommandTable(seisEventId, "banish", cmd);
+                if (ret) {
+                    // Success
+                    System.out.println(Global.debugAt() + " \nFired: New Command from the 'CommandTable'");
+                    formulatedCommand.fireSeisDataChanged();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Database Error.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
     }
 
     private void onButtonUnbanishActionPerformed(ActionEvent ae) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //
     }
 
     public void onButtonDoneActionPerformed(ActionEvent e) {

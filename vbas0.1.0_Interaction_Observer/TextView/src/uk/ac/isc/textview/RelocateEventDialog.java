@@ -31,7 +31,7 @@ import uk.ac.isc.seisdata.SeisDataDAO;
 import uk.ac.isc.seisdata.SeisEvent;
 
 
-public class HypoTableRelocateDialog extends JDialog {
+public class RelocateEventDialog extends JDialog {
 
     private final Command formulatedCommand = Global.getFormulatedCommand();
     private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
@@ -67,7 +67,7 @@ public class HypoTableRelocateDialog extends JDialog {
     private JRadioButton radio_median;
     
     
-    public HypoTableRelocateDialog() {
+    public RelocateEventDialog() {
             
             setTitle("Relocate Event");
             setModal(true);

@@ -92,8 +92,8 @@ public class EventsTable extends JPanel implements ListSelectionListener {
         // disable the double calls
         if (!e.getValueIsAdjusting()) {
             int selectedRowNum = table.getSelectedRow();
-            int selectedEvid = (Integer) table.getValueAt(selectedRowNum, 0);     // get selected evid.
-            selectedSeisEvent.setValues(eventsList.getEvents().get(selectedRowNum));            // do not change the actual address of the selected SiesEvent.
+            int selectedEvid = (Integer) table.getValueAt(selectedRowNum, 0);       // get selected evid.
+            selectedSeisEvent.setValues(eventsList.getEvents().get(selectedRowNum));// do not change the actual address of the selected SiesEvent.
         
             System.out.println(Global.debugAt() + "Selected SiesEventId= " + selectedEvid + ". Fire an event.");
             selectedSeisEvent.fireSeisDataChanged();
