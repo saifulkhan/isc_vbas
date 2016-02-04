@@ -98,12 +98,14 @@ public class PhaseEditDialog extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(table_edit);
 
+        textField_timeShift.setText("NA");
         textField_timeShift.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 textField_timeShiftActionPerformed(evt);
             }
         });
 
+        textField_put.setText("NA");
         textField_put.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 textField_putActionPerformed(evt);
@@ -119,7 +121,7 @@ public class PhaseEditDialog extends javax.swing.JFrame {
             }
         });
 
-        comboBox_fix.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Set", "Unset", "NA" }));
+        comboBox_fix.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NA", "Set", "Unset" }));
         comboBox_fix.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 comboBox_fixActionPerformed(evt);

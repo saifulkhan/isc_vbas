@@ -137,7 +137,6 @@ class HypoTablePopupManager implements ActionListener {
         menuItem_edit.addActionListener(this);
         menuItem_create.addActionListener(this);
         menuItem_move.addActionListener(this);
-
-    }
+   }
 
 }

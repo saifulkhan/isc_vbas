@@ -146,20 +146,20 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
 
         public void onButtonAssessActionPerformed(ActionEvent e) {
 
-            String cmd = "";
-
-            System.out.print(Global.debugAt());
-            for (int c : table.getSelectedRows()) {
-                int commandId = (Integer) table.getValueAt(c, 0);
-                cmd = cmd  + commandId + " ";
+            String commandStr = "<pdf> /some/path/to/pdf/ </pdf>";
+            int [] selectedRows = table.getSelectedRows();
+            
+            for (int i : selectedRows) {
+                int commandId = (Integer) table.getValueAt(i, 0);
+                commandStr =  commandStr  + " <id> " + commandId + " </id>";
             }
 
-            System.out.print(cmd + "\n\n");
+            System.out.print("command = " + commandStr + "\n\n");
 
-            if (cmd.equals("")) {
+            if (selectedRows.length <= 0) {
                 JOptionPane.showMessageDialog(null, "Select command(s) to assess.", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
-                boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "assess", cmd);
+                boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "assess", commandStr);
                 if (ret) {
                     // Success
                     System.out.println(Global.debugAt() + " \nFired: New Command from the 'CommandTable'");

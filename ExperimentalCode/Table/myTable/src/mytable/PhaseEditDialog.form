@@ -209,11 +209,17 @@
           </SubComponents>
         </Container>
         <Component class="javax.swing.JTextField" name="textField_timeShift">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="NA"/>
+          </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="textField_timeShiftActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JTextField" name="textField_put">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="NA"/>
+          </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="textField_putActionPerformed"/>
           </Events>
@@ -236,9 +242,9 @@
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
               <StringArray count="3">
-                <StringItem index="0" value="Set"/>
-                <StringItem index="1" value="Unset"/>
-                <StringItem index="2" value="NA"/>
+                <StringItem index="0" value="NA"/>
+                <StringItem index="1" value="Set"/>
+                <StringItem index="2" value="Unset"/>
               </StringArray>
             </Property>
           </Properties>

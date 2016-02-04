@@ -22,6 +22,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import uk.ac.isc.seisdata.AssessedCommandList;
+import uk.ac.isc.seisdata.Command;
 import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
@@ -37,20 +38,22 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
     private final AssessedCommandPanel assessedCommandPanel;
 
     private final AssessedCommandList assessedCommandList = Global.getAssessedCommandList();
-    private static SeisEvent seisEvent = Global.getSelectedSeisEvent();    // used to fetch event from the EventTable, EventControlView
-
+    private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();    // used to fetch event from the EventTable, EventControlView
+    private final Command formulatedCommand = Global.getFormulatedCommand();
+    
     public AssessedCommandTable() {
 
         table = new JTable();
+        scrollPane = new JScrollPane(table);
         model = new AssessedCommandTableModel(assessedCommandList.getAssessedCommandList());
         table.setModel(model);
-
-        scrollPane = new JScrollPane(table);
-
+        
         setupTableVisualAttributes();
-
-        seisEvent.addChangeListener(this);
-        SeisDataDAO.readAssessedCommands(seisEvent.getEvid(), assessedCommandList.getAssessedCommandList());
+        
+        selectedSeisEvent.addChangeListener(this);
+        formulatedCommand.addChangeListener(this);
+        
+        SeisDataDAO.readAssessedCommands(selectedSeisEvent.getEvid(), assessedCommandList.getAssessedCommandList());
 
         // Action buttons
         // layout all together
@@ -64,7 +67,7 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
     public void SeisDataChanged(SeisDataChangeEvent event) {
         System.out.println(Global.debugAt() + " Event received from " + event.getData().getClass().getName());
 
-        SeisDataDAO.readAssessedCommands(seisEvent.getEvid(), assessedCommandList.getAssessedCommandList());
+        SeisDataDAO.readAssessedCommands(selectedSeisEvent.getEvid(), assessedCommandList.getAssessedCommandList());
 
         model = new AssessedCommandTableModel(assessedCommandList.getAssessedCommandList());
         table.setModel(model);
