@@ -13,6 +13,7 @@ import javax.swing.LayoutStyle;
 /*
  * Sort panel for the phase table.
  * Sort JTable: https://groups.google.com/forum/#!topic/comp.lang.java.help/T5avbBnxgkk
+ * Check: http://www.codejava.net/java-se/swing/6-techniques-for-sorting-jtable-you-should-know
  */
 
 public class PhaseTableSortPanel extends JPanel {

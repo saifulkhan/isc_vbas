@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -148,24 +149,29 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
 
             String commandStr = "<pdf> /some/path/to/pdf/ </pdf>";
             int [] selectedRows = table.getSelectedRows();
+            ArrayList<Integer> commandIdList = new ArrayList<Integer> ();
             
-            for (int i : selectedRows) {
-                int commandId = (Integer) table.getValueAt(i, 0);
+            for (int row : selectedRows) {
+                int commandId = (Integer) table.getValueAt(row, 0);
                 commandStr =  commandStr  + " <id> " + commandId + " </id>";
+                commandIdList.add(commandId);
             }
 
             System.out.print("command = " + commandStr + "\n\n");
 
             if (selectedRows.length <= 0) {
-                JOptionPane.showMessageDialog(null, "Select command(s) to assess.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Select command(s) to assess.", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
             } else {
-                boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "assess", commandStr);
+                boolean ret = SeisDataDAO.updateCommandTableForAssess(selectedSeisEvent.getEvid(), 
+                        "assess", commandStr, commandIdList);
                 if (ret) {
                     // Success
                     System.out.println(Global.debugAt() + " \nFired: New Command from the 'CommandTable'");
                     formulatedCommand.fireSeisDataChanged();
                 } else {
-                    JOptionPane.showMessageDialog(null, "Database Error.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Database Error.", "Error", 
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
 

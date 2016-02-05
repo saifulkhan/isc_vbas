@@ -402,11 +402,13 @@ public class PhaseEditDialog extends JDialog {
             phaseEditDataList.set(row, editedData);
             fireTableCellUpdated(row, col);
 
-            System.out.println("New value of data:");
             printDebugData();
         }
 
         private void printDebugData() {
+            
+            System.out.println(Global.debugAt());
+            
             int numRows = getRowCount();
             int numCols = getColumnCount();
 
