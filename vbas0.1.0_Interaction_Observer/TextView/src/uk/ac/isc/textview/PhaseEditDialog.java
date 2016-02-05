@@ -34,7 +34,8 @@ public class PhaseEditDialog extends JDialog {
     private JScrollPane jScrollPane1;
     private JTextField textField_put;
     private JTextField textField_timeShift;
-
+    private JTextField textField_phaseType;
+    
     private JTable table_edit;
     private PhaseEditTableModel phaseEditTableModel;
 
@@ -77,6 +78,11 @@ public class PhaseEditDialog extends JDialog {
         this.dispose();
     }
 
+    
+    private void textField_phaseTypeActionPerformed(ActionEvent evt) {
+        // TODO add your handling code here:
+    }
+        
     private void textField_timeShiftActionPerformed(ActionEvent evt) {
         // TODO add your handling code here:
     }
@@ -114,6 +120,7 @@ public class PhaseEditDialog extends JDialog {
         table_edit = new JTable();
         textField_timeShift = new JTextField();
         textField_put = new JTextField();
+        textField_phaseType = new JTextField();
         button_applyToAll = new JButton();
         comboBox_fix = new JComboBox();
         comboBox_nondef = new JComboBox();
@@ -142,6 +149,13 @@ public class PhaseEditDialog extends JDialog {
 
         jScrollPane1.setViewportView(table_edit);
 
+        textField_phaseType.setText("NA");
+        textField_phaseType.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                textField_phaseTypeActionPerformed(evt);
+            }
+        });
+        
         textField_timeShift.setText("NA");
         textField_timeShift.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -158,7 +172,7 @@ public class PhaseEditDialog extends JDialog {
 
         button_applyToAll.setBackground(new java.awt.Color(45, 137, 239));
         button_applyToAll.setForeground(new java.awt.Color(255, 255, 255));
-        button_applyToAll.setText("Apply to all");
+        button_applyToAll.setText("Apply");
         button_applyToAll.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 button_applyToAllActionPerformed(evt);
@@ -200,7 +214,9 @@ public class PhaseEditDialog extends JDialog {
                 .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(button_applyToAll)
-                        .addGap(78, 78, 78)
+                        .addGap(12, 12, 12)
+                        .addComponent(textField_phaseType, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(comboBox_fix, GroupLayout.PREFERRED_SIZE, 86, GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(comboBox_nondef, GroupLayout.PREFERRED_SIZE, 86, GroupLayout.PREFERRED_SIZE)
@@ -221,6 +237,7 @@ public class PhaseEditDialog extends JDialog {
                         .addContainerGap()
                         .addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                 .addComponent(button_applyToAll)
+                                .addComponent(textField_phaseType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                                 .addComponent(comboBox_fix, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                                 .addComponent(comboBox_nondef, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                                 .addComponent(textField_timeShift, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)

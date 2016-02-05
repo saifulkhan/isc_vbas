@@ -31,7 +31,7 @@ import uk.ac.isc.seisdata.SeisDataDAO;
 import uk.ac.isc.seisdata.SeisEvent;
 
 
-public class RelocateEventDialog extends JDialog {
+public class EventRelocateDialog extends JDialog {
 
     private final Command formulatedCommand = Global.getFormulatedCommand();
     private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
@@ -67,7 +67,7 @@ public class RelocateEventDialog extends JDialog {
     private JRadioButton radio_median;
     
     
-    public RelocateEventDialog() {
+    public EventRelocateDialog() {
             
             setTitle("Relocate Event");
             setModal(true);

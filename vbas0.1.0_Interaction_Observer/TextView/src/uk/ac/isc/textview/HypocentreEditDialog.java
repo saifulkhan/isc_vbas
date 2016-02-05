@@ -25,7 +25,7 @@ import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.SeisDataDAO;
 import uk.ac.isc.seisdata.SeisEvent;
 
-public class EditHypocentreDialog extends JDialog {
+public class HypocentreEditDialog extends JDialog {
 
     private final Command formulatedCommand = Global.getFormulatedCommand();
     private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
@@ -61,7 +61,7 @@ public class EditHypocentreDialog extends JDialog {
     private JTextField text_time;
     private Object OptionPane;
 
-    public EditHypocentreDialog() {
+    public HypocentreEditDialog() {
 
         setTitle("Edit Hypocentre");
         setModal(true);
