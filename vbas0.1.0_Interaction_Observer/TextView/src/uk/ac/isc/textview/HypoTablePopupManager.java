@@ -22,7 +22,7 @@ class HypoTablePopupManager implements ActionListener {
     JPopupMenu popupMenu;
 
     EventRelocateDialog relocateEventDialog;
-    HypocentreEditDialog editHypocentreDialog;
+    HypoEditDialog editHypocentreDialog;
  
     private final Command formulatedCommand = Global.getFormulatedCommand();
     private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
@@ -34,7 +34,7 @@ class HypoTablePopupManager implements ActionListener {
         setPopupMenuVisualAttributes();
 
         relocateEventDialog = new EventRelocateDialog();
-        editHypocentreDialog = new HypocentreEditDialog();
+        editHypocentreDialog = new HypoEditDialog();
     }
 
     public JPopupMenu getPopupMenu() {

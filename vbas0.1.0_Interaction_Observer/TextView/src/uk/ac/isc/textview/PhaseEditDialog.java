@@ -2,7 +2,10 @@ package uk.ac.isc.textview;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
@@ -17,9 +20,16 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.LayoutStyle;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import uk.ac.isc.seisdata.Command;
 import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdata.SeisDataDAO;
+import uk.ac.isc.seisdata.SeisEvent;
 
 public class PhaseEditDialog extends JDialog {
 
@@ -35,15 +45,19 @@ public class PhaseEditDialog extends JDialog {
     private JTextField textField_put;
     private JTextField textField_timeShift;
     private JTextField textField_phaseType;
-    
+
     private JTable table_edit;
     private PhaseEditTableModel phaseEditTableModel;
 
+    private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
+    private final Command formulatedCommand = Global.getFormulatedCommand();
+
     public PhaseEditDialog() {
 
-        setTitle("Edit Phase");
+        setTitle("Phase Edit");
         setModal(true);
         initComponents();
+        table_edit.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
     }
 
@@ -52,9 +66,17 @@ public class PhaseEditDialog extends JDialog {
         phaseEditTableModel = new PhaseEditTableModel(phaseEditDataList);
         table_edit.setModel(phaseEditTableModel);
 
-        // Fiddle with the Sport column's cell editors/renderers.
+        table_edit.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent lse) {
+                if (!lse.getValueIsAdjusting()) {
+                    onValueChanged(lse);
+                }
+            }
+        });
+
         setUpPhaseBreakColumn(table_edit, table_edit.getColumnModel().getColumn(6));
-        
+
         setVisible(true);
     }
 
@@ -65,12 +87,125 @@ public class PhaseEditDialog extends JDialog {
         comboBox.addItem("Take");
         comboBox.addItem("Delete");
         comboBox.addItem("Put");
-
         column.setCellEditor(new DefaultCellEditor(comboBox));
+    }
+
+    private void onValueChanged(ListSelectionEvent lse) {
+        int selectedRow = table_edit.getSelectedRow();
+        int selectedCol = table_edit.getSelectedColumn();
+
+        if (selectedRow >= 0 && selectedCol >= 1) {
+            switch (selectedCol) {
+                case 1:
+                    textField_phaseType.setText("NA");
+                    break;
+                case 2:
+                    comboBox_fix.setSelectedIndex(0);
+                    break;
+                case 3:
+                    comboBox_nondef.setSelectedIndex(0);
+                    break;
+                case 4:
+                    textField_timeShift.setText("NA");
+                    break;
+                case 5:
+                    comboBox_deleteAmp.setSelectedIndex(0);
+                    break;
+                case 6:
+                    comboBox_phaseBreak.setSelectedIndex(0);
+                    break;
+                case 7:
+                    textField_put.setText("NA");
+                    break;
+
+            }
+        }
+
     }
 
     private void buttonOKActionPerformed(ActionEvent evt) {
 
+        System.out.println(Global.debugAt());
+
+        PhaseEditTableModel model = (PhaseEditTableModel) table_edit.getModel();
+        int nRow = model.getRowCount(), nCol = model.getColumnCount();
+
+        Object[][] tableData = new Object[nRow][nCol];
+        for (int i = 0; i < nRow; i++) {
+            String command = "<phid> " + (Integer) model.getValueAt(i, 0) + " ";
+
+            System.out.println(model.getValueAt(i, 1) + " "
+                    + model.getValueAt(i, 2) + " "
+                    + model.getValueAt(i, 3) + " "
+                    + model.getValueAt(i, 4) + " "
+                    + model.getValueAt(i, 5) + " "
+                    + model.getValueAt(i, 6) + " "
+                    + model.getValueAt(i, 7) + " ");
+
+            // TODO: phase type; get the old phase type value
+            // TODO: compare old and new
+            if (!model.getValueAt(i, 1).equals("null")) {
+                command += "<attr> " + "phase_fixed "
+                        + "<value> " + (String) model.getValueAt(i, 1) + " </value>"
+                        + "<prev_value> " + "null" + " </prev_value>"; // TODO:
+            }
+
+            if (model.getValueAt(i, 2) != null) {
+                command += "<attr> " + "phase_fixed "
+                        + "<value> " + (Boolean) model.getValueAt(i, 2) + " </value>"
+                        + "<prev_value> " + "null" + " </prev_value>";
+            }
+
+            if (model.getValueAt(i, 3) != null) {
+                command += "<attr> " + "nondef "
+                        + "<value> " + (Boolean) model.getValueAt(i, 3) + " </value>"
+                        + "<prev_value> " + "null" + " </prev_value>";
+            }
+
+            if (model.getValueAt(i, 4) != null) {
+                command += "<attr> " + "time_shift "
+                        + "<value> " + (Integer) model.getValueAt(i, 4) + " </value>"
+                        + "<prev_value> " + "null" + " </prev_value>";
+            }
+
+            if (model.getValueAt(i, 5) != null) {
+                command += "<attr> " + "delete_amp "
+                        + "<value> " + (Boolean) model.getValueAt(i, 5) + " </value>"
+                        + "<prev_value> " + "null" + " </prev_value>";
+            }
+
+            if (model.getValueAt(i, 6) != null) {
+                if (!model.getValueAt(i, 6).equals("-")) {
+                    command += "<attr> " + "phase_break "
+                            + "<value> " + (String) model.getValueAt(i, 6) + " </value>"
+                            + "<prev_value> " + "null" + " </prev_value>";
+
+                    if (model.getValueAt(i, 7) != null) {
+                        if (!model.getValueAt(i, 7).equals("Put")) {
+                            command += "<attr> " + "put_value "
+                                    + "<value> " + (String) model.getValueAt(i, 7) + " </value>"
+                                    + "<prev_value> " + "null" + " </prev_value>";
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Put (value) at row: " + i, "Error", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    }
+                }
+            }
+
+            command += " </phid>";
+
+            boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "chphase", command);
+            if (ret) {
+                System.out.println(Global.debugAt() + " \nCommand=" + command + " \nFired: New Command from the 'Phase Edit' dialog.");
+                formulatedCommand.fireSeisDataChanged();  // Notify the Command table to update from the database.            
+            } else {
+                JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
+                break;
+            }
+        }
+
+        //this.dispose();
     }
 
     private void buttonCancelActionPerformed(ActionEvent evt) {
@@ -78,20 +213,53 @@ public class PhaseEditDialog extends JDialog {
         this.dispose();
     }
 
-    
-    private void textField_phaseTypeActionPerformed(ActionEvent evt) {
-        // TODO add your handling code here:
+    private void button_applyToAllActionPerformed(ActionEvent evt) {
+
+        PhaseEditTableModel model = (PhaseEditTableModel) table_edit.getModel();
+        int nRow = model.getRowCount();
+
+        for (int i = 0; i < nRow; i++) {
+            if (!textField_phaseType.getText().equals("NA")) {
+                model.setValueAt(textField_phaseType.getText(), i, 1);
+            }
+
+            if (!comboBox_fix.getSelectedItem().equals("NA")) {
+                model.setValueAt(Boolean.valueOf(comboBox_fix.getSelectedItem().toString()), i, 2);
+            }
+
+            if (!comboBox_nondef.getSelectedItem().equals("NA")) {
+                model.setValueAt(Boolean.valueOf(comboBox_nondef.getSelectedItem().toString()), i, 3);
+            }
+
+            if (!textField_timeShift.getText().equals("NA")) {
+                model.setValueAt(Integer.valueOf(textField_timeShift.getText()), i, 4);
+            }
+
+            if (!comboBox_deleteAmp.getSelectedItem().equals("NA")) {
+                model.setValueAt(Boolean.valueOf(comboBox_deleteAmp.getSelectedItem().toString()), i, 5);
+            }
+
+            if (!comboBox_phaseBreak.getSelectedItem().equals("NA")) {
+                model.setValueAt(comboBox_phaseBreak.getSelectedItem(), i, 6);
+            }
+
+            if (!textField_put.getText().equals("NA")) {
+                model.setValueAt(Double.valueOf(textField_put.getText()), i, 7);
+            }
+
+        }
+
     }
-        
+
+    private void textField_phaseTypeActionPerformed(ActionEvent evt) {
+
+    }
+
     private void textField_timeShiftActionPerformed(ActionEvent evt) {
         // TODO add your handling code here:
     }
 
     private void textField_putActionPerformed(ActionEvent evt) {
-        // TODO add your handling code here:
-    }
-
-    private void button_applyToAllActionPerformed(ActionEvent evt) {
         // TODO add your handling code here:
     }
 
@@ -155,7 +323,7 @@ public class PhaseEditDialog extends JDialog {
                 textField_phaseTypeActionPerformed(evt);
             }
         });
-        
+
         textField_timeShift.setText("NA");
         textField_timeShift.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -179,21 +347,21 @@ public class PhaseEditDialog extends JDialog {
             }
         });
 
-        comboBox_fix.setModel(new DefaultComboBoxModel(new String[]{"NA", "Set", "Unset"}));
+        comboBox_fix.setModel(new DefaultComboBoxModel(new String[]{"NA", "True", "False"}));
         comboBox_fix.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 comboBox_fixActionPerformed(evt);
             }
         });
 
-        comboBox_nondef.setModel(new DefaultComboBoxModel(new String[]{"NA", "Set", "Unset"}));
+        comboBox_nondef.setModel(new DefaultComboBoxModel(new String[]{"NA", "True", "False"}));
         comboBox_nondef.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 comboBox_nondefActionPerformed(evt);
             }
         });
 
-        comboBox_deleteAmp.setModel(new DefaultComboBoxModel(new String[]{"NA", "Set", "Unset"}));
+        comboBox_deleteAmp.setModel(new DefaultComboBoxModel(new String[]{"NA", "True", "False"}));
         comboBox_deleteAmp.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 comboBox_deleteAmpActionPerformed(evt);
@@ -383,13 +551,13 @@ public class PhaseEditDialog extends JDialog {
         // Table value can change
         public void setValueAt(Object value, int row, int col) {
 
-            System.out.println("Setting value at " + row + "," + col
+            /*System.out.println("Setting value at " + row + "," + col
                     + " to " + value
                     + " (an instance of "
-                    + value.getClass() + ")");
-            
+                    + value.getClass() + ")");*/
+
             PhaseEditData editedData = (PhaseEditData) phaseEditDataList.get(row);
-            switch(col) {                
+            switch (col) {
                 case 1:
                     editedData.setType((String) value);
                     break;
@@ -419,22 +587,22 @@ public class PhaseEditDialog extends JDialog {
             phaseEditDataList.set(row, editedData);
             fireTableCellUpdated(row, col);
 
-            printDebugData();
+            //printDebugData();
         }
 
         private void printDebugData() {
-            
+
             System.out.println(Global.debugAt());
-            
+
             int numRows = getRowCount();
             int numCols = getColumnCount();
 
             for (PhaseEditData d : phaseEditDataList) {
-                System.out.println(d.getPhaseId() + "   " + d.getType() + "   " 
-                        + d.getFix() + "   " +  d.getNondef() + "   " 
-                        + d.getTimeShift() + "   " + d.getDeleteAmp() + "   " 
+                System.out.println(d.getPhaseId() + "   " + d.getType() + "   "
+                        + d.getFix() + "   " + d.getNondef() + "   "
+                        + d.getTimeShift() + "   " + d.getDeleteAmp() + "   "
                         + d.getPhaseBreak() + "   " + d.getPutValue());
-                
+
             }
             System.out.println("--------------------------");
         }

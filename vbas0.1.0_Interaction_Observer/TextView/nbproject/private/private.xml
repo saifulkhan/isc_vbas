@@ -5,6 +5,7 @@
         <group name="test"/>
         <group>
             <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_Interaction_Observer/TextView/src/uk/ac/isc/textview/PhaseTextViewTopComponent.java</file>
+            <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_Interaction_Observer/TextView/src/uk/ac/isc/textview/PhaseEditDialog.java</file>
             <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_Interaction_Observer/TextView/src/uk/ac/isc/textview/PhaseTableSortPanel.java</file>
         </group>
     </open-files>
