@@ -6,9 +6,6 @@
             <file>file:/export/home/hui/NetBeansProjects/vbas0.1.0/SeisData/src/uk/ac/isc/seisdata/BlockTableModel.java</file>
             <file>file:/export/home/hui/NetBeansProjects/vbas0.1.0/SeisData/src/uk/ac/isc/seisdata/SeisDataDAO.java</file>
         </group>
-        <group>
-            <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_Interaction_Observer/SeisData/src/uk/ac/isc/seisdata/Global.java</file>
-            <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_Interaction_Observer/SeisData/src/uk/ac/isc/seisdata/SeisDataDAO.java</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>

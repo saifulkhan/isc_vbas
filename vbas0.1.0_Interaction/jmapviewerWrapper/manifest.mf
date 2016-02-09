@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-OpenIDE-Module: isc.ac.uk.jmappviewerwrapper
-OpenIDE-Module-Localizing-Bundle: isc/ac/uk/jmappviewerwrapper/Bundle.properties
-OpenIDE-Module-Specification-Version: 1.0
-
