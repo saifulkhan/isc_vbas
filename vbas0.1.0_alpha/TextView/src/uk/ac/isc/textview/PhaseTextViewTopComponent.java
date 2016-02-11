@@ -67,16 +67,15 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
     private PhaseTableSortPanel phaseTableSortPanel = null;
     private final PhaseTablePopupManager ptPopupManager;
     
-    private static SeisEvent seisEvent = Global.getSelectedSeisEvent();
+    private static SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
     private static final PhasesList phasesList = Global.getPhasesList();
-    
-    
+        
     public PhaseTextViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_PhaseTextViewTopComponent());
         setToolTipText(Bundle.HINT_PhaseTextViewTopComponent());
 
-        seisEvent.addChangeListener(this);
+        selectedSeisEvent.addChangeListener(this);
 
         model = new PhaseTextViewTableModel(phasesList.getPhases());
         table = new JTable();
@@ -117,7 +116,7 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
         System.out.println(Global.debugAt() + " Event received from " + event.getData().getClass().getName());
-        seisEvent = Global.getSelectedSeisEvent();
+        selectedSeisEvent = Global.getSelectedSeisEvent();
 
         //System.out.println(Global.debugAt() + "phasesList.getPhases().size()= " + phasesList.getPhases().size());
         model = new PhaseTextViewTableModel(phasesList.getPhases());

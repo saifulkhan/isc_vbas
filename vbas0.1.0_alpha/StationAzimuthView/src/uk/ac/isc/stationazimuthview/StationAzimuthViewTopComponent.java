@@ -9,10 +9,12 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 import uk.ac.isc.eventscontrolview.EventsControlViewTopComponent;
+import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.PhasesList;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
+import uk.ac.isc.seisdata.SeisEvent;
 
 /**
  * Top component which displays station azimuth view.
@@ -39,39 +41,29 @@ import uk.ac.isc.seisdata.SeisDataChangeListener;
     "HINT_StationAzimuthViewTopComponent=This is a StationAzimuthView window"
 })
 public final class StationAzimuthViewTopComponent extends TopComponent implements SeisDataChangeListener {
-
-    //phase list 
-    private final PhasesList phasesList;
-
-    //hypo list
-    private final HypocentresList hyposList;
-
-    //get control window to retrieve data
-    private final TopComponent tc = WindowManager.getDefault().findTopComponent("EventsControlViewTopComponent");
-
+ 
     private final JScrollPane scrollPane;
 
-    //control panel of the view
+    // control panel of the view
     private final StationAzimuthControlPanel sacp;
-
-    //the main view 
+    // the main view 
     private final StationAzimuthView saView;
 
+    private static SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
+    private final PhasesList phasesList = Global.getPhasesList();
+    private final HypocentresList hyposList = Global.getHypocentresList();
+    
     public StationAzimuthViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_StationAzimuthViewTopComponent());
         setToolTipText(Bundle.HINT_StationAzimuthViewTopComponent());
-
-        phasesList = ((EventsControlViewTopComponent) tc).getControlPanel().getPhasesList();
-
-        hyposList = ((EventsControlViewTopComponent) tc).getControlPanel().getHyposList();
-
+        
+        selectedSeisEvent.addChangeListener(this);
+        
         saView = new StationAzimuthView(hyposList, phasesList);
-
         sacp = new StationAzimuthControlPanel(saView);
 
         scrollPane = new JScrollPane(saView);
-
         this.setLayout(new BorderLayout());
         this.add(scrollPane, BorderLayout.CENTER);
         this.add(sacp, BorderLayout.NORTH);
@@ -102,13 +94,13 @@ public final class StationAzimuthViewTopComponent extends TopComponent implement
     @Override
     public void componentOpened() {
         // TODO add custom code on component opening
-        phasesList.addChangeListener(this);
+        //phasesList.addChangeListener(this);
     }
 
     @Override
     public void componentClosed() {
         // TODO add custom code on component closing
-        phasesList.removeChangeListener(this);
+        //phasesList.removeChangeListener(this);
     }
 
     void writeProperties(java.util.Properties p) {

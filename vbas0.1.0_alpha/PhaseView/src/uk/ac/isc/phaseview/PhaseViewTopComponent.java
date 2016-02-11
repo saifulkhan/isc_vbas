@@ -48,11 +48,6 @@ import uk.ac.isc.seisdata.SeisEvent;
 })
 public final class PhaseViewTopComponent extends TopComponent implements SeisDataChangeListener {
 
-    private static final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();       // to receive events
-    private final HypocentresList hyposList = Global.getHypocentresList();
-    private static final PhasesList phasesList = Global.getPhasesList();
-    
-    // Pane and panels for views
     private JSplitPane pairViewsPane = null;
     private PhaseViewControlPanel phaseViewControlPanel = null;
     private JScrollPane leftPane = null;
@@ -69,6 +64,12 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
     // Other
     private Hypocentre ph;
     
+    // Data
+    private static final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
+    private final HypocentresList hyposList = Global.getHypocentresList();
+    private static final PhasesList phasesList = Global.getPhasesList();
+    
+    // Pane and panels for views
     
     public PhaseViewTopComponent() {
         initComponents();

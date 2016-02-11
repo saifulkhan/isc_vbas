@@ -14,14 +14,14 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import org.openide.windows.WindowManager;
-import uk.ac.isc.eventscontrolview.EventsControlViewTopComponent;
 import uk.ac.isc.seisdata.LikeliTriplet;
 import uk.ac.isc.seisdata.Phase;
 import uk.ac.isc.seisdata.PhasesList;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
 import uk.ac.isc.seisdata.SeisDataDAO;
+import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdata.SeisEvent;
 
 /**
  * Top component which displays three tables of agencies, they are reported and
@@ -53,64 +53,46 @@ import uk.ac.isc.seisdata.SeisDataDAO;
 })
 public final class AgencyViewTopComponent extends TopComponent implements SeisDataChangeListener {
 
-    //here is the reference of phase data
-    private final PhasesList phasesList;
-
     //save all the name of reporting agencies
     private final HashSet<String> reportedAgency = new HashSet<String>();
-
     //a map to keep agency likelihood
     private final HashMap<String, LikeliTriplet> agencyLikelihood = new HashMap<String, LikeliTriplet>();
-
     //the likelihood for all teh reported agencies
     private Map<String, LikeliTriplet> completeList;
-
     //the likelihood of expected agencies but not in the report list
     private Map<String, LikeliTriplet> expectList;
-
     private HashSet<String> newSet;
-
-    private Integer evid;
-    //get control window to retrieve data
-    private final TopComponent tc = WindowManager.getDefault().findTopComponent("EventsControlViewTopComponent");
 
     //panes for structure
     private final JSplitPane leftRightPane;
-
     private final JSplitPane topBottomPane;
-
     private final JScrollPane leftScrollPane;
-
     private final JScrollPane topScrollPane;
-
     private final JScrollPane bottomScrollPane;
-
     private final JTable normalTable;
-
     private final JTable expectTable;
-
     private final JTable unexpectTable;
-
     private DefaultTableModel model1;
-
     private DefaultTableModel model2;
-
     private DefaultTableModel model3;
-
     private final BackgroundRenderer renderer1 = new BackgroundRenderer();
 
-    private final String[] columnName = {"Agency", "Dist. Poss.", "Mag. Poss.", "Time Poss.", "Expectation"};
+    private final String[] columnName
+            = {"Agency", "Dist. Poss.", "Mag. Poss.", "Time Poss.", "Expectation"};
+
+    private static SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
+    private final PhasesList phasesList = Global.getPhasesList();
 
     public AgencyViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_AgencyRecViewTopComponent());
         setToolTipText(Bundle.HINT_AgencyRecViewTopComponent());
 
-        phasesList = ((EventsControlViewTopComponent) tc).getControlPanel().getPhasesList();
-        evid = ((EventsControlViewTopComponent) tc).getControlPanel().getSelectedSeisEvent().getEvid();
+        selectedSeisEvent.addChangeListener(this);
 
-        //get recommended list, sometime the recommendation list is empty, maybe will be sorted in future from database side
-        SeisDataDAO.retrieveAgencyLikelihood(agencyLikelihood, evid);
+        // get recommended list, sometime the recommendation list is empty, 
+        // maybe will be sorted in future from database side
+        SeisDataDAO.retrieveAgencyLikelihood(agencyLikelihood, selectedSeisEvent.getEvid());
 
         //get reported list
         for (Phase phase : phasesList.getPhases()) {
@@ -316,13 +298,13 @@ public final class AgencyViewTopComponent extends TopComponent implements SeisDa
     @Override
     public void componentOpened() {
         // TODO add custom code on component opening
-        phasesList.addChangeListener(this);
+        //phasesList.addChangeListener(this);
     }
 
     @Override
     public void componentClosed() {
         // TODO add custom code on component closing
-        phasesList.removeChangeListener(this);
+        //phasesList.removeChangeListener(this);
     }
 
     void writeProperties(java.util.Properties p) {
@@ -341,10 +323,8 @@ public final class AgencyViewTopComponent extends TopComponent implements SeisDa
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
 
-        evid = ((EventsControlViewTopComponent) tc).getControlPanel().getSelectedSeisEvent().getEvid();
-
         agencyLikelihood.clear();
-        SeisDataDAO.retrieveAgencyLikelihood(agencyLikelihood, evid);
+        SeisDataDAO.retrieveAgencyLikelihood(agencyLikelihood, selectedSeisEvent.getEvid());
 
         //get the ordered complete list
         completeList = new TreeMap<String, LikeliTriplet>();/*(new Comparator<Object>(){

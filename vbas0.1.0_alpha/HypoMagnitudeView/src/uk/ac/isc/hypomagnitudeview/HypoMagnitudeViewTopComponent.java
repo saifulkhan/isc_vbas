@@ -7,8 +7,6 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import org.openide.windows.WindowManager;
-import uk.ac.isc.eventscontrolview.EventsControlViewTopComponent;
 import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
@@ -41,19 +39,16 @@ import uk.ac.isc.seisdata.SeisEvent;
 })
 public final class HypoMagnitudeViewTopComponent extends TopComponent implements SeisDataChangeListener {
 
-   
-    private final HypocentresList hyposList = Global.getHypocentresList(); 
-    private static final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();       // to receive events
-      
-    
     private final JScrollPane scrollPane;
 
-    //the panel to have the figure
+    // the panel to have the figure
     HypoMagnitudeViewPanel hmag = null;
 
-    // get control window to retrieve data
-    private final TopComponent tc = WindowManager.getDefault().findTopComponent("EventsControlViewTopComponent");
-
+    // Data
+    private final HypocentresList hyposList = Global.getHypocentresList(); 
+    private static final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();   
+    
+   
     public HypoMagnitudeViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_HypoMagnitudeViewTopComponent());

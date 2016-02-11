@@ -7,11 +7,11 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import org.openide.windows.WindowManager;
-import uk.ac.isc.eventscontrolview.EventsControlViewTopComponent;
+import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.PhasesList;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
+import uk.ac.isc.seisdata.SeisEvent;
 
 /**
  * Top component which displays pie chart view.
@@ -39,41 +39,26 @@ import uk.ac.isc.seisdata.SeisDataChangeListener;
 })
 public final class AgencyPieChartViewTopComponent extends TopComponent implements SeisDataChangeListener {
 
-    //the reference of phases data
-    private final PhasesList phasesList;
-
     //processed data with sorted percentages
     private final PieChartData pcData;
-
-    //private final HashMap<String, Double> agencyLikelihood = new HashMap<String,Double>();
-    //private Integer evid;
-    //get control window to retrieve data
-    private final TopComponent tc = WindowManager.getDefault().findTopComponent("EventsControlViewTopComponent");
-
     private final JScrollPane scrollPane;
-
     //the key class of the piechart
     private final AgencyPieChartView apcView = new AgencyPieChartView();
 
-    //private final AgencyListView alView = new AgencyListView();
+    private static SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
+    private final PhasesList phasesList = Global.getPhasesList();
+    
     public AgencyPieChartViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_AgencyPieChartViewTopComponent());
         setToolTipText(Bundle.HINT_AgencyPieChartViewTopComponent());
-
-        //set up the table model
-        phasesList = ((EventsControlViewTopComponent) tc).getControlPanel().getPhasesList();
-        //evid = ((EventsControlViewTopComponent) tc).getControlPanel().getSelectedSeisEvent().getEvid();
-
+ 
+        selectedSeisEvent.addChangeListener(this);
+        
         pcData = new PieChartData(phasesList.getPhases());
-
-        //SeisDataDAO.retrieveAgencyLikelihood(agencyLikelihood, evid);
         apcView.setData(pcData);
 
-        //alView.setData(pcData, agencyLikelihood);
         scrollPane = new JScrollPane(apcView);
-        //scrollPane = new JScrollPane(alView);
-
         this.setLayout(new BorderLayout());
         this.add(scrollPane, BorderLayout.CENTER);
     }
@@ -103,13 +88,13 @@ public final class AgencyPieChartViewTopComponent extends TopComponent implement
     @Override
     public void componentOpened() {
         // TODO add custom code on component opening
-        phasesList.addChangeListener(this);
+        //phasesList.addChangeListener(this);
     }
 
     @Override
     public void componentClosed() {
         // TODO add custom code on component closing
-        phasesList.removeChangeListener(this);
+        //phasesList.removeChangeListener(this);
     }
 
     void writeProperties(java.util.Properties p) {
