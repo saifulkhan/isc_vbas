@@ -1317,10 +1317,10 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
             // Saiful: if the hypocentre is the selected hypocentre then color it red.
             if (h.getHypid() == Global.getSelectedHypocentre().getHypid()) {
                 g2.setPaint(Color.RED);
-                System.out.println(Global.debugAt() + "hypid=" + h.getHypid() + ", red");
+                //System.out.println(Global.debugAt() + "hypid=" + h.getHypid() + ", red");
             } else {
                 g2.setPaint(Color.BLACK);
-                System.out.println(Global.debugAt() + "hypid=" + h.getHypid() + ", black");
+                //System.out.println(Global.debugAt() + "hypid=" + h.getHypid() + ", black");
             }
             
             xpos = tileSource.LonToX(h.getLon(), seisZoom) - center.x + w2;

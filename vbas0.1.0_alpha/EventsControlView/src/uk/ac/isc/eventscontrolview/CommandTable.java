@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -38,7 +39,27 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
 
     public CommandTable() {
 
-        table = new JTable();
+        table = new JTable() {
+            // Implement table cell tool tips.
+            public String getToolTipText(MouseEvent e) {
+                String tip = "";
+                java.awt.Point p = e.getPoint();
+                int rowIndex = rowAtPoint(p);
+                int colIndex = columnAtPoint(p);
+                int realColumnIndex = convertColumnIndexToModel(colIndex);
+
+                if (realColumnIndex == 2) { //Command column
+                    tip += getValueAt(rowIndex, colIndex);
+                } else {
+                    // You can omit this part if you know you don't have any renderers 
+                    // that supply their own tool tips.
+                    tip = super.getToolTipText(e);
+                }
+                return tip;
+            }
+        };
+                
+                
         model = new CommandTableModel(commandList.getCommandList());
         table.setModel(model);
         scrollPane = new JScrollPane(table);
@@ -62,7 +83,6 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
     public void SeisDataChanged(SeisDataChangeEvent event) {
         System.out.println(Global.debugAt() + " Event received from " + event.getData().getClass().getName());
 
-        
         SeisDataDAO.readCommands(selectedSeisEvent.getEvid(), commandList.getCommandList());
 
         model = new CommandTableModel(commandList.getCommandList());
@@ -148,29 +168,29 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
         public void onButtonAssessActionPerformed(ActionEvent e) {
 
             String commandStr = "<pdf> /some/path/to/pdf/ </pdf>";
-            int [] selectedRows = table.getSelectedRows();
-            ArrayList<Integer> commandIdList = new ArrayList<Integer> ();
-            
+            int[] selectedRows = table.getSelectedRows();
+            ArrayList<Integer> commandIdList = new ArrayList<Integer>();
+
             for (int row : selectedRows) {
                 int commandId = (Integer) table.getValueAt(row, 0);
-                commandStr =  commandStr  + " <id> " + commandId + " </id>";
+                commandStr = commandStr + " <id> " + commandId + " </id>";
                 commandIdList.add(commandId);
             }
 
             System.out.print("command = " + commandStr + "\n\n");
 
             if (selectedRows.length <= 0) {
-                JOptionPane.showMessageDialog(null, "Select command(s) to assess.", 
+                JOptionPane.showMessageDialog(null, "Select command(s) to assess.",
                         "Error", JOptionPane.ERROR_MESSAGE);
             } else {
-                boolean ret = SeisDataDAO.updateCommandTableForAssess(selectedSeisEvent.getEvid(), 
+                boolean ret = SeisDataDAO.updateCommandTableForAssess(selectedSeisEvent.getEvid(),
                         "assess", commandStr, commandIdList);
                 if (ret) {
                     // Success
                     System.out.println(Global.debugAt() + " \nFired: New Command from the 'CommandTable'");
                     formulatedCommand.fireSeisDataChanged();
                 } else {
-                    JOptionPane.showMessageDialog(null, "Database Error.", "Error", 
+                    JOptionPane.showMessageDialog(null, "Database Error.", "Error",
                             JOptionPane.ERROR_MESSAGE);
                 }
             }

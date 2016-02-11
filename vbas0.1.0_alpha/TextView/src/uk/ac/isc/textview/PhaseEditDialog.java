@@ -1,11 +1,10 @@
 package uk.ac.isc.textview;
 
+import com.orsoncharts.util.json.JSONArray;
+import com.orsoncharts.util.json.JSONObject;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
@@ -13,7 +12,6 @@ import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JPanel;
@@ -24,7 +22,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import uk.ac.isc.seisdata.Command;
 import uk.ac.isc.seisdata.Global;
@@ -47,6 +44,7 @@ public class PhaseEditDialog extends JDialog {
     private JTextField textField_phaseType;
 
     private JTable table_edit;
+    private ArrayList<PhaseEditData> origPhaseEditDataList = new ArrayList<PhaseEditData>();
     private PhaseEditTableModel phaseEditTableModel;
 
     private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
@@ -61,9 +59,13 @@ public class PhaseEditDialog extends JDialog {
 
     }
 
-    public void showPhaseEditDialog(ArrayList<PhaseEditData> phaseEditDataList) {
+    public void showPhaseEditDialog(ArrayList<PhaseEditData> list) {
 
-        phaseEditTableModel = new PhaseEditTableModel(phaseEditDataList);
+        for (PhaseEditData obj : list) {
+            origPhaseEditDataList.add((PhaseEditData) obj.clone());
+        }
+
+        phaseEditTableModel = new PhaseEditTableModel(list);
         table_edit.setModel(phaseEditTableModel);
 
         table_edit.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -128,64 +130,95 @@ public class PhaseEditDialog extends JDialog {
         System.out.println(Global.debugAt());
 
         PhaseEditTableModel model = (PhaseEditTableModel) table_edit.getModel();
-        int nRow = model.getRowCount(), nCol = model.getColumnCount();
+        int nRow = model.getRowCount();
+        int nCol = model.getColumnCount();
 
-        Object[][] tableData = new Object[nRow][nCol];
+        JSONArray jCommandArray = new JSONArray();
+        JSONArray jFunctionArray = new JSONArray();
+        
         for (int i = 0; i < nRow; i++) {
-            String command = "<phid> " + (Integer) model.getValueAt(i, 0) + " ";
 
-            System.out.println(model.getValueAt(i, 1) + " "
-                    + model.getValueAt(i, 2) + " "
-                    + model.getValueAt(i, 3) + " "
-                    + model.getValueAt(i, 4) + " "
-                    + model.getValueAt(i, 5) + " "
-                    + model.getValueAt(i, 6) + " "
-                    + model.getValueAt(i, 7) + " ");
+            JSONObject jCommandObj = new JSONObject();
+            jCommandObj.put("commandType", "phasedit");
+            jCommandObj.put("dataType", "phase");
+            jCommandObj.put("id", (Integer) model.getValueAt(i, 0));
 
-            // TODO: phase type; get the old phase type value
-            // TODO: compare old and new
-            if (!model.getValueAt(i, 1).equals("null")) {
-                command += "<attr> " + "phase_fixed "
-                        + "<value> " + (String) model.getValueAt(i, 1) + " </value>"
-                        + "<prev_value> " + "null" + " </prev_value>"; // TODO:
+            
+            
+            
+            // Add all the changed "attributes" in the array.
+            JSONArray jAttrArray = new JSONArray();
+
+            String oldPhaseType = origPhaseEditDataList.get(i).getType();
+
+            System.out.println(Global.debugAt() + "old= " + oldPhaseType + ", new= " + model.getValueAt(i, 1));
+            if (!model.getValueAt(i, 1).equals(oldPhaseType)) {
+                JSONObject jAttrObj = new JSONObject();
+                jAttrObj.put("name", "phasetype");
+                jAttrObj.put("oldValue", (String) model.getValueAt(i, 1));
+                jAttrObj.put("newvalue", (String) model.getValueAt(i, 1));
+                jAttrArray.add(jAttrObj);
+                
+                /*JSONObject jFunctionObj = new JSONObject();
+                jCommandObj.put("function", 
+                        "chphase ( " 
+                                + (Integer) model.getValueAt(i, 0) + " INTEGER, " +
+                                + 
+                + );
+                jCommandObj.put("dataType", "phase");
+                jCommandObj.put("id", (Integer) model.getValueAt(i, 0));*/
             }
 
             if (model.getValueAt(i, 2) != null) {
-                command += "<attr> " + "phase_fixed "
-                        + "<value> " + (Boolean) model.getValueAt(i, 2) + " </value>"
-                        + "<prev_value> " + "null" + " </prev_value>";
+                JSONObject jAttrObj = new JSONObject();
+                jAttrObj.put("name", "phasefix");
+                jAttrObj.put("oldValue", null);
+                jAttrObj.put("newvalue", (Boolean) model.getValueAt(i, 2));
+                jAttrArray.add(jAttrObj);
             }
 
             if (model.getValueAt(i, 3) != null) {
-                command += "<attr> " + "nondef "
-                        + "<value> " + (Boolean) model.getValueAt(i, 3) + " </value>"
-                        + "<prev_value> " + "null" + " </prev_value>";
+                JSONObject jAttrObj = new JSONObject();
+                jAttrObj.put("name", "nondef");
+                jAttrObj.put("oldValue", null);
+                jAttrObj.put("newvalue", (Boolean) model.getValueAt(i, 3));
+                jAttrArray.add(jAttrObj);
             }
 
             if (model.getValueAt(i, 4) != null) {
-                command += "<attr> " + "time_shift "
-                        + "<value> " + (Integer) model.getValueAt(i, 4) + " </value>"
-                        + "<prev_value> " + "null" + " </prev_value>";
+                JSONObject jAttrObj = new JSONObject();
+                jAttrObj.put("name", "timeshift");
+                jAttrObj.put("oldValue", null);
+                jAttrObj.put("newvalue", (Integer) model.getValueAt(i, 4));
+                jAttrArray.add(jAttrObj);
             }
 
             if (model.getValueAt(i, 5) != null) {
-                command += "<attr> " + "delete_amp "
-                        + "<value> " + (Boolean) model.getValueAt(i, 5) + " </value>"
-                        + "<prev_value> " + "null" + " </prev_value>";
+                JSONObject jAttrObj = new JSONObject();
+                jAttrObj.put("name", "deleteamp");
+                jAttrObj.put("oldValue", null);
+                jAttrObj.put("newvalue", (Boolean) model.getValueAt(i, 5));
+                jAttrArray.add(jAttrObj);
             }
 
             if (model.getValueAt(i, 6) != null) {
                 if (!model.getValueAt(i, 6).equals("-")) {
-                    command += "<attr> " + "phase_break "
-                            + "<value> " + (String) model.getValueAt(i, 6) + " </value>"
-                            + "<prev_value> " + "null" + " </prev_value>";
+                    JSONObject jAttrObj = new JSONObject();
+                    jAttrObj.put("name", "phasebreak");
+                    jAttrObj.put("oldValue", null);
+                    jAttrObj.put("newvalue", (String) model.getValueAt(i, 6));
+                    jAttrArray.add(jAttrObj);
 
                     if (model.getValueAt(i, 7) != null) {
-                        if (!model.getValueAt(i, 7).equals("Put")) {
-                            command += "<attr> " + "put_value "
-                                    + "<value> " + (String) model.getValueAt(i, 7) + " </value>"
-                                    + "<prev_value> " + "null" + " </prev_value>";
-                        } else {
+                        if (model.getValueAt(i, 6).equals("Put")) {
+                            JSONObject jAttrObj1 = new JSONObject();
+                            jAttrObj1.put("name", "putvalue");
+                            jAttrObj1.put("oldValue", null);
+                            jAttrObj1.put("newvalue", (Double) model.getValueAt(i, 7));
+                            jAttrArray.add(jAttrObj1);
+                        }
+                    } else {
+                        if (model.getValueAt(i, 6).equals("Put")) {
                             JOptionPane.showMessageDialog(null, "Put (value) at row: " + i, "Error", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
@@ -193,23 +226,28 @@ public class PhaseEditDialog extends JDialog {
                 }
             }
 
-            command += " </phid>";
+            if (jAttrArray.size() > 0) {
+                jCommandObj.put("attributes", jAttrArray);
+                jCommandArray.add(jCommandObj);
+            }
+        }
 
-            boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "chphase", command);
+        if (jCommandArray.size() > 0) {
+            String command = jCommandArray.toString();
+
+            boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "phaseedit", command);
             if (ret) {
                 System.out.println(Global.debugAt() + " \nCommand=" + command + " \nFired: New Command from the 'Phase Edit' dialog.");
                 formulatedCommand.fireSeisDataChanged();  // Notify the Command table to update from the database.            
             } else {
                 JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
-                break;
             }
         }
 
-        //this.dispose();
+        this.dispose();
     }
 
     private void buttonCancelActionPerformed(ActionEvent evt) {
-        // TODO add your handling code here:
         this.dispose();
     }
 
@@ -552,10 +590,9 @@ public class PhaseEditDialog extends JDialog {
         public void setValueAt(Object value, int row, int col) {
 
             /*System.out.println("Setting value at " + row + "," + col
-                    + " to " + value
-                    + " (an instance of "
-                    + value.getClass() + ")");*/
-
+             + " to " + value
+             + " (an instance of "
+             + value.getClass() + ")");*/
             PhaseEditData editedData = (PhaseEditData) phaseEditDataList.get(row);
             switch (col) {
                 case 1:

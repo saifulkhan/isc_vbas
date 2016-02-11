@@ -1,12 +1,13 @@
 package uk.ac.isc.textview;
 
+import com.orsoncharts.util.json.JSONArray;
+import com.orsoncharts.util.json.JSONObject;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Level;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -72,7 +73,28 @@ public class HypoEditDialog extends JDialog {
     private void button_okActionPerformed(ActionEvent evt) {
 
         System.out.println(Global.debugAt());
-         
+
+  
+
+        JSONArray jCommandArray = new JSONArray();
+
+        JSONObject jCommandObj = new JSONObject();
+
+        jCommandObj.put("commandType", "hypocentreedit");
+        jCommandObj.put("dataType", "hypocentre");
+        jCommandObj.put("id", selectedHypocentre.getHypid());
+
+        // Add all the changed "attributes" in the array.
+        JSONArray jAttrArray = new JSONArray();
+
+        if (Integer.parseInt(text_depth.getText()) != selectedHypocentre.getDepth()) {
+            JSONObject jAttrObj = new JSONObject();
+            jAttrObj.put("name", "depth");
+            jAttrObj.put("oldValue", selectedHypocentre.getDepth());
+            jAttrObj.put("newvalue", Integer.parseInt(text_depth.getText()));
+            jAttrArray.add(jAttrObj);
+        }
+
         Date dd = null;
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
@@ -81,48 +103,49 @@ public class HypoEditDialog extends JDialog {
             JOptionPane.showMessageDialog(null, "Incorrect date time.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
-        String command = "";
-        command += "<hypid> " + selectedHypocentre.getHypid();
-
-        if (Integer.parseInt(text_depth.getText()) != selectedHypocentre.getDepth()) {
-            command += " <attr> " + " depth "
-                    + " <value> " + text_depth.getText() + " </value> "
-                    + " <prev_value> " + selectedHypocentre.getDepth() + " </prev_value> "
-                    + " </attr> ";
-        }
-
         if (dd.compareTo(selectedHypocentre.getOrigTime()) != 0) {  // same date time
-                command += " <attr> " + " time "
-                    + " <value> " + text_time.getText() + " </value> "
-                    + " <prev_value> " + selectedHypocentre.getOrigTime() + " </prev_value> "
-                    + " </attr> ";
+            
+            JSONObject jAttrObj = new JSONObject();
+            jAttrObj.put("name", "time");
+            jAttrObj.put("oldValue", selectedHypocentre.getOrigTime());
+            jAttrObj.put("newvalue", dd);
+            jAttrArray.add(jAttrObj);
         }
 
         if (Double.parseDouble(text_lat.getText()) != selectedHypocentre.getLat()) {
-            command += " <attr> " + " lat "
-                    + " <value> " + text_lat.getText() + " </value> "
-                    + " <prev_value> " + selectedHypocentre.getLat() + " </prev_value> "
-                    + " </attr> ";
+            JSONObject jAttrObj = new JSONObject();
+            jAttrObj.put("name", "lat");
+            jAttrObj.put("oldValue", selectedHypocentre.getLat());
+            jAttrObj.put("newvalue", Double.parseDouble(text_lat.getText()));
+            jAttrArray.add(jAttrObj);
         }
 
         if (Double.parseDouble(text_lon.getText()) != selectedHypocentre.getLon()) {
-            command += " <attr> " + " lon "
-                    + " <value> " + text_lon.getText() + " </value> "
-                    + " <prev_value> " + selectedHypocentre.getLon() + " </prev_value> "
-                    + " </attr> ";
+            JSONObject jAttrObj = new JSONObject();
+            jAttrObj.put("name", "lon");
+            jAttrObj.put("oldValue", selectedHypocentre.getLon());
+            jAttrObj.put("newvalue", Double.parseDouble(text_lon.getText()));
+            jAttrArray.add(jAttrObj);
         }
 
-        command += " </hypid>";
-        
-        boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "chhypo", command);
-        if (ret) {
-            // success
-            System.out.println(Global.debugAt() + " \nCommand=" + command + " \nFired: New Command from the 'Edit Hypocentre' dialog.");
-            formulatedCommand.fireSeisDataChanged();  // Notify the Command table to update from the database.
-            this.dispose();
-        } else {
-            JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
+        if (jAttrArray.size() > 0) {
+            jCommandObj.put("attributes", jAttrArray);
+            jCommandArray.add(jCommandObj);
+        }
+
+        if (jCommandArray.size() > 0) {
+            String command = jCommandArray.toString();
+            System.out.print("formulated json commad:" + command);
+
+            boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "hypocentreedit", command);
+            if (ret) {
+                // success
+                System.out.println(Global.debugAt() + " \nCommand=" + command + " \nFired: New Command from the 'Edit Hypocentre' dialog.");
+                formulatedCommand.fireSeisDataChanged();  // Notify the Command table to update from the database.
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
 
     }

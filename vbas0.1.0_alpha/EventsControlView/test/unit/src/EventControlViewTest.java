@@ -6,7 +6,7 @@
 
 import org.junit.Test;
 import static org.junit.Assert.*;
-import uk.ac.isc.eventscontrolview.EventsTable;
+import uk.ac.isc.eventscontrolview.SeisEventsTable;
 
 /**
  *
@@ -14,10 +14,10 @@ import uk.ac.isc.eventscontrolview.EventsTable;
  */
 public class EventControlViewTest {
 
-    EventsTable eventControlPanel;
+    SeisEventsTable eventControlPanel;
 
     public EventControlViewTest() {
-        eventControlPanel = new EventsTable();
+        eventControlPanel = new SeisEventsTable();
 
     }
 

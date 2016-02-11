@@ -65,7 +65,7 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
 
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
-        System.out.println(Global.debugAt() + " Event received from " + event.getData().getClass().getName());
+        //System.out.println(Global.debugAt() + " Event received from " + event.getData().getClass().getName());
 
         SeisDataDAO.readAssessedCommands(selectedSeisEvent.getEvid(), assessedCommandList.getAssessedCommandList());
 

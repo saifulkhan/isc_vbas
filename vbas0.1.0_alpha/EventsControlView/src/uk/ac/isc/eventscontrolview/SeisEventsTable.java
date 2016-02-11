@@ -28,20 +28,20 @@ import uk.ac.isc.seisdata.SeisEventsList;
  * It holds all the "phases", "hypocentres", and "events" data and passes
  * reference to other views.
  */
-public class EventsTable extends JPanel implements ListSelectionListener {
+public class SeisEventsTable extends JPanel implements ListSelectionListener {
 
     private JTable table;
     private EventsTableModel tableModel;
-    private EventSearchPanel eventsSearchPanel;
+    private SeisEventSearchPanel eventsSearchPanel;
  
     private static SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
     private final BlockTableModel blockTableModel = new BlockTableModel();  // The space to keep all the data
     private static final SeisEventsList eventsList = new SeisEventsList();
       
-    private static final Logger logger = Logger.getLogger(EventsTable.class.getName()); // each class may need logger to keep log file, too rush to follow the good practice 
+    private static final Logger logger = Logger.getLogger(SeisEventsTable.class.getName()); // each class may need logger to keep log file, too rush to follow the good practice 
 
     
-    public EventsTable() {
+    public SeisEventsTable() {
 
         table = new JTable();  
         //scrollPane = new JScrollPane(table);
@@ -76,7 +76,7 @@ public class EventsTable extends JPanel implements ListSelectionListener {
         
         // Action buttons, search panel
         // layout all together
-        eventsSearchPanel = new EventSearchPanel(table);
+        eventsSearchPanel = new SeisEventSearchPanel(table);
         this.setLayout(new BorderLayout());
         this.add(eventsSearchPanel, BorderLayout.PAGE_START);
         this.add(new JScrollPane(table), BorderLayout.CENTER);

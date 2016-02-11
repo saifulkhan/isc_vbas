@@ -16,12 +16,15 @@ import javax.swing.JViewport;
 import uk.ac.isc.seisdata.Command;
 import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.SeisDataDAO;
+import com.orsoncharts.util.json.JSONArray;
+import com.orsoncharts.util.json.JSONObject;
+
 
 /**
  *
  * A search panel for searching event
  */
-public class EventSearchPanel extends JPanel {
+public class SeisEventSearchPanel extends JPanel {
 
     private final JLabel label_input;
     private final JTextField text_search;
@@ -38,7 +41,7 @@ public class EventSearchPanel extends JPanel {
 
     private boolean searchFlag = false;
 
-    public EventSearchPanel(final JTable eventsTable) {
+    public SeisEventSearchPanel(final JTable eventsTable) {
         this.table = eventsTable;
 
         Font font = new Font("Sans-serif", Font.PLAIN, 14);
@@ -127,7 +130,7 @@ public class EventSearchPanel extends JPanel {
                     JViewport viewport = (JViewport) table.getParent();
                     Rectangle rect = table.getCellRect(table.getSelectedRow(), 0, true);
                     Rectangle r2 = viewport.getVisibleRect();
-                    table.scrollRectToVisible(new Rectangle(rect.x, rect.y, (int) r2.getWidth(), 
+                    table.scrollRectToVisible(new Rectangle(rect.x, rect.y, (int) r2.getWidth(),
                             (int) r2.getHeight()));
                     searchFlag = true;
                     break;
@@ -144,26 +147,36 @@ public class EventSearchPanel extends JPanel {
     }
 
     private void onButtonBanishActionPerformed(ActionEvent ae) {
-        String cmd = "NULL";
 
         System.out.print(Global.debugAt());
         int row = table.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(null, "Select an event to banish.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         int seisEventId = (Integer) table.getValueAt(row, 0);
 
-        System.out.print(cmd + "\n\n");
+        JSONArray jCommandArray = new JSONArray();
+        JSONObject jCommandObj = new JSONObject();
+        jCommandObj.put("commandType", "eventbanish");
+        jCommandObj.put("dataType", "seisevent");
+        jCommandObj.put("id", seisEventId);
 
-        if (cmd.equals("")) {
-            JOptionPane.showMessageDialog(null, "Select command(s) to assess.", 
-                    "Error", JOptionPane.ERROR_MESSAGE);
-        } else {
-            boolean ret = SeisDataDAO.updateCommandTable(seisEventId, "banish", cmd);
+        jCommandArray.add(jCommandObj);
+
+        if (jCommandArray.size() > 0) {
+            String command = jCommandArray.toString();
+
+            boolean ret = SeisDataDAO.updateCommandTable(seisEventId, "eventbanish", command);
             if (ret) {
-                // Success
-                System.out.println(Global.debugAt() + " \nFired: New Command from the 'CommandTable'");
-                formulatedCommand.fireSeisDataChanged();
+                // success
+                System.out.println(Global.debugAt() + " \nCommand=" + command + " \nFired: New Command eventbanish.");
+                formulatedCommand.fireSeisDataChanged();  // Notify the Command table to update from the database.
+
             } else {
-                JOptionPane.showMessageDialog(null, "Database Error.", "Error", 
-                        JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }

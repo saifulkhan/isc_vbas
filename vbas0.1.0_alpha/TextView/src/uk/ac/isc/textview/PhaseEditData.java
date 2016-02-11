@@ -1,6 +1,6 @@
 package uk.ac.isc.textview;
 
-class PhaseEditData {
+class PhaseEditData implements Cloneable {
 
     private final Integer phaseId;
     private String type;
@@ -80,5 +80,23 @@ class PhaseEditData {
 
     public void setPutValue(Double putValue) {
         this.putValue = putValue;
+    }
+
+    @Override
+    public Object clone() {
+
+        try {
+            PhaseEditData clone = (PhaseEditData) super.clone();
+            clone.setType(this.type);
+            clone.setFix(this.fix);
+            clone.setNondef(this.nondef);
+            clone.setTimeShift(this.timeShift);
+            clone.setDeleteAmp(this.deleteAmp);
+            clone.setPhaseBreak(this.phaseBreak);
+            clone.setPutValue(this.putValue);
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            return e;
+        }
     }
 }

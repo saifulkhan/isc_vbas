@@ -8,7 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import uk.ac.isc.seisdata.Global;
@@ -49,15 +48,15 @@ class PhaseTablePopupManager implements ActionListener {
             phaseEditDataList.add(new PhaseEditData(phaseId, type));
         }
 
-        if ("Edit..".equals(e.getActionCommand())) {
+        if ("Phase Edit..".equals(e.getActionCommand())) {
        
             System.out.print("\nRows:");
             for (int c : table.getSelectedRows()) {
-                System.out.println(String.format(" %d", c));
+                System.out.print(String.format(" %d", c)  + "  ");
             }
             System.out.print("\nColumns:");
             for (int c : table.getSelectedColumns()) {
-                System.out.print(String.format(" %d", c));
+                System.out.print(String.format(" %d", c) + "  ");
             }
             System.out.print(".\n\n");
 
@@ -70,7 +69,7 @@ class PhaseTablePopupManager implements ActionListener {
     private void setPopupMenuVisualAttributes() {
         popupMenu = new JPopupMenu();
 
-        JMenuItem menuItem_edit = new JMenuItem("Edit..");
+        JMenuItem menuItem_edit = new JMenuItem("Phase Edit..");
         menuItem_edit.setBackground(new Color(218, 83, 44));
         menuItem_edit.setForeground(Color.WHITE);
         menuItem_edit.setFont(new Font("Sans-serif", Font.PLAIN, 14));

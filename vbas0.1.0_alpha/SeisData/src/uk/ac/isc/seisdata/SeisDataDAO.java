@@ -2576,7 +2576,7 @@ public final class SeisDataDAO {
                     + " ORDER BY ec.adddate;";
 
             rs = st.executeQuery(query);
-            System.out.println(Global.debugAt() + "\nquery= " + query + "\nrs= " + rs);
+            //System.out.println(Global.debugAt() + "\nquery= " + query + "\nrs= " + rs);
 
             while (rs.next()) {
                 Integer id = rs.getInt("id");
@@ -2650,7 +2650,7 @@ public final class SeisDataDAO {
                     + " ORDER BY ec.adddate;";
 
             rs = st.executeQuery(query);
-            System.out.println(Global.debugAt() + "\nquery= " + query + "\nrs= " + rs);
+            //System.out.println(Global.debugAt() + "\nquery= " + query + "\nrs= " + rs);
 
             Hashtable<String, AssessedCommand> hashtable = new Hashtable<String, AssessedCommand>();;
 
@@ -2761,7 +2761,7 @@ public final class SeisDataDAO {
                     + type + "', '"
                     + command + "');";
 
-            System.out.println(Global.debugAt() + "\nquery= " + query);
+            //System.out.println(Global.debugAt() + "\nquery= " + query);
             st.executeUpdate(query);
 
             rs.close();
