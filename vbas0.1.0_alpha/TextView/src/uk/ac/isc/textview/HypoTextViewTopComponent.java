@@ -7,8 +7,6 @@ package uk.ac.isc.textview;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -25,8 +23,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
@@ -75,15 +71,14 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
 
     private JTable table = null;
     private JScrollPane scrollPane = null;
+    private ListSelectionListener  lsl = null;
+    private final HypoTablePopupManager htPopupManager;
 
     private static final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
     private final HypocentresList hypocentresList = Global.getHypocentresList();
     private static final Hypocentre selectedHypocentre = Global.getSelectedHypocentre();
-    private final HypoTablePopupManager htPopupManager;
-    
-    private ListSelectionListener  lsl = null;
-    
-              
+        
+                  
     public HypoTextViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_HypoTextViewTopComponent());
@@ -110,8 +105,8 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
             }
 
         });
-        
-        updateSeisData();
+      
+        table.setModel(new HypoTableModel(hypocentresList.getHypocentres()));
         table.getSelectionModel().addListSelectionListener(lsl);
         
         setupTableVisualAttributes();
@@ -190,7 +185,9 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         System.out.println(Global.debugAt() + " Event received from " + event.getData().getClass().getName());
         // Types of event: Selected Event, Selected Hypocentre (?).
                 
-        updateSeisData();
+        // Remove the previous (row) selection listener, if any.
+        table.getSelectionModel().removeListSelectionListener(lsl);
+        table.setModel(new HypoTableModel(hypocentresList.getHypocentres()));
         
         table.clearSelection();
         setHeaderText();
@@ -204,24 +201,6 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         table.getSelectionModel().addListSelectionListener(lsl);
     }
 
-    public void updateSeisData() {
-        System.out.println(Global.debugAt());
-        
-        SeisDataDAO.retrieveHypos(selectedSeisEvent.getEvid(), hypocentresList.getHypocentres());
-        SeisDataDAO.retrieveHyposMagnitude(hypocentresList.getHypocentres());
-        // as I remove all the hypos when clicking an event to retrieve the hypos, so need reset prime hypo every time
-        // TODO: Saiful, What is this?
-        for (Hypocentre hypo : hypocentresList.getHypocentres()) {
-            if (hypo.getIsPrime() == true) {
-                selectedSeisEvent.setPrimeHypo(hypo);
-            }
-        }
-        
-        // Remove the previous (row) selection listener, if any.
-        table.getSelectionModel().removeListSelectionListener(lsl);
-        table.setModel(new HypoTableModel(hypocentresList.getHypocentres()));
-    }
-    
     
     private void setupTableVisualAttributes() {
 

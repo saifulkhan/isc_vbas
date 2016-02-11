@@ -32,12 +32,15 @@ public class Global {
  
     public static SeisEvent getSelectedSeisEvent() {
        
+        // TODO: chek dependency again
         // needed when the hypocentre & phase table loads for the first time.
+        // if the SeiesEventTable module loads later
+        /*
         if (selectedSeisEvent.getEvid() == 0) {
             SeisEventsList eventsList = new SeisEventsList();
             SeisDataDAO.retrieveAllEvents(eventsList.getEvents());
             selectedSeisEvent.setValues(eventsList.getEvents().get(0));
-        }
+        } */
         return selectedSeisEvent;
     }
 

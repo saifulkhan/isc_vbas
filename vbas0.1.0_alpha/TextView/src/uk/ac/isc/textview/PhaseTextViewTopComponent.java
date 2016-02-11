@@ -65,28 +65,18 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
     private JTable table = null;
     private JScrollPane scrollPane = null;
     private PhaseTableSortPanel phaseTableSortPanel = null;
-
-    private static SeisEvent seisEvent = Global.getSelectedSeisEvent();
-    private static final PhasesList phasesList = Global.getPhasesList();
-    private final TreeMap<String, String> stations = new TreeMap<String, String>();
-
     private final PhaseTablePopupManager ptPopupManager;
     
-
+    private static SeisEvent seisEvent = Global.getSelectedSeisEvent();
+    private static final PhasesList phasesList = Global.getPhasesList();
+    
+    
     public PhaseTextViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_PhaseTextViewTopComponent());
         setToolTipText(Bundle.HINT_PhaseTextViewTopComponent());
 
         seisEvent.addChangeListener(this);
-
-        boolean retDAO = SeisDataDAO.retrieveAllPhases(seisEvent.getEvid(), phasesList.getPhases());
-        retDAO = SeisDataDAO.retrieveAllPhasesAmpMag(seisEvent.getEvid(), phasesList.getPhases());
-        retDAO = SeisDataDAO.retrieveAllStationsWithRegions(stations);                                  // load the correspondent map into the stataions
-        // put the region name into the pahseList
-        for (int i = 0; i < phasesList.getPhases().size(); i++) {
-            phasesList.getPhases().get(i).setRegionName(stations.get(phasesList.getPhases().get(i).getReportStation()));
-        }
 
         model = new PhaseTextViewTableModel(phasesList.getPhases());
         table = new JTable();
@@ -128,19 +118,6 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
     public void SeisDataChanged(SeisDataChangeEvent event) {
         System.out.println(Global.debugAt() + " Event received from " + event.getData().getClass().getName());
         seisEvent = Global.getSelectedSeisEvent();
-
-        //phasesList.getPhases().clear();
-        //System.out.println(Global.debugAt() + "phasesList.size() = " + phasesList.getPhases().size());
-        boolean retDAO = SeisDataDAO.retrieveAllPhases(seisEvent.getEvid(), phasesList.getPhases());
-        retDAO = SeisDataDAO.retrieveAllPhasesAmpMag(seisEvent.getEvid(), phasesList.getPhases());
-
-        //System.out.println(Global.debugAt() + "phasesList.getPhases().size()= " + phasesList.getPhases().size());
-        // put the region name into the pahseList
-        for (int i = 0; i < phasesList.getPhases().size(); i++) {
-            phasesList.getPhases()
-                    .get(i)
-                    .setRegionName(stations.get(phasesList.getPhases().get(i).getReportStation()));
-        }
 
         //System.out.println(Global.debugAt() + "phasesList.getPhases().size()= " + phasesList.getPhases().size());
         model = new PhaseTextViewTableModel(phasesList.getPhases());

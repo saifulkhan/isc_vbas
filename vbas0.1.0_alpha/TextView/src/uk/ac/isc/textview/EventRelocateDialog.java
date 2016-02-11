@@ -40,7 +40,7 @@ public class EventRelocateDialog extends JDialog {
     private JButton button_cancel;
 
     private Checkbox checkbox_gridSearch;
-    private JTextArea textField_depth;
+    private JTextArea text_depth;
     private JLabel jLabel1;
     private JLabel label_hypid;
     private JLabel label_coord;
@@ -59,7 +59,7 @@ public class EventRelocateDialog extends JDialog {
     private JPanel jPanel2;
     private JPanel jPanel3;
     private JScrollPane jScrollPane1;
-    private JTextArea text_depth;
+    private JTextArea text_comment;
     private JRadioButton radio_default;
     private JRadioButton radio_fix;
     private JRadioButton radio_free;
@@ -82,29 +82,29 @@ public class EventRelocateDialog extends JDialog {
 
     private void radioButtonFixActionPerformed(ActionEvent evt) {
         if (this.radio_fix.isSelected()) {
-            this.textField_depth.setEditable(true);
-            this.textField_depth.setEnabled(true);
+            this.text_depth.setEditable(true);
+            this.text_depth.setEnabled(true);
         }
     }
 
     private void radioButtonFreeActionPerformed(ActionEvent evt) {
         if (this.radio_free.isSelected()) {
-            this.textField_depth.setEditable(true);
-            this.textField_depth.setEnabled(true);
+            this.text_depth.setEditable(true);
+            this.text_depth.setEnabled(true);
         }
     }
 
     private void radioButtonDefaultActionPerformed(ActionEvent evt) {
         if (this.radio_default.isSelected()) {
-            this.textField_depth.setEditable(false);
-            this.textField_depth.setEnabled(false);
+            this.text_depth.setEditable(false);
+            this.text_depth.setEnabled(false);
         }
     }
 
     private void radioButtonMedianActionPerformed(ActionEvent evt) {
         if (this.radio_median.isSelected()) {
-            this.textField_depth.setEditable(false);
-            this.textField_depth.setEnabled(false);
+            this.text_depth.setEditable(false);
+            this.text_depth.setEnabled(false);
         }
     }
 
@@ -115,13 +115,13 @@ public class EventRelocateDialog extends JDialog {
         label_coord.setText(selectedHypocentre.getLat().toString() + "N " + selectedHypocentre.getLon().toString() + "W");
         label_depth.setText(selectedHypocentre.getDepth().toString());
         label_prime.setText(selectedHypocentre.getIsPrime().toString());
-        textField_depth.setText(selectedHypocentre.getDepth().toString());
-
+        text_depth.setText(selectedHypocentre.getDepth().toString());
+        
         setVisible(true);
     }
 
     private void button_okActionPerformed(ActionEvent evt) {
-        if (this.textField_depth.getText().equals(" ") && this.radio_fix.isSelected()) {
+        if (this.text_depth.getText().equals(" ") && this.radio_fix.isSelected()) {
             JOptionPane.showMessageDialog(null, "Enter Depth.");
             return;
         }
@@ -193,10 +193,10 @@ public class EventRelocateDialog extends JDialog {
         radio_free = new JRadioButton();
         jLabel14 = new JLabel();
         checkbox_gridSearch = new Checkbox();
-        textField_depth = new JTextArea();
+        text_depth = new JTextArea();
         jPanel3 = new JPanel();
         jScrollPane1 = new JScrollPane();
-        text_depth = new JTextArea();
+        text_comment = new JTextArea();
 
         button_ok.setBackground(new Color(45, 137, 239));
         button_ok.setForeground(new Color(255, 255, 255));
@@ -337,7 +337,7 @@ public class EventRelocateDialog extends JDialog {
                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                 .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(textField_depth, GroupLayout.PREFERRED_SIZE, 131, GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(text_depth, GroupLayout.PREFERRED_SIZE, 131, GroupLayout.PREFERRED_SIZE)
                                         .addGap(18, 18, 18)
                                         .addComponent(radio_fix)
                                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
@@ -358,7 +358,7 @@ public class EventRelocateDialog extends JDialog {
                                 .addComponent(radio_free)
                                 .addComponent(radio_default)
                                 .addComponent(radio_median)
-                                .addComponent(textField_depth, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                .addComponent(text_depth, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                         .addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                 .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -371,9 +371,9 @@ public class EventRelocateDialog extends JDialog {
 
         jPanel3.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Comment"));
 
-        text_depth.setColumns(20);
-        text_depth.setRows(5);
-        jScrollPane1.setViewportView(text_depth);
+        text_comment.setColumns(20);
+        text_comment.setRows(5);
+        jScrollPane1.setViewportView(text_comment);
 
         GroupLayout jPanel3Layout = new GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);

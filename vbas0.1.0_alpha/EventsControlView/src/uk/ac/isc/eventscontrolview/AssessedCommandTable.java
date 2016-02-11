@@ -26,7 +26,6 @@ import uk.ac.isc.seisdata.Command;
 import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
-import uk.ac.isc.seisdata.SeisDataDAO;
 import uk.ac.isc.seisdata.SeisEvent;
 
 public class AssessedCommandTable extends JPanel implements SeisDataChangeListener {
@@ -53,7 +52,7 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
         selectedSeisEvent.addChangeListener(this);
         formulatedCommand.addChangeListener(this);
         
-        SeisDataDAO.readAssessedCommands(selectedSeisEvent.getEvid(), assessedCommandList.getAssessedCommandList());
+        
 
         // Action buttons
         // layout all together
@@ -66,8 +65,6 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
         //System.out.println(Global.debugAt() + " Event received from " + event.getData().getClass().getName());
-
-        SeisDataDAO.readAssessedCommands(selectedSeisEvent.getEvid(), assessedCommandList.getAssessedCommandList());
 
         model = new AssessedCommandTableModel(assessedCommandList.getAssessedCommandList());
         table.setModel(model);

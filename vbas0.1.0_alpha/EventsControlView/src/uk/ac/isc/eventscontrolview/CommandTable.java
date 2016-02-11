@@ -34,7 +34,7 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
     private final CommandPanel commandPanel;
 
     private final CommandList commandList = Global.getCommandList();
-    private static SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
+    private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
     private final Command formulatedCommand = Global.getFormulatedCommand();
 
     public CommandTable() {
@@ -69,7 +69,6 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
         selectedSeisEvent.addChangeListener(this);
         formulatedCommand.addChangeListener(this);
 
-        SeisDataDAO.readCommands(selectedSeisEvent.getEvid(), commandList.getCommandList());
 
         // Action buttons
         // layout all together
@@ -82,8 +81,6 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
         System.out.println(Global.debugAt() + " Event received from " + event.getData().getClass().getName());
-
-        SeisDataDAO.readCommands(selectedSeisEvent.getEvid(), commandList.getCommandList());
 
         model = new CommandTableModel(commandList.getCommandList());
         table.setModel(model);
