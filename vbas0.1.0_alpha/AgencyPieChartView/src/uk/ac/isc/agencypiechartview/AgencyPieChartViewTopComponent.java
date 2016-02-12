@@ -55,6 +55,8 @@ public final class AgencyPieChartViewTopComponent extends TopComponent implement
  
         selectedSeisEvent.addChangeListener(this);
         
+        System.out.println(Global.debugAt() + "Total no of phases: " + phasesList.getPhases().size());
+        
         pcData = new PieChartData(phasesList.getPhases());
         apcView.setData(pcData);
 

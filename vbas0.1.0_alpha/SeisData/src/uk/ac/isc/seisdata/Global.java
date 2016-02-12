@@ -1,9 +1,6 @@
 
 package uk.ac.isc.seisdata;
-
-import java.util.TreeMap;
-
-
+ 
 /*
  * Used globally to register to change event and notify/fire changes.
  * Do not change the actual reference of these objects.
@@ -17,6 +14,9 @@ public class Global {
     private static Hypocentre selectedHypocentre = new Hypocentre();
     // Selected Phase
     private static Phase selectedPhase = new Phase();
+    
+    
+    // TODO:  change them to a event
     // Formulated command in: 1. Hypocentre table dialogs and popupmenus, 
     // 2. Comamnd table, 3. AssessedComamnd table
     // Not used: Set the comamnd as a java String.

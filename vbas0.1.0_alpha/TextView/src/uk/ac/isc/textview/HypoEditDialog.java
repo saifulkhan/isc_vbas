@@ -74,12 +74,10 @@ public class HypoEditDialog extends JDialog {
 
         System.out.println(Global.debugAt());
 
-  
-
         JSONArray jCommandArray = new JSONArray();
+        JSONArray jFunctionArray = new JSONArray();
 
         JSONObject jCommandObj = new JSONObject();
-
         jCommandObj.put("commandType", "hypocentreedit");
         jCommandObj.put("dataType", "hypocentre");
         jCommandObj.put("id", selectedHypocentre.getHypid());
@@ -93,6 +91,14 @@ public class HypoEditDialog extends JDialog {
             jAttrObj.put("oldValue", selectedHypocentre.getDepth());
             jAttrObj.put("newvalue", Integer.parseInt(text_depth.getText()));
             jAttrArray.add(jAttrObj);
+
+            JSONObject jFunctionObj = new JSONObject();
+            jFunctionObj.put("function", "chhypo ( "
+                    + selectedHypocentre.getHypid() + " INTEGER, "
+                    + "depth " + "VARCHAR, "
+                    + Integer.parseInt(text_depth.getText()) + " VARCHAR"
+            );
+            jFunctionArray.add(jFunctionObj);
         }
 
         Date dd = null;
@@ -104,12 +110,20 @@ public class HypoEditDialog extends JDialog {
             return;
         }
         if (dd.compareTo(selectedHypocentre.getOrigTime()) != 0) {  // same date time
-            
+
             JSONObject jAttrObj = new JSONObject();
             jAttrObj.put("name", "time");
             jAttrObj.put("oldValue", selectedHypocentre.getOrigTime());
             jAttrObj.put("newvalue", dd);
             jAttrArray.add(jAttrObj);
+
+            JSONObject jFunctionObj = new JSONObject();
+            jFunctionObj.put("function", "chhypo ( "
+                    + selectedHypocentre.getHypid() + " INTEGER, "
+                    + "time " + "VARCHAR, "
+                    + text_time.getText() + " VARCHAR"
+            );
+            jFunctionArray.add(jFunctionObj);
         }
 
         if (Double.parseDouble(text_lat.getText()) != selectedHypocentre.getLat()) {
@@ -118,6 +132,14 @@ public class HypoEditDialog extends JDialog {
             jAttrObj.put("oldValue", selectedHypocentre.getLat());
             jAttrObj.put("newvalue", Double.parseDouble(text_lat.getText()));
             jAttrArray.add(jAttrObj);
+
+            JSONObject jFunctionObj = new JSONObject();
+            jFunctionObj.put("function", "chhypo ( "
+                    + selectedHypocentre.getHypid() + " INTEGER, "
+                    + "lat " + "VARCHAR, "
+                    + Double.parseDouble(text_lat.getText()) + " VARCHAR"
+            );
+            jFunctionArray.add(jFunctionObj);
         }
 
         if (Double.parseDouble(text_lon.getText()) != selectedHypocentre.getLon()) {
@@ -126,6 +148,14 @@ public class HypoEditDialog extends JDialog {
             jAttrObj.put("oldValue", selectedHypocentre.getLon());
             jAttrObj.put("newvalue", Double.parseDouble(text_lon.getText()));
             jAttrArray.add(jAttrObj);
+
+            JSONObject jFunctionObj = new JSONObject();
+            jFunctionObj.put("function", "chhypo ( "
+                    + selectedHypocentre.getHypid() + " INTEGER, "
+                    + "lon " + "VARCHAR, "
+                    + Double.parseDouble(text_lon.getText()) + " VARCHAR"
+            );
+            jFunctionArray.add(jFunctionObj);
         }
 
         if (jAttrArray.size() > 0) {
@@ -134,14 +164,18 @@ public class HypoEditDialog extends JDialog {
         }
 
         if (jCommandArray.size() > 0) {
-            String command = jCommandArray.toString();
-            System.out.print("formulated json commad:" + command);
+            String commandStr = jCommandArray.toString();
+            String functionStr = jFunctionArray.toString();
 
-            boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "hypocentreedit", command);
+            boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), ""
+                    + "hypocentreedit", commandStr, functionStr);
             if (ret) {
                 // success
-                System.out.println(Global.debugAt() + " \nCommand=" + command + " \nFired: New Command from the 'Edit Hypocentre' dialog.");
-                formulatedCommand.fireSeisDataChanged();  // Notify the Command table to update from the database.
+                System.out.println(Global.debugAt() + " \ncommandStr= " + commandStr
+                        + "\nfunctionStr= " + functionStr
+                        + "\nFired: 'Edit Hypocentre' comamnd.");
+
+                formulatedCommand.fireSeisDataChanged();
                 this.dispose();
             } else {
                 JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);

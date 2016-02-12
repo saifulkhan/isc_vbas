@@ -29,8 +29,9 @@ import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.SeisDataDAO;
 import uk.ac.isc.seisdata.SeisEvent;
+import uk.ac.isc.seisdata.Settings;
 
-public class EventRelocateDialog extends JDialog {
+public class SeisEventRelocateDialog extends JDialog {
 
     private final Command formulatedCommand = Global.getFormulatedCommand();
     private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
@@ -65,8 +66,8 @@ public class EventRelocateDialog extends JDialog {
     private JRadioButton radio_free;
     private JRadioButton radio_median;
 
-    public EventRelocateDialog() {
-        setTitle("Event Relocate");
+    public SeisEventRelocateDialog() {
+        setTitle("SeisEvent Relocate");
         setModal(true);
         layoutComponents();
         groupRadioButton();
@@ -116,7 +117,7 @@ public class EventRelocateDialog extends JDialog {
         label_depth.setText(selectedHypocentre.getDepth().toString());
         label_prime.setText(selectedHypocentre.getIsPrime().toString());
         text_depth.setText(selectedHypocentre.getDepth().toString());
-        
+
         setVisible(true);
     }
 
@@ -127,10 +128,22 @@ public class EventRelocateDialog extends JDialog {
         }
 
         JSONArray jCommandArray = new JSONArray();
+        JSONArray jFunctionArray = new JSONArray();
+
         JSONObject jCommandObj = new JSONObject();
         jCommandObj.put("commandType", "seiseventrelocate");
         jCommandObj.put("dataType", "seisevent");
         jCommandObj.put("id", selectedSeisEvent.getEvid());
+
+        // unlike otehr commands, for relocate there are only one object or its a shell script.
+        JSONObject jFunctionObj = new JSONObject();
+        String functionStr = "ssh beast "
+                + "export PGUSER= " + Settings.getAssessUser() + "; "
+                + "export PGPASSWORD= " + Settings.getAssessPassword() + "; "
+                + "export PGDATABASE= " + Settings.getPgDatabase() + "; "
+                + "export PGHOSTADDR= " + Settings.getPgHostAddr() + "; "
+                + "echo '"
+                + selectedSeisEvent.getEvid() + " ";
 
         // Add all the changed "attributes" in the array.
         JSONArray jAttrArray = new JSONArray();
@@ -141,7 +154,55 @@ public class EventRelocateDialog extends JDialog {
             jAttrObj.put("oldValue", selectedHypocentre.getDepth());
             jAttrObj.put("newvalue", Integer.parseInt(text_depth.getText()));
             jAttrArray.add(jAttrObj);
+
+            functionStr += "depth=" + text_depth.getText();
         }
+
+        if (radio_fix.isSelected()) {
+            JSONObject jAttrObj = new JSONObject();
+            jAttrObj.put("name", "fix_depth");
+            jAttrObj.put("oldValue", selectedHypocentre.getDepth());
+            jAttrObj.put("newvalue", Integer.parseInt(text_depth.getText()));
+            jAttrArray.add(jAttrObj);
+
+            functionStr += "fix_depth=" + text_depth.getText();
+        }
+
+        if (radio_default.isSelected()) {
+            JSONObject jAttrObj = new JSONObject();
+            jAttrObj.put("name", "fix_depth_default");
+            jAttrObj.put("oldValue", selectedHypocentre.getDepth());
+            jAttrObj.put("newvalue", Integer.parseInt(text_depth.getText()));
+            jAttrArray.add(jAttrObj);
+
+            functionStr += "fix_depth_default=" + text_depth.getText();
+        }
+
+        if (radio_median.isSelected()) {
+            JSONObject jAttrObj = new JSONObject();
+            jAttrObj.put("name", "fix_depth_median");
+            jAttrObj.put("oldValue", selectedHypocentre.getDepth());
+            jAttrObj.put("newvalue", Integer.parseInt(text_depth.getText()));
+            jAttrArray.add(jAttrObj);
+
+            functionStr += "fix_depth_median=" + text_depth.getText();
+        }
+        
+        if (checkbox_gridSearch.isEnabled()){
+            JSONObject jAttrObj = new JSONObject();
+            jAttrObj.put("name", "do_gridsearch");
+            jAttrObj.put("oldValue", 0);
+            jAttrObj.put("newvalue", 1);
+            jAttrArray.add(jAttrObj);
+
+            functionStr += "do_gridsearch=" + 1;
+        }
+        
+        jFunctionObj.put("function", functionStr 
+                + " |  iscloc_parallel_db -  > "           
+                + Settings.getAssessDir() + "/"
+                + selectedSeisEvent.getEvid() + "/"
+                + "iscloc.out");
 
         if (jAttrArray.size() > 0) {
             jCommandObj.put("attributes", jAttrArray);
@@ -149,13 +210,18 @@ public class EventRelocateDialog extends JDialog {
         }
 
         if (jCommandArray.size() > 0) {
-            String command = jCommandArray.toString();
+            String commandStr = jCommandArray.toString();
+            functionStr = jFunctionArray.toString();
 
-            boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "seiseventrelocate", command);
+            boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(),
+                    "seiseventrelocate", commandStr, functionStr);
             if (ret) {
                 // success
-                System.out.println(Global.debugAt() + " \nCommand=" + command + " \nFired: New Command from the 'Event Relocate' dialog.");
-                formulatedCommand.fireSeisDataChanged();  // Notify the Command table to update from the database.
+                System.out.println(Global.debugAt() + " \ncommandStr= " + commandStr
+                        + "\nfunctionStr= " + functionStr
+                        + "\nFired: 'SeisEvent Relocate' comamnd.");
+
+                formulatedCommand.fireSeisDataChanged();
                 this.dispose();
             } else {
                 JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);

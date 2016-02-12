@@ -51,16 +51,23 @@ public class PhaseEditDialog extends JDialog {
     private final Command formulatedCommand = Global.getFormulatedCommand();
 
     public PhaseEditDialog() {
-
         setTitle("Phase Edit");
         setModal(true);
         initComponents();
         table_edit.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
     }
 
     public void showPhaseEditDialog(ArrayList<PhaseEditData> list) {
 
+        textField_phaseType.setText("");
+        comboBox_fix.setSelectedIndex(0);
+        comboBox_nondef.setSelectedIndex(0);
+        textField_timeShift.setText("");
+        comboBox_deleteAmp.setSelectedIndex(0);
+        comboBox_phaseBreak.setSelectedIndex(0);
+        textField_put.setText("");
+
+        
         for (PhaseEditData obj : list) {
             origPhaseEditDataList.add((PhaseEditData) obj.clone());
         }
@@ -85,10 +92,10 @@ public class PhaseEditDialog extends JDialog {
     // Combox in the table.
     private void setUpPhaseBreakColumn(JTable table_edit, TableColumn column) {
         JComboBox comboBox = new JComboBox();
-        comboBox.addItem("-");
+        comboBox.addItem("Put");
         comboBox.addItem("Take");
         comboBox.addItem("Delete");
-        comboBox.addItem("Put");
+        comboBox.addItem("");
         column.setCellEditor(new DefaultCellEditor(comboBox));
     }
 
@@ -99,7 +106,7 @@ public class PhaseEditDialog extends JDialog {
         if (selectedRow >= 0 && selectedCol >= 1) {
             switch (selectedCol) {
                 case 1:
-                    textField_phaseType.setText("NA");
+                    textField_phaseType.setText(" ");
                     break;
                 case 2:
                     comboBox_fix.setSelectedIndex(0);
@@ -108,7 +115,7 @@ public class PhaseEditDialog extends JDialog {
                     comboBox_nondef.setSelectedIndex(0);
                     break;
                 case 4:
-                    textField_timeShift.setText("NA");
+                    textField_timeShift.setText(" ");
                     break;
                 case 5:
                     comboBox_deleteAmp.setSelectedIndex(0);
@@ -117,7 +124,7 @@ public class PhaseEditDialog extends JDialog {
                     comboBox_phaseBreak.setSelectedIndex(0);
                     break;
                 case 7:
-                    textField_put.setText("NA");
+                    textField_put.setText(" ");
                     break;
 
             }
@@ -135,17 +142,14 @@ public class PhaseEditDialog extends JDialog {
 
         JSONArray jCommandArray = new JSONArray();
         JSONArray jFunctionArray = new JSONArray();
-        
+
         for (int i = 0; i < nRow; i++) {
 
             JSONObject jCommandObj = new JSONObject();
-            jCommandObj.put("commandType", "phasedit");
+            jCommandObj.put("commandType", "phaseedit");
             jCommandObj.put("dataType", "phase");
             jCommandObj.put("id", (Integer) model.getValueAt(i, 0));
 
-            
-            
-            
             // Add all the changed "attributes" in the array.
             JSONArray jAttrArray = new JSONArray();
 
@@ -158,15 +162,15 @@ public class PhaseEditDialog extends JDialog {
                 jAttrObj.put("oldValue", (String) model.getValueAt(i, 1));
                 jAttrObj.put("newvalue", (String) model.getValueAt(i, 1));
                 jAttrArray.add(jAttrObj);
-                
+
                 /*JSONObject jFunctionObj = new JSONObject();
-                jCommandObj.put("function", 
-                        "chphase ( " 
-                                + (Integer) model.getValueAt(i, 0) + " INTEGER, " +
-                                + 
-                + );
-                jCommandObj.put("dataType", "phase");
-                jCommandObj.put("id", (Integer) model.getValueAt(i, 0));*/
+                 jCommandObj.put("function", 
+                 "chphase ( " 
+                 + (Integer) model.getValueAt(i, 0) + " INTEGER, " +
+                 + 
+                 + );
+                 jCommandObj.put("dataType", "phase");
+                 jCommandObj.put("id", (Integer) model.getValueAt(i, 0));*/
             }
 
             if (model.getValueAt(i, 2) != null) {
@@ -202,7 +206,7 @@ public class PhaseEditDialog extends JDialog {
             }
 
             if (model.getValueAt(i, 6) != null) {
-                if (!model.getValueAt(i, 6).equals("-")) {
+                if (!model.getValueAt(i, 6).equals(" ")) {
                     JSONObject jAttrObj = new JSONObject();
                     jAttrObj.put("name", "phasebreak");
                     jAttrObj.put("oldValue", null);
@@ -233,18 +237,20 @@ public class PhaseEditDialog extends JDialog {
         }
 
         if (jCommandArray.size() > 0) {
-            String command = jCommandArray.toString();
+            String commandStr = jCommandArray.toString();
+            String functionStr = jFunctionArray.toString();
 
-            boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "phaseedit", command);
+            boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "phaseedit", commandStr, functionStr);
             if (ret) {
-                System.out.println(Global.debugAt() + " \nCommand=" + command + " \nFired: New Command from the 'Phase Edit' dialog.");
-                formulatedCommand.fireSeisDataChanged();  // Notify the Command table to update from the database.            
+                System.out.println(Global.debugAt() + " \ncommandStr= " + commandStr
+                        + "\nfunctionStr= " + functionStr
+                        + "\nFired: 'Phase Edit' comamnd.");
+                formulatedCommand.fireSeisDataChanged();
+                this.dispose();
             } else {
                 JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
-
-        this.dispose();
     }
 
     private void buttonCancelActionPerformed(ActionEvent evt) {
@@ -257,31 +263,31 @@ public class PhaseEditDialog extends JDialog {
         int nRow = model.getRowCount();
 
         for (int i = 0; i < nRow; i++) {
-            if (!textField_phaseType.getText().equals("NA")) {
+            if (!textField_phaseType.getText().equals(" ")) {
                 model.setValueAt(textField_phaseType.getText(), i, 1);
             }
 
-            if (!comboBox_fix.getSelectedItem().equals("NA")) {
+            if (!comboBox_fix.getSelectedItem().equals(" ")) {
                 model.setValueAt(Boolean.valueOf(comboBox_fix.getSelectedItem().toString()), i, 2);
             }
 
-            if (!comboBox_nondef.getSelectedItem().equals("NA")) {
+            if (!comboBox_nondef.getSelectedItem().equals(" ")) {
                 model.setValueAt(Boolean.valueOf(comboBox_nondef.getSelectedItem().toString()), i, 3);
             }
 
-            if (!textField_timeShift.getText().equals("NA")) {
-                model.setValueAt(Integer.valueOf(textField_timeShift.getText()), i, 4);
+            if (!textField_timeShift.getText().equals(" ")) {
+                model.setValueAt(Integer.valueOf(textField_timeShift.getText()), i,  4);
             }
 
-            if (!comboBox_deleteAmp.getSelectedItem().equals("NA")) {
+            if (!comboBox_deleteAmp.getSelectedItem().equals(" ")) {
                 model.setValueAt(Boolean.valueOf(comboBox_deleteAmp.getSelectedItem().toString()), i, 5);
             }
 
-            if (!comboBox_phaseBreak.getSelectedItem().equals("NA")) {
+            if (!comboBox_phaseBreak.getSelectedItem().equals(" ")) {
                 model.setValueAt(comboBox_phaseBreak.getSelectedItem(), i, 6);
             }
 
-            if (!textField_put.getText().equals("NA")) {
+            if (!textField_put.getText().equals(" ")) {
                 model.setValueAt(Double.valueOf(textField_put.getText()), i, 7);
             }
 
@@ -355,21 +361,21 @@ public class PhaseEditDialog extends JDialog {
 
         jScrollPane1.setViewportView(table_edit);
 
-        textField_phaseType.setText("NA");
+        textField_phaseType.setText(" ");
         textField_phaseType.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 textField_phaseTypeActionPerformed(evt);
             }
         });
 
-        textField_timeShift.setText("NA");
+        textField_timeShift.setText(" ");
         textField_timeShift.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 textField_timeShiftActionPerformed(evt);
             }
         });
 
-        textField_put.setText("NA");
+        textField_put.setText(" ");
         textField_put.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 textField_putActionPerformed(evt);
@@ -378,35 +384,35 @@ public class PhaseEditDialog extends JDialog {
 
         button_applyToAll.setBackground(new java.awt.Color(45, 137, 239));
         button_applyToAll.setForeground(new java.awt.Color(255, 255, 255));
-        button_applyToAll.setText("Apply");
+        button_applyToAll.setText("Apply all");
         button_applyToAll.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 button_applyToAllActionPerformed(evt);
             }
         });
 
-        comboBox_fix.setModel(new DefaultComboBoxModel(new String[]{"NA", "True", "False"}));
+        comboBox_fix.setModel(new DefaultComboBoxModel(new String[]{"Manual", "True", "False"}));
         comboBox_fix.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 comboBox_fixActionPerformed(evt);
             }
         });
 
-        comboBox_nondef.setModel(new DefaultComboBoxModel(new String[]{"NA", "True", "False"}));
+        comboBox_nondef.setModel(new DefaultComboBoxModel(new String[]{"Manual", "True", "False"}));
         comboBox_nondef.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 comboBox_nondefActionPerformed(evt);
             }
         });
 
-        comboBox_deleteAmp.setModel(new DefaultComboBoxModel(new String[]{"NA", "True", "False"}));
+        comboBox_deleteAmp.setModel(new DefaultComboBoxModel(new String[]{"Manual", "True", "False"}));
         comboBox_deleteAmp.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 comboBox_deleteAmpActionPerformed(evt);
             }
         });
 
-        comboBox_phaseBreak.setModel(new DefaultComboBoxModel(new String[]{"NA", "Take", "Delete", "Put"}));
+        comboBox_phaseBreak.setModel(new DefaultComboBoxModel(new String[]{"Put", "Take", "Delete", " "}));
         comboBox_phaseBreak.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 comboBox_phaseBreakActionPerformed(evt);

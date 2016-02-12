@@ -60,8 +60,7 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
 
     public SeisEventsTable() {
         loadSeisEvents();
-        loadSelectedSeisEventData();
-
+        
         table = new JTable();
         tableModel = new EventsTableModel(eventsList.getEvents());
         table.setModel(tableModel);
@@ -79,7 +78,7 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
     }
 
     public void loadSeisEvents() {
-
+          System.out.println(Global.debugAt() + "Load SeisEvents list.");
         // fill in the events number
         SeisDataDAO.retrieveBlockEventNumber(blockTableModel.getTaskBlocks());
         SeisDataDAO.retrieveBlockReviewedEventNumber(blockTableModel.getTaskBlocks());
@@ -96,7 +95,8 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
 
     public void loadSelectedSeisEventData() {
 
-        System.out.println(Global.debugAt());
+      System.out.println(Global.debugAt() + "Load list of Hypocentre, Phase, Commmands, and AssessedCommands for SeisEvent: " 
+              + selectedSeisEvent.getEvid());
 
         /*
          * Hypocentre
@@ -178,7 +178,7 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
         table.setColumnSelectionAllowed(false);
         table.setSelectionBackground(new Color(45, 137, 239));
         table.setSelectionForeground(Color.WHITE);
-        table.setRowSelectionInterval(0, 0);
+        //table.setRowSelectionInterval(0, 0);
 
         table.setRowHeight(25);
         table.setFont(new Font("Sans-serif", Font.PLAIN, 14));

@@ -159,20 +159,30 @@ public class SeisEventSearchPanel extends JPanel {
         int seisEventId = (Integer) table.getValueAt(row, 0);
 
         JSONArray jCommandArray = new JSONArray();
+        JSONArray jFunctionArray = new JSONArray();
+        
         JSONObject jCommandObj = new JSONObject();
-        jCommandObj.put("commandType", "eventbanish");
+        
+        jCommandObj.put("commandType", "seiseventbanish");
         jCommandObj.put("dataType", "seisevent");
         jCommandObj.put("id", seisEventId);
-
         jCommandArray.add(jCommandObj);
 
+        JSONObject jFunctionObj = new JSONObject();
+        jFunctionObj.put("function", "banish ( " + seisEventId + " INTEGER )");
+        jFunctionArray.add(jFunctionObj);
+        
+        
         if (jCommandArray.size() > 0) {
-            String command = jCommandArray.toString();
-
-            boolean ret = SeisDataDAO.updateCommandTable(seisEventId, "eventbanish", command);
+            String commandStr = jCommandArray.toString();
+            String functionStr = jFunctionArray.toString();
+            
+            boolean ret = SeisDataDAO.updateCommandTable(seisEventId, "seiseventbanish", commandStr, functionStr);
             if (ret) {
                 // success
-                System.out.println(Global.debugAt() + " \nCommand=" + command + " \nFired: New Command eventbanish.");
+                System.out.println(Global.debugAt() + " \ncommandStr= " + commandStr 
+                        + "\nfunctionStr= " + functionStr 
+                        + "\nFired: 'SeisEvent Banish' comamnd.");
                 formulatedCommand.fireSeisDataChanged();  // Notify the Command table to update from the database.
 
             } else {

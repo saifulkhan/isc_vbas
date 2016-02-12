@@ -21,7 +21,7 @@ class HypoTablePopupManager implements ActionListener {
     JTable table;
     JPopupMenu popupMenu;
 
-    EventRelocateDialog relocateEventDialog;
+    SeisEventRelocateDialog relocateEventDialog;
     HypoEditDialog editHypocentreDialog;
 
     private final Command formulatedCommand = Global.getFormulatedCommand();
@@ -33,7 +33,7 @@ class HypoTablePopupManager implements ActionListener {
 
         setPopupMenuVisualAttributes();
 
-        relocateEventDialog = new EventRelocateDialog();
+        relocateEventDialog = new SeisEventRelocateDialog();
         editHypocentreDialog = new HypoEditDialog();
     }
 
@@ -55,28 +55,37 @@ class HypoTablePopupManager implements ActionListener {
         if ("Set Prime".equals(e.getActionCommand())) {
 
             JSONArray jCommandArray = new JSONArray();
+            JSONArray jFunctionArray = new JSONArray();
+            
             JSONObject jCommandObj = new JSONObject();
             jCommandObj.put("commandType", "setprime");
             jCommandObj.put("dataType", "hypocentre");
             jCommandObj.put("id", selectedHypocentre.getHypid());
-
             jCommandArray.add(jCommandObj);
+            
+            JSONObject jFunctionObj = new JSONObject();
+            jFunctionObj.put("function", "rf ( " + selectedHypocentre.getHypid() + " INTEGER )");
+            jFunctionArray.add(jFunctionObj);
+        
 
             if (jCommandArray.size() > 0) {
-                String command = jCommandArray.toString();
-                System.out.print("formulated json commad:" + command);
-
-                boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "setprime", command);
+                String commandStr = jCommandArray.toString();
+                String functionStr = jFunctionArray.toString();
+            
+                boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "setprime", 
+                        commandStr, functionStr);
                 if (ret) {
                     // success
-                    System.out.println(Global.debugAt() + " \nCommand=" + command + " \nFired: New Command 'Set Prime'.");
-                    formulatedCommand.fireSeisDataChanged();  // Notify the Command table to update from the database.
-
+                     // success
+                System.out.println(Global.debugAt() + " \ncommandStr= " + commandStr 
+                        + "\nfunctionStr= " + functionStr 
+                        + "\nFired: 'Set Prime' comamnd.");
+                
+                    formulatedCommand.fireSeisDataChanged(); 
                 } else {
                     JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
-
         }
 
         if ("Event Relocate..".equals(e.getActionCommand())) {

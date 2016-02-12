@@ -2661,7 +2661,7 @@ public final class SeisDataDAO {
                 String assessId = rs.getString("assessid");
                 String commandId = rs.getString("cmdids");
 
-                System.out.println(commandId + " | " + analyst + " | " + report + " | " + pass + " | " + assessId);
+                //System.out.println(commandId + " | " + analyst + " | " + report + " | " + pass + " | " + assessId);
 
                 AssessedCommand ac = hashtable.get(assessId);
                 if (ac == null) {
@@ -2714,7 +2714,11 @@ public final class SeisDataDAO {
     /*
      * Update the Command table: add new command (string) generated.
      */
-    public static boolean updateCommandTable(Integer evid, String type, String command) {
+    public static boolean updateCommandTable(
+            Integer evid, 
+            String type, 
+            String commandStr, 
+            String functionStr) {
 
         Connection con = null;
         Statement st = null;
@@ -2751,7 +2755,8 @@ public final class SeisDataDAO {
                     + "block_allocation_id, "
                     + "adddate, "
                     + "type, "
-                    + "command )\n"
+                    + "command, " 
+                    + "function)\n"
                     + "VALUES ( "
                     + "NEXTVAL('isc.id')" + ", "
                     + evid + ", "
@@ -2759,7 +2764,8 @@ public final class SeisDataDAO {
                     + block_allocation_id + ", "
                     + "NOW(), '"
                     + type + "', '"
-                    + command + "');";
+                    + commandStr + "', '"
+                    + functionStr + "');";
 
             //System.out.println(Global.debugAt() + "\nquery= " + query);
             st.executeUpdate(query);
