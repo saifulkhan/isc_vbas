@@ -129,6 +129,8 @@ public class SeisEventRelocateDialog extends JDialog {
         checkbox_gridSearch.setEnabled(true);
         checkbox_gridSearch.setSelected(false);
 
+        text_comment.setText(null);
+        
         setVisible(true);
     }
 
@@ -234,6 +236,18 @@ public class SeisEventRelocateDialog extends JDialog {
         Global.logDebug(Settings.getAssessDir() + File.separator + selectedSeisEvent.getEvid() + File.separator);
 
         if (jAttrArray.size() > 0) {
+            
+             /*
+             * Comment text description. Include it only if a valif command is formulated.
+             */
+            if (text_comment.getText() != null) {
+                JSONObject jAttrObj = new JSONObject();
+                jAttrObj.put("name", "comment");
+                jAttrObj.put("oldValue", "");
+                jAttrObj.put("newvalue", text_comment.getText());
+                jAttrArray.add(jAttrObj);
+            }
+            
             jCommandObj.put("attributes", jAttrArray);
             jCommandArray.add(jCommandObj);
         }

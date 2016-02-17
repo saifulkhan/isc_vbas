@@ -171,9 +171,12 @@ public class HypocentreEditDialog extends JDialog {
         if (jAttrArray.size() > 0) {
 
             /*
-             * Reason text description. Include it only if anything is changed.
+             * Reason text description. Include it only if a valid command is formulated.
              */
-            if (Double.parseDouble(text_lon.getText()) != selectedHypocentre.getLon()) {
+            if (textArea_reason.getText() == null) {
+                JOptionPane.showMessageDialog(null, "Please give a reason.", "Warning", JOptionPane.WARNING_MESSAGE);
+                return;
+            } else {
                 JSONObject jAttrObj = new JSONObject();
                 jAttrObj.put("name", "reason");
                 jAttrObj.put("oldValue", "");
@@ -183,7 +186,6 @@ public class HypocentreEditDialog extends JDialog {
 
             jCommandObj.put("attributes", jAttrArray);
             jCommandArray.add(jCommandObj);
-
         }
 
         if (jCommandArray.size() > 0) {
