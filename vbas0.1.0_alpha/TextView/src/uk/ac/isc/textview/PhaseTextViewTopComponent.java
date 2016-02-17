@@ -115,7 +115,7 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         System.out.println(Global.debugAt() + " Event received from " + event.getData().getClass().getName());
         selectedSeisEvent = Global.getSelectedSeisEvent();
 
-        //System.out.println(Global.debugAt() + "phasesList.getPhases().size()= " + phasesList.getPhases().size());
+        System.out.println(Global.debugAt() + "phasesList.getPhases().size()= " + phasesList.getPhases().size());
         model = new PhaseTextViewTableModel(phasesList.getPhases());
         table.setModel(model);
 

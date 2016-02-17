@@ -45,20 +45,10 @@ class PhaseTablePopupManager implements ActionListener {
         for (int i : selectedRows) {
             int phaseId = (Integer) table.getValueAt(i, 14);
             String type = (String) table.getValueAt(i, 6);
-            phaseEditDataList.add(new PhaseEditData(phaseId, type));
+            phaseEditDataList.add(new PhaseEditData(phaseId, type, null, null, null, null, null, null));
         }
 
         if ("Phase Edit..".equals(e.getActionCommand())) {
-       
-            System.out.print("\nRows:");
-            for (int c : table.getSelectedRows()) {
-                System.out.print(String.format(" %d", c)  + "  ");
-            }
-            System.out.print("\nColumns:");
-            for (int c : table.getSelectedColumns()) {
-                System.out.print(String.format(" %d", c) + "  ");
-            }
-            System.out.print(".\n\n");
 
             phaseEditDialog.setLocationRelativeTo(table);
             phaseEditDialog.showPhaseEditDialog(phaseEditDataList);

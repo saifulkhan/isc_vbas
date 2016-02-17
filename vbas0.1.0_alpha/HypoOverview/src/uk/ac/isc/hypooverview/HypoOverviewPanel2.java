@@ -1313,7 +1313,7 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
         g2.setPaint(Color.BLACK);
 
         for (Hypocentre h : hyposList.getHypocentres()) {
-            
+
             // Saiful: if the hypocentre is the selected hypocentre then color it red.
             if (h.getHypid() == Global.getSelectedHypocentre().getHypid()) {
                 g2.setPaint(Color.RED);
@@ -1322,7 +1322,7 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
                 g2.setPaint(Color.BLACK);
                 //System.out.println(Global.debugAt() + "hypid=" + h.getHypid() + ", black");
             }
-            
+
             xpos = tileSource.LonToX(h.getLon(), seisZoom) - center.x + w2;
             if (xpos > mapSize) {
                 xpos -= mapSize;
@@ -1574,7 +1574,13 @@ class MapAnimation implements Runnable {
     JPanel parent;
     private volatile boolean running = true;
 
-    public MapAnimation(int xOffset, int yOffset, int mapWidth, int mapHeight, BufferedImage[] images, JPanel parent) {
+    public MapAnimation(int xOffset,
+            int yOffset,
+            int mapWidth,
+            int mapHeight,
+            BufferedImage[] images,
+            JPanel parent) {
+
         this.xOffset = xOffset;
         this.yOffset = yOffset;
         this.tmpImages = images;

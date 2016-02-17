@@ -9,17 +9,24 @@ class PhaseEditData implements Cloneable {
     private Integer timeShift;
     private Boolean deleteAmp;
     private String phaseBreak;
-    private Double putValue;
+    private Integer putHypocentre;
 
-    public PhaseEditData(Integer phaseId, String type) {
+    public PhaseEditData(Integer phaseId, 
+            String type, 
+            Boolean fix, 
+            Boolean nondef,
+            Integer timeShift,
+            Boolean deleteAmp,
+            String phaseBreak,
+            Integer putHypocentre) {
         this.phaseId = phaseId;
         this.type = type;
-        this.fix = null;
-        this.nondef = null;
-        this.timeShift = null;
-        this.deleteAmp = null;
-        this.phaseBreak = null;
-        this.putValue = null;
+        this.fix = fix;
+        this.nondef = nondef;
+        this.timeShift = timeShift;
+        this.deleteAmp = deleteAmp;
+        this.phaseBreak = phaseBreak;
+        this.putHypocentre = putHypocentre;
     }
 
     public Integer getPhaseId() {
@@ -74,12 +81,12 @@ class PhaseEditData implements Cloneable {
         this.phaseBreak = phaseBreak;
     }
 
-    public Double getPutValue() {
-        return putValue;
+    public Integer getPutHypocentre() {
+        return putHypocentre;
     }
 
-    public void setPutValue(Double putValue) {
-        this.putValue = putValue;
+    public void setPutHypocentre(Integer putValue) {
+        this.putHypocentre = putValue;
     }
 
     @Override
@@ -93,7 +100,7 @@ class PhaseEditData implements Cloneable {
             clone.setTimeShift(this.timeShift);
             clone.setDeleteAmp(this.deleteAmp);
             clone.setPhaseBreak(this.phaseBreak);
-            clone.setPutValue(this.putValue);
+            clone.setPutHypocentre(this.putHypocentre);
             return clone;
         } catch (CloneNotSupportedException e) {
             return e;

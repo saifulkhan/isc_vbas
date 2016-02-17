@@ -14,6 +14,8 @@ import javax.swing.LayoutStyle;
  * Sort panel for the phase table.
  * Sort JTable: https://groups.google.com/forum/#!topic/comp.lang.java.help/T5avbBnxgkk
  * Check: http://www.codejava.net/java-se/swing/6-techniques-for-sorting-jtable-you-should-know
+ * 
+ * TODO: Default sort order (by James)-- delta, code, reading id, init time,  phase id
  */
 
 public class PhaseTableSortPanel extends JPanel {

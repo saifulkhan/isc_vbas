@@ -1,10 +1,12 @@
  
 package uk.ac.isc.seisdata;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.Map;
 
 public final class Settings {
+    
     
     private static final String assessUser;
     private static final String assessPassword;
@@ -23,8 +25,10 @@ public final class Settings {
             
             Calendar c = Calendar.getInstance();
             assessDir = env.get("ASSESSDIR") 
-                    + "/" + c.get(Calendar.YEAR)
-                    + "/" + c.get(Calendar.MONTH);
+                    + File.separator + c.get(Calendar.YEAR)
+                    + File.separator + c.get(Calendar.MONTH);
+            
+            Global.logDebug("assessDir=" + assessDir);
         } else {
             // Saiful: Windows 10 laptop
             assessUser = " ";
@@ -34,6 +38,7 @@ public final class Settings {
             assessDir = " ";
         }         
     }
+    
     
     public Settings() {
         

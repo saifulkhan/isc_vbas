@@ -7,15 +7,17 @@ package uk.ac.isc.textview;
 
 import com.orsoncharts.util.json.JSONArray;
 import com.orsoncharts.util.json.JSONObject;
+import com.orsoncharts.util.json.parser.JSONParser;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.Checkbox;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.io.File;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -27,7 +29,6 @@ import javax.swing.LayoutStyle;
 import uk.ac.isc.seisdata.Command;
 import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.Hypocentre;
-import uk.ac.isc.seisdata.SeisDataDAO;
 import uk.ac.isc.seisdata.SeisEvent;
 import uk.ac.isc.seisdata.Settings;
 
@@ -40,7 +41,7 @@ public class SeisEventRelocateDialog extends JDialog {
     private JButton button_ok;
     private JButton button_cancel;
 
-    private Checkbox checkbox_gridSearch;
+    private JCheckBox checkbox_gridSearch;
     private JTextArea text_depth;
     private JLabel jLabel1;
     private JLabel label_hypid;
@@ -75,16 +76,17 @@ public class SeisEventRelocateDialog extends JDialog {
 
     private void groupRadioButton() {
         ButtonGroup group = new ButtonGroup();
+        group.add(this.radio_free);
         group.add(this.radio_fix);
         group.add(this.radio_default);
         group.add(this.radio_median);
-        group.add(this.radio_free);
     }
 
     private void radioButtonFixActionPerformed(ActionEvent evt) {
         if (this.radio_fix.isSelected()) {
             this.text_depth.setEditable(true);
             this.text_depth.setEnabled(true);
+            this.checkbox_gridSearch.setEnabled(true);
         }
     }
 
@@ -92,6 +94,7 @@ public class SeisEventRelocateDialog extends JDialog {
         if (this.radio_free.isSelected()) {
             this.text_depth.setEditable(true);
             this.text_depth.setEnabled(true);
+            this.checkbox_gridSearch.setEnabled(true);
         }
     }
 
@@ -99,6 +102,7 @@ public class SeisEventRelocateDialog extends JDialog {
         if (this.radio_default.isSelected()) {
             this.text_depth.setEditable(false);
             this.text_depth.setEnabled(false);
+            this.checkbox_gridSearch.setEnabled(false);
         }
     }
 
@@ -106,6 +110,7 @@ public class SeisEventRelocateDialog extends JDialog {
         if (this.radio_median.isSelected()) {
             this.text_depth.setEditable(false);
             this.text_depth.setEnabled(false);
+            this.checkbox_gridSearch.setEnabled(false);
         }
     }
 
@@ -116,7 +121,13 @@ public class SeisEventRelocateDialog extends JDialog {
         label_coord.setText(selectedHypocentre.getLat().toString() + "N " + selectedHypocentre.getLon().toString() + "W");
         label_depth.setText(selectedHypocentre.getDepth().toString());
         label_prime.setText(selectedHypocentre.getIsPrime().toString());
+
+        text_depth.setEditable(true);
+        text_depth.setEnabled(true);
         text_depth.setText(selectedHypocentre.getDepth().toString());
+        radio_free.setSelected(true);
+        checkbox_gridSearch.setEnabled(true);
+        checkbox_gridSearch.setSelected(false);
 
         setVisible(true);
     }
@@ -128,6 +139,8 @@ public class SeisEventRelocateDialog extends JDialog {
         }
 
         JSONArray jCommandArray = new JSONArray();
+        // Add all the changed "attributes" in the array.
+        JSONArray jAttrArray = new JSONArray();
         JSONArray jFunctionArray = new JSONArray();
 
         JSONObject jCommandObj = new JSONObject();
@@ -135,74 +148,90 @@ public class SeisEventRelocateDialog extends JDialog {
         jCommandObj.put("dataType", "seisevent");
         jCommandObj.put("id", selectedSeisEvent.getEvid());
 
-        // unlike otehr commands, for relocate there are only one object or its a shell script.
         JSONObject jFunctionObj = new JSONObject();
-        String functionStr = "ssh beast "
-                + "export PGUSER= " + Settings.getAssessUser() + "; "
-                + "export PGPASSWORD= " + Settings.getAssessPassword() + "; "
-                + "export PGDATABASE= " + Settings.getPgDatabase() + "; "
-                + "export PGHOSTADDR= " + Settings.getPgHostAddr() + "; "
-                + "echo '"
-                + selectedSeisEvent.getEvid() + " ";
 
-        // Add all the changed "attributes" in the array.
-        JSONArray jAttrArray = new JSONArray();
+        // unlike otehr commands, for relocate there are only one object or its a shell script.
+        String functionStr = selectedSeisEvent.getEvid() + " ";
 
-        if (text_depth.getText() != null) {
+        /*
+         * Depth : fix & free
+         */
+        if (text_depth.getText() != null && (radio_fix.isSelected() || radio_free.isSelected())) {
+
+            Integer depth = null;
+            try {
+                depth = Integer.parseInt(text_depth.getText());
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Incorrect depth format.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             JSONObject jAttrObj = new JSONObject();
             jAttrObj.put("name", "depth");
             jAttrObj.put("oldValue", selectedHypocentre.getDepth());
-            jAttrObj.put("newvalue", Integer.parseInt(text_depth.getText()));
+            jAttrObj.put("newvalue", depth);
             jAttrArray.add(jAttrObj);
 
-            functionStr += "depth=" + text_depth.getText();
+            if (radio_fix.isSelected()) {
+                JSONObject jAttrObj1 = new JSONObject();
+                jAttrObj1.put("name", "fix_depth");
+                jAttrObj1.put("oldValue", selectedHypocentre.getDepth());
+                jAttrObj1.put("newvalue", depth);
+                jAttrArray.add(jAttrObj1);
+
+                functionStr += " fix_depth=" + depth;
+            }
+
+            if (radio_free.isSelected()) {
+                JSONObject jAttrObj1 = new JSONObject();
+                jAttrObj1.put("name", "free_depth");
+                jAttrObj1.put("oldValue", selectedHypocentre.getDepth());
+                jAttrObj1.put("newvalue", depth);
+                jAttrArray.add(jAttrObj1);
+
+                functionStr += " free_depth=" + depth;
+            }
+
         }
 
-        if (radio_fix.isSelected()) {
-            JSONObject jAttrObj = new JSONObject();
-            jAttrObj.put("name", "fix_depth");
-            jAttrObj.put("oldValue", selectedHypocentre.getDepth());
-            jAttrObj.put("newvalue", Integer.parseInt(text_depth.getText()));
-            jAttrArray.add(jAttrObj);
-
-            functionStr += "fix_depth=" + text_depth.getText();
-        }
-
+        /*
+         * Depth : default & median
+         */
         if (radio_default.isSelected()) {
             JSONObject jAttrObj = new JSONObject();
             jAttrObj.put("name", "fix_depth_default");
-            jAttrObj.put("oldValue", selectedHypocentre.getDepth());
-            jAttrObj.put("newvalue", Integer.parseInt(text_depth.getText()));
+            jAttrObj.put("oldValue", null);
+            jAttrObj.put("newvalue", null);
             jAttrArray.add(jAttrObj);
 
-            functionStr += "fix_depth_default=" + text_depth.getText();
+            functionStr += " fix_depth_default";
         }
 
         if (radio_median.isSelected()) {
             JSONObject jAttrObj = new JSONObject();
             jAttrObj.put("name", "fix_depth_median");
-            jAttrObj.put("oldValue", selectedHypocentre.getDepth());
-            jAttrObj.put("newvalue", Integer.parseInt(text_depth.getText()));
+            jAttrObj.put("oldValue", null);
+            jAttrObj.put("newvalue", null);
             jAttrArray.add(jAttrObj);
 
-            functionStr += "fix_depth_median=" + text_depth.getText();
+            functionStr += " fix_depth_median";
         }
-        
-        if (checkbox_gridSearch.isEnabled()){
-            JSONObject jAttrObj = new JSONObject();
-            jAttrObj.put("name", "do_gridsearch");
-            jAttrObj.put("oldValue", 0);
-            jAttrObj.put("newvalue", 1);
-            jAttrArray.add(jAttrObj);
 
-            functionStr += "do_gridsearch=" + 1;
+        if ((radio_fix.isSelected() || radio_free.isSelected()) && checkbox_gridSearch.isSelected()) {
+            JSONObject jAttrObj2 = new JSONObject();
+            jAttrObj2.put("name", "do_gridsearch");
+            jAttrObj2.put("oldValue", 0);
+            jAttrObj2.put("newvalue", 1);
+            jAttrArray.add(jAttrObj2);
+
+            functionStr += " do_gridsearch=" + (checkbox_gridSearch.isEnabled() ? 1 : 0);
         }
-        
-        jFunctionObj.put("function", functionStr 
-                + " |  iscloc_parallel_db -  > "           
-                + Settings.getAssessDir() + "/"
-                + selectedSeisEvent.getEvid() + "/"
-                + "iscloc.out");
+
+        jFunctionObj.put("commandType", "seiseventrelocate");
+        jFunctionObj.put("function", functionStr);
+        jFunctionArray.add(jFunctionObj);
+
+        Global.logDebug(Settings.getAssessDir() + File.separator + selectedSeisEvent.getEvid() + File.separator);
 
         if (jAttrArray.size() > 0) {
             jCommandObj.put("attributes", jAttrArray);
@@ -212,20 +241,37 @@ public class SeisEventRelocateDialog extends JDialog {
         if (jCommandArray.size() > 0) {
             String commandStr = jCommandArray.toString();
             functionStr = jFunctionArray.toString();
+            Global.logDebug(" Fired: 'SeiesEvent Relocate' comamnd."
+                    + "\ncommandStr= " + commandStr
+                    + "\nfunctionStr= " + functionStr);
 
-            boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(),
-                    "seiseventrelocate", commandStr, functionStr);
-            if (ret) {
-                // success
-                System.out.println(Global.debugAt() + " \ncommandStr= " + commandStr
-                        + "\nfunctionStr= " + functionStr
-                        + "\nFired: 'SeisEvent Relocate' comamnd.");
+            // Debug JSON
+            JSONParser parser = new JSONParser();
+            try {
+                String s = jFunctionArray.toString();
+                Object obj = parser.parse(s);
+                JSONArray arr = (JSONArray) obj;
+                for (Object o : arr) {
+                    JSONObject jObj = (JSONObject) o;
+                    Global.logDebug("commandType: " + (String) jObj.get("commandType")
+                            + ", function: " + (String) jObj.get("function"));
+                }
 
-                formulatedCommand.fireSeisDataChanged();
-                this.dispose();
-            } else {
-                JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (com.orsoncharts.util.json.parser.ParseException pe) {
+                System.out.println("position: " + pe.getPosition());
+                System.out.println(pe);
             }
+            // end Debug
+
+            /*boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(),
+             "seiseventrelocate", commandStr, functionStr);
+             if (ret) {
+
+             formulatedCommand.fireSeisDataChanged();
+             this.dispose();
+             } else {
+             JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
+             }*/
         }
 
     }
@@ -258,7 +304,7 @@ public class SeisEventRelocateDialog extends JDialog {
         radio_median = new JRadioButton();
         radio_free = new JRadioButton();
         jLabel14 = new JLabel();
-        checkbox_gridSearch = new Checkbox();
+        checkbox_gridSearch = new JCheckBox();
         text_depth = new JTextArea();
         jPanel3 = new JPanel();
         jScrollPane1 = new JScrollPane();
@@ -405,9 +451,9 @@ public class SeisEventRelocateDialog extends JDialog {
                                 .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addComponent(text_depth, GroupLayout.PREFERRED_SIZE, 131, GroupLayout.PREFERRED_SIZE)
                                         .addGap(18, 18, 18)
-                                        .addComponent(radio_fix)
-                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(radio_free)
+                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(radio_fix)
                                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(radio_default)
                                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
@@ -420,8 +466,8 @@ public class SeisEventRelocateDialog extends JDialog {
                         .addGap(10, 10, 10)
                         .addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                 .addComponent(jLabel13)
-                                .addComponent(radio_fix)
                                 .addComponent(radio_free)
+                                .addComponent(radio_fix)
                                 .addComponent(radio_default)
                                 .addComponent(radio_median)
                                 .addComponent(text_depth, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))

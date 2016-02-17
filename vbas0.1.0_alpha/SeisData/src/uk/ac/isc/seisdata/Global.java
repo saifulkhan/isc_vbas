@@ -1,6 +1,9 @@
 
 package uk.ac.isc.seisdata;
  
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /*
  * Used globally to register to change event and notify/fire changes.
  * Do not change the actual reference of these objects.
@@ -66,17 +69,6 @@ public class Global {
         return hypocentresList;
     }
    
-    public static String debugAt() {
-        // Debug
-        String fullClassName = Thread.currentThread().getStackTrace()[2].getClassName();
-        String className = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
-        String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
-        int lineNumber = Thread.currentThread().getStackTrace()[2].getLineNumber();
-        return "Debug At-->> " + lineNumber + ":" + className + "." + methodName + "()-->> ";
-        // Debug
-    }
-
-  
     public static AssessedCommandList getAssessedCommandList() {
         return assessedCommandList;
     }
@@ -84,5 +76,28 @@ public class Global {
     public static CommandList getCommandList() {
         return commandList;
     }
+ 
+     public static String debugAt() {
+        String fullClassName = Thread.currentThread().getStackTrace()[2].getClassName();
+        String className = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
+        String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
+        int lineNumber = Thread.currentThread().getStackTrace()[2].getLineNumber();
+        return lineNumber + ":" + className + "." + methodName + "()-->> ";
+    }
    
+    public static void logSevere(String debugAt, String debugString) {
+        Logger.getLogger(debugAt).log(Level.SEVERE, debugString);
+    }
+    
+    public static void logDebug(String debugString) {
+        String fullClassName = Thread.currentThread().getStackTrace()[2].getClassName();
+        String className = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
+        String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
+        int lineNumber = Thread.currentThread().getStackTrace()[2].getLineNumber();
+        String debugAt = lineNumber + ":" + className + "." + methodName + "()-->> ";
+        
+        Logger.getLogger(debugAt).log(Level.INFO, "{0}{1}", 
+                new Object[]{debugAt, debugString});   
+    }
+     
 }

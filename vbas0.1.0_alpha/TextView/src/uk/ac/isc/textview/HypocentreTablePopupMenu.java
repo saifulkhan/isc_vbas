@@ -2,6 +2,8 @@ package uk.ac.isc.textview;
 
 import com.orsoncharts.util.json.JSONArray;
 import com.orsoncharts.util.json.JSONObject;
+import com.orsoncharts.util.json.parser.JSONParser;
+import com.orsoncharts.util.json.parser.ParseException;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -16,25 +18,25 @@ import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.SeisDataDAO;
 import uk.ac.isc.seisdata.SeisEvent;
 
-class HypoTablePopupManager implements ActionListener {
+class HypocentreTablePopupMenu implements ActionListener {
 
     JTable table;
     JPopupMenu popupMenu;
 
     SeisEventRelocateDialog relocateEventDialog;
-    HypoEditDialog editHypocentreDialog;
+    HypocentreEditDialog editHypocentreDialog;
 
     private final Command formulatedCommand = Global.getFormulatedCommand();
     private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
     private final Hypocentre selectedHypocentre = Global.getSelectedHypocentre();
 
-    public HypoTablePopupManager(JTable hypoTable) {
+    public HypocentreTablePopupMenu(JTable hypoTable) {
         table = hypoTable;
 
         setPopupMenuVisualAttributes();
 
         relocateEventDialog = new SeisEventRelocateDialog();
-        editHypocentreDialog = new HypoEditDialog();
+        editHypocentreDialog = new HypocentreEditDialog();
     }
 
     public JPopupMenu getPopupMenu() {
@@ -46,7 +48,6 @@ class HypoTablePopupManager implements ActionListener {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println(Global.debugAt());
 
         // Selected row values
         int selectedRow = table.getSelectedRow();
@@ -56,36 +57,56 @@ class HypoTablePopupManager implements ActionListener {
 
             JSONArray jCommandArray = new JSONArray();
             JSONArray jFunctionArray = new JSONArray();
-            
+
             JSONObject jCommandObj = new JSONObject();
             jCommandObj.put("commandType", "setprime");
             jCommandObj.put("dataType", "hypocentre");
             jCommandObj.put("id", selectedHypocentre.getHypid());
             jCommandArray.add(jCommandObj);
-            
+
             JSONObject jFunctionObj = new JSONObject();
-            jFunctionObj.put("function", "rf ( " + selectedHypocentre.getHypid() + " INTEGER )");
+            jFunctionObj.put("commandType", "setprime");
+            jFunctionObj.put("function", "setprime ( " + selectedHypocentre.getHypid() + ", " + selectedSeisEvent.getEvid() + " )");
             jFunctionArray.add(jFunctionObj);
-        
 
             if (jCommandArray.size() > 0) {
                 String commandStr = jCommandArray.toString();
                 String functionStr = jFunctionArray.toString();
-            
-                boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "setprime", 
-                        commandStr, functionStr);
-                if (ret) {
-                    // success
-                     // success
-                System.out.println(Global.debugAt() + " \ncommandStr= " + commandStr 
-                        + "\nfunctionStr= " + functionStr 
-                        + "\nFired: 'Set Prime' comamnd.");
-                
-                    formulatedCommand.fireSeisDataChanged(); 
-                } else {
-                    JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
+
+                Global.logDebug(" Fired: 'Set Prime' comamnd."
+                        + "\ncommandStr= " + commandStr
+                        + "\nfunctionStr= " + functionStr);
+
+                // Debug JSON
+                JSONParser parser = new JSONParser();
+                try {
+                    String s = jFunctionArray.toString();
+                    Object obj = parser.parse(s);
+                    JSONArray arr = (JSONArray) obj;
+                    for (Object o : arr) {
+                        JSONObject jObj = (JSONObject) o;
+                        Global.logDebug("commandType: " + (String) jObj.get("commandType")
+                                + ", function: " + (String) jObj.get("function"));
+                    }
+
+                } catch (com.orsoncharts.util.json.parser.ParseException pe) {
+                    Global.logDebug("Exception position: " + pe.getPosition() + "\nException: " + pe);
                 }
+                // end Debug
+
+                /*boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "setprime",
+                 commandStr, functionStr);
+                 if (ret) {
+                 Global.logDebug(" Fired: 'Set Prime' comamnd."
+                 + "\ncommandStr= " + commandStr
+                 + "\nfunctionStr= " + functionStr);
+
+                 formulatedCommand.fireSeisDataChanged();
+                 } else {
+                 JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
+                 }*/
             }
+
         }
 
         if ("Event Relocate..".equals(e.getActionCommand())) {
@@ -93,7 +114,7 @@ class HypoTablePopupManager implements ActionListener {
             relocateEventDialog.showHypoTableRelocateDialog();
         }
 
-        if ("Depricate".equals(e.getActionCommand())) {
+        if ("Deprecate".equals(e.getActionCommand())) {
             JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand() + "\nTo be added in future version.");
         }
 
@@ -123,7 +144,7 @@ class HypoTablePopupManager implements ActionListener {
         menuItem_relocate.setBackground(new Color(218, 83, 44));
         menuItem_relocate.setForeground(Color.WHITE);
         menuItem_relocate.setFont(new Font("Sans-serif", Font.PLAIN, 14));
-        JMenuItem menuItem_depricate = new JMenuItem("Depricate");
+        JMenuItem menuItem_depricate = new JMenuItem("Deprecate");
         menuItem_depricate.setBackground(new Color(218, 83, 44));
         menuItem_depricate.setForeground(Color.WHITE);
         menuItem_depricate.setFont(new Font("Sans-serif", Font.PLAIN, 14));
@@ -142,11 +163,11 @@ class HypoTablePopupManager implements ActionListener {
 
         popupMenu.add(menuItem_setprime);
         //popupMenu.addSeparator();
+        popupMenu.add(menuItem_edit);
+        //popupMenu.addSeparator();
         popupMenu.add(menuItem_relocate);
         //popupMenu.addSeparator();
         popupMenu.add(menuItem_depricate);
-        //popupMenu.addSeparator();
-        popupMenu.add(menuItem_edit);
         //popupMenu.addSeparator();
         popupMenu.add(menuItem_create);
         //popupMenu.addSeparator();

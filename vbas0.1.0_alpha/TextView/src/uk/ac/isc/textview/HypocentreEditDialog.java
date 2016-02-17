@@ -2,6 +2,7 @@ package uk.ac.isc.textview;
 
 import com.orsoncharts.util.json.JSONArray;
 import com.orsoncharts.util.json.JSONObject;
+import com.orsoncharts.util.json.parser.JSONParser;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,11 +27,7 @@ import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.SeisDataDAO;
 import uk.ac.isc.seisdata.SeisEvent;
 
-public class HypoEditDialog extends JDialog {
-
-    private final Command formulatedCommand = Global.getFormulatedCommand();
-    private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
-    private final Hypocentre selectedHypocentre = Global.getSelectedHypocentre();
+public class HypocentreEditDialog extends JDialog {
 
     private JButton button_cancel;
     private JButton button_ok;
@@ -49,20 +46,23 @@ public class HypoEditDialog extends JDialog {
     private JPanel jPanel2;
     private JPanel jPanel3;
     private JScrollPane jScrollPane1;
-    private JTextArea jTextArea1;
+    private JTextArea textArea_reason;
     private JLabel label_coord;
     private JLabel label_depth;
     private JLabel label_evid;
     private JLabel label_hypid;
     private JLabel label_prime;
     private JLabel label_time;
-    private JFormattedTextField text_depth;
+    private JTextArea text_depth;
     private JTextField text_lat;
     private JTextField text_lon;
     private JTextField text_time;
-    private Object OptionPane;
 
-    public HypoEditDialog() {
+    private final Command formulatedCommand = Global.getFormulatedCommand();
+    private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
+    private final Hypocentre selectedHypocentre = Global.getSelectedHypocentre();
+
+    public HypocentreEditDialog() {
 
         setTitle("Edit Hypocentre");
         setModal(true);
@@ -72,9 +72,9 @@ public class HypoEditDialog extends JDialog {
 
     private void button_okActionPerformed(ActionEvent evt) {
 
-        System.out.println(Global.debugAt());
-
         JSONArray jCommandArray = new JSONArray();
+        // Add all the changed "attributes" in the array.
+        JSONArray jAttrArray = new JSONArray();
         JSONArray jFunctionArray = new JSONArray();
 
         JSONObject jCommandObj = new JSONObject();
@@ -82,50 +82,60 @@ public class HypoEditDialog extends JDialog {
         jCommandObj.put("dataType", "hypocentre");
         jCommandObj.put("id", selectedHypocentre.getHypid());
 
-        // Add all the changed "attributes" in the array.
-        JSONArray jAttrArray = new JSONArray();
+        /*
+         * Depth 
+         */
+        Integer depth = null;
+        try {
+            depth = Integer.parseInt(text_depth.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Incorrect depth format.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-        if (Integer.parseInt(text_depth.getText()) != selectedHypocentre.getDepth()) {
+        if (depth != selectedHypocentre.getDepth()) {
             JSONObject jAttrObj = new JSONObject();
             jAttrObj.put("name", "depth");
             jAttrObj.put("oldValue", selectedHypocentre.getDepth());
-            jAttrObj.put("newvalue", Integer.parseInt(text_depth.getText()));
+            jAttrObj.put("newvalue", depth);
             jAttrArray.add(jAttrObj);
 
             JSONObject jFunctionObj = new JSONObject();
-            jFunctionObj.put("function", "chhypo ( "
-                    + selectedHypocentre.getHypid() + " INTEGER, "
-                    + "depth " + "VARCHAR, "
-                    + Integer.parseInt(text_depth.getText()) + " VARCHAR"
-            );
+            jFunctionObj.put("commandType", "hypocentreedit");
+            jFunctionObj.put("function", "hypocentreedit ( "
+                    + selectedHypocentre.getHypid() + ", depth, " + Integer.parseInt(text_depth.getText()) + " )");
             jFunctionArray.add(jFunctionObj);
         }
 
-        Date dd = null;
+        /*
+         * Date 
+         */
+        Date date = null;
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            dd = df.parse(text_time.getText());
+            date = df.parse(text_time.getText());
         } catch (ParseException e) {
             JOptionPane.showMessageDialog(null, "Incorrect date time.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        if (dd.compareTo(selectedHypocentre.getOrigTime()) != 0) {  // same date time
+        if (date.compareTo(selectedHypocentre.getOrigTime()) != 0) {  // same date time
 
             JSONObject jAttrObj = new JSONObject();
             jAttrObj.put("name", "time");
             jAttrObj.put("oldValue", selectedHypocentre.getOrigTime());
-            jAttrObj.put("newvalue", dd);
+            jAttrObj.put("newvalue", date);
             jAttrArray.add(jAttrObj);
 
             JSONObject jFunctionObj = new JSONObject();
-            jFunctionObj.put("function", "chhypo ( "
-                    + selectedHypocentre.getHypid() + " INTEGER, "
-                    + "time " + "VARCHAR, "
-                    + text_time.getText() + " VARCHAR"
-            );
+            jFunctionObj.put("commandType", "hypocentreedit");
+            jFunctionObj.put("function", "hypocentreedit ( "
+                    + selectedHypocentre.getHypid() + ", time, '" + text_time.getText() + "' )");
             jFunctionArray.add(jFunctionObj);
         }
 
+        /*
+         * Latitude
+         */
         if (Double.parseDouble(text_lat.getText()) != selectedHypocentre.getLat()) {
             JSONObject jAttrObj = new JSONObject();
             jAttrObj.put("name", "lat");
@@ -134,14 +144,15 @@ public class HypoEditDialog extends JDialog {
             jAttrArray.add(jAttrObj);
 
             JSONObject jFunctionObj = new JSONObject();
-            jFunctionObj.put("function", "chhypo ( "
-                    + selectedHypocentre.getHypid() + " INTEGER, "
-                    + "lat " + "VARCHAR, "
-                    + Double.parseDouble(text_lat.getText()) + " VARCHAR"
-            );
+            jFunctionObj.put("commandType", "hypocentreedit");
+            jFunctionObj.put("function", "hypocentreedit ( "
+                    + selectedHypocentre.getHypid() + ", lat, " + Double.parseDouble(text_lat.getText()) + " )");
             jFunctionArray.add(jFunctionObj);
         }
 
+        /*
+         * Longitude 
+         */
         if (Double.parseDouble(text_lon.getText()) != selectedHypocentre.getLon()) {
             JSONObject jAttrObj = new JSONObject();
             jAttrObj.put("name", "lon");
@@ -150,36 +161,68 @@ public class HypoEditDialog extends JDialog {
             jAttrArray.add(jAttrObj);
 
             JSONObject jFunctionObj = new JSONObject();
-            jFunctionObj.put("function", "chhypo ( "
-                    + selectedHypocentre.getHypid() + " INTEGER, "
-                    + "lon " + "VARCHAR, "
-                    + Double.parseDouble(text_lon.getText()) + " VARCHAR"
+            jFunctionObj.put("commandType", "hypocentreedit");
+            jFunctionObj.put("function", "hypocentreedit ( "
+                    + selectedHypocentre.getHypid() + ", lon, " + Double.parseDouble(text_lon.getText()) + " )"
             );
             jFunctionArray.add(jFunctionObj);
         }
 
         if (jAttrArray.size() > 0) {
+
+            /*
+             * Reason text description. Include it only if anything is changed.
+             */
+            if (Double.parseDouble(text_lon.getText()) != selectedHypocentre.getLon()) {
+                JSONObject jAttrObj = new JSONObject();
+                jAttrObj.put("name", "reason");
+                jAttrObj.put("oldValue", "");
+                jAttrObj.put("newvalue", textArea_reason.getText());
+                jAttrArray.add(jAttrObj);
+            }
+
             jCommandObj.put("attributes", jAttrArray);
             jCommandArray.add(jCommandObj);
+
         }
 
         if (jCommandArray.size() > 0) {
             String commandStr = jCommandArray.toString();
             String functionStr = jFunctionArray.toString();
+            Global.logDebug(" Fired: 'Edit Hypocentre' comamnd."
+                    + "\ncommandStr= " + commandStr
+                    + "\nfunctionStr= " + functionStr);
 
-            boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), ""
-                    + "hypocentreedit", commandStr, functionStr);
-            if (ret) {
-                // success
-                System.out.println(Global.debugAt() + " \ncommandStr= " + commandStr
-                        + "\nfunctionStr= " + functionStr
-                        + "\nFired: 'Edit Hypocentre' comamnd.");
+            // Debug JSON
+            JSONParser parser = new JSONParser();
+            try {
+                String s = jFunctionArray.toString();
+                Object obj = parser.parse(s);
+                JSONArray arr = (JSONArray) obj;
+                for (Object o : arr) {
+                    JSONObject jObj = (JSONObject) o;
+                    Global.logDebug("commandType: " + (String) jObj.get("commandType")
+                            + ", function: " + (String) jObj.get("function"));
+                }
 
-                formulatedCommand.fireSeisDataChanged();
-                this.dispose();
-            } else {
-                JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (com.orsoncharts.util.json.parser.ParseException pe) {
+                System.out.println("position: " + pe.getPosition());
+                System.out.println(pe);
             }
+            // end Debug
+
+            /*boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), ""
+             + "hypocentreedit", commandStr, functionStr);
+             if (ret) {
+             Global.logDebug(" Fired: 'Edit Hypocentre' comamnd."
+             + "\ncommandStr= " + commandStr
+             + "\nfunctionStr= " + functionStr);
+
+             formulatedCommand.fireSeisDataChanged();
+             this.dispose();
+             } else {
+             JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
+             }*/
         }
 
     }
@@ -204,6 +247,8 @@ public class HypoEditDialog extends JDialog {
         text_lon.setText(selectedHypocentre.getLon().toString());
         text_time.setText(df.format(selectedHypocentre.getOrigTime()));
 
+        textArea_reason.setText(null);
+
         setVisible(true);
     }
 
@@ -226,7 +271,7 @@ public class HypoEditDialog extends JDialog {
         jPanel1 = new JPanel();
         jLabel13 = new JLabel();
         jLabel14 = new JLabel();
-        text_depth = new JFormattedTextField();
+        text_depth = new JTextArea();
         jLabel2 = new JLabel();
         text_lat = new JTextField();
         text_lon = new JTextField();
@@ -235,7 +280,7 @@ public class HypoEditDialog extends JDialog {
         text_time = new JTextField();
         jPanel3 = new JPanel();
         jScrollPane1 = new JScrollPane();
-        jTextArea1 = new JTextArea();
+        textArea_reason = new JTextArea();
 
         button_ok.setBackground(new Color(45, 137, 239));
         button_ok.setForeground(new Color(255, 255, 255));
@@ -389,9 +434,9 @@ public class HypoEditDialog extends JDialog {
 
         jPanel3.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Reason"));
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        textArea_reason.setColumns(20);
+        textArea_reason.setRows(5);
+        jScrollPane1.setViewportView(textArea_reason);
 
         GroupLayout jPanel3Layout = new GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);

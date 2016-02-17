@@ -71,14 +71,13 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
 
     private JTable table = null;
     private JScrollPane scrollPane = null;
-    private ListSelectionListener  lsl = null;
-    private final HypoTablePopupManager htPopupManager;
+    private ListSelectionListener lsl = null;
+    private final HypocentreTablePopupMenu htPopupManager;
 
     private static final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
     private final HypocentresList hypocentresList = Global.getHypocentresList();
     private static final Hypocentre selectedHypocentre = Global.getSelectedHypocentre();
-        
-                  
+
     public HypoTextViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_HypoTextViewTopComponent());
@@ -87,8 +86,8 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         selectedSeisEvent.addChangeListener(this);
 
         table = new JTable();
-        
-        lsl= new ListSelectionListener() {
+
+        lsl = new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent lse) {
                 // disable the double calls
@@ -97,7 +96,7 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
                 }
             }
         };
-            
+
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {
@@ -105,15 +104,15 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
             }
 
         });
-      
-        table.setModel(new HypoTableModel(hypocentresList.getHypocentres()));
+
+        table.setModel(new HypocentreTableModel(hypocentresList.getHypocentres()));
         table.getSelectionModel().addListSelectionListener(lsl);
-        
+
         setupTableVisualAttributes();
         setHeaderText();
 
         // add the popup-menu
-        htPopupManager = new HypoTablePopupManager(table);
+        htPopupManager = new HypocentreTablePopupMenu(table);
 
         scrollPane = new JScrollPane(table);
         this.setLayout(new BorderLayout());
@@ -127,55 +126,42 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
     public void onValueChanged(ListSelectionEvent lse) {
         System.out.println(Global.debugAt() + " New Hypocentre is selected.");
         int selectedRowNum = table.getSelectedRow();
-        
+
         Hypocentre hypocentre = hypocentresList.getHypocentres().get(selectedRowNum);
-        selectedHypocentre.setValues(hypocentre);   
-        System.out.println("Selected: row= " + selectedRowNum + "Hypocentre= " + (Integer) table.getValueAt(selectedRowNum, 9) + ". Fire an event.");
+        selectedHypocentre.setValues(hypocentre);
+        Global.logDebug("'SeisEvent' changed, fire an event."
+                + "\nSelected row=" + selectedRowNum
+                + ", Hypocentre= " + (Integer) table.getValueAt(selectedRowNum, 9));
         selectedHypocentre.fireSeisDataChanged();
     }
-    
-    
+
     private void onMouseClicked(MouseEvent e) {
-        System.out.println(Global.debugAt());
-        
+
         Point p = e.getPoint();
         final int row = table.rowAtPoint(p);
         final int col = table.columnAtPoint(p);
         int selectedRow = table.getSelectedRow();
         int selectedCol = table.getSelectedColumn();
-       
-        if(htPopupManager.getPopupMenu().isVisible())
+
+        if (htPopupManager.getPopupMenu().isVisible()) {
             htPopupManager.getPopupMenu().setVisible(false);
-        
-        /*
-        // Update the current selection for correct htPopupManager behavior
-        // in case a new selection is made with the right mouse button.
-        if(row != selectedRow || col != selectedCol) {
-            EventQueue.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    table.changeSelection(row, col, true, false);
-                }
-            });
-        }*/
-        
-        System.out.println(Global.debugAt() + "1. selectedRow= " + selectedRow + ", selectedCol= " + selectedCol);
-        
+        }
+
         // Specify the condition(s) you want for htPopupManager display.
         // For Example: show htPopupManager only if a row & column is selected.
-        if(selectedRow >= 0 && selectedCol >= 0) {
-            System.out.println(Global.debugAt() + "2. selectedRow= " + selectedRow + ", selectedCol= " + selectedCol);
-            if(SwingUtilities.isRightMouseButton(e)) {
+        if (selectedRow >= 0 && selectedCol >= 0) {
+            Global.logDebug("selectedRow=" + selectedRow
+                    + ", selectedCol=" + selectedCol);
+
+            if (SwingUtilities.isRightMouseButton(e)) {
                 Rectangle r = table.getCellRect(row, col, false);
-                htPopupManager.getPopupMenu().show(table, r.x, r.y+r.height);
-                System.out.println(Global.debugAt() + "selectedRow= " + selectedRow + ", selectedCol= " + selectedCol);
+                htPopupManager.getPopupMenu().show(table, r.x, r.y + r.height);               
             } else {
                 e.consume();
             }
         }
     }
 
-    
     /*
      * Receive new event selection event. 
      * Repaint if data changes.
@@ -184,24 +170,23 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
     public void SeisDataChanged(SeisDataChangeEvent event) {
         System.out.println(Global.debugAt() + " Event received from " + event.getData().getClass().getName());
         // Types of event: Selected Event, Selected Hypocentre (?).
-                
+
         // Remove the previous (row) selection listener, if any.
         table.getSelectionModel().removeListSelectionListener(lsl);
-        table.setModel(new HypoTableModel(hypocentresList.getHypocentres()));
-        
+        table.setModel(new HypocentreTableModel(hypocentresList.getHypocentres()));
+
         table.clearSelection();
         setHeaderText();
         header.repaint();
 
         scrollPane.setViewportView(table);
         scrollPane.repaint();
-        
+
         // Note: keep this call here! 
         // Add the (row) selection listener.  
         table.getSelectionModel().addListSelectionListener(lsl);
     }
 
-    
     private void setupTableVisualAttributes() {
 
         JTableHeader th = table.getTableHeader();
@@ -230,7 +215,9 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
     }
 
     private void setHeaderText() {
-        // The hypocentre table header: shows overall information
+        Global.logDebug(selectedSeisEvent.getEvid() + ", "
+                + selectedSeisEvent.getPrimeHypo().getOrigTime());
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         headerString = selectedSeisEvent.getLocation()
                 + "  "

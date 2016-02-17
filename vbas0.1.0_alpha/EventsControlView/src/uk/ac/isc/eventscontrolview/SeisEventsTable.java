@@ -5,8 +5,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -60,7 +58,7 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
 
     public SeisEventsTable() {
         loadSeisEvents();
-        
+
         table = new JTable();
         tableModel = new EventsTableModel(eventsList.getEvents());
         table.setModel(tableModel);
@@ -78,7 +76,7 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
     }
 
     public void loadSeisEvents() {
-          System.out.println(Global.debugAt() + "Load SeisEvents list.");
+        System.out.println(Global.debugAt() + "Load SeisEvents list.");
         // fill in the events number
         SeisDataDAO.retrieveBlockEventNumber(blockTableModel.getTaskBlocks());
         SeisDataDAO.retrieveBlockReviewedEventNumber(blockTableModel.getTaskBlocks());
@@ -95,8 +93,8 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
 
     public void loadSelectedSeisEventData() {
 
-      System.out.println(Global.debugAt() + "Load list of Hypocentre, Phase, Commmands, and AssessedCommands for SeisEvent: " 
-              + selectedSeisEvent.getEvid());
+        System.out.println(Global.debugAt() + "Load list of Hypocentre, Phase, Commmands, and AssessedCommands for SeisEvent: "
+                + selectedSeisEvent.getEvid());
 
         /*
          * Hypocentre
@@ -142,6 +140,11 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
          */
         SeisDataDAO.readAssessedCommands(selectedSeisEvent.getEvid(),
                 assessedCommandList.getAssessedCommandList());
+
+        Global.logDebug("#Hypocentres:" + hypocentresList.getHypocentres().size()
+                + " #Phases:" + phasesList.getPhases().size()
+                + " #Commands:" + commandList.getCommandList().size()
+                + " #AssessedCommands:" + assessedCommandList.getAssessedCommandList().size());
 
     }
     /*

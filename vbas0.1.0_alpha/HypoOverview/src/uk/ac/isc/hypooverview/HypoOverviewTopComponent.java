@@ -45,7 +45,7 @@ import uk.ac.isc.seisdata.SeisEvent;
 })
 public final class HypoOverviewTopComponent extends TopComponent implements SeisDataChangeListener {
 
-    private final HypocentresList hypoList = Global.getHypocentresList(); 
+    private final HypocentresList hypoList = Global.getHypocentresList();
     private static final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();       // to receive events
     private static final Hypocentre selectedHypocentre = Global.getSelectedHypocentre();    // to receive events
 
@@ -58,7 +58,7 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
         setName(Bundle.CTL_HypoOverviewTopComponent());
         setToolTipText(Bundle.HINT_HypoOverviewTopComponent());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
-               
+
         selectedSeisEvent.addChangeListener(this);
         selectedHypocentre.addChangeListener(this);
 
@@ -76,12 +76,12 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
     public void SeisDataChanged(SeisDataChangeEvent event) {
         String eventName = event.getData().getClass().getName();
         System.out.println(Global.debugAt() + " Event received from " + eventName);
-       
+
         switch (eventName) {
             case "uk.ac.isc.seisdata.SeisEvent":
-                SeisEvent seisEvent= (SeisEvent) event.getData();
+                SeisEvent seisEvent = (SeisEvent) event.getData();
                 System.out.println(Global.debugAt() + " SeisEvent= " + selectedSeisEvent.getEvid());
-                
+
                 for (Hypocentre hypo : hypoList.getHypocentres()) {
                     if (hypo.getIsPrime() == true) {
                         hop.setCentLatLon(hypo.getLat(), hypo.getLon());
@@ -89,24 +89,17 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
                         hop.loadSeisData(hypo.getLat(), hypo.getLon(), hop.getRangeDelta());
                     }
                 }
-                
-                //hop.setHypoVisOptions(2);
-                //hop.setDepthBandOrder(4);
-                //hop.repaint();
-                ocp.resetToDefault();
-                ocp.repaint();
-                scrollPane.setViewportView(hop);
                 break;
 
             case "uk.ac.isc.seisdata.Hypocentre":
-                Hypocentre hypocentre= (Hypocentre) event.getData();
+                Hypocentre hypocentre = (Hypocentre) event.getData();
                 System.out.println(Global.debugAt() + " Hypocentre= " + selectedHypocentre.getHypid());
-                ocp.resetToDefault();
-                ocp.repaint();
-                scrollPane.setViewportView(hop);
                 break;
         }
 
+        ocp.resetToDefault();
+        ocp.repaint();
+        scrollPane.setViewportView(hop);
     }
 
     /**

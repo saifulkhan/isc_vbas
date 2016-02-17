@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 import uk.ac.isc.seisdata.Hypocentre;
 
-class HypoTableModel extends AbstractTableModel {
+class HypocentreTableModel extends AbstractTableModel {
 
     private final String[] columnNames = {"Agency", "Time", "Lat.", "Long.",
         "Depth", "Depth Error", "Magnitude 1", "Magnitude 2", "RMS", "Hypid"};
@@ -18,7 +18,7 @@ class HypoTableModel extends AbstractTableModel {
 
     private ArrayList<Hypocentre> hyposList;
 
-    public HypoTableModel(ArrayList<Hypocentre> hyposList) {
+    public HypocentreTableModel(ArrayList<Hypocentre> hyposList) {
         this.hyposList = hyposList;
     }
 

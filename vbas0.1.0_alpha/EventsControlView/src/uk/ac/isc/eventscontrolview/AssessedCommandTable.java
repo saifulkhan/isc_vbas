@@ -138,10 +138,6 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
             icon = new ImageIcon(newimg);
 
             button.setIcon(icon);
-
-            //this.lctable = table;
-            //this.lcRow = row;
-            //this.lcColumn = column;
             return button;
         }
 
