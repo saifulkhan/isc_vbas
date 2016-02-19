@@ -49,7 +49,7 @@ public class PhaseEditDialog extends JDialog {
     private PhaseEditTableModel phaseEditTableModel;
 
     private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
-    private final Command formulatedCommand = Global.getFormulatedCommand();
+    private final Command commandEvent = Global.getCommandEvent();
 
     public PhaseEditDialog() {
         setTitle("Phase Edit");
@@ -159,9 +159,10 @@ public class PhaseEditDialog extends JDialog {
              * Type (phase type)
              */
             String oldPhaseType = origPhaseEditDataList.get(i).getType();
-
-            System.out.println(Global.debugAt() + "old= " + oldPhaseType + ", new= " + model.getValueAt(i, 1));
-            if (!model.getValueAt(i, 1).equals(oldPhaseType)) {
+            String newPhaseType = (String) model.getValueAt(i, 1);
+            Global.logDebug("oldPhaseType= " + oldPhaseType + ", newPhaseType= " + newPhaseType);
+            
+            if (!newPhaseType.equals(oldPhaseType) && !newPhaseType.equals("")) {
                 JSONObject jAttrObj = new JSONObject();
                 jAttrObj.put("name", "phasetype");
                 jAttrObj.put("oldValue", oldPhaseType);
@@ -170,15 +171,15 @@ public class PhaseEditDialog extends JDialog {
 
                 JSONObject jFunctionObj = new JSONObject();
                 jFunctionObj.put("commandType", "phaseedit");
-                jFunctionObj.put("function", "phaseedit ( "
-                        + (Integer) model.getValueAt(i, 0) + ", phase, " + (String) model.getValueAt(i, 1) + " )");
+                jFunctionObj.put("function", "chphase ( "
+                        + (Integer) model.getValueAt(i, 0) + ", phase, ''" + (String) model.getValueAt(i, 1) + "'' )");
                 jFunctionArray.add(jFunctionObj);
             }
 
             /*
              * Fix (0,1)
              */
-            if (model.getValueAt(i, 2) != null) {
+            if ((Boolean) model.getValueAt(i, 2)) {
                 JSONObject jAttrObj = new JSONObject();
                 jAttrObj.put("name", "phase_fixed");
                 jAttrObj.put("oldValue", null);
@@ -187,7 +188,7 @@ public class PhaseEditDialog extends JDialog {
 
                 JSONObject jFunctionObj = new JSONObject();
                 jFunctionObj.put("commandType", "phaseedit");
-                jFunctionObj.put("function", "phaseedit ( "
+                jFunctionObj.put("function", "chphase ( "
                         + (Integer) model.getValueAt(i, 0) + ", phase_fixed, " + (Boolean) model.getValueAt(i, 2) + " )");
                 jFunctionArray.add(jFunctionObj);
             }
@@ -195,7 +196,7 @@ public class PhaseEditDialog extends JDialog {
             /*
              * Nondef (0,1)
              */
-            if (model.getValueAt(i, 3) != null) {
+            if ((Boolean) model.getValueAt(i, 3)) {
                 JSONObject jAttrObj = new JSONObject();
                 jAttrObj.put("name", "nondef");
                 jAttrObj.put("oldValue", null);
@@ -204,7 +205,7 @@ public class PhaseEditDialog extends JDialog {
 
                 JSONObject jFunctionObj = new JSONObject();
                 jFunctionObj.put("commandType", "phaseedit");
-                jFunctionObj.put("function", "phaseedit ( "
+                jFunctionObj.put("function", "chphase ( "
                         + (Integer) model.getValueAt(i, 0) + ", nondef, " + (Boolean) model.getValueAt(i, 3) + " )");
                 jFunctionArray.add(jFunctionObj);
             }
@@ -221,7 +222,7 @@ public class PhaseEditDialog extends JDialog {
 
                 JSONObject jFunctionObj = new JSONObject();
                 jFunctionObj.put("commandType", "phaseedit");
-                jFunctionObj.put("function", "phaseedit ( "
+                jFunctionObj.put("function", "chphase ( "
                         + (Integer) model.getValueAt(i, 0) + ", timeshift, " + (Integer) model.getValueAt(i, 4) + " )");
                 jFunctionArray.add(jFunctionObj);
             }
@@ -229,7 +230,7 @@ public class PhaseEditDialog extends JDialog {
             /*
              * DeletAamp (0,1)
              */
-            if (model.getValueAt(i, 5) != null) {
+            if ((Boolean) model.getValueAt(i, 5)) {
                 JSONObject jAttrObj = new JSONObject();
                 jAttrObj.put("name", "deleteamp");
                 jAttrObj.put("oldValue", null);
@@ -238,51 +239,69 @@ public class PhaseEditDialog extends JDialog {
 
                 JSONObject jFunctionObj = new JSONObject();
                 jFunctionObj.put("commandType", "phaseedit");
-                jFunctionObj.put("function", "phaseedit ( "
-                        + (Integer) model.getValueAt(i, 0) + ", deleteamp, " + (Boolean) model.getValueAt(i, 5) + " )");
+                jFunctionObj.put("function", "deleteamp ( " + (Integer) model.getValueAt(i, 0) + " )");
                 jFunctionArray.add(jFunctionObj);
             }
 
             /*
              * Phase Break ( , Put, Take, Delete)
              */
-            if (model.getValueAt(i, 6) != null) {
-                if (!model.getValueAt(i, 6).equals(" ")) {
+            if (model.getValueAt(i, 6) != "") {
+                if (!model.getValueAt(i, 6).equals("")) {
                     JSONObject jAttrObj = new JSONObject();
                     jAttrObj.put("name", "phasebreak");
                     jAttrObj.put("oldValue", null);
                     jAttrObj.put("newvalue", (String) model.getValueAt(i, 6));
                     jAttrArray.add(jAttrObj);
 
-                    JSONObject jFunctionObj = new JSONObject();
-                    jFunctionObj.put("commandType", "phaseedit");
-                    jFunctionObj.put("function", "phaseedit ( "
-                            + (Integer) model.getValueAt(i, 0) + ", phasebreak, " + (String) model.getValueAt(i, 6) + " )");
-                    jFunctionArray.add(jFunctionObj);
-
                     /*
-                     * Put (Hypocentre)
+                     * Put (Event)
                      */
-                    if (model.getValueAt(i, 7) != null) {
-                        if (model.getValueAt(i, 6).equals("Put")) {
+                    if (model.getValueAt(i, 6).equals("Put")) {
+                        if (model.getValueAt(i, 7) != null) {
+                            Integer putSeisEvent = null;
+                            try {
+                                putSeisEvent = Integer.valueOf(model.getValueAt(i, 7).toString());
+                            } catch (NumberFormatException e) {
+                                JOptionPane.showMessageDialog(null, "Put (SeisEvent) at row: " + (i + 1),
+                                        "Warning", JOptionPane.WARNING_MESSAGE);
+                                return;
+                            }
+
                             JSONObject jAttrObj1 = new JSONObject();
                             jAttrObj1.put("name", "puthypocentre");
                             jAttrObj1.put("oldValue", null);
                             jAttrObj1.put("newvalue", (Integer) model.getValueAt(i, 7));
                             jAttrArray.add(jAttrObj1);
 
-                            JSONObject jFunctionObj1 = new JSONObject();
-                            jFunctionObj1.put("commandType", "phaseedit");
-                            jFunctionObj1.put("function", "phaseedit ( "
-                                    + (Integer) model.getValueAt(i, 0) + ", puthypocentre, " + (Integer) model.getValueAt(i, 7) + " )");
-                            jFunctionArray.add(jFunctionObj1);
-                        }
-                    } else {
-                        if (model.getValueAt(i, 6).equals("Put")) {
-                            JOptionPane.showMessageDialog(null, "Put (Hypocentre) at row: " + (i + 1), "Error", JOptionPane.ERROR_MESSAGE);
+                        } else {
+
+                            JOptionPane.showMessageDialog(null, "Put (SeisEvent) at row: " + (i + 1),
+                                    "Error", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
                     }
+
+                    JSONObject jFunctionObj = new JSONObject();
+                    jFunctionObj.put("commandType", "phaseedit");
+                    String functionStr = "";
+                    switch ((String) model.getValueAt(i, 6)) {
+                        case "Put":
+                            functionStr = "putphase ( " + (Integer) model.getValueAt(i, 0) + ", "
+                                    + Global.getSelectedSeisEvent().getEvid() + ", "
+                                    + (Integer) model.getValueAt(i, 7) + " )";
+                            break;
+                        case "Take":
+                            functionStr = "takephase ( " + (Integer) model.getValueAt(i, 0) + " )";
+                            break;
+                        case "Delete":
+                            functionStr = "deletephase ( " + (Integer) model.getValueAt(i, 0) + " )";
+                            break;
+                    }
+
+                    jFunctionObj.put("function", functionStr);
+                    jFunctionArray.add(jFunctionObj);
+
                 }
             }
 
@@ -292,42 +311,23 @@ public class PhaseEditDialog extends JDialog {
             }
         }
 
+        
         if (jCommandArray.size() > 0) {
             String commandStr = jCommandArray.toString();
             String functionStr = jFunctionArray.toString();
-            Global.logDebug(" Fired: 'Edit Hypocentre' comamnd."
-                    + "\ncommandStr= " + commandStr
+            Global.logDebug("\ncommandStr= " + commandStr
                     + "\nfunctionStr= " + functionStr);
+            Global.logJSONDebug(jFunctionArray);
 
-            // Debug JSON
-            JSONParser parser = new JSONParser();
-            try {
-                String s = jFunctionArray.toString();
-                Object obj = parser.parse(s);
-                JSONArray arr = (JSONArray) obj;
-                for (Object o : arr) {
-                    JSONObject jObj = (JSONObject) o;
-                    Global.logDebug("commandType: " + (String) jObj.get("commandType")
-                            + ", function: " + (String) jObj.get("function"));
-                }
+            boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "phaseedit", commandStr, functionStr);
+            if (ret) {
+                Global.logDebug("Fired: 'Edit Hypocentre' comamnd.");
 
-            } catch (com.orsoncharts.util.json.parser.ParseException pe) {
-                System.out.println("position: " + pe.getPosition());
-                System.out.println(pe);
+                commandEvent.fireSeisDataChanged();
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-
-            /*
-             boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "phaseedit", commandStr, functionStr);
-             if (ret) {
-             Global.logDebug(" Fired: 'Edit Hypocentre' comamnd."
-             + "\ncommandStr= " + commandStr
-             + "\nfunctionStr= " + functionStr);
-
-             formulatedCommand.fireSeisDataChanged();
-             this.dispose();
-             } else {
-             JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
-             }*/
         }
     }
 
@@ -361,7 +361,8 @@ public class PhaseEditDialog extends JDialog {
                 try {
                     timeshift = Integer.parseInt(textField_timeShift.getText());
                 } catch (NumberFormatException e) {
-                    JOptionPane.showMessageDialog(null, "Incorrect Time Shift format.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Incorrect 'Time Shift (Sec)' format.",
+                            "Warning", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
                 model.setValueAt(timeshift, i, 4);
@@ -375,50 +376,21 @@ public class PhaseEditDialog extends JDialog {
             if (!comboBox_phaseBreak.getSelectedItem().equals("")) {
                 Object val = comboBox_phaseBreak.getSelectedItem();
                 model.setValueAt(val, i, 6);
-
             }
 
             if (!textField_put.getText().equals("")) {
-                Integer puthypocentre = null;
+                Integer putSeisEvent = null;
                 try {
-                    puthypocentre = Integer.parseInt(textField_put.getText());
+                    putSeisEvent = Integer.parseInt(textField_put.getText());
                 } catch (NumberFormatException e) {
-                    JOptionPane.showMessageDialog(null, "Incorrect Put (Hypocentre) format.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Incorrect 'SeisEvent' format.", "Warning", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                model.setValueAt(puthypocentre, i, 7);
+                model.setValueAt(putSeisEvent, i, 7);
             }
 
         }
 
-    }
-
-    private void textField_phaseTypeActionPerformed(ActionEvent evt) {
-
-    }
-
-    private void textField_timeShiftActionPerformed(ActionEvent evt) {
-        // TODO add your handling code here:
-    }
-
-    private void textField_putActionPerformed(ActionEvent evt) {
-        // TODO add your handling code here:
-    }
-
-    private void comboBox_fixActionPerformed(ActionEvent evt) {
-        // TODO add your handling code here:
-    }
-
-    private void comboBox_nondefActionPerformed(ActionEvent evt) {
-        // TODO add your handling code here:
-    }
-
-    private void comboBox_deleteAmpActionPerformed(ActionEvent evt) {
-        // TODO add your handling code here:
-    }
-
-    private void comboBox_phaseBreakActionPerformed(ActionEvent evt) {
-        // TODO add your handling code here:
     }
 
     private void initComponents() {
@@ -462,21 +434,21 @@ public class PhaseEditDialog extends JDialog {
         textField_phaseType.setText(" ");
         textField_phaseType.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                textField_phaseTypeActionPerformed(evt);
+                
             }
         });
 
         textField_timeShift.setText(" ");
         textField_timeShift.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                textField_timeShiftActionPerformed(evt);
+                
             }
         });
 
         textField_put.setText(" ");
         textField_put.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                textField_putActionPerformed(evt);
+                
             }
         });
 
@@ -492,28 +464,28 @@ public class PhaseEditDialog extends JDialog {
         comboBox_fix.setModel(new DefaultComboBoxModel(new String[]{"", "Set", "Unset"}));
         comboBox_fix.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                comboBox_fixActionPerformed(evt);
+                
             }
         });
 
         comboBox_nondef.setModel(new DefaultComboBoxModel(new String[]{"", "Set", "Unset"}));
         comboBox_nondef.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                comboBox_nondefActionPerformed(evt);
+                
             }
         });
 
         comboBox_deleteAmp.setModel(new DefaultComboBoxModel(new String[]{"", "Set", "Unset"}));
         comboBox_deleteAmp.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                comboBox_deleteAmpActionPerformed(evt);
+                
             }
         });
 
         comboBox_phaseBreak.setModel(new DefaultComboBoxModel(new String[]{"", "Put", "Take", "Delete"}));
         comboBox_phaseBreak.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                comboBox_phaseBreakActionPerformed(evt);
+                
             }
         });
 
@@ -598,7 +570,7 @@ public class PhaseEditDialog extends JDialog {
             "Time Shift(sec)",
             "Delete Amp",
             "Phase Break",
-            "Put (Hypocentre)"
+            "Put (SeisEvent)"
         };
 
         private final Class[] columnTypes = new Class[]{
@@ -659,7 +631,7 @@ public class PhaseEditDialog extends JDialog {
                     retObject = phaseEditDataList.get(r).getPhaseBreak();
                     break;
                 case 7:
-                    retObject = phaseEditDataList.get(r).getPutHypocentre();
+                    retObject = phaseEditDataList.get(r).getPutSeisEvent();
                     break;
                 default:
                     String message = Global.debugAt() + "\nSee the error log file for more information. ";
@@ -718,7 +690,7 @@ public class PhaseEditDialog extends JDialog {
                     editedData.setPhaseBreak((String) value);
                     break;
                 case 7:
-                    editedData.setPutHypocentre((Integer) value);
+                    editedData.setPutSeisEvent((Integer) value);
                     break;
                 default:
                     String message = Global.debugAt() + "\nSee the error log file for more information. ";
@@ -742,7 +714,7 @@ public class PhaseEditDialog extends JDialog {
                 System.out.println(d.getPhaseId() + "   " + d.getType() + "   "
                         + d.getFix() + "   " + d.getNondef() + "   "
                         + d.getTimeShift() + "   " + d.getDeleteAmp() + "   "
-                        + d.getPhaseBreak() + "   " + d.getPutHypocentre());
+                        + d.getPhaseBreak() + "   " + d.getPutSeisEvent());
 
             }
             System.out.println("--------------------------");

@@ -7,12 +7,10 @@ package uk.ac.isc.textview;
 
 import com.orsoncharts.util.json.JSONArray;
 import com.orsoncharts.util.json.JSONObject;
-import com.orsoncharts.util.json.parser.JSONParser;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Color;
 import java.awt.Cursor;
-import java.io.File;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
@@ -29,12 +27,12 @@ import javax.swing.LayoutStyle;
 import uk.ac.isc.seisdata.Command;
 import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.Hypocentre;
+import uk.ac.isc.seisdata.SeisDataDAO;
 import uk.ac.isc.seisdata.SeisEvent;
-import uk.ac.isc.seisdata.Settings;
 
 public class SeisEventRelocateDialog extends JDialog {
 
-    private final Command formulatedCommand = Global.getFormulatedCommand();
+    private final Command commandEvent = Global.getCommandEvent();
     private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
     private final Hypocentre selectedHypocentre = Global.getSelectedHypocentre();
 
@@ -130,7 +128,7 @@ public class SeisEventRelocateDialog extends JDialog {
         checkbox_gridSearch.setSelected(false);
 
         text_comment.setText(null);
-        
+
         setVisible(true);
     }
 
@@ -153,7 +151,7 @@ public class SeisEventRelocateDialog extends JDialog {
         JSONObject jFunctionObj = new JSONObject();
 
         // unlike otehr commands, for relocate there are only one object or its a shell script.
-        String functionStr = selectedSeisEvent.getEvid() + " ";
+        String locatorCommandStr = selectedSeisEvent.getEvid() + " ";
 
         /*
          * Depth : fix & free
@@ -181,7 +179,7 @@ public class SeisEventRelocateDialog extends JDialog {
                 jAttrObj1.put("newvalue", depth);
                 jAttrArray.add(jAttrObj1);
 
-                functionStr += " fix_depth=" + depth;
+                locatorCommandStr += "fix_depth=" + depth + " ";
             }
 
             if (radio_free.isSelected()) {
@@ -191,7 +189,7 @@ public class SeisEventRelocateDialog extends JDialog {
                 jAttrObj1.put("newvalue", depth);
                 jAttrArray.add(jAttrObj1);
 
-                functionStr += " free_depth=" + depth;
+                locatorCommandStr += "free_depth=" + depth + " ";
             }
 
         }
@@ -206,7 +204,7 @@ public class SeisEventRelocateDialog extends JDialog {
             jAttrObj.put("newvalue", null);
             jAttrArray.add(jAttrObj);
 
-            functionStr += " fix_depth_default";
+            locatorCommandStr += "fix_depth_default";
         }
 
         if (radio_median.isSelected()) {
@@ -216,7 +214,7 @@ public class SeisEventRelocateDialog extends JDialog {
             jAttrObj.put("newvalue", null);
             jAttrArray.add(jAttrObj);
 
-            functionStr += " fix_depth_median";
+            locatorCommandStr += "fix_depth_median";
         }
 
         if ((radio_fix.isSelected() || radio_free.isSelected()) && checkbox_gridSearch.isSelected()) {
@@ -226,18 +224,16 @@ public class SeisEventRelocateDialog extends JDialog {
             jAttrObj2.put("newvalue", 1);
             jAttrArray.add(jAttrObj2);
 
-            functionStr += " do_gridsearch=" + (checkbox_gridSearch.isEnabled() ? 1 : 0);
+            locatorCommandStr += "do_gridsearch=" + (checkbox_gridSearch.isEnabled() ? 1 : 0) + " ";
         }
 
         jFunctionObj.put("commandType", "seiseventrelocate");
-        jFunctionObj.put("function", functionStr);
+        jFunctionObj.put("function", locatorCommandStr);
         jFunctionArray.add(jFunctionObj);
 
-        Global.logDebug(Settings.getAssessDir() + File.separator + selectedSeisEvent.getEvid() + File.separator);
-
         if (jAttrArray.size() > 0) {
-            
-             /*
+
+            /*
              * Comment text description. Include it only if a valif command is formulated.
              */
             if (text_comment.getText() != null) {
@@ -247,45 +243,26 @@ public class SeisEventRelocateDialog extends JDialog {
                 jAttrObj.put("newvalue", text_comment.getText());
                 jAttrArray.add(jAttrObj);
             }
-            
+
             jCommandObj.put("attributes", jAttrArray);
             jCommandArray.add(jCommandObj);
         }
 
         if (jCommandArray.size() > 0) {
             String commandStr = jCommandArray.toString();
-            functionStr = jFunctionArray.toString();
-            Global.logDebug(" Fired: 'SeiesEvent Relocate' comamnd."
-                    + "\ncommandStr= " + commandStr
-                    + "\nfunctionStr= " + functionStr);
+            locatorCommandStr = jFunctionArray.toString();
+            Global.logDebug("\ncommandStr= " + commandStr + "\nfunctionStr= " + locatorCommandStr);
+            Global.logJSONDebug(jFunctionArray);
 
-            // Debug JSON
-            JSONParser parser = new JSONParser();
-            try {
-                String s = jFunctionArray.toString();
-                Object obj = parser.parse(s);
-                JSONArray arr = (JSONArray) obj;
-                for (Object o : arr) {
-                    JSONObject jObj = (JSONObject) o;
-                    Global.logDebug("commandType: " + (String) jObj.get("commandType")
-                            + ", function: " + (String) jObj.get("function"));
-                }
-
-            } catch (com.orsoncharts.util.json.parser.ParseException pe) {
-                System.out.println("position: " + pe.getPosition());
-                System.out.println(pe);
+            boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(),
+                    "seiseventrelocate", commandStr, locatorCommandStr);
+            if (ret) {
+                Global.logDebug(" Fired: 'SeiesEvent Relocate' comamnd.");
+                commandEvent.fireSeisDataChanged();
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-            // end Debug
-
-            /*boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(),
-             "seiseventrelocate", commandStr, functionStr);
-             if (ret) {
-
-             formulatedCommand.fireSeisDataChanged();
-             this.dispose();
-             } else {
-             JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
-             }*/
         }
 
     }

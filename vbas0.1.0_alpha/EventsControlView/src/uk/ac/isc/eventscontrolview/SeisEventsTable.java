@@ -76,7 +76,7 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
     }
 
     public void loadSeisEvents() {
-        System.out.println(Global.debugAt() + "Load SeisEvents list.");
+        Global.logDebug("Load SeisEvents list.");
         // fill in the events number
         SeisDataDAO.retrieveBlockEventNumber(blockTableModel.getTaskBlocks());
         SeisDataDAO.retrieveBlockReviewedEventNumber(blockTableModel.getTaskBlocks());
@@ -117,7 +117,8 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
         SeisDataDAO.retrieveAllPhases(selectedSeisEvent.getEvid(), phasesList.getPhases());
         SeisDataDAO.retrieveAllPhasesAmpMag(selectedSeisEvent.getEvid(),
                 phasesList.getPhases());
-        SeisDataDAO.retrieveAllStationsWithRegions(stations);                                       // load the correspondent map into the stataions
+        SeisDataDAO.retrieveAllStationsWithRegions(stations);                                       
+        // load the correspondent map into the stataions
         // put the region name into the pahseList
         for (int i = 0; i < phasesList.getPhases().size(); i++) {
             phasesList.getPhases()
@@ -132,13 +133,13 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
         /*
          * Commands
          */
-        SeisDataDAO.readCommands(selectedSeisEvent.getEvid(),
+        SeisDataDAO.readCommandTable(selectedSeisEvent.getEvid(),
                 commandList.getCommandList());
 
         /*
          * AssessedCommand 
          */
-        SeisDataDAO.readAssessedCommands(selectedSeisEvent.getEvid(),
+        SeisDataDAO.readAssessedCommandTable(selectedSeisEvent.getEvid(),
                 assessedCommandList.getAssessedCommandList());
 
         Global.logDebug("#Hypocentres:" + hypocentresList.getHypocentres().size()

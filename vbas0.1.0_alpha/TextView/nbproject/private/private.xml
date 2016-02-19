@@ -5,10 +5,7 @@
         <group name="test"/>
         <group>
             <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_alpha/TextView/src/uk/ac/isc/textview/SeisEventRelocateDialog.java</file>
-            <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_alpha/TextView/src/uk/ac/isc/textview/HypoTextViewTopComponent.java</file>
-            <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_alpha/TextView/src/uk/ac/isc/textview/HypoTablePopupManager.java</file>
-            <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_alpha/TextView/src/uk/ac/isc/textview/PhaseTextViewTopComponent.java</file>
-            <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_alpha/TextView/src/uk/ac/isc/textview/HypoEditDialog.java</file>
+            <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_alpha/TextView/src/uk/ac/isc/textview/HypocentreEditDialog.java</file>
         </group>
     </open-files>
 </project-private>

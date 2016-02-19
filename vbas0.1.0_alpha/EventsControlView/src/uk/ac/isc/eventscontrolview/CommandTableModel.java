@@ -70,7 +70,7 @@ public class CommandTableModel extends AbstractTableModel {
                 retObject = commandList.get(rowIndex).getAnalyst();
                 break;
             case 2:
-                retObject = commandList.get(rowIndex).getCommand();
+                retObject = commandList.get(rowIndex).getCommandStr();
                 break;
             case 3:
                 retObject = commandList.get(rowIndex).getStatus();
@@ -86,11 +86,7 @@ public class CommandTableModel extends AbstractTableModel {
         return retObject;
     }
 
-    /*
-     * JTable uses this method to determine the default renderer/editor for each cell.  
-     * If we didn't implement this method,
-     * then the last column would contain text ("true"/"false"), rather than a check box.
-     */
+    
     @Override
     public Class getColumnClass(int c) {
         //System.out.println(Global.debugAt() + "c= " + c + ", getValueAt(0, c)=" + getValueAt(0, c));
@@ -101,16 +97,6 @@ public class CommandTableModel extends AbstractTableModel {
     // only the select column is editable.
     @Override
     public boolean isCellEditable(int row, int col) {
-        /*
-        // If the status of the command is "C" (committed), it can not be assesed (selected).
-        Object o = getValueAt(row, 3);
-        String status = (String) o;
-        if(status.equals("C")) {
-            System.out.println(Global.debugAt() + " Status= " + status);
-        }
-        return (status.equals("C"));
-        */
-       
         return false;
     }
 

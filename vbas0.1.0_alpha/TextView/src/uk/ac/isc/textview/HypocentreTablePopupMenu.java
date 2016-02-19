@@ -26,7 +26,7 @@ class HypocentreTablePopupMenu implements ActionListener {
     SeisEventRelocateDialog relocateEventDialog;
     HypocentreEditDialog editHypocentreDialog;
 
-    private final Command formulatedCommand = Global.getFormulatedCommand();
+    private final Command commandEvent = Global.getCommandEvent();
     private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
     private final Hypocentre selectedHypocentre = Global.getSelectedHypocentre();
 
@@ -66,50 +66,32 @@ class HypocentreTablePopupMenu implements ActionListener {
 
             JSONObject jFunctionObj = new JSONObject();
             jFunctionObj.put("commandType", "setprime");
-            jFunctionObj.put("function", "setprime ( " + selectedHypocentre.getHypid() + ", " + selectedSeisEvent.getEvid() + " )");
+            jFunctionObj.put("function", "rf ( " + selectedHypocentre.getHypid() + ", " + selectedSeisEvent.getEvid() + " )");
             jFunctionArray.add(jFunctionObj);
 
             if (jCommandArray.size() > 0) {
                 String commandStr = jCommandArray.toString();
                 String functionStr = jFunctionArray.toString();
 
-                Global.logDebug(" Fired: 'Set Prime' comamnd."
-                        + "\ncommandStr= " + commandStr
+                Global.logDebug("\ncommandStr= " + commandStr
                         + "\nfunctionStr= " + functionStr);
 
-                // Debug JSON
-                JSONParser parser = new JSONParser();
-                try {
-                    String s = jFunctionArray.toString();
-                    Object obj = parser.parse(s);
-                    JSONArray arr = (JSONArray) obj;
-                    for (Object o : arr) {
-                        JSONObject jObj = (JSONObject) o;
-                        Global.logDebug("commandType: " + (String) jObj.get("commandType")
-                                + ", function: " + (String) jObj.get("function"));
-                    }
+                Global.logJSONDebug(jFunctionArray);
 
-                } catch (com.orsoncharts.util.json.parser.ParseException pe) {
-                    Global.logDebug("Exception position: " + pe.getPosition() + "\nException: " + pe);
+                boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "setprime",
+                        commandStr, functionStr);
+                if (ret) {
+                    Global.logDebug("Fired: 'Set Prime' comamnd.");
+
+                    commandEvent.fireSeisDataChanged();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-                // end Debug
-
-                /*boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "setprime",
-                 commandStr, functionStr);
-                 if (ret) {
-                 Global.logDebug(" Fired: 'Set Prime' comamnd."
-                 + "\ncommandStr= " + commandStr
-                 + "\nfunctionStr= " + functionStr);
-
-                 formulatedCommand.fireSeisDataChanged();
-                 } else {
-                 JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
-                 }*/
             }
 
         }
 
-        if ("Event Relocate..".equals(e.getActionCommand())) {
+        if ("SeisEvent Relocate..".equals(e.getActionCommand())) {
             relocateEventDialog.setLocationRelativeTo(table);
             relocateEventDialog.showHypoTableRelocateDialog();
         }
@@ -140,7 +122,7 @@ class HypocentreTablePopupMenu implements ActionListener {
         menuItem_setprime.setBackground(new Color(218, 83, 44));
         menuItem_setprime.setForeground(Color.WHITE);
         menuItem_setprime.setFont(new Font("Sans-serif", Font.PLAIN, 14));
-        JMenuItem menuItem_relocate = new JMenuItem("Event Relocate..");
+        JMenuItem menuItem_relocate = new JMenuItem("SeisEvent Relocate..");
         menuItem_relocate.setBackground(new Color(218, 83, 44));
         menuItem_relocate.setForeground(Color.WHITE);
         menuItem_relocate.setFont(new Font("Sans-serif", Font.PLAIN, 14));

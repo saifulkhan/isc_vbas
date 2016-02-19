@@ -75,7 +75,7 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
         String eventName = event.getData().getClass().getName();
-        System.out.println(Global.debugAt() + " Event received from " + eventName);
+        Global.logDebug("Event received from " + eventName);
 
         switch (eventName) {
             case "uk.ac.isc.seisdata.SeisEvent":

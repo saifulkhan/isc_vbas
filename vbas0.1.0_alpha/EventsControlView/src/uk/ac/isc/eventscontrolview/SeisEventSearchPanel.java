@@ -18,11 +18,12 @@ import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.SeisDataDAO;
 import com.orsoncharts.util.json.JSONArray;
 import com.orsoncharts.util.json.JSONObject;
-import com.orsoncharts.util.json.parser.JSONParser;
 
-/**
- *
- * A search panel for searching event
+
+/*
+ *****************************************************************************************
+ * A search panel for searching event in SiesEvent Table
+ *****************************************************************************************
  */
 public class SeisEventSearchPanel extends JPanel {
 
@@ -34,7 +35,7 @@ public class SeisEventSearchPanel extends JPanel {
     private final JButton button_unbanish;
     private final JButton button_done;
 
-    private final Command formulatedCommand = Global.getFormulatedCommand();
+    private final Command commandEvent = Global.getCommandEvent();
 
     // reference of the control view
     private final JTable table;
@@ -169,45 +170,25 @@ public class SeisEventSearchPanel extends JPanel {
 
         JSONObject jFunctionObj = new JSONObject();
         jFunctionObj.put("commandType", "seiseventbanish");
-        jFunctionObj.put("function", "seiseventbanish ( " + seisEventId + " )");
+        jFunctionObj.put("function", "banish ( " + seisEventId + " )");
         jFunctionArray.add(jFunctionObj);
 
         if (jCommandArray.size() > 0) {
             String commandStr = jCommandArray.toString();
             String functionStr = jFunctionArray.toString();
 
-            Global.logDebug(" Fired: 'SeisEvent Banish' comamnd."
-                    + "\ncommandStr= " + commandStr
-                    + "\nfunctionStr= " + functionStr);
+            Global.logDebug("\ncommandStr= " + commandStr + "\nfunctionStr= " + functionStr);
+            Global.logJSONDebug(jFunctionArray);
 
-            // Debug JSON
-            JSONParser parser = new JSONParser();
-            try {
-                String s = jFunctionArray.toString();
-                Object obj = parser.parse(s);
-                JSONArray arr = (JSONArray) obj;
-                for (Object o : arr) {
-                    JSONObject jObj = (JSONObject) o;
-                    Global.logDebug("commandType: " + (String) jObj.get("commandType")
-                            + ", function: " + (String) jObj.get("function"));
-                }
-
-            } catch (com.orsoncharts.util.json.parser.ParseException pe) {
-                Global.logDebug("Exception position: " + pe.getPosition() + "\nException: " + pe);
+            boolean ret = SeisDataDAO.updateCommandTable(Global.getSelectedSeisEvent().getEvid(),
+                    "seiseventbanish",
+                    commandStr, functionStr);
+            if (ret) {
+                Global.logDebug("Fired: 'SeisEvent Banish' comamnd.");
+                commandEvent.fireSeisDataChanged();
+            } else {
+                JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-                // end Debug
-
-            /*boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "setprime",
-             commandStr, functionStr);
-             if (ret) {
-             Global.logDebug(" Fired: 'Set Prime' comamnd."
-             + "\ncommandStr= " + commandStr
-             + "\nfunctionStr= " + functionStr);
-
-             formulatedCommand.fireSeisDataChanged();
-             } else {
-             JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
-             }*/
         }
 
     }

@@ -1,8 +1,6 @@
 package uk.ac.isc.seisdata;
 
 
-import java.util.Date;
-
 
 public class AssessedCommand extends AbstractSeisData {
 
@@ -14,6 +12,7 @@ public class AssessedCommand extends AbstractSeisData {
     private String report;    // the report to the pdf file (assessed report)
     
     public AssessedCommand() {
+        
     }
 
     public AssessedCommand(Integer evid, String ids, String analyst, String report) {

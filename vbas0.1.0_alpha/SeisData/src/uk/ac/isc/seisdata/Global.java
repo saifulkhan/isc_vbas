@@ -1,103 +1,140 @@
-
 package uk.ac.isc.seisdata;
- 
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import com.orsoncharts.util.json.JSONArray;
+import com.orsoncharts.util.json.JSONObject;
+import com.orsoncharts.util.json.parser.JSONParser;
+import com.orsoncharts.util.json.parser.ParseException;
 
 /*
  * Used globally to register to change event and notify/fire changes.
  * Do not change the actual reference of these objects.
  */
-
 public class Global {
-    
-    // Selected Seies Event
-    private static SeisEvent selectedSeisEvent = new SeisEvent();
-    // Selected Hypocentre
-    private static Hypocentre selectedHypocentre = new Hypocentre();
-    // Selected Phase
-    private static Phase selectedPhase = new Phase();
-    
-    
-    // TODO:  change them to a event
-    // Formulated command in: 1. Hypocentre table dialogs and popupmenus, 
-    // 2. Comamnd table, 3. AssessedComamnd table
-    // Not used: Set the comamnd as a java String.
-    private static Command formulatedCommand = new Command();
-    
-    private static HypocentresList hypocentresList = new HypocentresList();
-    private static PhasesList phasesList = new PhasesList(); 
 
-    // TODO: Do I need these?
-    private static CommandList commandList = new CommandList(); 
+    // Selected SeiesEvent and it's 
+    // Hypocentre(s), Phase(s), Command(s), and  AssessedCommand(s)
+    // They are fetched at the beginning when a SeisEvent is selected.
+    private static SeisEvent selectedSeisEvent = new SeisEvent();
+    private static HypocentresList hypocentresList = new HypocentresList();
+    private static PhasesList phasesList = new PhasesList();
+    private static CommandList commandList = new CommandList();
     private static AssessedCommandList assessedCommandList = new AssessedCommandList();
 
- 
+    // To notify an event: a Hypocentre or a Phase is selected.
+    private static Hypocentre selectedHypocentre = new Hypocentre();
+    private static Phase selectedPhase = new Phase();
+
+    // To notify an event:  a new Command is generated
+    private static Command commandEvent = new Command();
+    private static AssessedCommand assessedComamndEvent = new AssessedCommand();
+
     public static SeisEvent getSelectedSeisEvent() {
-       
+
         // TODO: chek dependency again
         // needed when the hypocentre & phase table loads for the first time.
         // if the SeiesEventTable module loads later
         /*
-        if (selectedSeisEvent.getEvid() == 0) {
-            SeisEventsList eventsList = new SeisEventsList();
-            SeisDataDAO.retrieveAllEvents(eventsList.getEvents());
-            selectedSeisEvent.setValues(eventsList.getEvents().get(0));
-        } */
+         if (selectedSeisEvent.getEvid() == 0) {
+         SeisEventsList eventsList = new SeisEventsList();
+         SeisDataDAO.retrieveAllEvents(eventsList.getEvents());
+         selectedSeisEvent.setValues(eventsList.getEvents().get(0));
+         } */
         return selectedSeisEvent;
     }
 
     public static Hypocentre getSelectedHypocentre() {
         return selectedHypocentre;
     }
-  
-    
+
     public static Phase getSelectedPhase() {
         return selectedPhase;
     }
 
-    public static Command getFormulatedCommand() {
-        return formulatedCommand;
-    }
-         
-    
     public static PhasesList getPhasesList() {
         return phasesList;
     }
-   
+
     public static HypocentresList getHypocentresList() {
         return hypocentresList;
     }
-   
+
     public static AssessedCommandList getAssessedCommandList() {
         return assessedCommandList;
     }
-    
+
     public static CommandList getCommandList() {
         return commandList;
     }
- 
-     public static String debugAt() {
-        String fullClassName = Thread.currentThread().getStackTrace()[2].getClassName();
-        String className = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
-        String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
-        int lineNumber = Thread.currentThread().getStackTrace()[2].getLineNumber();
-        return lineNumber + ":" + className + "." + methodName + "()-->> ";
+
+    public static Command getCommandEvent() {
+        return commandEvent;
     }
-   
-    public static void logSevere(String debugAt, String debugString) {
-        Logger.getLogger(debugAt).log(Level.SEVERE, debugString);
+
+    public static AssessedCommand getAssessedComamndEvent() {
+        return assessedComamndEvent;
     }
-    
-    public static void logDebug(String debugString) {
-        String fullClassName = Thread.currentThread().getStackTrace()[2].getClassName();
-        String className = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
-        String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
-        int lineNumber = Thread.currentThread().getStackTrace()[2].getLineNumber();
-        String debugAt = lineNumber + ":" + className + "." + methodName + "()-->> ";
+
+    /*
+     *****************************************************************************************
+     * TODO: in a separate class. 
+     *****************************************************************************************
+     */
+    public static String debugAt() {
+        String at = Thread.currentThread().getStackTrace()[2].getLineNumber() + ":"
+                + Thread.currentThread().getStackTrace()[2].getClassName().
+                substring(Thread.currentThread().getStackTrace()[2].getClassName().
+                        lastIndexOf(".") + 1) + ":"
+                + Thread.currentThread().getStackTrace()[2].getMethodName();
         
-        Logger.getLogger(debugAt).log(Level.INFO, "{0}{1}", 
-                new Object[]{debugAt, debugString});   
+        return at;
     }
-     
+
+    public static void logSevere(String debugString) {
+        String at = Thread.currentThread().getStackTrace()[2].getLineNumber() + ":"
+                + Thread.currentThread().getStackTrace()[2].getClassName().
+                substring(Thread.currentThread().getStackTrace()[2].getClassName().
+                        lastIndexOf(".") + 1) + ":"
+                + Thread.currentThread().getStackTrace()[2].getMethodName();
+
+        Logger.getLogger(at).log(Level.SEVERE, debugString);
+    }
+
+    public static void logDebug(String debugString) {
+        String at = Thread.currentThread().getStackTrace()[2].getLineNumber() + ":"
+                + Thread.currentThread().getStackTrace()[2].getClassName().
+                substring(Thread.currentThread().getStackTrace()[2].getClassName().
+                        lastIndexOf(".") + 1) + ":"
+                + Thread.currentThread().getStackTrace()[2].getMethodName();
+        Logger.getLogger(at).log(Level.INFO, debugString);
+    }
+
+    public static void logJSONDebug(JSONArray jFunctionArray) {
+
+        String at = Thread.currentThread().getStackTrace()[2].getLineNumber() + ":"
+                + Thread.currentThread().getStackTrace()[2].getClassName().
+                substring(Thread.currentThread().getStackTrace()[2].getClassName().
+                        lastIndexOf(".") + 1) + ":"
+                + Thread.currentThread().getStackTrace()[2].getMethodName();
+
+        JSONParser parser = new JSONParser();
+        try {
+            String s = jFunctionArray.toString();
+            Object obj = parser.parse(s);
+            JSONArray arr = (JSONArray) obj;
+            for (Object o : arr) {
+                JSONObject jObj = (JSONObject) o;
+
+                Logger.getLogger(at).log(Level.INFO,
+                        "\ncommandType: " + (String) jObj.get("commandType")
+                        + ", function: " + (String) jObj.get("function"));
+            }
+
+        } catch (ParseException pe) {
+            Logger.getLogger(at).log(Level.SEVERE, "\nPosition:" + pe.getPosition() + ", " + pe 
+                    + "\nError Parsing: " + jFunctionArray.toString());
+        }
+    }
+
 }
