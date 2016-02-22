@@ -9,6 +9,7 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
+import uk.ac.isc.seisdata.Global;
 
 /**
  * Top component which displays the events control list that the analyst can
@@ -35,44 +36,45 @@ import org.openide.windows.TopComponent;
 @Messages({
     "CTL_EventsControlViewAction=EventsControlView",
     "CTL_EventsControlViewTopComponent=EventsControlView Window",
-    "HINT_EventsControlViewTopComponent=This is a EventsControlView window" 
+    "HINT_EventsControlViewTopComponent=This is a EventsControlView window"
 })
 
 public final class EventsControlViewTopComponent extends TopComponent {
 
     SeisEventsTable eventsTable;                    // Event Table
-    CommandTable commandTable;                  // Action Hostory Table
-    AssessedCommandTable assessedCommandTable;
-    
-    
+    //CommandTable commandTable;                  // Action Hostory Table
+    //AssessedCommandTable assessedCommandTable;
+
     public EventsControlViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_EventsControlViewTopComponent());
         setToolTipText(Bundle.HINT_EventsControlViewTopComponent());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
+        Global.logDebug("Here...");
 
         eventsTable = new SeisEventsTable();
-        commandTable = new CommandTable();
-        assessedCommandTable = new AssessedCommandTable();
-        
+        //commandTable = new CommandTable();
+        //assessedCommandTable = new AssessedCommandTable();
+
         this.setLayout(new BorderLayout());
+
+        /*
+         JSplitPane split;
         
-        JSplitPane split;
-        
-        JSplitPane spLeft = new JSplitPane(JSplitPane.VERTICAL_SPLIT, eventsTable, null);
-        spLeft.setDividerSize(4);
-        spLeft.setContinuousLayout(true);
+         JSplitPane spLeft = new JSplitPane(JSplitPane.VERTICAL_SPLIT, eventsTable, null);
+         spLeft.setDividerSize(4);
+         spLeft.setContinuousLayout(true);
 
-        JSplitPane spRight = new JSplitPane(JSplitPane.VERTICAL_SPLIT, commandTable, assessedCommandTable);
-        spRight.setDividerSize(4);
-        spRight.setContinuousLayout(true);
+         JSplitPane spRight = new JSplitPane(JSplitPane.VERTICAL_SPLIT, commandTable, assessedCommandTable);
+         spRight.setDividerSize(4);
+         spRight.setContinuousLayout(true);
 
-        split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spLeft, spRight);
-        split.setContinuousLayout(false);
-        split.setOneTouchExpandable(true);
+         split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spLeft, spRight);
+         split.setContinuousLayout(false);
+         split.setOneTouchExpandable(true);*/
+        this.add(eventsTable, BorderLayout.CENTER);
 
-        this.add(split, BorderLayout.CENTER);
     }
 
     /* 

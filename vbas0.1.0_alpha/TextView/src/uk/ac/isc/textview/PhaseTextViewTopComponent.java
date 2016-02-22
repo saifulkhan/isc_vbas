@@ -71,7 +71,8 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         initComponents();
         setName(Bundle.CTL_PhaseTextViewTopComponent());
         setToolTipText(Bundle.HINT_PhaseTextViewTopComponent());
-
+        Global.logDebug("Here...");
+        
         selectedSeisEvent.addChangeListener(this);
 
         model = new PhaseTextViewTableModel(phasesList.getPhases());

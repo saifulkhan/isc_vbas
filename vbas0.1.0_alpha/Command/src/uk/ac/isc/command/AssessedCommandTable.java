@@ -1,4 +1,4 @@
-package uk.ac.isc.eventscontrolview;
+package uk.ac.isc.command;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -45,6 +45,8 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
 
         table = new JTable();
         scrollPane = new JScrollPane(table);
+        
+        Global.logDebug(" #AssessedCommands:" + assessedCommandList.getAssessedCommandList().size());
         model = new AssessedCommandTableModel(assessedCommandList.getAssessedCommandList());
         table.setModel(model);
 
@@ -71,11 +73,12 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
 
             case "uk.ac.isc.seisdata.AssessedCommand":
                 SeisDataDAO.readAssessedCommandTable(selectedSeisEvent.getEvid(),
-                        assessedCommandList.getAssessedCommandList());
-                Global.logDebug(" #AssessedCommands:" + assessedCommandList.getAssessedCommandList().size());
+                        assessedCommandList.getAssessedCommandList());             
                 break;
         }
-
+        
+        Global.logDebug(" #AssessedCommands:" + assessedCommandList.getAssessedCommandList().size());
+        
         model = new AssessedCommandTableModel(assessedCommandList.getAssessedCommandList());
         table.setModel(model);
 

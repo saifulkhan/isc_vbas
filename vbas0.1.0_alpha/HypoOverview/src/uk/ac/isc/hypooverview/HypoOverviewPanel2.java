@@ -173,6 +173,20 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
 
     private int hypoVisOption;
 
+    public BufferedImage getBaseMap() {
+        return baseMap;
+    }
+
+    public static BufferedImage getDotImg() {
+        return dotImg;
+    }
+
+    public BufferedImage getRawMiniMap() {
+        return rawMiniMap;
+    }
+
+    
+    
     public HypoOverviewPanel2(HypocentresList hyposList) {
 
         //new DefaultMapController(this);
@@ -675,7 +689,8 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
         super.paintComponent(g);
 
         Graphics2D g2 = (Graphics2D) g;
-
+        
+        
         xOffset = (getWidth() - mapWidth) / 2;
         yOffset = (getHeight() - mapHeight) / 2;
 

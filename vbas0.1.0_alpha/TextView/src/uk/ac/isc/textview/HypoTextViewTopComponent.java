@@ -82,7 +82,8 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         initComponents();
         setName(Bundle.CTL_HypoTextViewTopComponent());
         setToolTipText(Bundle.HINT_HypoTextViewTopComponent());
-
+        Global.logDebug("Here...");
+        
         selectedSeisEvent.addChangeListener(this);
 
         table = new JTable();
@@ -118,6 +119,7 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         this.setLayout(new BorderLayout());
         this.add(header, BorderLayout.NORTH);
         this.add(scrollPane, BorderLayout.CENTER);
+
     }
 
     /*
@@ -266,13 +268,13 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
     @Override
     public void componentOpened() {
         // TODO add custom code on component opening
-        hypocentresList.addChangeListener(this);
+        //hypocentresList.addChangeListener(this);
     }
 
     @Override
     public void componentClosed() {
         // TODO add custom code on component closing
-        hypocentresList.removeChangeListener(this);
+        //hypocentresList.removeChangeListener(this);
     }
 
     void writeProperties(java.util.Properties p) {

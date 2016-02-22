@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 import uk.ac.isc.seisdata.Hypocentre;
 
-class HypocentreTableModel extends AbstractTableModel {
+public class HypocentreTableModel extends AbstractTableModel {
 
     private final String[] columnNames = {"Agency", "Time", "Lat.", "Long.",
         "Depth", "Depth Error", "Magnitude 1", "Magnitude 2", "RMS", "Hypid"};

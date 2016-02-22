@@ -1,4 +1,4 @@
-package uk.ac.isc.eventscontrolview;
+package uk.ac.isc.command;
 
 import com.orsoncharts.util.json.JSONArray;
 import com.orsoncharts.util.json.JSONObject;
@@ -11,9 +11,6 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import javax.swing.JButton;
@@ -35,7 +32,6 @@ import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
 import uk.ac.isc.seisdata.SeisDataDAO;
-import uk.ac.isc.seisdata.SeisDataDAOAssess;
 import uk.ac.isc.seisdata.SeisEvent;
 
 public class CommandTable extends JPanel implements SeisDataChangeListener {
@@ -75,6 +71,7 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
         MyRowSelectionListener rowListener = new MyRowSelectionListener();
         table.getSelectionModel().addListSelectionListener(rowListener);
 
+        Global.logDebug(" #Commands:" + commandList.getCommandList().size());
         model = new CommandTableModel(commandList.getCommandList());
         table.setModel(model);
 
@@ -104,10 +101,11 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
             case "uk.ac.isc.seisdata.Command":
                 SeisDataDAO.readCommandTable(selectedSeisEvent.getEvid(),
                         commandList.getCommandList());
-                Global.logDebug(" #Commands:" + commandList.getCommandList().size());
                 break;
         }
 
+        Global.logDebug(" #Commands:" + commandList.getCommandList().size());
+        
         model = new CommandTableModel(commandList.getCommandList());
         table.setModel(model);
 
