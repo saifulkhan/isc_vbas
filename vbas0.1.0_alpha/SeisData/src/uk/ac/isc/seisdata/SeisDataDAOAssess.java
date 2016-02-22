@@ -29,9 +29,11 @@ import javax.swing.JOptionPane;
 public final class SeisDataDAOAssess {
 
     protected static String url;
-    protected static String user;
-    protected static String password;
-
+    protected static String assessUser;
+    protected static String assessPassword;
+    protected static String pgUser;
+    
+    
     private static Path assessDir = null;
 
     static {
@@ -42,9 +44,10 @@ public final class SeisDataDAOAssess {
                     + env.get("PGHOSTADDR") + ":"
                     + env.get("PGPORT") + "/"
                     + env.get("PGDATABASE");
-            user = env.get("ASSESS_USER");
-            password = env.get("ASSESS_PW");
-
+            assessUser = env.get("ASSESS_USER");
+            assessPassword = env.get("ASSESS_PW");
+            pgUser = env.get("PGUSER");
+            
             int month = Calendar.getInstance().get(Calendar.MONTH) + 1;
 
             assessDir = Paths.get(env.get("ASSESSDIR")
@@ -65,29 +68,27 @@ public final class SeisDataDAOAssess {
     }
 
     public static Path getAssessDir() {
+        Global.logDebug("url=" + url + ", user=" + assessUser +", password=" + assessPassword);
         return assessDir;
     }
 
-    public static String getUrl() {
-        return url;
+    public static String getAssessUser() {
+        return assessUser;
     }
 
-    public static String getUser() {
-        return user;
+    public static String getAssessPassword() {
+        return assessPassword;
     }
 
-    public static String getPassword() {
-        return password;
-    }
-
-    
+ 
     
     /*
      * Update the Assess Schema
      * Return the locatorCommandStr
      */
     public static String processAssessData(int evid, JSONArray jFunctionArray) {
-
+        Global.logDebug("url=" + url + ", user=" + assessUser +", password=" + assessPassword);
+        
         Connection con = null;
         Statement st = null;
         ResultSet rs = null;
@@ -96,7 +97,7 @@ public final class SeisDataDAOAssess {
         String query = null;
         
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, assessUser, assessPassword);
 
             st = con.createStatement();
 
@@ -109,8 +110,9 @@ public final class SeisDataDAOAssess {
 
             /*
              * 2: Fill schema with appropiate data
+             * Note: the FILL_ASSESS will read data from PGUSER.
              */
-            query = "SELECT FILL_ASSESS (" + evid + ", '" + user + "');";
+            query = "SELECT FILL_ASSESS (" + evid + ", '" + pgUser + "');"; 
             Global.logDebug("query= " + query);
             rs = st.executeQuery(query);
 
@@ -176,6 +178,7 @@ public final class SeisDataDAOAssess {
      * @return
      */
     public static boolean retrieveHypos(Integer evid, ArrayList<Hypocentre> HypoList) {
+        Global.logDebug("url=" + url + ", user=" + assessUser +", password=" + assessPassword);
 
         Connection con = null;
         Statement st = null;
@@ -184,7 +187,7 @@ public final class SeisDataDAOAssess {
         HypoList.clear();
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, assessUser, assessPassword);
             st = con.createStatement();
 
             String query = "SELECT h.author, h.day, h.lat, h.lon, h.depth, h.prime, h.hypid, x.sdepth, h.epifix, x.stime, x.strike, x.smajax, x.sminax,h.nass, h.ndef, h.nsta, h.ndefsta, h.msec "
@@ -278,6 +281,7 @@ public final class SeisDataDAOAssess {
      * @return
      */
     public static boolean retrieveHyposMagnitude(ArrayList<Hypocentre> HypoList) {
+        Global.logDebug("url=" + url + ", user=" + assessUser +", password=" + assessPassword);
 
         Connection con = null;
         Statement st = null;
@@ -285,7 +289,7 @@ public final class SeisDataDAOAssess {
 
         Iterator<Hypocentre> iter = HypoList.iterator();
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, assessUser, assessPassword);
             st = con.createStatement();
 
             while (iter.hasNext()) {
@@ -335,6 +339,8 @@ public final class SeisDataDAOAssess {
      * @return filled phases list
      */
     public static boolean retrieveAllPhases(Integer evid, ArrayList<Phase> PhasesList) {
+        Global.logDebug("url=" + url + ", user=" + assessUser +", password=" + assessPassword);
+        
         Connection con = null;
         Statement st = null;
         ResultSet rs = null;
@@ -343,7 +349,7 @@ public final class SeisDataDAOAssess {
 
         try {
 
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, assessUser, assessPassword);
             st = con.createStatement();
 
             String query = "SELECT r.reporter, p.sta, p.day, a.delta, a.esaz, a.phase, a.timeres, p.phid, p.phase, a.timedef, p.rdid, s.staname, p.msec, p.slow, p.azim, i.snr, a.phase_fixed "
@@ -447,6 +453,8 @@ public final class SeisDataDAOAssess {
      * @return
      */
     public static boolean retrieveAllPhasesAmpMag(Integer evid, ArrayList<Phase> PhaseList) {
+        Global.logDebug("url=" + url + ", user=" + assessUser +", password=" + assessPassword);
+        
         Connection con = null;
         Statement st = null;
         ResultSet rs = null;
@@ -458,7 +466,7 @@ public final class SeisDataDAOAssess {
         }
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, assessUser, assessPassword);
             st = con.createStatement();
 
             String query = "SELECT p.amp, p.per, s.magnitude, s.ampdef, p.phid "
@@ -513,6 +521,8 @@ public final class SeisDataDAOAssess {
      * @return
      */
     public static boolean retrieveAllStationsWithRegions(TreeMap<String, String> allStations) {
+        Global.logDebug("url=" + url + ", user=" + assessUser +", password=" + assessPassword);
+        
         Connection con = null;
         Statement st = null;
         ResultSet rs = null;
@@ -523,7 +533,7 @@ public final class SeisDataDAOAssess {
                 + "AND s.sta = g.sta AND g.net IS NULL AND g.grn_ll = r.gr_number;";
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, assessUser, assessPassword);
             st = con.createStatement();
             rs = st.executeQuery(query);
 

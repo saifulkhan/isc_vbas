@@ -101,7 +101,7 @@ public class HypocentreEditDialog extends JDialog {
             JSONObject jFunctionObj = new JSONObject();
             jFunctionObj.put("commandType", "hypocentreedit");
             jFunctionObj.put("function", "chhypo ( "
-                    + selectedHypocentre.getHypid() + ", ''depth'', " + Integer.parseInt(text_depth.getText()) + " )");
+                    + selectedHypocentre.getHypid() + ", ''depth'', ''" + Integer.parseInt(text_depth.getText()) + "'' )");
             jFunctionArray.add(jFunctionObj);
         }
 
@@ -144,7 +144,7 @@ public class HypocentreEditDialog extends JDialog {
             JSONObject jFunctionObj = new JSONObject();
             jFunctionObj.put("commandType", "hypocentreedit");
             jFunctionObj.put("function", "chhypo ( "
-                    + selectedHypocentre.getHypid() + ", ''lat'', " + Double.parseDouble(text_lat.getText()) + " )");
+                    + selectedHypocentre.getHypid() + ", ''lat'', ''" + Double.parseDouble(text_lat.getText()) + "'' )");
             jFunctionArray.add(jFunctionObj);
         }
 
@@ -161,7 +161,7 @@ public class HypocentreEditDialog extends JDialog {
             JSONObject jFunctionObj = new JSONObject();
             jFunctionObj.put("commandType", "hypocentreedit");
             jFunctionObj.put("function", "chhypo ( "
-                    + selectedHypocentre.getHypid() + ", ''lon'', " + Double.parseDouble(text_lon.getText()) + " )"
+                    + selectedHypocentre.getHypid() + ", ''lon'', ''" + Double.parseDouble(text_lon.getText()) + "'' )"
             );
             jFunctionArray.add(jFunctionObj);
         }
@@ -169,7 +169,7 @@ public class HypocentreEditDialog extends JDialog {
         if (jAttrArray.size() > 0) {
 
             /*
-             * Reason text description. Include it only if a valid command is formulated.
+             * Reason text-- Include only when a valid command is formulated.
              */
             if (textArea_reason.getText() == null) {
                 JOptionPane.showMessageDialog(null, "Please give a reason.", "Warning", JOptionPane.WARNING_MESSAGE);

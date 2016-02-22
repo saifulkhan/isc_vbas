@@ -11,14 +11,10 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -236,15 +232,6 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
                 return;
             }
 
-            Path assessDir = Paths.get(SeisDataDAOAssess.getAssessDir().toString()
-                    + File.separator + Global.getSelectedSeisEvent().getEvid());
-
-            JSONObject jCommandObj = new JSONObject();
-            jCommandObj.put("commandType", "assess");
-            jCommandObj.put("dataType", "seisevent");
-            jCommandObj.put("id", selectedSeisEvent.getEvid());
-            jCommandObj.put("assessDir", assessDir.toString());
-
             ArrayList<Integer> commandIds = new ArrayList<Integer>();
 
             JSONArray jFunctionArray = new JSONArray();
@@ -270,73 +257,35 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
                 Global.logDebug("Appended functionStr: " + jFunctionArray.toString());
             }
 
-            jCommandObj.put("commandIDs", commandIds.toString());
-
             /*
-             * process assess data  : run relocator, generate html etc..
+             * ***************************************************************************
+             * Assess: run relocator, generate html etc.. If susccess write the
+             * assess info in the AssessedCommand table
+             * ****************************************************************************
              */
-            String locatorCommandStr
-                    = SeisDataDAOAssess.processAssessData(Global.getSelectedSeisEvent().getEvid(), jFunctionArray);
-
-            if (locatorCommandStr != null) {
-                String iscLocOut = assessDir + File.separator
-                        + "iscloc." + Global.getSelectedSeisEvent().getEvid() + ".out";
-                Global.logDebug("locatorCommandStr= " + locatorCommandStr + "\niscLocOut=" + iscLocOut);
-
-                if (!new File(assessDir.toString()).exists()) {
-                    boolean success = (new File(assessDir.toString())).mkdirs();
-                    if (!success) {
-                        String message = "Error creating the directory " + assessDir;
-                        Global.logSevere(message);
-                        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                }
-
-                String runLocatorStr = "ssh beast "
-                        + "export PGUSER=" + SeisDataDAOAssess.getUser() + "; "
-                        + "export PGPASSWORD=" + SeisDataDAOAssess.getPassword() + "; "
-                        + "echo " + "\"" + locatorCommandStr + "\"" + " | iscloc_parallel_db - > "
-                        + iscLocOut;
-                Global.logDebug(runLocatorStr);
-
-                String output = null;
-                try {
-                    Process p = Runtime.getRuntime().exec(runLocatorStr);
-                    BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                    BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-
-                    Global.logDebug("The standard output of the command:\n");
-                    while ((output = stdInput.readLine()) != null) {
-                        Global.logDebug(output);
-                    }
-                    Global.logDebug("The standard error of the command (if any):\n");
-                    while ((output = stdError.readLine()) != null) {
-                        String message = "The standard error of the locator command: " + output;
-                        Global.logSevere(message);
-                        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    //System.exit(0);
-                } catch (IOException e2) {
-                    String message = "The standard error of the locator command: ";
-                    e2.printStackTrace();
-                    Global.logSevere(message);
-                    JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                    //System.exit(-1);
-                }
-
-            } else {
-                String message = "Incorrect locator command (locatorCommandStr= " + locatorCommandStr + ")";
-                Global.logSevere(message);
-                JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+            Assess assess = new Assess(jFunctionArray);
+            Boolean success = assess.runLocator();
+            if (success == false) {
+                Global.logSevere("Assess failed.");
+                return;
+            }
+            success = assess.generateHTMLReport();
+            if (success == false) {
+                Global.logSevere("HTML report generation failed.");
                 return;
             }
 
+            
             /*
              * Now writw the assessed details 
              */
+            JSONObject jCommandObj = new JSONObject();
+            jCommandObj.put("commandType", "assess");
+            jCommandObj.put("dataType", "seisevent");
+            jCommandObj.put("id", selectedSeisEvent.getEvid());
+            jCommandObj.put("reportName", assess.getReportName());
+            jCommandObj.put("commandIDs", commandIds.toString());
+
             String commandStr = jCommandObj.toJSONString();
             String functionStr = jFunctionArray.toString();
 
@@ -354,11 +303,6 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
                         JOptionPane.WARNING_MESSAGE);
             }
 
-
-            /*
-             *  Stage-2 process assess data
-             */
-            //new Assess();
         }
     }
 }
