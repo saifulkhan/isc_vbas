@@ -12,8 +12,10 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.JFreeChart;
@@ -23,6 +25,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.xy.XYDotRenderer;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.Second;
+import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.Phase;
 import uk.ac.isc.seisdata.PhasesList;
@@ -513,6 +516,15 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
         yOffset = Math.max((getHeight() - imageHeight) / 2, 0);
 
         g2.drawImage(phaseImageWithRect, xOffset, yOffset, this);
+
+        // TEST: 
+        Global.logDebug("Write BufferedImage.");
+        try {
+            ImageIO.write(phaseImageWithRect, "png",
+                    new File("/export/home/saiful/assess/temp/phaseImageWithRect.png"));
+        } catch (Exception e) {
+            Global.logSevere("Error creating a png.");
+        }
 
     }
 

@@ -4,7 +4,9 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.text.SimpleDateFormat;
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
@@ -13,6 +15,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.xy.XYDotRenderer;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.Second;
+import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.Phase;
 import uk.ac.isc.seisdata.PhasesList;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
@@ -219,12 +222,12 @@ class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListener {
         freechart = new JFreeChart(plot);
 
         freechart.removeLegend();
-       
+
         phasesImage = freechart.createBufferedImage(imageWidth, imageHeight);
         // Saiful: Idea
         //backgroundImage = freechart.createBufferedImage(imageWidth, imageHeight);
         //phasesImage = backgroundImage.copy
-                
+
     }
 
     //paint the detail view on the right side
@@ -237,6 +240,14 @@ class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListener {
 
         g2.drawImage(phasesImage, xOffset, yOffset, this);
 
+        // TEST: 
+        Global.logDebug("Write BufferedImage.");
+        try {
+            ImageIO.write(phasesImage, "png",
+                    new File("/export/home/saiful/assess/temp/phasesImage.png"));
+        } catch (Exception e) {
+            Global.logSevere("Error creating a png.");
+        }
     }
 
     //repaint when the data changes

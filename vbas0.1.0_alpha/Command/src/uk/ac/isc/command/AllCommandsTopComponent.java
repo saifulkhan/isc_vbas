@@ -48,7 +48,7 @@ public final class AllCommandsTopComponent extends TopComponent {
         initComponents();
         setName(Bundle.CTL_AllCommandsTopComponent());
         setToolTipText(Bundle.HINT_AllCommandsTopComponent());
-        Global.logDebug("Here...");
+        Global.logDebug("Loaded...");
 
         commandTable = new CommandTable();
         assessedCommandTable = new AssessedCommandTable();

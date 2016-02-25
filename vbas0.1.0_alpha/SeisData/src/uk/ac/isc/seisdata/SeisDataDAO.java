@@ -1,6 +1,5 @@
 package uk.ac.isc.seisdata;
 
-import com.orsoncharts.util.json.JSONObject;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;

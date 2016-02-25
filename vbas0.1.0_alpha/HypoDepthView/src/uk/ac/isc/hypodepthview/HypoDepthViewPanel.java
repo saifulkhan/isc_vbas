@@ -5,11 +5,13 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisLocation;
@@ -19,16 +21,17 @@ import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.DefaultCategoryDataset;
+import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.Hypocentre;
 
-/**
+
+/*
  *
  * The panel to show the depth of hypocentres
- *
- * @author hui
  */
-class HypoDepthViewPanel extends JPanel {
+public class HypoDepthViewPanel extends JPanel {
 
+    int width = 600, height = 300;
     //copy the hypocentre list as it is required to be sorted
     private final ArrayList<Hypocentre> hyposList = new ArrayList<Hypocentre>();
 
@@ -41,19 +44,18 @@ class HypoDepthViewPanel extends JPanel {
     private JFreeChart freeChart;
 
     //buffer image of the bar chart
-    private BufferedImage DepthHistImg;
+    private BufferedImage depthHistImg;
 
     public HypoDepthViewPanel(ArrayList<Hypocentre> hypos) {
-        this.hyposList.addAll(hypos);
+        Global.logDebug("Here...");
 
+        this.hyposList.addAll(hypos);
         //sort the hypolist
         Collections.sort(hyposList, new Comparator<Hypocentre>() {
-
             @Override
             public int compare(Hypocentre h1, Hypocentre h2) {
                 return (h1.getDepth() - h2.getDepth());
             }
-
         });
 
         HyposToCategoryDataset(hyposList);
@@ -232,15 +234,39 @@ class HypoDepthViewPanel extends JPanel {
 
         Graphics2D g2 = (Graphics2D) g.create();
 
-        DepthHistImg = freeChart.createBufferedImage(600, 300);
+        depthHistImg = freeChart.createBufferedImage(width, height);
 
-        int xOffset = (getWidth() - 600) / 2;
-        int yOffset = (getHeight() - 300) / 2;
+        int xOffset = (getWidth() - width) / 2;
+        int yOffset = (getHeight() - height) / 2;
 
-        g2.drawImage(DepthHistImg, xOffset, yOffset, 600, 300, this);
-        //g2.drawImage(DepthHistImg, null, 0, 0);
+        g2.drawImage(depthHistImg, xOffset, yOffset, width, height, this);
+        //g2.drawImage(depthHistImg, null, 0, 0);
         g2.dispose();
 
+        // TEST: 
+        Global.logDebug("Write BufferedImage.");
+        try {
+            ImageIO.write(depthHistImg, "png",
+                    new File("/export/home/saiful/assess/temp/HypocentreDepthView.png"));
+        } catch (Exception e) {
+            Global.logSevere("Error creating a png.");
+        }
+
     }
+
+    public BufferedImage getDepthHistImg() {
+        return depthHistImg;
+    }
+
+    
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+    
+    
 
 }

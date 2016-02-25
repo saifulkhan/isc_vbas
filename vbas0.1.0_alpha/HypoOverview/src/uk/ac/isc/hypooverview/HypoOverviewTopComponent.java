@@ -50,24 +50,25 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
     private static final Hypocentre selectedHypocentre = Global.getSelectedHypocentre();    // to receive events
 
     private final JScrollPane scrollPane;
-    private final HypoOverviewPanel2 hop;           // the main view
-    private final OverviewControlPanel3 ocp;        // the control panel
+    private final HypoOverviewPanel2 overviewPanel;           // the main view
+    private final OverviewControlPanel3 controlPanel;        // the control panel
 
     public HypoOverviewTopComponent() {
         initComponents();
         setName(Bundle.CTL_HypoOverviewTopComponent());
         setToolTipText(Bundle.HINT_HypoOverviewTopComponent());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
-
+        Global.logDebug("Loaded...");
+        
         selectedSeisEvent.addChangeListener(this);
         selectedHypocentre.addChangeListener(this);
 
-        hop = new HypoOverviewPanel2(hypoList);
-        scrollPane = new JScrollPane(hop);
-        ocp = new OverviewControlPanel3(hop);
+        overviewPanel = new HypoOverviewPanel2(hypoList);
+        scrollPane = new JScrollPane(overviewPanel);
+        controlPanel = new OverviewControlPanel3(overviewPanel);
 
         this.setLayout(new BorderLayout());
-        this.add(ocp, BorderLayout.NORTH);
+        this.add(controlPanel, BorderLayout.NORTH);
         this.add(scrollPane, BorderLayout.CENTER);
     }
 
@@ -75,31 +76,31 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
         String eventName = event.getData().getClass().getName();
-        Global.logDebug("Event received from " + eventName);
+        Global.logDebug("Event received from: " + eventName);
 
         switch (eventName) {
             case "uk.ac.isc.seisdata.SeisEvent":
-                SeisEvent seisEvent = (SeisEvent) event.getData();
-                System.out.println(Global.debugAt() + " SeisEvent= " + selectedSeisEvent.getEvid());
+                //SeisEvent seisEvent = (SeisEvent) event.getData();
+                Global.logDebug("SeisEvent= " + selectedSeisEvent.getEvid());
 
                 for (Hypocentre hypo : hypoList.getHypocentres()) {
                     if (hypo.getIsPrime() == true) {
-                        hop.setCentLatLon(hypo.getLat(), hypo.getLon());
-                        hop.setCentDepth(hypo.getDepth());
-                        hop.loadSeisData(hypo.getLat(), hypo.getLon(), hop.getRangeDelta());
+                        overviewPanel.setCentLatLon(hypo.getLat(), hypo.getLon());
+                        overviewPanel.setCentDepth(hypo.getDepth());
+                        overviewPanel.loadSeisData(hypo.getLat(), hypo.getLon(), overviewPanel.getRangeDelta());
                     }
                 }
                 break;
 
             case "uk.ac.isc.seisdata.Hypocentre":
-                Hypocentre hypocentre = (Hypocentre) event.getData();
-                System.out.println(Global.debugAt() + " Hypocentre= " + selectedHypocentre.getHypid());
+                //Hypocentre hypocentre = (Hypocentre) event.getData();
+                Global.logDebug("Hypocentre= " + selectedHypocentre.getHypid());
                 break;
         }
 
-        ocp.resetToDefault();
-        ocp.repaint();
-        scrollPane.setViewportView(hop);
+        controlPanel.resetToDefault();
+        controlPanel.repaint();
+        scrollPane.setViewportView(overviewPanel);
     }
 
     /**

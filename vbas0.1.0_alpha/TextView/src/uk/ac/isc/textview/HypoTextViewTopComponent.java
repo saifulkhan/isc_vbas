@@ -82,7 +82,7 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         initComponents();
         setName(Bundle.CTL_HypoTextViewTopComponent());
         setToolTipText(Bundle.HINT_HypoTextViewTopComponent());
-        Global.logDebug("Here...");
+        Global.logDebug("Loaded...");
         
         selectedSeisEvent.addChangeListener(this);
 

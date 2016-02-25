@@ -5,12 +5,13 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
-import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.CategoryAxis;
@@ -23,20 +24,19 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.DefaultCategoryDataset;
+import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.SeisUtils;
 
 /**
  * The panel to draw the view
  *
- * @author hui
  */
+
 class HypoMagnitudeViewPanel extends JPanel {
 
     private final ArrayList<Hypocentre> hyposList = new ArrayList<Hypocentre>();
 
-    //private DefaultCategoryDataset datasetOrig = new DefaultCategoryDataset();
-    //private DefaultCategoryDataset datasetDelta = new DefaultCategoryDataset();
     //set a vertical or horizontal layout 
     private final boolean isVertical = false;
 
@@ -67,19 +67,17 @@ class HypoMagnitudeViewPanel extends JPanel {
     private BufferedImage MagDeltaImg;
 
     static Font domainLabelFont = new Font("Verdana", Font.BOLD, 16);
-
     static Font tickMarkRangeLabelFont = new Font("Verdana", Font.BOLD, 10);
     static Font tickMarkDomainLabelFont = new Font("Verdana", Font.BOLD, 12);
 
     public HypoMagnitudeViewPanel(ArrayList<Hypocentre> hypos) {
+        Global.logDebug("Here...");
+
         this.hyposList.addAll(hypos);
 
-        /**
-         * get medium value of the magnitude no matter which type it is
-         */
+        // get medium value of the magnitude no matter which type it is
         medMag = getMediumMagnitude();
         fillMagTypeMap();
-
         if (isVertical) {
             setTwoVtcCharts();
         } else {
@@ -434,7 +432,7 @@ class HypoMagnitudeViewPanel extends JPanel {
 
             g2.drawImage(MagDeltaImg, xOffset, yOffset, 600, 150, this);
             g2.drawImage(HypoMagImg, xOffset, yOffset + 150, 600, 300, this);
-        } else {//draw vertical fig
+        } else {
             HypoMagImg = freeChartMain.createBufferedImage(300, 600);
             MagDeltaImg = freeChartDelta.createBufferedImage(300, 600);
 
@@ -446,6 +444,17 @@ class HypoMagnitudeViewPanel extends JPanel {
         }
 
         g2.dispose();
+        
+           // TEST: 
+        Global.logDebug("Write BufferedImage.");
+        try {
+            ImageIO.write(HypoMagImg, "png", 
+                    new File("/export/home/saiful/assess/temp/HypoMagImg.png"));        
+            ImageIO.write(MagDeltaImg, "png", 
+                    new File("/export/home/saiful/assess/temp/MagDeltaImg.png")); 
+        } catch (Exception e) {
+            Global.logSevere("Error creating a png.");
+        }
 
     }
 }

@@ -1,6 +1,10 @@
 package uk.ac.isc.command;
 
 import com.orsoncharts.util.json.JSONArray;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -12,7 +16,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.TreeMap;
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import uk.ac.isc.hypodepthview.HypoDepthViewPanel;
 import uk.ac.isc.hypooverview.HypoOverviewPanel2;
 import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.Hypocentre;
@@ -22,26 +31,22 @@ import uk.ac.isc.seisdata.SeisDataDAOAssess;
 import uk.ac.isc.seisdata.SeisEvent;
 import uk.ac.isc.textview.HypocentreTableModel;
 
-import org.openstreetmap.gui.jmapviewer.interfaces.TileLoaderListener;
-
 public class Assess {
 
     private final JSONArray jFunctionArray;
     private final Path assessDir;
-    private final File reportName;;
+    private final File reportName;
+    ;
     
     private static final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
     // New (relocator generated) Hypocentre & Phase data for the selected SeisEvent.
     private final HypocentresList hypocentresList = new HypocentresList();
     private final PhasesList phasesList = new PhasesList();
     private final TreeMap<String, String> stations = new TreeMap<String, String>();
-    
-    private HypoOverviewPanel2 hypoOverviewPanel;   
-    
-    
+
     Assess(JSONArray jFunctionArray) {
         this.jFunctionArray = jFunctionArray;
-        
+
         int evid = Global.getSelectedSeisEvent().getEvid();
         assessDir = Paths.get(SeisDataDAOAssess.getAssessDir().toString() + File.separator + evid);
         reportName = new File(assessDir + File.separator + evid + ".html");
@@ -98,13 +103,12 @@ public class Assess {
 
             // TODO: 
             /*Global.logDebug("The standard error of the locator command:\n");
-            while ((output = stdError.readLine()) != null) {
-                String message = "The standard error of the locator command: " + output;
-                Global.logSevere(message);
-                JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }*/
-
+             while ((output = stdError.readLine()) != null) {
+             String message = "The standard error of the locator command: " + output;
+             Global.logSevere(message);
+             JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+             return false;
+             }*/
         } catch (IOException e2) {
             String message = "The standard error of the locator command: ";
             e2.printStackTrace();
@@ -117,18 +121,106 @@ public class Assess {
 
     }
 
-        
     Boolean generateHTMLReport() {
         Global.logDebug("Writing the Hypocentre table.");
         loadSelectedSeisEventData();
-        
+
         writeHypocentreTable();
-        writeHypocentreOverview();
-        
+
+        Global.logDebug("#Hypocentres=" + hypocentresList.getHypocentres().size());
+        writeOverview(new HypoOverviewPanel2(hypocentresList), "HypocentreOverview");
+        writeOverview(new HypoDepthViewPanel(hypocentresList.getHypocentres()), "HypocentreDepthview");
+
         return true;
     }
 
-        
+    private void writeOverview(final JPanel viewPanel, final String panelName) {
+
+        Global.logDebug("Generating: " + panelName);
+
+        int width = 0, height = 0;
+
+        switch (panelName) {
+            case "HypocentreOverview":
+                HypoOverviewPanel2 hop = (HypoOverviewPanel2) viewPanel;
+                width = hop.getMapWidth();
+                height = hop.getMapHeight();
+                break;
+
+            case "HypocentreDepthview":
+                HypoDepthViewPanel hdp = (HypoDepthViewPanel) viewPanel;
+                width = hdp.getWidth();
+                height = hdp.getHeight();
+                break;
+        }
+
+        final JDialog f = new JDialog();
+        f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        f.setModal(true);
+        f.setLayout(new BorderLayout());
+        JButton button_ok = new JButton("OK");
+
+        f.setPreferredSize(new Dimension(width, height));
+        f.add(viewPanel, BorderLayout.CENTER);
+
+        f.add(button_ok, BorderLayout.PAGE_END);
+        f.pack();
+
+        button_ok.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+
+                File outputFile = new File(assessDir + File.separator + panelName + ".png");
+                BufferedImage bi = null;
+                int width = 0, height = 0;
+
+                switch (panelName) {
+                    case "HypocentreOverview":
+                        HypoOverviewPanel2 hop = (HypoOverviewPanel2) viewPanel;
+                        bi = hop.getBaseMap();
+                        width = hop.getMapWidth();
+                        height = hop.getMapHeight();
+                        break;
+
+                    case "HypocentreDepthview":
+                        HypoDepthViewPanel hdp = (HypoDepthViewPanel) viewPanel;
+                        bi = hdp.getDepthHistImg();
+                        width = hdp.getWidth();
+                        height = hdp.getHeight();
+                        break;
+                }
+                
+                try {
+
+                    ImageIO.write(bi, "png", outputFile);
+                } catch (Exception e) {
+                    Global.logSevere("Error creating a png file: " + outputFile.toString());
+                    e.printStackTrace();
+                }
+
+                try {
+                    FileWriter fileWritter = new FileWriter(reportName, true);
+                    BufferedWriter bw = new BufferedWriter(fileWritter);
+
+                    bw.write("<div>");
+                    bw.write("<h2> " + panelName + " </h2>");
+                    bw.write("<img src=\"" + panelName + ".png\" "
+                            + "alt=\"" + panelName + "\" "
+                            + "width= " + "\"" + width + "\""
+                            + "height= " + "\"" + height + "\"");
+                    bw.write("</div>");
+
+                    bw.close();
+                } catch (IOException e) {
+                    Global.logSevere("Error writing to HTML file.");
+                    e.printStackTrace();
+                }
+                f.dispose();
+            }
+        });
+
+        f.setVisible(true);
+    }
+
     private void loadSelectedSeisEventData() {
 
         System.out.println(Global.debugAt() + "Load list of Hypocentre and Phase for SeisEvent: "
@@ -172,14 +264,13 @@ public class Assess {
                 + " #Phases:" + phasesList.getPhases().size());
 
     }
-    
-    
+
     private void writeHypocentreTable() {
-        
-        Global.logDebug("Writing the Hypocentre to HTML. #Hypocentres=" + hypocentresList.getHypocentres().size());
+
+        Global.logDebug("#Hypocentres=" + hypocentresList.getHypocentres().size());
         HypocentreTableModel model = new HypocentreTableModel(hypocentresList.getHypocentres());
-        
-         try {
+
+        try {
             // if the reportName file doesnt exists, then create it
             if (!reportName.exists()) {
                 reportName.createNewFile();
@@ -188,12 +279,10 @@ public class Assess {
             FileWriter fileWritter = new FileWriter(reportName, true);
             BufferedWriter bw = new BufferedWriter(fileWritter);
 
-            
             bw.write("<div>");
             bw.write("<h2>Hypocentre Table</h2>");
             bw.write("<table>");
-            
-            
+
             for (int r = 0; r < model.getRowCount(); ++r) {
                 bw.write("<tr>");
                 for (int c = 0; c < model.getColumnCount(); ++c) {
@@ -203,37 +292,17 @@ public class Assess {
                     bw.write("</td>");
                 }
             }
-                    
+
             bw.write("</table>");
             bw.write("</div>");
-            //bw.newLine();
-            
-            bw.write("<h2>Hypocentre Overview</h2>");
-            bw.write("<img src=\"hypooverview.png\" "
-                    + "alt=\"Mountain View\" "
-                    + "style=\"width:304px;height:228px;\">");
 
-        
             bw.close();
         } catch (IOException e) {
             Global.logSevere("Error writing to file");
             // Or we could just do this:
             // ex.printStackTrace();
-        } 
-        
-    }
+        }
 
-    private void writeHypocentreOverview() {
-        
-        Global.logDebug("Writing the HypoOverview Image.");
-        
-         hypoOverviewPanel = new HypoOverviewPanel2(hypocentresList);
-         BufferedImage bi = hypoOverviewPanel.getBaseMap();
-         try{
-             ImageIO.write(bi, "png", new File(assessDir + File.separator + "hypooverview.png"));
-         } catch (Exception e) {
-         
-         }
     }
 
 }

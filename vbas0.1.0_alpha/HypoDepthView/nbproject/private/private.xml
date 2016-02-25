@@ -5,6 +5,9 @@
         <group name="test">
             <file>file:/export/home/hui/NetBeansProjects/vbas0.1.0/HypoDepthView/src/uk/ac/isc/hypodepthview/HypoDepthViewTopComponent.java</file>
         </group>
-        <group/>
+        <group>
+            <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_alpha/HypoDepthView/src/uk/ac/isc/hypodepthview/HypoDepthViewPanel.java</file>
+            <file>file:/export/home/saiful/DATA/vbas/vbas0.1.0_alpha/HypoDepthView/src/uk/ac/isc/hypodepthview/HypoDepthViewTopComponent.java</file>
+        </group>
     </open-files>
 </project-private>

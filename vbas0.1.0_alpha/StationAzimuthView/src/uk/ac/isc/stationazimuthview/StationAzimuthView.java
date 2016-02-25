@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import org.jfree.text.TextUtilities;
 import org.openide.util.Exceptions;
 import org.openstreetmap.gui.jmapviewer.OsmMercator;
+import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.Phase;
@@ -101,6 +102,7 @@ class StationAzimuthView extends JPanel {
      * @param phasesList
      */
     public StationAzimuthView(HypocentresList hyposList, PhasesList phasesList) {
+        Global.logDebug("Here...");
 
         this.phasesList = phasesList;
         this.hyposList = hyposList;
@@ -458,6 +460,17 @@ class StationAzimuthView extends JPanel {
         //g2.drawImage(srcImg, 0, 0, 512, 512, null);
         g2.setClip(new Ellipse2D.Double(xOffset + imSize / 8, yOffset + imSize / 8, imSize * 0.75, imSize * 0.75));
         g2.drawImage(dstImg, xOffset, yOffset, imSize, imSize, null);
+
+        // TEST: 
+        Global.logDebug("Write BufferedImage.");
+        try {
+            ImageIO.write(dstImg, "png",
+                    new File("/export/home/saiful/assess/temp/dstImg.png"));
+            ImageIO.write(azImg, "png",
+                    new File("/export/home/saiful/assess/temp/azImg.png"));
+        } catch (Exception e) {
+            Global.logSevere("Error creating a png.");
+        }
 
     }
 

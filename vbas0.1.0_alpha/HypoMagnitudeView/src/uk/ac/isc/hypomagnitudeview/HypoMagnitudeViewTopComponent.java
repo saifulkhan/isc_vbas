@@ -40,22 +40,21 @@ import uk.ac.isc.seisdata.SeisEvent;
 public final class HypoMagnitudeViewTopComponent extends TopComponent implements SeisDataChangeListener {
 
     private final JScrollPane scrollPane;
-
     // the panel to have the figure
     HypoMagnitudeViewPanel hmag = null;
 
     // Data
-    private final HypocentresList hyposList = Global.getHypocentresList(); 
-    private static final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();   
-    
-   
+    private final HypocentresList hyposList = Global.getHypocentresList();
+    private static final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
+
     public HypoMagnitudeViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_HypoMagnitudeViewTopComponent());
         setToolTipText(Bundle.HINT_HypoMagnitudeViewTopComponent());
-        
+        Global.logDebug("Loaded...");
+
         selectedSeisEvent.addChangeListener(this);
-        
+
         hmag = new HypoMagnitudeViewPanel(hyposList.getHypocentres());
         scrollPane = new JScrollPane(hmag);
 
@@ -63,6 +62,28 @@ public final class HypoMagnitudeViewTopComponent extends TopComponent implements
         this.add(scrollPane, BorderLayout.CENTER);
     }
 
+    //repaint the view when data chages
+    @Override
+    public void SeisDataChanged(SeisDataChangeEvent event) {
+
+        String eventName = event.getData().getClass().getName();
+        Global.logDebug(" Event received from " + eventName);
+
+        // It only received SeiesEvent selected/changed now
+        switch (eventName) {
+            case ("uk.ac.isc.seisdata.SeisEvent"):
+                //SeisEvent seisEvent = (SeisEvent) event.getData();
+                Global.logDebug("SeisEvent= " + selectedSeisEvent.getEvid());
+
+                hmag.UpdateData(hyposList.getHypocentres());
+                hmag.repaint();
+                scrollPane.setViewportView(hmag);
+
+                break;
+        }
+    }
+
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -108,15 +129,4 @@ public final class HypoMagnitudeViewTopComponent extends TopComponent implements
         String version = p.getProperty("version");
         // TODO read your settings according to their version
     }
-
-    //repaint the view when data chages
-    @Override
-    public void SeisDataChanged(SeisDataChangeEvent event) {
-
-        hmag.UpdateData(hyposList.getHypocentres());
-
-        hmag.repaint();
-        scrollPane.setViewportView(hmag);
-    }
-
 }

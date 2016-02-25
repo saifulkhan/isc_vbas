@@ -9,6 +9,7 @@ import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Stroke;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import static java.lang.Thread.sleep;
 import java.net.URL;
@@ -46,13 +47,9 @@ import uk.ac.isc.seisdata.SeisUtils;
  * (probably there is a way to make it quicker without compromising the
  * requirement)
  *
- * @author hui
  */
 public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListener {
 
-    //build a paint array for drawing with band colors
-    //public static final Paint[] seisPaints = ColorUtils.createOldSeismicityPaintArray();
-    //public static final Paint[] seisNewPaints = ColorUtils.createInitialPaintArray();
     public static final Paint[] seisNewPaints = ColorUtils.createSeismicityPaintArray3();
 
     //base map size
@@ -67,16 +64,10 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
     private final TileController tileController;
     private final TileSource tileSource;
 
-    //hypocentre lists + the range of the seismicity map
-    private final HypocentresList hyposList;
-
     private double cenLat, cenLon;
-
     private int cenDepth;
 
-    /**
-     * Vectors for clock-wise tile painting
-     */
+    // Vectors for clock-wise tile painting
     protected static final Point[] move = {new Point(1, 0), new Point(0, 1), new Point(-1, 0), new Point(0, -1)};
 
     public static final int MAX_ZOOM = 7;
@@ -84,130 +75,63 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
 
     protected boolean scrollWrapEnabled = true;
 
-    /**
-     * x- and y-position of the center of this map-panel on the world map
-     * denoted in screen pixel regarding the current zoom level.
-     */
+    // x- and y-position of the center of this map-panel on the world map denoted
+    // in screen pixel regarding the current zoom level.
     protected Point center;
 
-    /**
-     * Current zoom level
-     */
+    // Current zoom level
     protected int zoom;
-
-    /**
-     * rangeDelta: it define the range for loading seismicity
-     */
+    // rangeDelta: it define the range for loading seismicity
     private int rangeDelta = 8;
-
-    /**
-     * a depth cutoff value to show seismicity
-     */
+    // a depth cutoff value to show seismicity
     private int depthCutoff = 8;
-
-    private BufferedImage baseMap = new BufferedImage(mapWidth, mapHeight, BufferedImage.TYPE_INT_ARGB);
-
-    private static BufferedImage dotImg = null;
-
-    private final BufferedImage[] animMaps = new BufferedImage[8];
-
-    private MapAnimation mapAnim;
 
     //new thread to show animation of the seismicity
     private Thread mapAnimThread;
-
-    private HypocenterAnimation hypoAnim;
-
+    private MapAnimation mapAnim;
     //new thread to show animation of the hypocentres
     private Thread hypoAnimThread;
+    private HypocenterAnimation hypoAnim;
 
     //offset on the panel
-    private int xOffset;
+    private int xOffset, yOffset;
 
-    private int yOffset;
-    /**
-     * rawMiniMap for the mini base map miniMap labelled with current prime
-     * hypocentre
-     */
-    private BufferedImage rawMiniMap = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
+    // Border attributes: border width
+    int borderWidth = 12, textToBorder = 30;
 
-    /**
-     * mini map with the prime hypo on top to show the position of the event
-     */
-    private final BufferedImage miniMap = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
-
-    /**
-     * seisList for loading the historic data to show the seismicity map
-     */
-    ArrayList<HistoricEvent> seisList;
-
-    /**
-     * Border attributes: border width
-     *
-     */
-    int borderWidth = 12;
-
-    int textToBorder = 30;
-
-    //longitude is allowed to smaller than -180 or bigger than 180, we norm it when annotating it
-    //annotation range
+    // longitude is allowed to smaller than -180 or bigger than 180, we norm it when annotating it
+    // annotation range
     double latLow, latHigh, lonLeft, lonRight;
-
     int latAnnotNumber, lonAnnotNumber;
 
-    /**
-     * Flags to show different features, i.e. Seismicity, Mini Map, Hypocentres,
-     * reversed Seismicity, Border and force to fit all features
-     */
-    //private boolean showSeismicity = true;
-    //private boolean showMiniMap = true;
-    //private boolean showHypos = true;
-    //private boolean seisReversed = false;
-    //private boolean showBorder = true;
-    //private boolean forceFit = false;
     private int depthBandOrder;
-
     private final boolean[] depthBandVisible = new boolean[8];
-
     private int seisPixelSize;
-
     private int hypoVisOption;
 
-    public BufferedImage getBaseMap() {
-        return baseMap;
-    }
+    private BufferedImage baseMap = new BufferedImage(mapWidth, mapHeight, BufferedImage.TYPE_INT_ARGB);
+    private static BufferedImage dotImg = null;
+    private final BufferedImage[] animMaps = new BufferedImage[8];
+    // rawMiniMap for the mini base map miniMap labelled with current prime hypocentre
+    private BufferedImage rawMiniMap = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
+    // mini map with the prime hypo on top to show the position of the event
+    private final BufferedImage miniMap = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
 
-    public static BufferedImage getDotImg() {
-        return dotImg;
-    }
+    // hypocentre lists // (?)the range of the seismicity map
+    private final HypocentresList hyposList;
+    // seisList for loading the historic data to show the seismicity map
+    ArrayList<HistoricEvent> seisList;
 
-    public BufferedImage getRawMiniMap() {
-        return rawMiniMap;
-    }
-
-    
-    
     public HypoOverviewPanel2(HypocentresList hyposList) {
+        Global.logDebug("Here...");
+        this.hyposList = hyposList;
 
-        //new DefaultMapController(this);
         JobDispatcher.setMaxWorkers(2);
-
         this.setLayout(null);
-        //tileSource = new OsmTileSource.Mapnik();  
-        tileSource = new OfflineOsmTileSource("file:/export/home/hui/perl", 0, 7);
-        //String fileName = "main/resources/0.png";     
-        //String pathString = getClass().getClassLoader().getResource(fileName).getPath();
-        //String path = "jar:"+Paths.get(pathString).getParent().toString();
-        //tileSource = new OfflineOsmTileSource(path,0,7);
 
-        //tileSource = new OfflineOsmTileSource("file:C:/map",0,7);
+        tileSource = new OfflineOsmTileSource("file:/export/home/hui/perl", 0, 7);      // TODO: 
         tileController = new TileController(tileSource, new MemoryTileCache(), this);
         tileController.setTileSource(tileSource);
-
-        //setMinimumSize(new Dimension(tileSource.getTileSize(), tileSource.getTileSize()));
-        //setPreferredSize(new Dimension(mapWidth, mapHeight));
-        //this.setIgnoreRepaint(true);
-        this.hyposList = hyposList;
 
         //there must be one prime, so center won't be null
         for (Hypocentre hypo : hyposList.getHypocentres()) {
@@ -230,11 +154,10 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
 
         loadSeisData(this.cenLat, this.cenLon, this.rangeDelta);
 
-        //load resource images
-        //URL url = getClass().getClassLoader().getResource("dot.png");
+        // load resource images
         URL url1 = getClass().getClassLoader().getResource("main/resources/dot.png");
         URL url2 = getClass().getClassLoader().getResource("main/resources/0.png");
-        //String urlString = url1.getPath();
+
         try {
             dotImg = ImageIO.read(url1);
             rawMiniMap = ImageIO.read(url2);
@@ -244,12 +167,35 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
 
         //repaint();
         //try border
-        //this.setBorder(BorderFactory.createEtchedBorder(1, Color.lightGray, Color.yellow));        
+        //this.setBorder(BorderFactory.createEtchedBorder(1, Color.lightGray, Color.yellow));
     }
 
+    public void loadSeisData(double cenLat, double cenLon, double rangeDelta) {
+
+        getZoomToFitSeis(cenLat, cenLon, rangeDelta); //get zoom level and save it in the zoom
+        setDisplayPosition(new Coordinate(cenLat, cenLon), this.zoom);
+        calculateAnnotation();
+
+        // get the seismicity data based on the visible range from zoom level
+        SeisDataDAO.retrieveHistEvents(seisList, latHigh, latLow, lonLeft, lonRight);
+    }
+
+    // saiful
+    public BufferedImage getBaseMap() {
+        return baseMap;
+    }
+
+    public int getMapWidth() {
+        return mapWidth;
+    }
+
+    public int getMapHeight() {
+        return mapHeight;
+    }
+    
     public BufferedImage getMiniMap() {
         return this.miniMap;
-    }
+    } // saiful
 
     public int getCurrentBand() {
         return SeisUtils.getNewDepthBand(cenDepth);
@@ -349,17 +295,6 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
         for (int i = 0; i < 8; i++) {
             depthBandVisible[i] = true;
         }
-    }
-
-    public void loadSeisData(double cenLat, double cenLon, double rangeDelta) {
-
-        getZoomToFitSeis(cenLat, cenLon, rangeDelta); //get zoom level and save it in the zoom
-        setDisplayPosition(new Coordinate(cenLat, cenLon), this.zoom);
-        calculateAnnotation();
-        /**
-         * get the seismicity data based on the visible range from zoom level
-         */
-        SeisDataDAO.retrieveHistEvents(seisList, latHigh, latLow, lonLeft, lonRight);
     }
 
     /**
@@ -687,10 +622,8 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
     protected void paintComponent(Graphics g) {
 
         super.paintComponent(g);
-
         Graphics2D g2 = (Graphics2D) g;
-        
-        
+
         xOffset = (getWidth() - mapWidth) / 2;
         yOffset = (getHeight() - mapHeight) / 2;
 
@@ -711,12 +644,7 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
             mapAnimThread = new Thread(mapAnim);
         }
 
-        //if(depthBandOrder!=5 && Thread.State.RUNNABLE==mapAnimThread.getState())
-        //{
-        //    mapAnim.terminate();
-        //}
-        //g2.drawImage(animMaps[2],xOffset, yOffset, mapWidth, mapHeight, this);
-        //if animation
+        // if animation
         if (hypoAnim != null) {
             hypoAnim.terminate();
         }
@@ -727,7 +655,7 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
             hypoAnimThread = new Thread(hypoAnim);
         }
 
-        //draw mini map
+        // draw mini map
         int miniXOffset = 0, miniYOffset = 0;
         //if(showMiniMap == true)
         {
@@ -809,7 +737,7 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
             int labelY, barYPos;
             int count;
 
-            if ((getHeight() - mapHeight) > 0) //set map between latitude labels and border ratio 
+            if ((getHeight() - mapHeight) > 0) //set map between latitude labels and border ratio
             {
                 for (int i = (int) Math.round(latLow + 0.5); i <= (int) latHigh; i += 4) {
 
@@ -914,9 +842,21 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
             hypoAnimThread.start();
         }
 
+        // TEST: 
+        Global.logDebug("Write BufferedImage.");
+        try {
+            ImageIO.write(baseMap, "png", 
+                    new File("/export/home/saiful/assess/temp/HypocentreOverview.png"));
+            //ImageIO.write(dotImg, "png", new File("/export/home/saiful/assess/dotImg.png"));
+            //ImageIO.write(rawMiniMap, "png", new File("/export/home/saiful/assess/rawMiniMap.png"));
+            //ImageIO.write(miniMap, "png", new File("/export/home/saiful/assess/miniMap.png"));
+        } catch (Exception e) {
+            Global.logSevere("Error creating a png.");
+        }
+
     }
 
-    private void drawBaseMap() {
+     void drawBaseMap() {
 
         baseMap = new BufferedImage(mapWidth, mapHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = baseMap.createGraphics();
@@ -1041,7 +981,7 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
         /**
          * get the seismicity data based on the visible range from zoom level
          */
-        //SeisDataDAO.retrieveHistEvents(seisList, latN, latS, lonW, lonE);           
+        //SeisDataDAO.retrieveHistEvents(seisList, latN, latS, lonW, lonE);
         //}
         Paint savedPaint = g2.getPaint();
         int xpos, ypos;
@@ -1375,7 +1315,7 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
         g2.setStroke(new BasicStroke(3));
 
         g2.drawRect(0, 0, miniMap.getWidth(), miniMap.getHeight());
-        //calculate the position and draw all the stations first       
+        //calculate the position and draw all the stations first
         //g2.setPaint(seisPaints[SeisUtils.getOldDepthBand(cenDepth)]);
         //g2.setPaint(seisPaints[SeisUtils.getNewDepthBand(cenDepth)]);
         //if(forceFit)
@@ -1419,6 +1359,11 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
         return tileController.getTileCache();
     }
 
+    /*
+     *****************************************************************************************
+     * XX
+     *****************************************************************************************
+     */
     class HypocenterAnimation implements Runnable {
 
         HypocentresList hyposList;
@@ -1581,6 +1526,12 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
     }
 }
 
+
+/*
+ *****************************************************************************************
+ * XX
+ *****************************************************************************************
+ */
 class MapAnimation implements Runnable {
 
     int xOffset, yOffset;

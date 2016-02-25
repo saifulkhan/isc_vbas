@@ -287,9 +287,8 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
             String commandStr = jCommandObj.toJSONString();
             String functionStr = jFunctionArray.toString();
 
-            Global.logDebug(
-                    "commandStr= " + commandStr
-                    + "\nfunctionStr= " + functionStr);
+            /*
+            Global.logDebug("\ncommandStr= " + commandStr + "\nfunctionStr= " + functionStr);
 
             boolean ret = SeisDataDAO.updateAssessedCommandTable(selectedSeisEvent.getEvid(),
                     "assess", commandStr, functionStr, commandIds);
@@ -299,7 +298,7 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
             } else {
                 JOptionPane.showMessageDialog(null, "Incorrect 'Assess' command.", "Warning",
                         JOptionPane.WARNING_MESSAGE);
-            }
+            }*/
 
         }
     }

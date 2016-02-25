@@ -7,9 +7,8 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import org.openide.windows.WindowManager;
-import uk.ac.isc.eventscontrolview.EventsControlViewTopComponent;
 import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.PhasesList;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
@@ -40,8 +39,9 @@ import uk.ac.isc.seisdata.SeisEvent;
     "CTL_StationAzimuthViewTopComponent=StationAzimuthView Window",
     "HINT_StationAzimuthViewTopComponent=This is a StationAzimuthView window"
 })
+
 public final class StationAzimuthViewTopComponent extends TopComponent implements SeisDataChangeListener {
- 
+
     private final JScrollPane scrollPane;
 
     // control panel of the view
@@ -52,14 +52,15 @@ public final class StationAzimuthViewTopComponent extends TopComponent implement
     private static SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
     private final PhasesList phasesList = Global.getPhasesList();
     private final HypocentresList hyposList = Global.getHypocentresList();
-    
+
     public StationAzimuthViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_StationAzimuthViewTopComponent());
         setToolTipText(Bundle.HINT_StationAzimuthViewTopComponent());
-        
+        Global.logDebug("Loaded...");
+
         selectedSeisEvent.addChangeListener(this);
-        
+
         saView = new StationAzimuthView(hyposList, phasesList);
         sacp = new StationAzimuthControlPanel(saView);
 
@@ -67,6 +68,23 @@ public final class StationAzimuthViewTopComponent extends TopComponent implement
         this.setLayout(new BorderLayout());
         this.add(scrollPane, BorderLayout.CENTER);
         this.add(sacp, BorderLayout.NORTH);
+    }
+
+    //repaint the view when data changes
+    @Override
+    public void SeisDataChanged(SeisDataChangeEvent event) {
+        String eventName = event.getData().getClass().getName();
+        Global.logDebug("Event received from: " + eventName);
+
+        switch (eventName) {
+            case "uk.ac.isc.seisdata.SeisEvent":
+                //SeisEvent seisEvent = (SeisEvent) event.getData();
+                Global.logDebug("SeisEvent= " + selectedSeisEvent.getEvid());
+                saView.updateData();
+                scrollPane.setViewportView(saView);
+                break;
+        }
+
     }
 
     /**
@@ -115,12 +133,4 @@ public final class StationAzimuthViewTopComponent extends TopComponent implement
         // TODO read your settings according to their version
     }
 
-    //repaint the view when data changes
-    @Override
-    public void SeisDataChanged(SeisDataChangeEvent event) {
-
-        saView.updateData();
-        scrollPane.setViewportView(saView);
-
-    }
 }

@@ -63,6 +63,7 @@ public final class HypoDepthViewTopComponent extends TopComponent implements Sei
         initComponents();
         setName(Bundle.CTL_HypoDepthViewTopComponent());
         setToolTipText(Bundle.HINT_HypoDepthViewTopComponent());
+        Global.logDebug("Loaded...");
 
         selectedSeisEvent.addChangeListener(this);
         selectedHypocentre.addChangeListener(this);
@@ -74,6 +75,32 @@ public final class HypoDepthViewTopComponent extends TopComponent implements Sei
         this.add(scrollPane, BorderLayout.CENTER);
     }
 
+     //repaint the view when data changes
+    @Override
+    public void SeisDataChanged(SeisDataChangeEvent event) {
+
+        String eventName = event.getData().getClass().getName();
+        Global.logDebug(" Event received from " + eventName);
+
+        // TODO: Probably don't need to redraw everything.
+        switch (eventName) {
+            case ("uk.ac.isc.seisdata.SeisEvent"):
+                //SeisEvent seisEvent = (SeisEvent) event.getData();
+                Global.logDebug("SeisEvent= " + selectedSeisEvent.getEvid());
+                break;
+
+            case ("uk.ac.isc.seisdata.Hypocentre"):
+               //Hypocentre hypocentre = (Hypocentre) event.getData();
+               Global.logDebug("Hypocentre= " + selectedHypocentre.getHypid());
+                break;
+        }
+        
+        hdp.UpdateData(hyposList.getHypocentres());
+        hdp.getJFreeChart().fireChartChanged();
+        hdp.repaint();
+        scrollPane.setViewportView(hdp);
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -121,32 +148,4 @@ public final class HypoDepthViewTopComponent extends TopComponent implements Sei
         String version = p.getProperty("version");
         // TODO read your settings according to their version
     }
-
-    //repaint the view when data changes
-    @Override
-    public void SeisDataChanged(SeisDataChangeEvent event) {
-
-        String eventName = event.getData().getClass().getName();
-        System.out.println(Global.debugAt() + " Event received from " + eventName);
-
-        if (eventName.equals("uk.ac.isc.seisdata.SeisEvent")) {
-                SeisEvent seisEvent = (SeisEvent) event.getData();
-                System.out.println(Global.debugAt() + " SeisEvent= " + selectedSeisEvent.getEvid());
-                hdp.UpdateData(hyposList.getHypocentres());
-                hdp.getJFreeChart().fireChartChanged();
-                hdp.repaint();
-                scrollPane.setViewportView(hdp);
-                
-        } else if (eventName.equals("uk.ac.isc.seisdata.Hypocentre")) {
-
-                Hypocentre hypocentre = (Hypocentre) event.getData();
-                System.out.println(Global.debugAt() + " Hypocentre= " + selectedHypocentre.getHypid());
-
-                hdp.UpdateData(hyposList.getHypocentres());
-                hdp.getJFreeChart().fireChartChanged();
-                hdp.repaint();
-                scrollPane.setViewportView(hdp);
-        }
-        }
-    
 }
