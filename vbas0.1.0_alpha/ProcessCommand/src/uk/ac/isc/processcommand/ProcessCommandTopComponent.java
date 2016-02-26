@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package uk.ac.isc.command;
+package uk.ac.isc.processcommand;
 
 import java.awt.BorderLayout;
 import javax.swing.JSplitPane;
@@ -18,7 +18,7 @@ import uk.ac.isc.seisdata.Global;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//uk.ac.isc.command//AllCommands//EN",
+        dtd = "-//uk.ac.isc.processcommand//AllCommands//EN",
         autostore = false
 )
 @TopComponent.Description(
@@ -27,7 +27,7 @@ import uk.ac.isc.seisdata.Global;
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "explorer", openAtStartup = true)
-@ActionID(category = "Window", id = "uk.ac.isc.command.AllCommandsTopComponent")
+@ActionID(category = "Window", id = "uk.ac.isc.processcommand.AllCommandsTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_AllCommandsAction",
@@ -39,12 +39,12 @@ import uk.ac.isc.seisdata.Global;
     "HINT_AllCommandsTopComponent=This is a AllCommands window"
 })
 
-public final class AllCommandsTopComponent extends TopComponent {
+public final class ProcessCommandTopComponent extends TopComponent {
 
     CommandTable commandTable;                  // Action Hostory Table
     AssessedCommandTable assessedCommandTable;
 
-    public AllCommandsTopComponent() {
+    public ProcessCommandTopComponent() {
         initComponents();
         setName(Bundle.CTL_AllCommandsTopComponent());
         setToolTipText(Bundle.HINT_AllCommandsTopComponent());

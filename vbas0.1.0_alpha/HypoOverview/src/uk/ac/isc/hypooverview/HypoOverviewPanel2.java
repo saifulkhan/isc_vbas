@@ -185,11 +185,11 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
         return baseMap;
     }
 
-    public int getMapWidth() {
+    public int getWidth() {
         return mapWidth;
     }
 
-    public int getMapHeight() {
+    public int getHeight() {
         return mapHeight;
     }
     

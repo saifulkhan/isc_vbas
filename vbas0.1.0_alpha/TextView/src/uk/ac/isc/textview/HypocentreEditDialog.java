@@ -70,15 +70,19 @@ public class HypocentreEditDialog extends JDialog {
 
     private void button_okActionPerformed(ActionEvent evt) {
 
-        JSONArray jCommandArray = new JSONArray();
-        // Add all the changed "attributes" in the array.
-        JSONArray jAttrArray = new JSONArray();
-        JSONArray jFunctionArray = new JSONArray();
+        // See the document for the "Command Log" and "System Command" format
+        // Command Log
+        JSONObject commandLogObj = new JSONObject();
+        commandLogObj.put("commandType", "hypocentreedit");
+        commandLogObj.put("dataType", "hypocentre");
+        commandLogObj.put("id", selectedHypocentre.getHypid());
+        JSONArray attrArray = new JSONArray();
 
-        JSONObject jCommandObj = new JSONObject();
-        jCommandObj.put("commandType", "hypocentreedit");
-        jCommandObj.put("dataType", "hypocentre");
-        jCommandObj.put("id", selectedHypocentre.getHypid());
+        // System Command
+        JSONObject systemCommandObj = new JSONObject();
+        systemCommandObj.put("commandType", "hypocentreedit");
+        systemCommandObj.put("locatorArgStr", null);
+        JSONArray sqlFunctionArray = new JSONArray();
 
         /*
          * Depth 
@@ -92,17 +96,15 @@ public class HypocentreEditDialog extends JDialog {
         }
 
         if (newDepth != selectedHypocentre.getDepth()) {
-            JSONObject jAttrObj = new JSONObject();
-            jAttrObj.put("name", "depth");
-            jAttrObj.put("oldValue", selectedHypocentre.getDepth());
-            jAttrObj.put("newvalue", newDepth);
-            jAttrArray.add(jAttrObj);
+            JSONObject attrObj = new JSONObject();
+            attrObj.put("name", "depth");
+            attrObj.put("oldValue", selectedHypocentre.getDepth());
+            attrObj.put("newvalue", newDepth);
+            attrArray.add(attrObj);
 
-            JSONObject jFunctionObj = new JSONObject();
-            jFunctionObj.put("commandType", "hypocentreedit");
-            jFunctionObj.put("function", "chhypo ( "
-                    + selectedHypocentre.getHypid() + ", ''depth'', ''" + Integer.parseInt(text_depth.getText()) + "'' )");
-            jFunctionArray.add(jFunctionObj);
+            JSONObject sqlFunctionObj = new JSONObject();
+            sqlFunctionObj.put("sqlFunction", "chhypo ( " + selectedHypocentre.getHypid() + ", ''depth'', ''" + Integer.parseInt(text_depth.getText()) + "'' )");
+            sqlFunctionArray.add(sqlFunctionObj);
         }
 
         /*
@@ -122,13 +124,11 @@ public class HypocentreEditDialog extends JDialog {
             jAttrObj.put("name", "time");
             jAttrObj.put("oldValue", selectedHypocentre.getOrigTime());
             jAttrObj.put("newvalue", newDate);
-            jAttrArray.add(jAttrObj);
+            attrArray.add(jAttrObj);
 
-            JSONObject jFunctionObj = new JSONObject();
-            jFunctionObj.put("commandType", "hypocentreedit");
-            jFunctionObj.put("function", "chhypo ( "
-                    + selectedHypocentre.getHypid() + ", ''time'', ''" + text_time.getText() + "'' )");
-            jFunctionArray.add(jFunctionObj);
+            JSONObject sqlFunctionObj = new JSONObject();
+            sqlFunctionObj.put("sqlFunction", "chhypo ( " + selectedHypocentre.getHypid() + ", ''time'', ''" + text_time.getText() + "'' )");
+            sqlFunctionArray.add(sqlFunctionObj);
         }
 
         /*
@@ -139,13 +139,11 @@ public class HypocentreEditDialog extends JDialog {
             jAttrObj.put("name", "lat");
             jAttrObj.put("oldValue", selectedHypocentre.getLat());
             jAttrObj.put("newvalue", Double.parseDouble(text_lat.getText()));
-            jAttrArray.add(jAttrObj);
+            attrArray.add(jAttrObj);
 
-            JSONObject jFunctionObj = new JSONObject();
-            jFunctionObj.put("commandType", "hypocentreedit");
-            jFunctionObj.put("function", "chhypo ( "
-                    + selectedHypocentre.getHypid() + ", ''lat'', ''" + Double.parseDouble(text_lat.getText()) + "'' )");
-            jFunctionArray.add(jFunctionObj);
+            JSONObject sqlFunctionObj = new JSONObject();
+            sqlFunctionObj.put("sqlFunction", "chhypo ( " + selectedHypocentre.getHypid() + ", ''lat'', ''" + Double.parseDouble(text_lat.getText()) + "'' )");
+            sqlFunctionArray.add(sqlFunctionObj);
         }
 
         /*
@@ -156,17 +154,14 @@ public class HypocentreEditDialog extends JDialog {
             jAttrObj.put("name", "lon");
             jAttrObj.put("oldValue", selectedHypocentre.getLon());
             jAttrObj.put("newvalue", Double.parseDouble(text_lon.getText()));
-            jAttrArray.add(jAttrObj);
+            attrArray.add(jAttrObj);
 
-            JSONObject jFunctionObj = new JSONObject();
-            jFunctionObj.put("commandType", "hypocentreedit");
-            jFunctionObj.put("function", "chhypo ( "
-                    + selectedHypocentre.getHypid() + ", ''lon'', ''" + Double.parseDouble(text_lon.getText()) + "'' )"
-            );
-            jFunctionArray.add(jFunctionObj);
+            JSONObject sqlFunctionObj = new JSONObject();
+            sqlFunctionObj.put("sqlFunction", "chhypo ( " + selectedHypocentre.getHypid() + ", ''lon'', ''" + Double.parseDouble(text_lon.getText()) + "'' )");
+            sqlFunctionArray.add(sqlFunctionObj);
         }
 
-        if (jAttrArray.size() > 0) {
+        if (attrArray.size() > 0) {
 
             /*
              * Reason text-- Include only when a valid command is formulated.
@@ -177,31 +172,26 @@ public class HypocentreEditDialog extends JDialog {
             } else {
                 JSONObject jAttrObj = new JSONObject();
                 jAttrObj.put("name", "reason");
-                jAttrObj.put("oldValue", "");
+                jAttrObj.put("oldValue", null);
                 jAttrObj.put("newvalue", textArea_reason.getText());
-                jAttrArray.add(jAttrObj);
+                attrArray.add(jAttrObj);
             }
 
-            jCommandObj.put("attributes", jAttrArray);
-            jCommandArray.add(jCommandObj);
+            commandLogObj.put("attributeArray", attrArray);
+            systemCommandObj.put("sqlFunctionArray", sqlFunctionArray);
         }
 
-        if (jCommandArray.size() > 0) {
-            String commandStr = jCommandArray.toString();
-            String functionStr = jFunctionArray.toString();
-            Global.logDebug(" Fired: 'Edit Hypocentre' comamnd."
-                    + "\ncommandStr= " + commandStr
-                    + "\nfunctionStr= " + functionStr);
+        if (attrArray.size() > 0) {
+            String commandLog = commandLogObj.toString();
+            String systemCommand = systemCommandObj.toString();
+            Global.logDebug("\ncommandLog= " + commandLog + "\nsystemCommand= " + systemCommand);
 
-            Global.logJSONDebug(jFunctionArray);
+            Global.logJSONDebug(systemCommandObj);
 
             boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), ""
-                    + "hypocentreedit", commandStr, functionStr);
+                    + "hypocentreedit", commandLog, systemCommand);
             if (ret) {
-                Global.logDebug(" Fired: 'Edit Hypocentre' comamnd."
-                        + "\ncommandStr= " + commandStr
-                        + "\nfunctionStr= " + functionStr);
-
+                Global.logDebug("Fired: 'Hypocentre Edit' comamnd.");
                 commandEvent.fireSeisDataChanged();
                 this.dispose();
             } else {

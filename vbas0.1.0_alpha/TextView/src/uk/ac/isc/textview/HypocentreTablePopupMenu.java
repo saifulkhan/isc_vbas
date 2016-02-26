@@ -2,8 +2,6 @@ package uk.ac.isc.textview;
 
 import com.orsoncharts.util.json.JSONArray;
 import com.orsoncharts.util.json.JSONObject;
-import com.orsoncharts.util.json.parser.JSONParser;
-import com.orsoncharts.util.json.parser.ParseException;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -55,34 +53,33 @@ class HypocentreTablePopupMenu implements ActionListener {
 
         if ("Set Prime".equals(e.getActionCommand())) {
 
-            JSONArray jCommandArray = new JSONArray();
-            JSONArray jFunctionArray = new JSONArray();
+            JSONObject commandLogObj = new JSONObject();
+            commandLogObj.put("commandType", "setprime");
+            commandLogObj.put("dataType", "hypocentre");
+            commandLogObj.put("id", selectedHypocentre.getHypid());
+            JSONArray attrArray = new JSONArray();
 
-            JSONObject jCommandObj = new JSONObject();
-            jCommandObj.put("commandType", "setprime");
-            jCommandObj.put("dataType", "hypocentre");
-            jCommandObj.put("id", selectedHypocentre.getHypid());
-            jCommandArray.add(jCommandObj);
+            JSONObject systemCommandObj = new JSONObject();
+            systemCommandObj.put("commandType", "setprime");
+            systemCommandObj.put("locatorArgStr",
+                    selectedSeisEvent.getEvid() + "fix_hypo=" + table.getValueAt(selectedRow, 0));
+            JSONArray sqlFunctionArray = new JSONArray();
 
-            JSONObject jFunctionObj = new JSONObject();
-            jFunctionObj.put("commandType", "setprime");
-            jFunctionObj.put("function", "rf ( " + selectedHypocentre.getHypid() + ", " + selectedSeisEvent.getEvid() + " )");
-            jFunctionArray.add(jFunctionObj);
+            JSONObject sqlFunctionObj = new JSONObject();
+            sqlFunctionObj.put("sqlFunction", "rf ( " + selectedHypocentre.getHypid() + ", " + selectedSeisEvent.getEvid() + " )");
+            sqlFunctionArray.add(sqlFunctionObj);
 
-            if (jCommandArray.size() > 0) {
-                String commandStr = jCommandArray.toString();
-                String functionStr = jFunctionArray.toString();
+            if (sqlFunctionArray.size() > 0) {
+                String commandLog = commandLogObj.toString();
+                String systemCommand = systemCommandObj.toString();
+                Global.logDebug("\ncommandLog= " + commandLog + "\nsystemCommand= " + systemCommand);
 
-                Global.logDebug("\ncommandStr= " + commandStr
-                        + "\nfunctionStr= " + functionStr);
-
-                Global.logJSONDebug(jFunctionArray);
+                Global.logJSONDebug(systemCommandObj);
 
                 boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), "setprime",
-                        commandStr, functionStr);
+                        commandLog, systemCommand);
                 if (ret) {
                     Global.logDebug("Fired: 'Set Prime' comamnd.");
-
                     commandEvent.fireSeisDataChanged();
                 } else {
                     JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);

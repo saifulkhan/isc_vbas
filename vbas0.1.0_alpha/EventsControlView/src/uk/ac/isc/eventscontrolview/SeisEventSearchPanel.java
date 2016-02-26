@@ -159,30 +159,33 @@ public class SeisEventSearchPanel extends JPanel {
 
         int seisEventId = (Integer) table.getValueAt(row, 0);
 
-        JSONArray jCommandArray = new JSONArray();
-        JSONArray jFunctionArray = new JSONArray();
+        JSONObject commandLogObj = new JSONObject();
+        commandLogObj.put("commandType", "seiseventbanish");
+        commandLogObj.put("dataType", "seisevent");
+        commandLogObj.put("id", seisEventId);
+        JSONArray attrArray = new JSONArray();
 
-        JSONObject jCommandObj = new JSONObject();
-        jCommandObj.put("commandType", "seiseventbanish");
-        jCommandObj.put("dataType", "seisevent");
-        jCommandObj.put("id", seisEventId);
-        jCommandArray.add(jCommandObj);
+        JSONObject systemCommandObj = new JSONObject();
+        systemCommandObj.put("commandType", "seiseventbanish");
+        systemCommandObj.put("locatorArgStr", null);
+        JSONArray sqlFunctionArray = new JSONArray();
 
-        JSONObject jFunctionObj = new JSONObject();
-        jFunctionObj.put("commandType", "seiseventbanish");
-        jFunctionObj.put("function", "banish ( " + seisEventId + " )");
-        jFunctionArray.add(jFunctionObj);
+        JSONObject sqlFunctionObj = new JSONObject();
+        sqlFunctionObj.put("sqlFunction", "banish ( " + seisEventId + " )");
+        sqlFunctionArray.add(sqlFunctionObj);
 
-        if (jCommandArray.size() > 0) {
-            String commandStr = jCommandArray.toString();
-            String functionStr = jFunctionArray.toString();
+        commandLogObj.put("attributeArray", null);
+        systemCommandObj.put("sqlFunctionArray", sqlFunctionArray);
 
-            Global.logDebug("\ncommandStr= " + commandStr + "\nfunctionStr= " + functionStr);
-            Global.logJSONDebug(jFunctionArray);
+        if (sqlFunctionArray.size() > 0) {
+            String commandLog = commandLogObj.toString();
+            String systemCommand = systemCommandObj.toString();
+            Global.logDebug("\ncommandLog= " + commandLog + "\nsystemCommand= " + systemCommand);
+
+            Global.logJSONDebug(systemCommandObj);
 
             boolean ret = SeisDataDAO.updateCommandTable(Global.getSelectedSeisEvent().getEvid(),
-                    "seiseventbanish",
-                    commandStr, functionStr);
+                    "seiseventbanish", commandLog, systemCommand);
             if (ret) {
                 Global.logDebug("Fired: 'SeisEvent Banish' comamnd.");
                 commandEvent.fireSeisDataChanged();

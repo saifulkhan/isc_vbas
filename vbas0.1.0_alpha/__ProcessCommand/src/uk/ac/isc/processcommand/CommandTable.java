@@ -1,4 +1,4 @@
-package uk.ac.isc.command;
+package uk.ac.isc.processcommand;
 
 import com.orsoncharts.util.json.JSONArray;
 import com.orsoncharts.util.json.JSONObject;

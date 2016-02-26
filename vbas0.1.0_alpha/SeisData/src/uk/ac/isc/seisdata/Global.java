@@ -110,7 +110,9 @@ public class Global {
         Logger.getLogger(at).log(Level.INFO, debugString);
     }
 
-    public static void logJSONDebug(JSONArray jFunctionArray) {
+    
+    // only work with System Comamnd format
+    public static void logJSONDebug(JSONObject obj) {
 
         String at = Thread.currentThread().getStackTrace()[2].getLineNumber() + ":"
                 + Thread.currentThread().getStackTrace()[2].getClassName().
@@ -119,6 +121,8 @@ public class Global {
                 + Thread.currentThread().getStackTrace()[2].getMethodName();
 
         JSONParser parser = new JSONParser();
+        
+        /*
         try {
             String s = jFunctionArray.toString();
             Object obj = parser.parse(s);
@@ -134,7 +138,7 @@ public class Global {
         } catch (ParseException pe) {
             Logger.getLogger(at).log(Level.SEVERE, "\nPosition:" + pe.getPosition() + ", " + pe 
                     + "\nError Parsing: " + jFunctionArray.toString());
-        }
+        }*/
     }
 
 }

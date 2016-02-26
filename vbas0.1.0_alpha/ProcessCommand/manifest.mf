@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+AutoUpdate-Show-In-Client: true
+OpenIDE-Module: uk.ac.isc.processcommand
+OpenIDE-Module-Localizing-Bundle: uk/ac/isc/processcommand/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0
+

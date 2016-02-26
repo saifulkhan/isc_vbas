@@ -1,4 +1,4 @@
-package uk.ac.isc.command;
+package uk.ac.isc.processcommand;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
