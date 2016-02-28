@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.TreeMap;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
@@ -29,49 +30,35 @@ import uk.ac.isc.seisdata.SeisDataDAOAssess;
 import uk.ac.isc.seisdata.SeisEvent;
 import org.openstreetmap.gui.jmapviewer.interfaces.TileLoaderListener; // Note: Required to avoid compilation error.
 import uk.ac.isc.textview.HypocentreTableModel;
-import uk.ac.isc.textview.PhaseEditDialog;
 import uk.ac.isc.textview.PhaseTextViewTableModel;
 
 public class Assess {
-
-    private final JSONArray jFunctionArray;
-    private final Path assessDir;
-    private final File htmlReport;
 
     private static final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
     // New (relocator generated) Hypocentre & Phase data for the selected SeisEvent.
     private final HypocentresList hypocentresList = new HypocentresList();
     private final PhasesList phasesList = new PhasesList();
     private final TreeMap<String, String> stations = new TreeMap<String, String>();
+    
+    private Path assessDir;
 
-    Assess(JSONArray jFunctionArray) {
-        this.jFunctionArray = jFunctionArray;
+    Assess() {
 
-        int evid = Global.getSelectedSeisEvent().getEvid();
-        assessDir = Paths.get(SeisDataDAOAssess.getAssessDir().toString() + File.separator + evid);
-        htmlReport = new File(assessDir + File.separator + evid + ".html");
-        Global.logDebug("assessDir=" + assessDir + ", reportName=" + htmlReport);
     }
 
-    public File getHTMLReport() {
-        return htmlReport;
-    }
-
-    public Boolean runLocator() {
-
-        String locatorCommandStr
-                = SeisDataDAOAssess.processAssessData(Global.getSelectedSeisEvent().getEvid(), jFunctionArray);
-
-        if (locatorCommandStr == null) {
-            String message = "Incorrect locator command (locatorCommandStr= " + locatorCommandStr + ")";
-            Global.logSevere(message);
-            JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-
+    public Boolean runLocator(Path assessDir, ArrayList<String> functionArray, String locatorArgStr) {
+        
+        this.assessDir = assessDir;
+        
         String iscLocOut = assessDir + File.separator
                 + "iscloc." + Global.getSelectedSeisEvent().getEvid() + ".out";
-        Global.logDebug("locatorCommandStr= " + locatorCommandStr + "\niscLocOut=" + iscLocOut);
+
+        Global.logDebug("\nassessDir=" + assessDir
+                + "\nfunctionArray=" + functionArray.toString()
+                + "\nlocatorCommandStr=" + locatorArgStr
+                + "\niscLocOut=" + iscLocOut);
+
+        SeisDataDAOAssess.processAssessData(Global.getSelectedSeisEvent().getEvid(), functionArray);
 
         if (!new File(assessDir.toString()).exists()) {
             boolean success = (new File(assessDir.toString())).mkdirs();
@@ -83,10 +70,11 @@ public class Assess {
             }
         }
 
+   
         String runLocatorStr = "ssh beast "
                 + "export PGUSER=" + SeisDataDAOAssess.getAssessUser() + "; "
                 + "export PGPASSWORD=" + SeisDataDAOAssess.getAssessPassword() + "; "
-                + "echo " + "\"" + locatorCommandStr + "\"" + " | iscloc_parallel_db - > "
+                + "echo " + "\"" + Global.getSelectedSeisEvent().getEvid() + " " + locatorArgStr + "\"" + " | iscloc_parallel_db - > "
                 + iscLocOut;
         Global.logDebug(runLocatorStr);
 
@@ -121,8 +109,8 @@ public class Assess {
 
     }
 
-    public void generateReport() {
-        Global.logDebug("");
+    public void generateReport(File htmlReport) {
+        Global.logDebug("htmlReport:" + htmlReport);
 
         /*
          * Load assessed data.
@@ -166,7 +154,6 @@ public class Assess {
         }
     }
 
-    
     private void genetarePNG(final String view, final JPanel panel, final int width, final int height) {
 
         final JDialog f = new JDialog();
@@ -218,7 +205,6 @@ public class Assess {
         f.setVisible(true);
     }
 
-    
     private void loadSelectedSeisEventData() {
 
         System.out.println(Global.debugAt() + "Load list of Hypocentre and Phase for SeisEvent: "

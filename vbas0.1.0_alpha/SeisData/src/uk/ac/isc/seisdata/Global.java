@@ -2,10 +2,7 @@ package uk.ac.isc.seisdata;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.orsoncharts.util.json.JSONArray;
-import com.orsoncharts.util.json.JSONObject;
-import com.orsoncharts.util.json.parser.JSONParser;
-import com.orsoncharts.util.json.parser.ParseException;
+
 
 /*
  * Used globally to register to change event and notify/fire changes.
@@ -31,11 +28,9 @@ public class Global {
     private static AssessedCommand assessedComamndEvent = new AssessedCommand();
 
     public static SeisEvent getSelectedSeisEvent() {
-
-        // TODO: chek dependency again
+        /*
         // needed when the hypocentre & phase table loads for the first time.
         // if the SeiesEventTable module loads later
-        /*
          if (selectedSeisEvent.getEvid() == 0) {
          SeisEventsList eventsList = new SeisEventsList();
          SeisDataDAO.retrieveAllEvents(eventsList.getEvents());
@@ -87,7 +82,7 @@ public class Global {
                 substring(Thread.currentThread().getStackTrace()[2].getClassName().
                         lastIndexOf(".") + 1) + ":"
                 + Thread.currentThread().getStackTrace()[2].getMethodName();
-        
+
         return at;
     }
 
@@ -108,37 +103,6 @@ public class Global {
                         lastIndexOf(".") + 1) + ":"
                 + Thread.currentThread().getStackTrace()[2].getMethodName();
         Logger.getLogger(at).log(Level.INFO, debugString);
-    }
-
-    
-    // only work with System Comamnd format
-    public static void logJSONDebug(JSONObject obj) {
-
-        String at = Thread.currentThread().getStackTrace()[2].getLineNumber() + ":"
-                + Thread.currentThread().getStackTrace()[2].getClassName().
-                substring(Thread.currentThread().getStackTrace()[2].getClassName().
-                        lastIndexOf(".") + 1) + ":"
-                + Thread.currentThread().getStackTrace()[2].getMethodName();
-
-        JSONParser parser = new JSONParser();
-        
-        /*
-        try {
-            String s = jFunctionArray.toString();
-            Object obj = parser.parse(s);
-            JSONArray arr = (JSONArray) obj;
-            for (Object o : arr) {
-                JSONObject jObj = (JSONObject) o;
-
-                Logger.getLogger(at).log(Level.INFO,
-                        "\ncommandType: " + (String) jObj.get("commandType")
-                        + ", function: " + (String) jObj.get("function"));
-            }
-
-        } catch (ParseException pe) {
-            Logger.getLogger(at).log(Level.SEVERE, "\nPosition:" + pe.getPosition() + ", " + pe 
-                    + "\nError Parsing: " + jFunctionArray.toString());
-        }*/
     }
 
 }

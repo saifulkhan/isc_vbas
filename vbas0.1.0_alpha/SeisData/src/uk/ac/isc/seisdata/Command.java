@@ -6,8 +6,8 @@ public class Command extends AbstractSeisData {
 
     // written by VBAS
     private Integer evid;       // event id
-    private String commandStr;  // the formulated command in JSON
-    private String functionsStr;   // the function (s) in JSON
+    private String commandLogStr;  // the formulated command in JSON
+    private String systemCommandStr;   // the function (s) in JSON
 
     // Processed by & read from the database
     private Integer id;     // command id    
@@ -23,7 +23,7 @@ public class Command extends AbstractSeisData {
 
     public Command(Integer evid,
             String command,
-            String functionsStr,
+            String systemCommandStr,
             Integer id,
             String analyst,
             String pass,
@@ -32,8 +32,8 @@ public class Command extends AbstractSeisData {
             String type) {
 
         this.evid = evid;
-        this.commandStr = command;
-        this.functionsStr = functionsStr;
+        this.commandLogStr = command;
+        this.systemCommandStr = systemCommandStr;
         this.id = id;
         this.analyst = analyst;
         this.pass = pass;
@@ -67,11 +67,11 @@ public class Command extends AbstractSeisData {
     }
 
     public String getCommandStr() {
-        return commandStr;
+        return commandLogStr;
     }
 
     public void setCommandStr(String command) {
-        this.commandStr = command;
+        this.commandLogStr = command;
     }
 
     public String getPass() {
@@ -106,12 +106,12 @@ public class Command extends AbstractSeisData {
         this.type = type;
     }
 
-    public String getFunctionsStr() {
-        return functionsStr;
+    public String getSystemCommandStr() {
+        return systemCommandStr;
     }
 
-    public void setFunctionStr(String functionsStr) {
-        this.functionsStr = functionsStr;
+    public void setSystemCommandStr(String systemCommandStr) {
+        this.systemCommandStr = systemCommandStr;
     }
 
 }

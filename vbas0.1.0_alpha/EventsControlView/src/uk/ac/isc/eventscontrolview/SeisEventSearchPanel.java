@@ -18,6 +18,7 @@ import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.SeisDataDAO;
 import com.orsoncharts.util.json.JSONArray;
 import com.orsoncharts.util.json.JSONObject;
+import uk.ac.isc.seisdata.FormulateCommand;
 
 
 /*
@@ -159,35 +160,21 @@ public class SeisEventSearchPanel extends JPanel {
 
         int seisEventId = (Integer) table.getValueAt(row, 0);
 
-        JSONObject commandLogObj = new JSONObject();
-        commandLogObj.put("commandType", "seiseventbanish");
-        commandLogObj.put("dataType", "seisevent");
-        commandLogObj.put("id", seisEventId);
-        JSONArray attrArray = new JSONArray();
+        String commandType = "seiseventbanish";
+        FormulateCommand formulateCommand = new FormulateCommand(commandType, "seisevent", seisEventId);
 
-        JSONObject systemCommandObj = new JSONObject();
-        systemCommandObj.put("commandType", "seiseventbanish");
-        systemCommandObj.put("locatorArgStr", null);
-        JSONArray sqlFunctionArray = new JSONArray();
+        formulateCommand.addSQLFunction("banish ( " + seisEventId + " )");
 
-        JSONObject sqlFunctionObj = new JSONObject();
-        sqlFunctionObj.put("sqlFunction", "banish ( " + seisEventId + " )");
-        sqlFunctionArray.add(sqlFunctionObj);
+        if (formulateCommand.isValidCommand()) {
 
-        commandLogObj.put("attributeArray", null);
-        systemCommandObj.put("sqlFunctionArray", sqlFunctionArray);
+            Global.logDebug("\ncommandLog= " + formulateCommand.getCmdProvenance().toString()
+                    + "\nsystemCommand= " + formulateCommand.getSystemCommand());
 
-        if (sqlFunctionArray.size() > 0) {
-            String commandLog = commandLogObj.toString();
-            String systemCommand = systemCommandObj.toString();
-            Global.logDebug("\ncommandLog= " + commandLog + "\nsystemCommand= " + systemCommand);
+            boolean ret = SeisDataDAO.updateCommandTable(Global.getSelectedSeisEvent().getEvid(), commandType,
+                    formulateCommand.getCmdProvenance().toString(), formulateCommand.getSystemCommand().toString());
 
-            Global.logJSONDebug(systemCommandObj);
-
-            boolean ret = SeisDataDAO.updateCommandTable(Global.getSelectedSeisEvent().getEvid(),
-                    "seiseventbanish", commandLog, systemCommand);
             if (ret) {
-                Global.logDebug("Fired: 'SeisEvent Banish' comamnd.");
+                Global.logDebug(" Fired: " + commandType);
                 commandEvent.fireSeisDataChanged();
             } else {
                 JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);

@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import javax.swing.JOptionPane;
 
-
 /**
  * This is the database access object which provides functions to read and write
  * ISC database
@@ -32,8 +31,7 @@ public final class SeisDataDAOAssess {
     protected static String assessUser;
     protected static String assessPassword;
     protected static String pgUser;
-    
-    
+
     private static Path assessDir = null;
 
     static {
@@ -47,13 +45,12 @@ public final class SeisDataDAOAssess {
             assessUser = env.get("ASSESS_USER");
             assessPassword = env.get("ASSESS_PW");
             pgUser = env.get("PGUSER");
-            
+
             int month = Calendar.getInstance().get(Calendar.MONTH) + 1;
 
             assessDir = Paths.get(env.get("ASSESSDIR")
                     + File.separator + Calendar.getInstance().get(Calendar.YEAR)
                     + File.separator + month);
-
         } else {
             // Saiful: Windows 10 laptop
             //url = "jdbc:postgresql://127.0.0.1:5432/isc";
@@ -68,7 +65,7 @@ public final class SeisDataDAOAssess {
     }
 
     public static Path getAssessDir() {
-        Global.logDebug("url=" + url + ", user=" + assessUser +", password=" + assessPassword);
+        Global.logDebug("url=" + url + ", user=" + assessUser + ", password=" + assessPassword);
         return assessDir;
     }
 
@@ -80,22 +77,20 @@ public final class SeisDataDAOAssess {
         return assessPassword;
     }
 
- 
-    
     /*
      * Update the Assess Schema
      * Return the locatorCommandStr
      */
-    public static String processAssessData(int evid, JSONArray jFunctionArray) {
-        Global.logDebug("url=" + url + ", user=" + assessUser +", password=" + assessPassword);
-        
+    public static String processAssessData(int evid, ArrayList<String> functionArray) {
+        Global.logDebug("url=" + url + ", user=" + assessUser + ", password=" + assessPassword);
+
         Connection con = null;
         Statement st = null;
         ResultSet rs = null;
 
         String locatorCommandStr = null;
         String query = null;
-        
+
         try {
             con = DriverManager.getConnection(url, assessUser, assessPassword);
 
@@ -112,34 +107,20 @@ public final class SeisDataDAOAssess {
              * 2: Fill schema with appropiate data
              * Note: the FILL_ASSESS will read data from PGUSER.
              */
-            query = "SELECT FILL_ASSESS (" + evid + ", '" + pgUser + "');"; 
+            query = "SELECT FILL_ASSESS (" + evid + ", '" + pgUser + "');";
             Global.logDebug("query= " + query);
             rs = st.executeQuery(query);
 
             /*
              * 3: Apply data alteration functions
              */
-            for (Object o : jFunctionArray) {
-                JSONObject jObj = (JSONObject) o;
-                String commandType = (String) jObj.get("commandType");
-                String function = (String) jObj.get("function");
-                
-                if(commandType.equals("seiseventrelocate")) {
-                   locatorCommandStr = function;
-                } else {
-                    query = "SELECT " + function;
-                    Global.logDebug("query= " + query);
-                    rs = st.executeQuery(query);
-                }
-                
+            for (String funtion : functionArray) {
+
+                query = "SELECT " + funtion;
+                Global.logDebug("query= " + query);
+                rs = st.executeQuery(query);
             }
-            
-            // when there are no 'seieseventrelocate' type command selected from the Command table.
-            if (locatorCommandStr == null) {
-                locatorCommandStr = String.valueOf(evid);
-            }
-            
-            
+
         } catch (SQLException ex) {
             String message = ex.toString() + "\n\n"
                     + "Failed query= " + query
@@ -166,7 +147,7 @@ public final class SeisDataDAOAssess {
                 return null;
             }
         }
-        
+
         return locatorCommandStr;
     }
 
@@ -178,7 +159,7 @@ public final class SeisDataDAOAssess {
      * @return
      */
     public static boolean retrieveHypos(Integer evid, ArrayList<Hypocentre> HypoList) {
-        Global.logDebug("url=" + url + ", user=" + assessUser +", password=" + assessPassword);
+        Global.logDebug("url=" + url + ", user=" + assessUser + ", password=" + assessPassword);
 
         Connection con = null;
         Statement st = null;
@@ -281,7 +262,7 @@ public final class SeisDataDAOAssess {
      * @return
      */
     public static boolean retrieveHyposMagnitude(ArrayList<Hypocentre> HypoList) {
-        Global.logDebug("url=" + url + ", user=" + assessUser +", password=" + assessPassword);
+        Global.logDebug("url=" + url + ", user=" + assessUser + ", password=" + assessPassword);
 
         Connection con = null;
         Statement st = null;
@@ -339,8 +320,8 @@ public final class SeisDataDAOAssess {
      * @return filled phases list
      */
     public static boolean retrieveAllPhases(Integer evid, ArrayList<Phase> PhasesList) {
-        Global.logDebug("url=" + url + ", user=" + assessUser +", password=" + assessPassword);
-        
+        Global.logDebug("url=" + url + ", user=" + assessUser + ", password=" + assessPassword);
+
         Connection con = null;
         Statement st = null;
         ResultSet rs = null;
@@ -453,8 +434,8 @@ public final class SeisDataDAOAssess {
      * @return
      */
     public static boolean retrieveAllPhasesAmpMag(Integer evid, ArrayList<Phase> PhaseList) {
-        Global.logDebug("url=" + url + ", user=" + assessUser +", password=" + assessPassword);
-        
+        Global.logDebug("url=" + url + ", user=" + assessUser + ", password=" + assessPassword);
+
         Connection con = null;
         Statement st = null;
         ResultSet rs = null;
@@ -521,8 +502,8 @@ public final class SeisDataDAOAssess {
      * @return
      */
     public static boolean retrieveAllStationsWithRegions(TreeMap<String, String> allStations) {
-        Global.logDebug("url=" + url + ", user=" + assessUser +", password=" + assessPassword);
-        
+        Global.logDebug("url=" + url + ", user=" + assessUser + ", password=" + assessPassword);
+
         Connection con = null;
         Statement st = null;
         ResultSet rs = null;

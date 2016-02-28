@@ -25,6 +25,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
 import uk.ac.isc.seisdata.Command;
+import uk.ac.isc.seisdata.FormulateCommand;
 import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.SeisDataDAO;
@@ -133,23 +134,14 @@ public class SeisEventRelocateDialog extends JDialog {
     }
 
     private void button_okActionPerformed(ActionEvent evt) {
+
         if (this.text_depth.getText().equals(" ") && this.radio_fix.isSelected()) {
             JOptionPane.showMessageDialog(null, "Enter Depth.");
             return;
         }
 
-        JSONObject commandLogObj = new JSONObject();
-        commandLogObj.put("commandType", "seiseventrelocate");
-        commandLogObj.put("dataType", "seisevent");
-        commandLogObj.put("id", selectedSeisEvent.getEvid());
-        JSONArray attrArray = new JSONArray();
-
-        // System Command
-        JSONObject systemCommandObj = new JSONObject();
-        systemCommandObj.put("commandType", "seiseventrelocate");
-        systemCommandObj.put("sqlFunctionArray", null);
- 
-        String locatorArgStr = selectedSeisEvent.getEvid() + " ";
+        String commandType = "seiseventrelocate";
+        FormulateCommand composeCommand = new FormulateCommand(commandType, "seisevent", selectedSeisEvent.getEvid());
 
         /*
          * Depth : fix & free
@@ -164,30 +156,12 @@ public class SeisEventRelocateDialog extends JDialog {
                 return;
             }
 
-            JSONObject jAttrObj = new JSONObject();
-            jAttrObj.put("name", "depth");
-            jAttrObj.put("oldValue", selectedHypocentre.getDepth());
-            jAttrObj.put("newvalue", depth);
-            attrArray.add(jAttrObj);
-
             if (radio_fix.isSelected()) {
-                JSONObject jAttrObj1 = new JSONObject();
-                jAttrObj1.put("name", "fix_depth");
-                jAttrObj1.put("oldValue", selectedHypocentre.getDepth());
-                jAttrObj1.put("newvalue", depth);
-                attrArray.add(jAttrObj1);
-
-                locatorArgStr += "fix_depth=" + depth + " ";
-            }
-
-            if (radio_free.isSelected()) {
-                JSONObject jAttrObj1 = new JSONObject();
-                jAttrObj1.put("name", "free_depth");
-                jAttrObj1.put("oldValue", selectedHypocentre.getDepth());
-                jAttrObj1.put("newvalue", depth);
-                attrArray.add(jAttrObj1);
-
-                locatorArgStr += "free_depth=" + depth + " ";
+                composeCommand.addAttribute("fix_depth", depth, selectedHypocentre.getDepth());
+                composeCommand.addLocatorArg("fix_depth=" + depth);
+            } else if (radio_free.isSelected()) {
+                composeCommand.addAttribute("free_depth", depth, selectedHypocentre.getDepth());
+                composeCommand.addLocatorArg("free_depth=" + depth);
             }
 
         }
@@ -196,73 +170,42 @@ public class SeisEventRelocateDialog extends JDialog {
          * Depth : default & median
          */
         if (radio_default.isSelected()) {
-            JSONObject jAttrObj = new JSONObject();
-            jAttrObj.put("name", "fix_depth_default");
-            jAttrObj.put("oldValue", null);
-            jAttrObj.put("newvalue", null);
-            attrArray.add(jAttrObj);
-
-            locatorArgStr += "fix_depth_default";
+            composeCommand.addAttribute("fix_depth_default", null, null);
+            composeCommand.addLocatorArg("fix_depth_default");
         }
 
         if (radio_median.isSelected()) {
-            JSONObject jAttrObj = new JSONObject();
-            jAttrObj.put("name", "fix_depth_median");
-            jAttrObj.put("oldValue", null);
-            jAttrObj.put("newvalue", null);
-            attrArray.add(jAttrObj);
-
-            locatorArgStr += "fix_depth_median";
+            composeCommand.addAttribute("fix_depth_median", null, null);
+            composeCommand.addLocatorArg("fix_depth_median");
         }
 
         if ((radio_fix.isSelected() || radio_free.isSelected()) && checkbox_gridSearch.isSelected()) {
-            JSONObject jAttrObj2 = new JSONObject();
-            jAttrObj2.put("name", "do_gridsearch");
-            jAttrObj2.put("oldValue", null);
-            jAttrObj2.put("newvalue", (checkbox_gridSearch.isEnabled() ? 1 : 0));
-            attrArray.add(jAttrObj2);
-
-            locatorArgStr += "do_gridsearch=" + (checkbox_gridSearch.isEnabled() ? 1 : 0) + " ";
+            composeCommand.addAttribute("do_gridsearch", (checkbox_gridSearch.isEnabled() ? 1 : 0), null);
+            composeCommand.addLocatorArg("do_gridsearch=" + (checkbox_gridSearch.isEnabled() ? 1 : 0));
         }
 
-        systemCommandObj.put("locatorArgStr", locatorArgStr);
-
-        
-        
-        if (attrArray.size() > 0) {
-
+        if (composeCommand.isValidCommand()) {
             /*
-             * Comment text description. Include it only if a valif command is formulated.
+             * Comment (not mandatory) text description. Include it only if a valif command is formulated.
              */
-            if (text_comment.getText() != null) {
-                JSONObject jAttrObj = new JSONObject();
-                jAttrObj.put("name", "comment");
-                jAttrObj.put("oldValue", "");
-                jAttrObj.put("newvalue", text_comment.getText());
-                attrArray.add(jAttrObj);
+            if (!text_comment.getText().equals("")) {
+                composeCommand.addAttribute("comment", text_comment.getText(), null);
             }
 
-            commandLogObj.put("attributeArray", attrArray);
-        }
+            Global.logDebug("\ncommandLog= " + composeCommand.getCmdProvenance().toString()
+                    + "\nsystemCommand= " + composeCommand.getSystemCommand().toString());
 
-        if (attrArray.size() > 0) {
-            String commandLog = commandLogObj.toString();
-            String systemCommand = systemCommandObj.toString();
-            Global.logDebug("\ncommandLog= " + commandLog + "\nsystemCommand= " + systemCommand);
+            boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), commandType,
+                    composeCommand.getCmdProvenance().toString(), composeCommand.getSystemCommand().toString());
 
-            Global.logJSONDebug(systemCommandObj);
-
-            boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(),
-                    "seiseventrelocate", commandLog, systemCommand);
             if (ret) {
-                Global.logDebug(" Fired: 'SeiesEvent Relocate' comamnd.");
+                Global.logDebug(" Fired: " + commandType);
                 commandEvent.fireSeisDataChanged();
-                this.dispose();
             } else {
                 JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
-
+        this.dispose();
     }
 
     private void button_cancelActionPerformed(ActionEvent evt) {

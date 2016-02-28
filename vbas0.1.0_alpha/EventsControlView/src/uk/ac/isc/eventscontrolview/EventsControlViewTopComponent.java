@@ -42,8 +42,6 @@ import uk.ac.isc.seisdata.Global;
 public final class EventsControlViewTopComponent extends TopComponent {
 
     SeisEventsTable eventsTable;                    // Event Table
-    //CommandTable commandTable;                  // Action Hostory Table
-    //AssessedCommandTable assessedCommandTable;
 
     public EventsControlViewTopComponent() {
         initComponents();
@@ -54,25 +52,7 @@ public final class EventsControlViewTopComponent extends TopComponent {
         Global.logDebug("Here...");
 
         eventsTable = new SeisEventsTable();
-        //commandTable = new CommandTable();
-        //assessedCommandTable = new AssessedCommandTable();
-
         this.setLayout(new BorderLayout());
-
-        /*
-         JSplitPane split;
-        
-         JSplitPane spLeft = new JSplitPane(JSplitPane.VERTICAL_SPLIT, eventsTable, null);
-         spLeft.setDividerSize(4);
-         spLeft.setContinuousLayout(true);
-
-         JSplitPane spRight = new JSplitPane(JSplitPane.VERTICAL_SPLIT, commandTable, assessedCommandTable);
-         spRight.setDividerSize(4);
-         spRight.setContinuousLayout(true);
-
-         split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spLeft, spRight);
-         split.setContinuousLayout(false);
-         split.setOneTouchExpandable(true);*/
         this.add(eventsTable, BorderLayout.CENTER);
 
     }

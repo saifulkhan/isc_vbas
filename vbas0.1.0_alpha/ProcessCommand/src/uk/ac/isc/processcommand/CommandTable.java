@@ -11,6 +11,9 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import javax.swing.JButton;
@@ -28,10 +31,12 @@ import javax.swing.table.JTableHeader;
 import uk.ac.isc.seisdata.AssessedCommand;
 import uk.ac.isc.seisdata.Command;
 import uk.ac.isc.seisdata.CommandList;
+import uk.ac.isc.seisdata.FormulateCommand;
 import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
 import uk.ac.isc.seisdata.SeisDataDAO;
+import uk.ac.isc.seisdata.SeisDataDAOAssess;
 import uk.ac.isc.seisdata.SeisEvent;
 
 public class CommandTable extends JPanel implements SeisDataChangeListener {
@@ -44,7 +49,9 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
     private final CommandList commandList = Global.getCommandList();
     private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
     private final Command commandEvent = Global.getCommandEvent();
-    private final AssessedCommand assessedCommandEvent = Global.getAssessedComamndEvent();
+    private final AssessedCommand assessedCommandEvent = Global.getAssessedComamndEvent(); // send event to AssessedCommand table
+
+    private final Assess assess = new Assess();
 
     public CommandTable() {
 
@@ -105,7 +112,7 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
         }
 
         Global.logDebug(" #Commands:" + commandList.getCommandList().size());
-        
+
         model = new CommandTableModel(commandList.getCommandList());
         table.setModel(model);
 
@@ -231,29 +238,27 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
             }
 
             ArrayList<Integer> commandIds = new ArrayList<Integer>();
-
-            JSONArray jFunctionArray = new JSONArray();
+            String commandType = "assess";
+            FormulateCommand formulateCommand = new FormulateCommand(commandType, "seisevent", Global.getSelectedSeisEvent().getEvid());
 
             for (int row : selectedRows) {
                 commandIds.add((Integer) table.getValueAt(row, 0));
 
-                // now concatinate
-                JSONParser parser = new JSONParser();
-                try {
-                    String s = commandList.getCommandList().get(row).getFunctionsStr();
-                    Object obj = parser.parse(s);
-                    JSONArray arr = (JSONArray) obj;
-                    jFunctionArray.addAll(arr);
+                String systemCommandStr = commandList.getCommandList().get(row).getSystemCommandStr();
 
-                } catch (ParseException pe) {
-                    Global.logSevere("\nPosition:" + pe.getPosition() + ", " + pe
-                            + "\nError Parsing: " + jFunctionArray.toString());
-                    JOptionPane.showMessageDialog(null, "Error in JSON parsing. Failed to build the jFunctionArray",
-                            "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                Global.logDebug("Appended functionStr: " + jFunctionArray.toString());
+                // add/append the command to the formulated asses command
+                Global.logDebug("Append the cmd: " + systemCommandStr);
+                formulateCommand.addSystemCommand(systemCommandStr);
+
             }
+
+            Path assessDir = Paths.get(SeisDataDAOAssess.getAssessDir().toString()
+                    + File.separator + Global.getSelectedSeisEvent().getEvid());
+            File htmlReport = new File(assessDir
+                    + File.separator + Global.getSelectedSeisEvent().getEvid() + ".html");
+
+            formulateCommand.addAttribute("commands", commandIds.toString(), null);
+            formulateCommand.addAttribute("report", htmlReport, null);
 
             /*
              * ***************************************************************************
@@ -261,36 +266,28 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
              * assess info in the AssessedCommand table
              * ****************************************************************************
              */
-            Assess assess = new Assess(jFunctionArray);
-            assess.runLocator();
-            assess.generateReport();
-            
-            
+            assess.runLocator(assessDir, formulateCommand.getSQLFunctionArray(), formulateCommand.getLocatorArgStr());
+            assess.generateReport(htmlReport);
+
             /*
              * Now writw the assessed details 
              */
-            JSONObject jCommandObj = new JSONObject();
-            jCommandObj.put("commandType", "assess");
-            jCommandObj.put("dataType", "seisevent");
-            jCommandObj.put("id", selectedSeisEvent.getEvid());
-            jCommandObj.put("reportName", assess.getHTMLReport());
-            jCommandObj.put("commandIDs", commandIds.toString());
+            if (formulateCommand.isValidCommand()) {
 
-            String commandStr = jCommandObj.toJSONString();
-            String functionStr = jFunctionArray.toString();
+                Global.logDebug("\ncommandProvenance= " + formulateCommand.getCmdProvenance().toString()
+                        + "\nsystemCommand= " + formulateCommand.getSystemCommand().toString());
 
-            /*
-            Global.logDebug("\ncommandStr= " + commandStr + "\nfunctionStr= " + functionStr);
+                boolean ret = SeisDataDAO.updateAssessedCommandTable(Global.getSelectedSeisEvent().getEvid(), commandType,
+                        formulateCommand.getCmdProvenance().toString(), formulateCommand.getSystemCommand().toString(),
+                        commandIds);
 
-            boolean ret = SeisDataDAO.updateAssessedCommandTable(selectedSeisEvent.getEvid(),
-                    "assess", commandStr, functionStr, commandIds);
-            if (ret) {
-                Global.logDebug(" Fired: 'Assess' comamnd.");
-                assessedCommandEvent.fireSeisDataChanged();
-            } else {
-                JOptionPane.showMessageDialog(null, "Incorrect 'Assess' command.", "Warning",
-                        JOptionPane.WARNING_MESSAGE);
-            }*/
+                if (ret) {
+                    Global.logDebug(" Fired: " + commandType);
+                    assessedCommandEvent.fireSeisDataChanged();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
 
         }
     }
