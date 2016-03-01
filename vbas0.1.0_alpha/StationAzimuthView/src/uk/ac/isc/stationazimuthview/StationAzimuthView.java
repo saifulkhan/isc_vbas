@@ -33,20 +33,21 @@ import uk.ac.isc.seisdata.Station;
  *
  * @author hui
  */
-class StationAzimuthView extends JPanel {
+public class StationAzimuthView extends JPanel {
+
+    // saiful: combine imSize with height and width
+    private int stationAzimuthViewWidth = 650, stationAzimuthViewheight = 650;
+    private int imSize = 650;
 
     // A reference of the phase list
     private final PhasesList phasesList;
-
     // A reference of the hypocentre list
     private final HypocentresList hyposList;
-
     //station list
     private ArrayList<Station> staList = null;
 
     //referenc of prime hypocentre, it is used to centralise the map because the location of the prime hypocentre is asked to be the central of the map
     private Hypocentre ph = null;
-
     //the parameter to define how many bins of directions
     private int binNumber = 12;
 
@@ -58,9 +59,6 @@ class StationAzimuthView extends JPanel {
 
     final static double deg2rad = 3.14159 / 180.0;
     final static double rad2deg = 180.0 / 3.14159;
-
-    //image size of the map
-    private int imSize = 650;
 
     //how big of station icon (circle at the current stage)
     private final int stationIconSize = 9;
@@ -462,16 +460,54 @@ class StationAzimuthView extends JPanel {
         g2.drawImage(dstImg, xOffset, yOffset, imSize, imSize, null);
 
         // TEST: 
+        int w = Math.max(dstImg.getWidth(), azImg.getWidth());
+        int h = Math.max(dstImg.getHeight(), azImg.getHeight());
+        BufferedImage combined = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+
+        // paint both images, preserving the alpha channels
+        Graphics graphics = combined.getGraphics();
+        graphics.drawImage(azImg, 0, 0, null);
+        graphics.setClip(new Ellipse2D.Double(0 + imSize / 8, 0 + imSize / 8, imSize * 0.75, imSize * 0.75));
+        graphics.drawImage(dstImg, 0, 0, null);
+
         Global.logDebug("Write BufferedImage.");
         try {
+
+            ImageIO.write(combined, "png",
+                    new File("/export/home/saiful/assess/temp/StationAzimuthView.png"));
+
             ImageIO.write(dstImg, "png",
-                    new File("/export/home/saiful/assess/temp/dstImg.png"));
+                    new File("/export/home/saiful/assess/temp/StationAzimuthView-1.png"));
             ImageIO.write(azImg, "png",
-                    new File("/export/home/saiful/assess/temp/azImg.png"));
+                    new File("/export/home/saiful/assess/temp/StationAzimuthView-2.png"));
+
         } catch (Exception e) {
             Global.logSevere("Error creating a png.");
         }
 
+    }
+
+    public BufferedImage getBufferedImage() {
+        BufferedImage combined = new BufferedImage(stationAzimuthViewWidth, stationAzimuthViewheight, BufferedImage.TYPE_INT_ARGB);
+        Graphics graphics = combined.getGraphics();
+        graphics.drawImage(azImg, 0, 0, null);
+        
+        graphics.setClip(new Ellipse2D.Double(0 + stationAzimuthViewWidth / 8,
+                0 + stationAzimuthViewWidth / 8,
+                stationAzimuthViewWidth * 0.75,
+                stationAzimuthViewWidth * 0.75));
+
+        graphics.drawImage(dstImg, 0, 0, null);
+
+        return combined;
+    }
+
+    public int getStationAzimuthViewWidth() {
+        return stationAzimuthViewWidth;
+    }
+
+    public int getStationAzimuthViewheight() {
+        return stationAzimuthViewheight;
     }
 
 }

@@ -72,7 +72,9 @@
                     </run-dependency>
                 </dependency>
             </module-dependencies>
-            <public-packages/>
+            <public-packages>
+                <package>uk.ac.isc.hypomagnitudeview</package>
+            </public-packages>
         </data>
     </configuration>
 </project>

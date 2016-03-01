@@ -4,7 +4,6 @@ import com.orsoncharts.util.json.JSONArray;
 import com.orsoncharts.util.json.JSONObject;
 import java.util.Arrays;
 import com.orsoncharts.util.json.parser.JSONParser;
-import java.text.ParseException;
 import java.util.ArrayList;
 import org.openide.util.Exceptions;
 
@@ -81,7 +80,6 @@ public class FormulateCommand {
         return obj;
     }
 
-    
     public Boolean isValidCommand() {
         return !(sqlFunctionArray.size() <= 0 && locatorArgStr.equals(""));
     }
@@ -112,29 +110,29 @@ public class FormulateCommand {
             JSONArray array = (JSONArray) jObj.get("sqlFunctionArray");
             sqlFunctionArray.addAll(array);     // append all 
             addLocatorArg(jObj.get("locatorArgStr").toString());
-        }  
+        }
 
         Global.logDebug("sqlFunctionArray= " + sqlFunctionArray.toString());
         Global.logDebug("locatorArgStr= " + locatorArgStr);
     }
-    
-    public ArrayList <String> getSQLFunctionArray() {
-        ArrayList<String> fun = null; 
-        
+
+    public ArrayList<String> getSQLFunctionArray() {
+        ArrayList<String> fun = new ArrayList<String> ();
+
         for (Object o : sqlFunctionArray) {
-                JSONObject jObj = (JSONObject) o;
-                fun.add((String) jObj.get("name"));
-            }        
-        
-            return fun;
+            JSONObject jObj = (JSONObject) o;
+            String functionName = (String) jObj.get("name");
+            //Global.logDebug("jObj=" + jObj.toString() +  ", name:"  + functionName);
+            fun.add((String) jObj.get("name"));
+        }
+
+        return fun;
     }
-    
-    
+
     public String getLocatorArgStr() {
         return locatorArgStr;
     }
 
-    
     /*
      * Related to Command Provenance
      */
@@ -168,8 +166,6 @@ public class FormulateCommand {
         return obj;
     }
 
-     
-
     /*
      * other functions, chekc if a string is a object {} or array of objects [{}, {}]
      */
@@ -201,33 +197,4 @@ public class FormulateCommand {
         return false;
     }
 
-    /*
-    // only work with System Comamnd format
-    public static void logJSONDebug(JSONObject obj) {
-
-        String at = Thread.currentThread().getStackTrace()[2].getLineNumber() + ":"
-                + Thread.currentThread().getStackTrace()[2].getClassName().
-                substring(Thread.currentThread().getStackTrace()[2].getClassName().
-                        lastIndexOf(".") + 1) + ":"
-                + Thread.currentThread().getStackTrace()[2].getMethodName();
-
-        JSONParser parser = new JSONParser();
-
-        try {
-            String s = jFunctionArray.toString();
-            Object obj = parser.parse(s);
-            JSONArray arr = (JSONArray) obj;
-            for (Object o : arr) {
-                JSONObject jObj = (JSONObject) o;
-
-                Logger.getLogger(at).log(Level.INFO,
-                        "\ncommandType: " + (String) jObj.get("commandType")
-                        + ", function: " + (String) jObj.get("function"));
-            }
-
-        } catch (ParseException pe) {
-            Logger.getLogger(at).log(Level.SEVERE, "\nPosition:" + pe.getPosition() + ", " + pe
-                    + "\nError Parsing: " + jFunctionArray.toString());
-        }
-    }*/
 }

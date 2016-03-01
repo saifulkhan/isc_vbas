@@ -62,7 +62,7 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
     private boolean showTTDFlag = true;
 
     // Other
-    private Hypocentre ph;
+    private Hypocentre primeHypocentre;
 
     // Data
     private static final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
@@ -82,16 +82,15 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
 
         for (int i = 0; i < hyposList.getHypocentres().size(); i++) {
             if (hyposList.getHypocentres().get(i).getIsPrime()) {
-                ph = hyposList.getHypocentres().get(i);
+                primeHypocentre = hyposList.getHypocentres().get(i);
             }
         }
 
-        phaseTVPanel = new PhaseTravelViewPanel(phasesList, ph, ttdData);
-
+        phaseTVPanel = new PhaseTravelViewPanel(phasesList, primeHypocentre, ttdData);
         phaseDVPanel = new PhaseDetailViewPanel(phaseTVPanel, ttdData);
 
         //handle general view first
-        phaseTVPanel.setPrime(ph);
+        phaseTVPanel.setPrime(primeHypocentre);
         //pgvp.setTTDData(ttdData);
 
         phaseViewControlPanel = new PhaseViewControlPanel(phaseTVPanel, phaseDVPanel);
@@ -123,10 +122,10 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
 
                 for (int i = 0; i < hyposList.getHypocentres().size(); i++) {
                     if (hyposList.getHypocentres().get(i).getIsPrime()) {
-                        ph = hyposList.getHypocentres().get(i);
+                        primeHypocentre = hyposList.getHypocentres().get(i);
                     }
                 }
-                phaseTVPanel.setPrime(ph);
+                phaseTVPanel.setPrime(primeHypocentre);
                 phaseTVPanel.setTTDData(ttdData);
 
                 phaseViewControlPanel.reset();

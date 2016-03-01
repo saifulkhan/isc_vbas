@@ -1,6 +1,5 @@
 package uk.ac.isc.processcommand;
 
-import com.orsoncharts.util.json.JSONArray;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -11,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.TreeMap;
 import javax.imageio.ImageIO;
@@ -29,6 +27,8 @@ import uk.ac.isc.seisdata.PhasesList;
 import uk.ac.isc.seisdata.SeisDataDAOAssess;
 import uk.ac.isc.seisdata.SeisEvent;
 import org.openstreetmap.gui.jmapviewer.interfaces.TileLoaderListener; // Note: Required to avoid compilation error.
+import uk.ac.isc.hypomagnitudeview.HypoMagnitudeViewPanel;
+import uk.ac.isc.stationazimuthview.StationAzimuthView;
 import uk.ac.isc.textview.HypocentreTableModel;
 import uk.ac.isc.textview.PhaseTextViewTableModel;
 
@@ -39,7 +39,7 @@ public class Assess {
     private final HypocentresList hypocentresList = new HypocentresList();
     private final PhasesList phasesList = new PhasesList();
     private final TreeMap<String, String> stations = new TreeMap<String, String>();
-    
+
     private Path assessDir;
 
     Assess() {
@@ -47,9 +47,9 @@ public class Assess {
     }
 
     public Boolean runLocator(Path assessDir, ArrayList<String> functionArray, String locatorArgStr) {
-        
+
         this.assessDir = assessDir;
-        
+
         String iscLocOut = assessDir + File.separator
                 + "iscloc." + Global.getSelectedSeisEvent().getEvid() + ".out";
 
@@ -70,7 +70,6 @@ public class Assess {
             }
         }
 
-   
         String runLocatorStr = "ssh beast "
                 + "export PGUSER=" + SeisDataDAOAssess.getAssessUser() + "; "
                 + "export PGPASSWORD=" + SeisDataDAOAssess.getAssessPassword() + "; "
@@ -140,14 +139,38 @@ public class Assess {
             int width = 0, height = 0;
 
             switch (view) {
-                case "Hypocentre Overview":
+                case "HypocentreOverview":
                     HypoOverviewPanel2 hop = new HypoOverviewPanel2(hypocentresList);
                     genetarePNG(view, hop, hop.getWidth(), hop.getHeight());
                     break;
 
-                case "Hypocentre Depthview":
+                case "PhaseView":
+                    //HypoDepthViewPanel hdv = new HypoDepthViewPanel(hypocentresList.getHypocentres());
+                    //genetarePNG(view, hdv, hdv.getWidth(), hdv.getHeight());
+                    break;
+                    
+                case "HypocentreDepthView":
                     HypoDepthViewPanel hdv = new HypoDepthViewPanel(hypocentresList.getHypocentres());
                     genetarePNG(view, hdv, hdv.getWidth(), hdv.getHeight());
+                    break;
+
+                case "HypocentreMagnitudeView":
+                    HypoMagnitudeViewPanel hmag = new HypoMagnitudeViewPanel(hypocentresList.getHypocentres());
+                    genetarePNG(view, hmag, hmag.getHypocentreMagnitudeViewWidth(), hmag.getHypocentreMagnitudeViewHeight());
+                    break;
+
+                case "StationAzimuthView":
+                    StationAzimuthView saView = new StationAzimuthView(hypocentresList, phasesList);
+                    genetarePNG(view, saView, saView.getStationAzimuthViewWidth(), saView.getStationAzimuthViewheight());
+                    break;
+
+                case "StationMagnitudeView":
+                    //HypoDepthViewPanel hdv = new HypoDepthViewPanel(hypocentresList.getHypocentres());
+                    //genetarePNG(view, hdv, hdv.getWidth(), hdv.getHeight());
+                    break;
+                case "AgencyPieChartView":
+                    //HypoDepthViewPanel hdv = new HypoDepthViewPanel(hypocentresList.getHypocentres());
+                    //genetarePNG(view, hdv, hdv.getWidth(), hdv.getHeight());
                     break;
             }
 
@@ -179,14 +202,34 @@ public class Assess {
                 BufferedImage bi = null;
 
                 switch (view) {
-                    case "Hypocentre Overview":
+                    case "HypocentreOverview":
                         HypoOverviewPanel2 hop = (HypoOverviewPanel2) panel;
                         bi = hop.getBaseMap();
                         break;
 
-                    case "Hypocentre Depthview":
+                    case "PhaseView":
+                        break;
+
+                    case "HypocentreDepthView":
                         HypoDepthViewPanel hdp = (HypoDepthViewPanel) panel;
                         bi = hdp.getDepthHistImg();
+                        break;
+
+                    case "HypocentreMagnitudeView":
+                        HypoMagnitudeViewPanel hmag = (HypoMagnitudeViewPanel) panel;
+                        bi = hmag.getBufferedImage();
+                        break;
+
+                    case "StationAzimuthView":
+                        StationAzimuthView saView = (StationAzimuthView) panel;
+                        bi = saView.getBufferedImage();
+                        break;
+
+                    case "StationMagnitudeView":
+                        
+                        break;
+                        
+                    case "AgencyPieChartView":
                         break;
                 }
 
@@ -216,7 +259,7 @@ public class Assess {
         SeisDataDAOAssess.retrieveHypos(selectedSeisEvent.getEvid(),
                 hypocentresList.getHypocentres());
         SeisDataDAOAssess.retrieveHyposMagnitude(hypocentresList.getHypocentres());
-        // as I remove all the hypos when clicking an event to retrieve the hypos, 
+        // as I remove all the hypos when clicking an event to retrieve the hypos,
         // so need reset prime hypo every time
         // TODO: Saiful, What is this?
         for (Hypocentre hypo : hypocentresList.getHypocentres()) {

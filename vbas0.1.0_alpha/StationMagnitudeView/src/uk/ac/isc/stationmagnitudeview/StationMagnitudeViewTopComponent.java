@@ -7,12 +7,12 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import org.openide.windows.WindowManager;
-import uk.ac.isc.eventscontrolview.EventsControlViewTopComponent;
+import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
+import uk.ac.isc.seisdata.SeisEvent;
 
 /**
  * Top component which displays the station magnitude view.
@@ -26,7 +26,7 @@ import uk.ac.isc.seisdata.SeisDataChangeListener;
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "magnitudeview", openAtStartup = false)
+@TopComponent.Registration(mode = "magnitudeview", openAtStartup = true)
 @ActionID(category = "Window", id = "uk.ac.isc.stationmagnitudeview.StationMagnitudeViewTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(
@@ -40,17 +40,12 @@ import uk.ac.isc.seisdata.SeisDataChangeListener;
 })
 public final class StationMagnitudeViewTopComponent extends TopComponent implements SeisDataChangeListener {
 
-    //hypo list data
-    private final HypocentresList hyposList;
-
-    //get control window to retrieve data
-    private final TopComponent tc = WindowManager.getDefault().findTopComponent("EventsControlViewTopComponent");
-
     private JScrollPane scrollPane = null;
 
+    private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
+    private final HypocentresList hyposList = Global.getHypocentresList();
     //prime hypo
-    private Hypocentre ph;
-
+    private Hypocentre primeHypocentre;
     //the key object of the view    
     private StationMagnitudeView smView;
 
@@ -58,25 +53,48 @@ public final class StationMagnitudeViewTopComponent extends TopComponent impleme
         initComponents();
         setName(Bundle.CTL_StationMagnitudeViewTopComponent());
         setToolTipText(Bundle.HINT_StationMagnitudeViewTopComponent());
+        Global.logDebug("Loaded..."
+                + ", #SiesEvent=" + Global.getSelectedSeisEvent().getEvid()
+                + ", #Hypocentre=" + hyposList.getHypocentres().size());
 
-        hyposList = ((EventsControlViewTopComponent) tc).getControlPanel().getHyposList();
+        selectedSeisEvent.addChangeListener(this);
 
         for (int i = 0; i < hyposList.getHypocentres().size(); i++) {
             if (hyposList.getHypocentres().get(i).getIsPrime()) {
-                ph = hyposList.getHypocentres().get(i);
+                primeHypocentre = hyposList.getHypocentres().get(i);
             }
         }
 
-        smView = new StationMagnitudeView(ph);
+        smView = new StationMagnitudeView(primeHypocentre);
 
         scrollPane = new JScrollPane(smView);
 
-        //if(!"ISC".equals(ph.getAgency()) || ph.getAgency()==null)
-        //{
-        //   return;
-        //}
         this.setLayout(new BorderLayout());
         this.add(scrollPane, BorderLayout.CENTER);
+    }
+
+    @Override
+    public void SeisDataChanged(SeisDataChangeEvent event) {
+
+        String eventName = event.getData().getClass().getName();
+        Global.logDebug(" Event received from " + eventName
+                + ", #SiesEvent=" + Global.getSelectedSeisEvent().getEvid()
+                + ", #Hypocentre=" + hyposList.getHypocentres().size());
+
+        // It only received SeiesEvent selected/changed now
+        switch (eventName) {
+            case ("uk.ac.isc.seisdata.SeisEvent"):
+                //SeisEvent seisEvent = (SeisEvent) event.getData();
+                for (int i = 0; i < hyposList.getHypocentres().size(); i++) {
+                    if (hyposList.getHypocentres().get(i).getIsPrime()) {
+                        primeHypocentre = hyposList.getHypocentres().get(i);
+                    }
+                }
+                smView.reset(primeHypocentre);
+                scrollPane.setViewportView(smView);
+
+                break;
+        }
 
     }
 
@@ -105,13 +123,13 @@ public final class StationMagnitudeViewTopComponent extends TopComponent impleme
     @Override
     public void componentOpened() {
         // TODO add custom code on component opening
-        hyposList.addChangeListener(this);
+        //hyposList.addChangeListener(this);
     }
 
     @Override
     public void componentClosed() {
         // TODO add custom code on component closing
-        hyposList.removeChangeListener(this);
+        //hyposList.removeChangeListener(this);
     }
 
     void writeProperties(java.util.Properties p) {
@@ -126,23 +144,4 @@ public final class StationMagnitudeViewTopComponent extends TopComponent impleme
         // TODO read your settings according to their version
     }
 
-    //when the hypolist fire a data change event, this function will be called to update the view
-    @Override
-    public void SeisDataChanged(SeisDataChangeEvent event) {
-
-        for (int i = 0; i < hyposList.getHypocentres().size(); i++) {
-            if (hyposList.getHypocentres().get(i).getIsPrime()) {
-                ph = hyposList.getHypocentres().get(i);
-            }
-        }
-
-        //if(!"ISC".equals(ph.getAgency()) || ph.getAgency()==null)
-        //{
-        //    return;
-        //}
-        //scrollPane.removeAll();
-        smView.reset(ph);
-        //scrollPane.add(smView);
-        scrollPane.setViewportView(smView);
-    }
 }

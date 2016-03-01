@@ -32,11 +32,11 @@ import uk.ac.isc.seisdata.SeisUtils;
  * The panel to draw the view
  *
  */
-
-class HypoMagnitudeViewPanel extends JPanel {
+public class HypoMagnitudeViewPanel extends JPanel {
 
     private final ArrayList<Hypocentre> hyposList = new ArrayList<Hypocentre>();
 
+    private int hypocentreMagnitudeViewHeight = 600, hypocentreMagnitudeViewWidth = 300;
     //set a vertical or horizontal layout 
     private final boolean isVertical = false;
 
@@ -61,10 +61,10 @@ class HypoMagnitudeViewPanel extends JPanel {
     private JFreeChart freeChartDelta = null;
 
     //image of hypo magnitude 
-    private BufferedImage HypoMagImg;
+    private BufferedImage hypoMagImg;
 
     //image of delta hypo magnitude
-    private BufferedImage MagDeltaImg;
+    private BufferedImage magDeltaImg;
 
     static Font domainLabelFont = new Font("Verdana", Font.BOLD, 16);
     static Font tickMarkRangeLabelFont = new Font("Verdana", Font.BOLD, 10);
@@ -333,7 +333,7 @@ class HypoMagnitudeViewPanel extends JPanel {
             renderer.setShadowVisible(false);
             renderer.setBarPainter(new StandardBarPainter());
 
-            //control bar width
+            //control bar hypocentreMagnitudeViewHeight
             if (magTypeMap.get(i).size() > 1) {
                 renderer.setMaximumBarWidth(0.3);
                 rend2.setMaximumBarWidth(0.3);
@@ -422,39 +422,63 @@ class HypoMagnitudeViewPanel extends JPanel {
 
         Graphics2D g2 = (Graphics2D) g.create();
 
-        //ChartRenderingInfo info = new ChartRenderingInfo();
-        //draw Horizontal fig
-        if (isVertical) {
-            HypoMagImg = freeChartMain.createBufferedImage(600, 300);
-            MagDeltaImg = freeChartDelta.createBufferedImage(600, 150);
-            int xOffset = (getWidth() - 600) / 2;
-            int yOffset = (getHeight() - 450) / 2;
+        /* Saiful: commented the when vertical section!
+         HypoMagImg = freeChartMain.createBufferedImage(600, 300);
+         MagDeltaImg = freeChartDelta.createBufferedImage(600, 150);
+         int xOffset = (getWidth() - 600) / 2;
+         int yOffset = (getHeight() - 450) / 2;
+         g2.drawImage(MagDeltaImg, xOffset, yOffset, 600, 150, this);
+         g2.drawImage(HypoMagImg, xOffset, yOffset + 150, 600, 300, this);
+         */
+        
+        hypoMagImg = freeChartMain.createBufferedImage(hypocentreMagnitudeViewWidth, hypocentreMagnitudeViewHeight);
+        magDeltaImg = freeChartDelta.createBufferedImage(hypocentreMagnitudeViewWidth, hypocentreMagnitudeViewHeight);
 
-            g2.drawImage(MagDeltaImg, xOffset, yOffset, 600, 150, this);
-            g2.drawImage(HypoMagImg, xOffset, yOffset + 150, 600, 300, this);
-        } else {
-            HypoMagImg = freeChartMain.createBufferedImage(300, 600);
-            MagDeltaImg = freeChartDelta.createBufferedImage(300, 600);
+        int xOffset = (getWidth() - hypocentreMagnitudeViewWidth) / 2;
+        int yOffset = (getHeight() - hypocentreMagnitudeViewHeight) / 2;
 
-            int xOffset = (getWidth() - 600) / 2;
-            int yOffset = (getHeight() - 600) / 2;
-
-            g2.drawImage(HypoMagImg, xOffset, yOffset, 300, 600, this);
-            g2.drawImage(MagDeltaImg, xOffset + 300, yOffset, 300, 600, this);
-        }
+        g2.drawImage(hypoMagImg, xOffset, yOffset, hypocentreMagnitudeViewWidth, hypocentreMagnitudeViewHeight, this);
+        g2.drawImage(magDeltaImg, xOffset + hypocentreMagnitudeViewWidth, yOffset, hypocentreMagnitudeViewWidth, hypocentreMagnitudeViewHeight, this);
 
         g2.dispose();
-        
-           // TEST: 
-        Global.logDebug("Write BufferedImage.");
+
+        // TEST: 
+        // create the new image, canvas size is the max. of both image sizes
+        BufferedImage combined = new BufferedImage(2 * hypocentreMagnitudeViewWidth, hypocentreMagnitudeViewHeight, BufferedImage.TYPE_INT_ARGB);
+        // paint both images, preserving the alpha channels
+        Graphics graphics = combined.getGraphics();
+        graphics.drawImage(hypoMagImg, 0, 0, null);
+        graphics.drawImage(magDeltaImg, hypocentreMagnitudeViewWidth, 0, null);
+
+        // Save as new image
         try {
-            ImageIO.write(HypoMagImg, "png", 
-                    new File("/export/home/saiful/assess/temp/HypoMagImg.png"));        
-            ImageIO.write(MagDeltaImg, "png", 
-                    new File("/export/home/saiful/assess/temp/MagDeltaImg.png")); 
+
+            ImageIO.write(combined, "png",
+                    new File("/export/home/saiful/assess/temp/HypocentreMagnitudeview.png"));
         } catch (Exception e) {
             Global.logSevere("Error creating a png.");
         }
 
     }
+
+    public BufferedImage getBufferedImage() {
+         BufferedImage combined = new BufferedImage(getHypocentreMagnitudeViewWidth(), 
+                 getHypocentreMagnitudeViewHeight(), BufferedImage.TYPE_INT_ARGB);
+
+        // paint both images, preserving the alpha channels
+        Graphics graphics = combined.getGraphics();
+        graphics.drawImage(hypoMagImg, 0, 0, null);
+        graphics.drawImage(magDeltaImg, hypocentreMagnitudeViewWidth, 0, null);
+
+        return combined;
+    }
+
+    public int getHypocentreMagnitudeViewWidth() {
+        return (2 * hypocentreMagnitudeViewWidth);
+    }
+
+    public int getHypocentreMagnitudeViewHeight() {
+        return hypocentreMagnitudeViewHeight;
+    }
+
 }

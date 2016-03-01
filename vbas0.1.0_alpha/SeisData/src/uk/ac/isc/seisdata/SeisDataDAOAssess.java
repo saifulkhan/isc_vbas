@@ -1,7 +1,6 @@
 package uk.ac.isc.seisdata;
 
-import com.orsoncharts.util.json.JSONArray;
-import com.orsoncharts.util.json.JSONObject;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -65,7 +64,8 @@ public final class SeisDataDAOAssess {
     }
 
     public static Path getAssessDir() {
-        Global.logDebug("url=" + url + ", user=" + assessUser + ", password=" + assessPassword);
+        Global.logDebug("\nassessDir=" + assessDir 
+                + "\nurl=" + url + ", user=" + assessUser + ", password=" + assessPassword);
         return assessDir;
     }
 

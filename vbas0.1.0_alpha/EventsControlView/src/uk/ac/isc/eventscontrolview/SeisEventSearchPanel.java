@@ -16,8 +16,6 @@ import javax.swing.JViewport;
 import uk.ac.isc.seisdata.Command;
 import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.SeisDataDAO;
-import com.orsoncharts.util.json.JSONArray;
-import com.orsoncharts.util.json.JSONObject;
 import uk.ac.isc.seisdata.FormulateCommand;
 
 

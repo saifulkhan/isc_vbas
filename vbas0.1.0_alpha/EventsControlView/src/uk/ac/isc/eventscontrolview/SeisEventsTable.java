@@ -133,12 +133,12 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
         /*
          * Commands
          */
-        //SeisDataDAO.readCommandTable(selectedSeisEvent.getEvid(), commandList.getCommandList());
+        SeisDataDAO.readCommandTable(selectedSeisEvent.getEvid(), commandList.getCommandList());
 
         /*
          * AssessedCommand 
          */
-        //SeisDataDAO.readAssessedCommandTable(selectedSeisEvent.getEvid(), assessedCommandList.getAssessedCommandList());
+        SeisDataDAO.readAssessedCommandTable(selectedSeisEvent.getEvid(), assessedCommandList.getAssessedCommandList());
 
         Global.logDebug("#Hypocentres:" + hypocentresList.getHypocentres().size()
                 + " #Phases:" + phasesList.getPhases().size()

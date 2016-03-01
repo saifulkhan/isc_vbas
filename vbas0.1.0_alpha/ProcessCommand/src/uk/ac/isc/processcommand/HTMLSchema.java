@@ -18,8 +18,14 @@ import uk.ac.isc.seisdata.Global;
  */
 public class HTMLSchema {
 
-    private static final String[] tables = {"Hypocentre Table", "Phase Table"};
-    private static final String[] views = {"Hypocentre Overview", "Hypocentre Depthview"};
+    private static final String[] tables = {"HypocentreTable", "PhaseTable"};
+    private static final String[] views = {"HypocentreOverview",
+        "PhaseView",
+        "HypocentreDepthView",
+        "HypocentreMagnitudeView",
+        "StationAzimuthView",
+        "StationMagnitudeView",
+        "AgencyPieChartView"};
 
     private final AbstractTableModel hModel;
     private final AbstractTableModel pModel;
@@ -50,82 +56,54 @@ public class HTMLSchema {
             /*
              * Write the table data first. 
              */
-            /*
-             * Hypocentre table
-             */
-            bufferedWriter.write("<div>");
-            bufferedWriter.newLine();
-            bufferedWriter.write("<h2>Hypocentre Table</h2>");
-            bufferedWriter.newLine();
+            for (String table : tables) {
+                Global.logDebug(table);
 
-            bufferedWriter.write("<table>");
-            bufferedWriter.newLine();
-
-            // write column names
-            bufferedWriter.write("<tr>");
-            bufferedWriter.newLine();
-            for (int c = 0; c < this.hModel.getColumnCount(); ++c) {
-                bufferedWriter.write("<th>");
-                bufferedWriter.write(this.hModel.getColumnName(c));
-                bufferedWriter.write("</th>");
-            }
-            bufferedWriter.write("</tr>");
-            bufferedWriter.newLine();
-
-            // write rows or column data 
-            for (int r = 0; r < this.hModel.getRowCount(); ++r) {
-                bufferedWriter.write("<tr>");
-                for (int c = 0; c < this.hModel.getColumnCount(); ++c) {
-                    bufferedWriter.write("<td>");
-                    //Global.logDebug(model.getValueAt(r, c) == null ? "" : model.getValueAt(r, c).toString());
-                    bufferedWriter.write(this.hModel.getValueAt(r, c) == null ? "" : this.hModel.getValueAt(r, c).toString());
-                    bufferedWriter.write("</td>");
+                AbstractTableModel model = null;
+                switch (table) {
+                    case "HypocentreTable":
+                        model = hModel;
+                        break;
+                    case "PhaseTable":
+                        model = pModel;
+                        break;
                 }
-            }
 
-            bufferedWriter.write("</table>");
-            bufferedWriter.newLine();
-            bufferedWriter.write("</div>");
-            bufferedWriter.newLine();
+                bufferedWriter.write("<div>");
+                bufferedWriter.newLine();
+                bufferedWriter.write("<h2> table </h2>");
+                bufferedWriter.newLine();
 
-            /*
-             * Phase table
-             */
-            bufferedWriter.write("<div>");
-            bufferedWriter.newLine();
-            bufferedWriter.write("<h2>Phase Table</h2>");
-            bufferedWriter.newLine();
+                bufferedWriter.write("<table>");
+                bufferedWriter.newLine();
 
-            bufferedWriter.write("<table>");
-            bufferedWriter.newLine();
-
-            // write column names
-            bufferedWriter.write("<tr>");
-            bufferedWriter.newLine();
-            for (int c = 0; c < this.pModel.getColumnCount(); ++c) {
-                bufferedWriter.write("<th>");
-                bufferedWriter.write(this.pModel.getColumnName(c));
-                bufferedWriter.write("</th>");
-            }
-            bufferedWriter.write("</tr>");
-            bufferedWriter.newLine();
-
-            // write rows or column data 
-            for (int r = 0; r < this.pModel.getRowCount(); ++r) {
+                // write column names
                 bufferedWriter.write("<tr>");
-                for (int c = 0; c < this.pModel.getColumnCount(); ++c) {
-                    bufferedWriter.write("<td>");
-                    //Global.logDebug(model.getValueAt(r, c) == null ? "" : model.getValueAt(r, c).toString());
-                    bufferedWriter.write(this.pModel.getValueAt(r, c) == null ? "" : this.pModel.getValueAt(r, c).toString());
-                    bufferedWriter.write("</td>");
+                bufferedWriter.newLine();
+                for (int c = 0; c < model.getColumnCount(); ++c) {
+                    bufferedWriter.write("<th>");
+                    bufferedWriter.write(model.getColumnName(c));
+                    bufferedWriter.write("</th>");
                 }
+                bufferedWriter.write("</tr>");
+                bufferedWriter.newLine();
+
+                // write rows or column data 
+                for (int r = 0; r < model.getRowCount(); ++r) {
+                    bufferedWriter.write("<tr>");
+                    for (int c = 0; c < model.getColumnCount(); ++c) {
+                        bufferedWriter.write("<td>");
+                        //Global.logDebug(model.getValueAt(r, c) == null ? "" : model.getValueAt(r, c).toString());
+                        bufferedWriter.write(model.getValueAt(r, c) == null ? "" : model.getValueAt(r, c).toString());
+                        bufferedWriter.write("</td>");
+                    }
+                }
+
+                bufferedWriter.write("</table>");
+                bufferedWriter.newLine();
+                bufferedWriter.write("</div>");
+                bufferedWriter.newLine();
             }
-
-            bufferedWriter.write("</table>");
-            bufferedWriter.newLine();
-            bufferedWriter.write("</div>");
-            bufferedWriter.newLine();
-
 
             /*
              * Write the images (just name and structure) 
@@ -159,9 +137,9 @@ public class HTMLSchema {
                     bufferedWriter.close();
                 }
                 /*if (fileWritter != null) {
-                    //fileWritter.flush();
-                    fileWritter.close();
-                }*/
+                 //fileWritter.flush();
+                 fileWritter.close();
+                 }*/
 
             } catch (IOException e) {
                 Global.logSevere("Error releasing resources.");

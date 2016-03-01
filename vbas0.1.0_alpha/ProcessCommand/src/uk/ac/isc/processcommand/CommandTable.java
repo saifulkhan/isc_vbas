@@ -170,25 +170,33 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
             if (!event.getValueIsAdjusting()) {
 
                 /*
-                 * Check if multiple SeiesEvent Relocate commands are selected for Assess.
+                 * Check if multiple 'seiseventrelocate' or 'setprime' commands are selected for Assess.
                  */
-                HashSet set = new HashSet();
+                
+                /*
+                //HashSet set = new HashSet();
+                Boolean similar = false;
                 for (int r : table.getSelectedRows()) {
                     String commandType = (String) table.getValueAt(r, 4);
-                    Global.logDebug("Row=" + r + ", commndType=" + commandType);
-                    if (commandType.equals("seiseventrelocate")) {
-                        if (set.add(commandType) == false) {
+                    Global.logDebug("Row=" + r + "; Selected commndType=" + commandType);
+                    if (commandType.equals("seiseventrelocate") || commandType.equals("setprime")) {
+                        //if (set.add(commandType) == false) {
+                        if (similar == false) {
+                            similar = true;
+                        } else if (similar == true) {
                             JOptionPane.showMessageDialog(null,
                                     "Selected multiple 'SiesEvent Relocate' commands.", "Warning",
                                     JOptionPane.WARNING_MESSAGE);
-                            table.getSelectionModel().clearSelection();
-                            table.getColumnModel().getSelectionModel().clearSelection();
                         }
+                        table.getSelectionModel().clearSelection();
+                        table.getColumnModel().getSelectionModel().clearSelection();
                     }
-                }
+                }*/
             }
+
         }
     }
+
 
     /*
      *****************************************************************************************
@@ -278,7 +286,8 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
                         + "\nsystemCommand= " + formulateCommand.getSystemCommand().toString());
 
                 boolean ret = SeisDataDAO.updateAssessedCommandTable(Global.getSelectedSeisEvent().getEvid(), commandType,
-                        formulateCommand.getCmdProvenance().toString(), formulateCommand.getSystemCommand().toString(),
+                        formulateCommand.getCmdProvenance().toString(), 
+                        commandIds.toString(), /*Note: we are just writing the command IDs*/
                         commandIds);
 
                 if (ret) {

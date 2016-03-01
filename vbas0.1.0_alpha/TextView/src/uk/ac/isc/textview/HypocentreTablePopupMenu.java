@@ -1,7 +1,5 @@
 package uk.ac.isc.textview;
 
-import com.orsoncharts.util.json.JSONArray;
-import com.orsoncharts.util.json.JSONObject;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;

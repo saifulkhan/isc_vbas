@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +21,7 @@ import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.statistics.HistogramDataset;
 import org.openide.util.Exceptions;
 import org.openstreetmap.gui.jmapviewer.OsmMercator;
+import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.SeisDataDAO;
 import uk.ac.isc.seisdata.SeisUtils;
@@ -614,6 +616,26 @@ class StationMagnitudeView extends JPanel {
 
         g2.drawImage(histMb, xOffset, yOffset + StaImSize + 20, StaImSize, StaHistHeight, null);
         g2.drawImage(histMs, xOffset + StaImSize + 20, yOffset + StaImSize + 20, StaImSize, StaHistHeight, null);
+
+        // TEST:
+        BufferedImage combined = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+        // paint both images, preserving the alpha channels
+        Graphics graphics = combined.getGraphics();
+        graphics.drawImage(dstImgMb, 0, 0, StaImSize, StaImSize, null);
+        graphics.drawImage(dstImgMs, StaImSize + 20, 0, StaImSize, StaImSize, null);
+        graphics.drawImage(histMb, 0, StaImSize + 20, StaImSize, StaHistHeight, null);
+        graphics.drawImage(histMs, 0 + StaImSize + 20, 0 + StaImSize + 20, StaImSize, StaHistHeight, null);
+
+        Global.logDebug("Write BufferedImage.");
+        try {
+
+            ImageIO.write(combined, "png",
+                    new File("/export/home/saiful/assess/temp/StationMagnitudeView.png"));
+
+        } catch (Exception e) {
+            Global.logSevere("Error creating a png.");
+        }
+
     }
 
 }
