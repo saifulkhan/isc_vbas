@@ -243,14 +243,14 @@ public class HypoDepthViewPanel extends JPanel {
         //g2.drawImage(depthHistImg, null, 0, 0);
         g2.dispose();
 
-        // TEST: 
+        /*// TEST: 
         Global.logDebug("Write BufferedImage.");
         try {
             ImageIO.write(depthHistImg, "png",
                     new File("/export/home/saiful/assess/temp/HypocentreDepthView.png"));
         } catch (Exception e) {
             Global.logSevere("Error creating a png.");
-        }
+        }*/
 
     }
 
@@ -258,7 +258,6 @@ public class HypoDepthViewPanel extends JPanel {
         return depthHistImg;
     }
 
-    
     public int getWidth() {
         return width;
     }
@@ -266,7 +265,5 @@ public class HypoDepthViewPanel extends JPanel {
     public int getHeight() {
         return height;
     }
-    
-    
 
 }

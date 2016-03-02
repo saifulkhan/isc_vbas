@@ -18,6 +18,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 import uk.ac.isc.hypodepthview.HypoDepthViewPanel;
 import uk.ac.isc.hypooverview.HypoOverviewPanel2;
 import uk.ac.isc.seisdata.Global;
@@ -29,6 +30,7 @@ import uk.ac.isc.seisdata.SeisEvent;
 import org.openstreetmap.gui.jmapviewer.interfaces.TileLoaderListener; // Note: Required to avoid compilation error.
 import uk.ac.isc.hypomagnitudeview.HypoMagnitudeViewPanel;
 import uk.ac.isc.stationazimuthview.StationAzimuthView;
+import uk.ac.isc.stationmagnitudeview.StationMagnitudeView;
 import uk.ac.isc.textview.HypocentreTableModel;
 import uk.ac.isc.textview.PhaseTextViewTableModel;
 
@@ -50,13 +52,12 @@ public class Assess {
 
         this.assessDir = assessDir;
 
-        String iscLocOut = assessDir + File.separator
-                + "iscloc." + Global.getSelectedSeisEvent().getEvid() + ".out";
+        String iscLocOut = assessDir + File.separator + "iscloc.out";
 
-        Global.logDebug("\nassessDir=" + assessDir
-                + "\nfunctionArray=" + functionArray.toString()
-                + "\nlocatorCommandStr=" + locatorArgStr
-                + "\niscLocOut=" + iscLocOut);
+        Global.logDebug("nassessDir= " + assessDir);
+        Global.logDebug("functionArray= " + functionArray.toString());
+        Global.logDebug("locatorCommandStr= " + locatorArgStr);
+        Global.logDebug("iscLocOut= " + iscLocOut);
 
         SeisDataDAOAssess.processAssessData(Global.getSelectedSeisEvent().getEvid(), functionArray);
 
@@ -148,7 +149,7 @@ public class Assess {
                     //HypoDepthViewPanel hdv = new HypoDepthViewPanel(hypocentresList.getHypocentres());
                     //genetarePNG(view, hdv, hdv.getWidth(), hdv.getHeight());
                     break;
-                    
+
                 case "HypocentreDepthView":
                     HypoDepthViewPanel hdv = new HypoDepthViewPanel(hypocentresList.getHypocentres());
                     genetarePNG(view, hdv, hdv.getWidth(), hdv.getHeight());
@@ -165,9 +166,10 @@ public class Assess {
                     break;
 
                 case "StationMagnitudeView":
-                    //HypoDepthViewPanel hdv = new HypoDepthViewPanel(hypocentresList.getHypocentres());
-                    //genetarePNG(view, hdv, hdv.getWidth(), hdv.getHeight());
+                    StationMagnitudeView smView = new StationMagnitudeView(hypocentresList);
+                    genetarePNG(view, smView, smView.getStationMagnitudeViewWidth(), smView.getStationMagnitudeViewHeight());
                     break;
+
                 case "AgencyPieChartView":
                     //HypoDepthViewPanel hdv = new HypoDepthViewPanel(hypocentresList.getHypocentres());
                     //genetarePNG(view, hdv, hdv.getWidth(), hdv.getHeight());
@@ -183,69 +185,67 @@ public class Assess {
         f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         f.setModal(true);
         f.setLayout(new BorderLayout());
-        JButton button_ok = new JButton("OK");
-
-        f.setPreferredSize(new Dimension(width, height));
+        f.setPreferredSize(new Dimension(width + 40, height + 40));
         f.add(panel, BorderLayout.CENTER);
-
-        f.add(button_ok, BorderLayout.PAGE_END);
         f.pack();
 
-        /*
-         * Pop-up the view.
-         * Read the corresponding BufferedImage.
-         */
-        button_ok.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-
-                File outputFile = new File(assessDir + File.separator + view + ".png");
-                BufferedImage bi = null;
-
-                switch (view) {
-                    case "HypocentreOverview":
-                        HypoOverviewPanel2 hop = (HypoOverviewPanel2) panel;
-                        bi = hop.getBaseMap();
-                        break;
-
-                    case "PhaseView":
-                        break;
-
-                    case "HypocentreDepthView":
-                        HypoDepthViewPanel hdp = (HypoDepthViewPanel) panel;
-                        bi = hdp.getDepthHistImg();
-                        break;
-
-                    case "HypocentreMagnitudeView":
-                        HypoMagnitudeViewPanel hmag = (HypoMagnitudeViewPanel) panel;
-                        bi = hmag.getBufferedImage();
-                        break;
-
-                    case "StationAzimuthView":
-                        StationAzimuthView saView = (StationAzimuthView) panel;
-                        bi = saView.getBufferedImage();
-                        break;
-
-                    case "StationMagnitudeView":
-                        
-                        break;
-                        
-                    case "AgencyPieChartView":
-                        break;
-                }
-
-                try {
-
-                    ImageIO.write(bi, "png", outputFile);
-                } catch (Exception e) {
-                    Global.logSevere("Error creating a png file: " + outputFile.toString());
-                    e.printStackTrace();
-                }
-
+        // Note: see tutorial
+        // http://stackoverflow.com/questions/1306868/can-i-set-a-timer-on-a-java-swing-jdialog-box-to-close-after-a-number-of-millise
+        Timer timer = new Timer(500, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                f.setVisible(false);
                 f.dispose();
             }
         });
-
+        timer.setRepeats(false);
+        timer.start();
         f.setVisible(true);
+        
+      
+        File outputFile = new File(assessDir + File.separator + view + ".png");
+        BufferedImage bi = null;
+
+        switch (view) {
+            case "HypocentreOverview":
+                HypoOverviewPanel2 hop = (HypoOverviewPanel2) panel;
+                bi = hop.getBaseMap();
+                break;
+
+            case "PhaseView":
+                break;
+
+            case "HypocentreDepthView":
+                HypoDepthViewPanel hdp = (HypoDepthViewPanel) panel;
+                bi = hdp.getDepthHistImg();
+                break;
+
+            case "HypocentreMagnitudeView":
+                HypoMagnitudeViewPanel hmag = (HypoMagnitudeViewPanel) panel;
+                bi = hmag.getBufferedImage();
+                break;
+
+            case "StationAzimuthView":
+                StationAzimuthView saView = (StationAzimuthView) panel;
+                bi = saView.getBufferedImage();
+                break;
+
+            case "StationMagnitudeView":
+                StationMagnitudeView smView = (StationMagnitudeView) panel;
+                bi = smView.getBufferedImage();
+                break;
+
+            case "AgencyPieChartView":
+                break;
+        }
+
+        try {
+
+            ImageIO.write(bi, "png", outputFile);
+        } catch (Exception e) {
+            Global.logSevere("Error creating a png file: " + outputFile.toString());
+            e.printStackTrace();
+        }
+
     }
 
     private void loadSelectedSeisEventData() {
@@ -287,8 +287,9 @@ public class Assess {
                                     .getReportStation()));
         }
 
-        Global.logDebug("#Hypocentres:" + hypocentresList.getHypocentres().size()
-                + " #Phases:" + phasesList.getPhases().size());
+        Global.logDebug("SeisEvent=" + selectedSeisEvent.getEvid()
+                + ", #Hypocentres:" + hypocentresList.getHypocentres().size()
+                + ", #Phases:" + phasesList.getPhases().size());
 
     }
 

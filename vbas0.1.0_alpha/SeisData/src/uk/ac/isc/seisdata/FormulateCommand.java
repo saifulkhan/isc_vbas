@@ -101,14 +101,18 @@ public class FormulateCommand {
             for (Object o : arr) {
                 JSONObject jObj = (JSONObject) o;
                 JSONArray array = (JSONArray) jObj.get("sqlFunctionArray");
-                sqlFunctionArray.addAll(array);     // append all 
+                if (array != null) {
+                    sqlFunctionArray.addAll(array);     // append all 
+                }
                 addLocatorArg(jObj.get("locatorArgStr").toString());
             }
 
         } else if (isObject(cmd)) {
             JSONObject jObj = (JSONObject) obj;
             JSONArray array = (JSONArray) jObj.get("sqlFunctionArray");
-            sqlFunctionArray.addAll(array);     // append all 
+            if (array != null) {
+                sqlFunctionArray.addAll(array);     // append all 
+            }
             addLocatorArg(jObj.get("locatorArgStr").toString());
         }
 
@@ -117,7 +121,7 @@ public class FormulateCommand {
     }
 
     public ArrayList<String> getSQLFunctionArray() {
-        ArrayList<String> fun = new ArrayList<String> ();
+        ArrayList<String> fun = new ArrayList<String>();
 
         for (Object o : sqlFunctionArray) {
             JSONObject jObj = (JSONObject) o;
@@ -145,8 +149,12 @@ public class FormulateCommand {
 
         JSONObject attrObj = new JSONObject();
         attrObj.put("name", attributeName);
-        attrObj.put("oldValue", oldValue);
-        attrObj.put("newvalue", newValue);
+        if (oldValue != null) {
+            attrObj.put("oldValue", oldValue);
+        }
+        if (newValue != null) {
+            attrObj.put("newValue", newValue);
+        }
 
         attrArray.add(attrObj);
     }
@@ -164,6 +172,62 @@ public class FormulateCommand {
         }
 
         return obj;
+    }
+
+    // Reformat the input command (Command Provenance format) for user.
+    public static String getRedableCommandStr(String cmd) {
+
+        Global.logDebug("json: " + cmd);
+
+        JSONParser parser = new JSONParser();
+        Object obj = null;
+        try {
+            obj = parser.parse(cmd);
+        } catch (com.orsoncharts.util.json.parser.ParseException ex) {
+            Global.logSevere("cmd=" + cmd + " is not a valid json format.");
+        }
+
+        String str = "";
+
+        if (isArray(cmd)) { // array of System Command
+            JSONArray commands = (JSONArray) obj;
+            for (Object o : commands) {
+                JSONObject command = (JSONObject) o;
+                str += command.get("dataType").toString() + "#" + command.get("id").toString() + ": ";
+
+                // TODO: repeated code
+                JSONArray attributes = (JSONArray) command.get("attributeArray");
+                if (attributes != null) {
+                    for (Object o1 : attributes) {
+                        JSONObject attribute = (JSONObject) o1;
+                        str += attribute.get("name").toString() + ":"
+                                + (attribute.get("oldValue") == null ? "" : (attribute.get("oldValue").toString() + "->"))
+                                + (attribute.get("newValue") == null ? "" : attribute.get("newValue").toString())
+                                + " ";
+                    }
+                }
+            }
+
+        } else if (isObject(cmd)) {
+            JSONObject command = (JSONObject) obj;
+            str += command.get("dataType").toString() + "#" + command.get("id").toString() + ": ";
+
+            // TODO: repeated code
+            JSONArray attributes = (JSONArray) command.get("attributeArray");
+            if (attributes != null) {
+                for (Object o1 : attributes) {
+                    JSONObject attribute = (JSONObject) o1;
+                    str += attribute.get("name").toString() + ":"
+                            + (attribute.get("oldValue") == null ? "" : (attribute.get("oldValue").toString() + "->"))
+                            + (attribute.get("newValue") == null ? "" : attribute.get("newValue").toString())
+                            + " ";
+                }
+            }
+
+        }
+
+        Global.logDebug("readable format: " + str);
+        return str;
     }
 
     /*

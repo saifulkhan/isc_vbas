@@ -470,7 +470,7 @@ public class StationAzimuthView extends JPanel {
         graphics.setClip(new Ellipse2D.Double(0 + imSize / 8, 0 + imSize / 8, imSize * 0.75, imSize * 0.75));
         graphics.drawImage(dstImg, 0, 0, null);
 
-        Global.logDebug("Write BufferedImage.");
+        /*//Global.logDebug("Write BufferedImage.");
         try {
 
             ImageIO.write(combined, "png",
@@ -483,7 +483,7 @@ public class StationAzimuthView extends JPanel {
 
         } catch (Exception e) {
             Global.logSevere("Error creating a png.");
-        }
+        }*/
 
     }
 
@@ -491,7 +491,7 @@ public class StationAzimuthView extends JPanel {
         BufferedImage combined = new BufferedImage(stationAzimuthViewWidth, stationAzimuthViewheight, BufferedImage.TYPE_INT_ARGB);
         Graphics graphics = combined.getGraphics();
         graphics.drawImage(azImg, 0, 0, null);
-        
+
         graphics.setClip(new Ellipse2D.Double(0 + stationAzimuthViewWidth / 8,
                 0 + stationAzimuthViewWidth / 8,
                 stationAzimuthViewWidth * 0.75,

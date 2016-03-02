@@ -37,7 +37,7 @@ public class SeisEvent extends AbstractSeisData {
         this.srn = another.defaultDepth;
         this.defaultDepth = another.defaultDepth;
     }
-    
+
     public void setEvid(Integer evid) {
         this.evid = evid;
     }

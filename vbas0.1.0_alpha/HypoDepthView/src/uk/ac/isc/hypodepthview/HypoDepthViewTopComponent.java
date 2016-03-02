@@ -75,7 +75,7 @@ public final class HypoDepthViewTopComponent extends TopComponent implements Sei
         this.add(scrollPane, BorderLayout.CENTER);
     }
 
-     //repaint the view when data changes
+    //repaint the view when data changes
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
 
@@ -90,17 +90,17 @@ public final class HypoDepthViewTopComponent extends TopComponent implements Sei
                 break;
 
             case ("uk.ac.isc.seisdata.Hypocentre"):
-               //Hypocentre hypocentre = (Hypocentre) event.getData();
-               Global.logDebug("Hypocentre= " + selectedHypocentre.getHypid());
+                //Hypocentre hypocentre = (Hypocentre) event.getData();
+                Global.logDebug("Hypocentre= " + selectedHypocentre.getHypid());
                 break;
         }
-        
+
         hdp.UpdateData(hyposList.getHypocentres());
         hdp.getJFreeChart().fireChartChanged();
         hdp.repaint();
         scrollPane.setViewportView(hdp);
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

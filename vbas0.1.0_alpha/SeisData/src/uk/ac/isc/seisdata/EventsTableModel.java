@@ -10,42 +10,41 @@ import javax.swing.table.AbstractTableModel;
 
 /**
  * This is an extended class for saving events list showing in an table data in
- * rows are events, columns are Evid, lat, region, lon and Orig time
- * Just need to override some standard functions to make the table model working
+ * rows are events, columns are Evid, lat, region, lon and Orig time Just need
+ * to override some standard functions to make the table model working
  */
-
 public class EventsTableModel extends AbstractTableModel {
 
     private final String[] columnNames = {
-        "Event ID.", 
-        "Prime", 
-        "Region", 
-        "Origin Time", 
-        "Lat.", 
-        "Long.", 
-        "Mag.()", 
+        "Event ID.",
+        "Prime",
+        "Region",
+        "Origin Time",
+        "Lat.",
+        "Long.",
+        "Mag.()",
         "Nass"};
-    
-    private final Class[] columns = new Class[] {
-        Integer.class, 
-        String.class, 
-        String.class, 
-        String.class, 
-        String.class, 
-        String.class, 
-        String.class, 
+
+    private final Class[] columns = new Class[]{
+        Integer.class,
+        String.class,
+        String.class,
+        String.class,
+        String.class,
+        String.class,
+        String.class,
         Integer.class};
-    
+
     public final Object[] longValues = {
-        new Integer(0), 
-        new String(new char[5]), 
+        new Integer(0),
+        new String(new char[5]),
         new String(new char[20]),
         "00:00:00",
         "",
         "",
         "9.9",
         new Integer(9999)};
- 
+
     private final ArrayList<SeisEvent> events;
 
     public EventsTableModel(ArrayList<SeisEvent> events) {
@@ -86,7 +85,7 @@ public class EventsTableModel extends AbstractTableModel {
         } else if (columnIndex == 2) {
             retObject = events.get(rowIndex).getLocation();
         } else if (columnIndex == 3) {
-            Date datetmp = events.get(rowIndex).getPrimeHypo().getOrigTime();            
+            Date datetmp = events.get(rowIndex).getPrimeHypo().getOrigTime();
             String dateOut = formatter.format(datetmp);
             retObject = dateOut;
         } else if (columnIndex == 4) {
@@ -94,7 +93,7 @@ public class EventsTableModel extends AbstractTableModel {
                 Double lat = events.get(rowIndex).getPrimeHypo().getLat();
                 String sign = lat > 0 ? "N" : "S";
                 retObject = numFormat.format(Math.abs(lat)) + sign;
-                
+
             } else {
                 retObject = null;
             }
@@ -104,7 +103,7 @@ public class EventsTableModel extends AbstractTableModel {
                 String sign = lon > 0 ? "E" : "W";
                 retObject = numFormat.format(Math.abs(lon)) + sign;
                 //retObject = numFormat.format(events.get(rowIndex).getPrimeHypo().getLon());
-                
+
             } else {
                 retObject = null;
             }

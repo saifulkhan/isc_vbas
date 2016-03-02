@@ -1,6 +1,5 @@
 package uk.ac.isc.seisdata;
 
-
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -64,8 +63,8 @@ public final class SeisDataDAOAssess {
     }
 
     public static Path getAssessDir() {
-        Global.logDebug("\nassessDir=" + assessDir 
-                + "\nurl=" + url + ", user=" + assessUser + ", password=" + assessPassword);
+        Global.logDebug("assessDir=" + assessDir + ", url=" + url  
+                + ", user=" + assessUser + ", password=" + assessPassword);
         return assessDir;
     }
 

@@ -9,6 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -63,16 +64,16 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
     private JScrollPane scrollPane = null;
     private PhaseTableSortPanel phaseTableSortPanel = null;
     private final PhaseTablePopupManager ptPopupManager;
-    
+
     private static SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
     private static final PhasesList phasesList = Global.getPhasesList();
-        
+
     public PhaseTextViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_PhaseTextViewTopComponent());
         setToolTipText(Bundle.HINT_PhaseTextViewTopComponent());
         Global.logDebug("Here...");
-        
+
         selectedSeisEvent.addChangeListener(this);
 
         model = new PhaseTextViewTableModel(phasesList.getPhases());
@@ -113,10 +114,10 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
     // Receive SeisEvent changes and redraw the table.
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
-        System.out.println(Global.debugAt() + " Event received from " + event.getData().getClass().getName());
+        Global.logDebug("Event received from " + event.getData().getClass().getName());
         selectedSeisEvent = Global.getSelectedSeisEvent();
 
-        System.out.println(Global.debugAt() + "phasesList.getPhases().size()= " + phasesList.getPhases().size());
+        Global.logDebug("#Phases= " + phasesList.getPhases().size());
         model = new PhaseTextViewTableModel(phasesList.getPhases());
         table.setModel(model);
 
@@ -240,7 +241,7 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
     private class MyMouseAdapter extends MouseAdapter {
 
         public void mouseClicked(MouseEvent e) {
-            System.out.println(Global.debugAt());
+            Global.logDebug("");
 
             Point p = e.getPoint();
             final int row = table.rowAtPoint(p);
@@ -252,14 +253,13 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
                 ptPopupManager.getPopupMenu().setVisible(false);
             }
 
-            System.out.println(Global.debugAt() + "1. selectedRow= " + selectedRows + ", selectedCol= " + selectedCols);
-
             // Specify the condition(s) you want for the popup display.
             // For Example: show popup only if a row & column is selected, and mouse right clicked.
             if (selectedRows.length > 0 && selectedCols.length > 0 && SwingUtilities.isRightMouseButton(e)) {
                 Rectangle r = table.getCellRect(row, col, false);
                 ptPopupManager.getPopupMenu().show(table, r.x, r.y + r.height);
-                System.out.println(Global.debugAt() + "selectedRow= " + selectedRows + ", selectedCol= " + selectedCols);
+                Global.logDebug("selectedRows: " + Arrays.toString(selectedRows)
+                        + ", selectedCols: " + Arrays.toString(selectedCols));
             } else {
                 e.consume();
             }

@@ -11,9 +11,9 @@ class PhaseEditData implements Cloneable {
     private String phaseBreak;
     private Integer putSeisEvent;
 
-    public PhaseEditData(Integer phaseId, 
-            String type, 
-            Boolean fix, 
+    public PhaseEditData(Integer phaseId,
+            String type,
+            Boolean fix,
             Boolean nondef,
             Integer timeShift,
             Boolean deleteAmp,

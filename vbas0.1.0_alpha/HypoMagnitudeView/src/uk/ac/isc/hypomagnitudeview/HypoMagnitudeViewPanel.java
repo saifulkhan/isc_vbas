@@ -430,7 +430,6 @@ public class HypoMagnitudeViewPanel extends JPanel {
          g2.drawImage(MagDeltaImg, xOffset, yOffset, 600, 150, this);
          g2.drawImage(HypoMagImg, xOffset, yOffset + 150, 600, 300, this);
          */
-        
         hypoMagImg = freeChartMain.createBufferedImage(hypocentreMagnitudeViewWidth, hypocentreMagnitudeViewHeight);
         magDeltaImg = freeChartDelta.createBufferedImage(hypocentreMagnitudeViewWidth, hypocentreMagnitudeViewHeight);
 
@@ -450,20 +449,20 @@ public class HypoMagnitudeViewPanel extends JPanel {
         graphics.drawImage(hypoMagImg, 0, 0, null);
         graphics.drawImage(magDeltaImg, hypocentreMagnitudeViewWidth, 0, null);
 
-        // Save as new image
+        /*// Save as new image
         try {
 
             ImageIO.write(combined, "png",
                     new File("/export/home/saiful/assess/temp/HypocentreMagnitudeview.png"));
         } catch (Exception e) {
             Global.logSevere("Error creating a png.");
-        }
+        }*/
 
     }
 
     public BufferedImage getBufferedImage() {
-         BufferedImage combined = new BufferedImage(getHypocentreMagnitudeViewWidth(), 
-                 getHypocentreMagnitudeViewHeight(), BufferedImage.TYPE_INT_ARGB);
+        BufferedImage combined = new BufferedImage(getHypocentreMagnitudeViewWidth(),
+                getHypocentreMagnitudeViewHeight(), BufferedImage.TYPE_INT_ARGB);
 
         // paint both images, preserving the alpha channels
         Graphics graphics = combined.getGraphics();

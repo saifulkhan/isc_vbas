@@ -17,7 +17,7 @@ public class SeisDataChangeEvent extends EventObject {
     public SeisData getData() {
         return this.data;
     }
-    
+
     public void debug() {
         // Debug
         String fullClassName = Thread.currentThread().getStackTrace()[2].getClassName();

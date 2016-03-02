@@ -1,7 +1,5 @@
 package uk.ac.isc.seisdata;
 
-
-
 public class AssessedCommand extends AbstractSeisData {
 
     private Boolean select; // the selection flag of the assessed command
@@ -10,9 +8,9 @@ public class AssessedCommand extends AbstractSeisData {
     private String ids;     // command id(s)
     private String analyst; // analyst name
     private String report;    // the report to the pdf file (assessed report)
-    
+
     public AssessedCommand() {
-        
+
     }
 
     public AssessedCommand(Integer evid, String ids, String analyst, String report) {
@@ -23,7 +21,6 @@ public class AssessedCommand extends AbstractSeisData {
         this.report = report;
     }
 
-    
     public Boolean getSelect() {
         return select;
     }
@@ -63,7 +60,5 @@ public class AssessedCommand extends AbstractSeisData {
     public void setReport(String path) {
         this.report = path;
     }
-
-    
 
 }

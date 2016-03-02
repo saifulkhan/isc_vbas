@@ -116,69 +116,70 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
 
     private int yOffset;
 
-    PhaseTravelViewPanel(PhasesList pList, Hypocentre ph) {
-        this.pList = pList;
-        setPreferredSize(new Dimension(500, 1000));
+    /*
+     PhaseTravelViewPanel(PhasesList pList, Hypocentre ph) {
+     this.pList = pList;
+     setPreferredSize(new Dimension(500, 1000));
 
-        phaseSeries = new DuplicateUnorderTimeSeries("");
+     phaseSeries = new DuplicateUnorderTimeSeries("");
 
-        zoomMinTime = Double.MAX_VALUE;
-        zoomMaxTime = Double.MIN_VALUE;
-        zoomMinDist = Double.MAX_VALUE;
-        zoomMaxDist = Double.MIN_VALUE;
+     zoomMinTime = Double.MAX_VALUE;
+     zoomMaxTime = Double.MIN_VALUE;
+     zoomMinDist = Double.MAX_VALUE;
+     zoomMaxDist = Double.MIN_VALUE;
 
-        //put phases into the dataseries
-        for (Phase p : pList.getPhases()) {
-            if ((p.getArrivalTime() != null) && ((p.getTimeResidual() != null && Math.abs(p.getTimeResidual()) > residualCutoffLevel) || (p.getTimeResidual() == null))) {
-                RegularTimePeriod rp = new Second(p.getArrivalTime());
-                phaseSeries.add(rp, p.getDistance());
-                if (detailedPList.getPhases().size() < 20) {
-                    detailedPList.getPhases().add(p);
+     //put phases into the dataseries
+     for (Phase p : pList.getPhases()) {
+     if ((p.getArrivalTime() != null) && ((p.getTimeResidual() != null && Math.abs(p.getTimeResidual()) > residualCutoffLevel) || (p.getTimeResidual() == null))) {
+     RegularTimePeriod rp = new Second(p.getArrivalTime());
+     phaseSeries.add(rp, p.getDistance());
+     if (detailedPList.getPhases().size() < 20) {
+     detailedPList.getPhases().add(p);
 
-                    //get zoom range
-                    if ((double) p.getArrivalTime().getTime() < zoomMinTime) {
-                        zoomMinTime = (double) p.getArrivalTime().getTime();
-                    }
+     //get zoom range
+     if ((double) p.getArrivalTime().getTime() < zoomMinTime) {
+     zoomMinTime = (double) p.getArrivalTime().getTime();
+     }
 
-                    if ((double) p.getArrivalTime().getTime() > zoomMaxTime) {
-                        zoomMaxTime = (double) p.getArrivalTime().getTime();
-                    }
+     if ((double) p.getArrivalTime().getTime() > zoomMaxTime) {
+     zoomMaxTime = (double) p.getArrivalTime().getTime();
+     }
 
-                    if (p.getDistance() < zoomMinDist) {
-                        zoomMinDist = p.getDistance();
-                    }
+     if (p.getDistance() < zoomMinDist) {
+     zoomMinDist = p.getDistance();
+     }
 
-                    if (p.getDistance() > zoomMaxDist) {
-                        zoomMaxDist = p.getDistance();
-                    }
-                }
+     if (p.getDistance() > zoomMaxDist) {
+     zoomMaxDist = p.getDistance();
+     }
+     }
 
-            }
-        }
-        dataset.addSeries(phaseSeries);
+     }
+     }
+     dataset.addSeries(phaseSeries);
 
-        this.prime = ph;
+     this.prime = ph;
 
-        minTime = Math.min(ph.getOrigTime().getTime(), phaseSeries.getMinX());
-        maxTime = phaseSeries.getMaxX();
-        maxDist = phaseSeries.getMaxY();
+     minTime = Math.min(ph.getOrigTime().getTime(), phaseSeries.getMinX());
+     maxTime = phaseSeries.getMaxX();
+     maxDist = phaseSeries.getMaxY();
 
-        createTravelImage();
+     createTravelImage();
 
-        //get the rectangle based on the freechart, reverse the min and max
-        double yMax = freechart.getXYPlot().getDomainAxis().valueToJava2D(zoomMinTime, info.getPlotInfo().getDataArea(), freechart.getXYPlot().getDomainAxisEdge());
-        double yMin = freechart.getXYPlot().getDomainAxis().valueToJava2D(zoomMaxTime, info.getPlotInfo().getDataArea(), freechart.getXYPlot().getDomainAxisEdge());
-        double xMin = freechart.getXYPlot().getRangeAxis().valueToJava2D(zoomMinDist, info.getPlotInfo().getDataArea(), freechart.getXYPlot().getRangeAxisEdge());
-        double xMax = freechart.getXYPlot().getRangeAxis().valueToJava2D(zoomMaxDist, info.getPlotInfo().getDataArea(), freechart.getXYPlot().getRangeAxisEdge());
+     //get the rectangle based on the freechart, reverse the min and max
+     double yMax = freechart.getXYPlot().getDomainAxis().valueToJava2D(zoomMinTime, info.getPlotInfo().getDataArea(), freechart.getXYPlot().getDomainAxisEdge());
+     double yMin = freechart.getXYPlot().getDomainAxis().valueToJava2D(zoomMaxTime, info.getPlotInfo().getDataArea(), freechart.getXYPlot().getDomainAxisEdge());
+     double xMin = freechart.getXYPlot().getRangeAxis().valueToJava2D(zoomMinDist, info.getPlotInfo().getDataArea(), freechart.getXYPlot().getRangeAxisEdge());
+     double xMax = freechart.getXYPlot().getRangeAxis().valueToJava2D(zoomMaxDist, info.getPlotInfo().getDataArea(), freechart.getXYPlot().getRangeAxisEdge());
 
-        //define the rectangle and draw it in the buffer
-        Graphics2D g2 = (Graphics2D) phaseImageWithRect.getGraphics();
-        zoomRectangle = new Rectangle2D.Double(xMin, yMin, xMax - xMin, yMax - yMin);
-        drawZoomRectangle(g2, true);
+     //define the rectangle and draw it in the buffer
+     Graphics2D g2 = (Graphics2D) phaseImageWithRect.getGraphics();
+     zoomRectangle = new Rectangle2D.Double(xMin, yMin, xMax - xMin, yMax - yMin);
+     drawZoomRectangle(g2, true);
 
-        addMouseListener(this);
-    }
-
+     addMouseListener(this);
+     }
+     */
     PhaseTravelViewPanel(PhasesList pList, Hypocentre ph, DuplicateUnorderTimeSeriesCollection ttdData) {
         this.pList = pList;
         setPreferredSize(new Dimension(500, 1000));
@@ -517,14 +518,14 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
 
         g2.drawImage(phaseImageWithRect, xOffset, yOffset, this);
 
-        // TEST: 
-        Global.logDebug("Write BufferedImage.");
+        /*// TEST: 
+        //Global.logDebug("Write BufferedImage.");
         try {
             ImageIO.write(phaseImageWithRect, "png",
                     new File("/export/home/saiful/assess/temp/phaseImageWithRect.png"));
         } catch (Exception e) {
             Global.logSevere("Error creating a png.");
-        }
+        }*/
 
     }
 

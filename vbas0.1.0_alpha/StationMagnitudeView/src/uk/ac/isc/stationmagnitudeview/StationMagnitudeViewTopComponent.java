@@ -59,16 +59,14 @@ public final class StationMagnitudeViewTopComponent extends TopComponent impleme
 
         selectedSeisEvent.addChangeListener(this);
 
-        for (int i = 0; i < hyposList.getHypocentres().size(); i++) {
-            if (hyposList.getHypocentres().get(i).getIsPrime()) {
-                primeHypocentre = hyposList.getHypocentres().get(i);
-            }
-        }
-
-        smView = new StationMagnitudeView(primeHypocentre);
+        /*for (int i = 0; i < hyposList.getHypocentres().size(); i++) {
+         if (hyposList.getHypocentres().get(i).getIsPrime()) {
+         primeHypocentre = hyposList.getHypocentres().get(i);
+         }
+         }*/
+        smView = new StationMagnitudeView(hyposList);
 
         scrollPane = new JScrollPane(smView);
-
         this.setLayout(new BorderLayout());
         this.add(scrollPane, BorderLayout.CENTER);
     }
@@ -78,21 +76,20 @@ public final class StationMagnitudeViewTopComponent extends TopComponent impleme
 
         String eventName = event.getData().getClass().getName();
         Global.logDebug(" Event received from " + eventName
-                + ", #SiesEvent=" + Global.getSelectedSeisEvent().getEvid()
-                + ", #Hypocentre=" + hyposList.getHypocentres().size());
+                + ", SiesEvent=" + Global.getSelectedSeisEvent().getEvid()
+                + ", #Hypocentres=" + hyposList.getHypocentres().size());
 
         // It only received SeiesEvent selected/changed now
         switch (eventName) {
             case ("uk.ac.isc.seisdata.SeisEvent"):
                 //SeisEvent seisEvent = (SeisEvent) event.getData();
-                for (int i = 0; i < hyposList.getHypocentres().size(); i++) {
-                    if (hyposList.getHypocentres().get(i).getIsPrime()) {
-                        primeHypocentre = hyposList.getHypocentres().get(i);
-                    }
-                }
-                smView.reset(primeHypocentre);
+                /*for (int i = 0; i < hyposList.getHypocentres().size(); i++) {
+                 if (hyposList.getHypocentres().get(i).getIsPrime()) {
+                 primeHypocentre = hyposList.getHypocentres().get(i);
+                 }
+                 }*/
+                smView.reset(hyposList);
                 scrollPane.setViewportView(smView);
-
                 break;
         }
 

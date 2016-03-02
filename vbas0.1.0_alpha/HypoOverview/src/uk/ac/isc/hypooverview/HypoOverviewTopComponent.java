@@ -59,7 +59,7 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
         setToolTipText(Bundle.HINT_HypoOverviewTopComponent());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         Global.logDebug("Loaded...");
-        
+
         selectedSeisEvent.addChangeListener(this);
         selectedHypocentre.addChangeListener(this);
 

@@ -150,7 +150,7 @@ public class PhaseEditDialog extends JDialog {
 
         for (int i = 0; i < nRow; i++) {
 
-            FormulateCommand formulateCommand = new FormulateCommand(commandType, "hypocentre", (Integer) model.getValueAt(i, 0));
+            FormulateCommand formulateCommand = new FormulateCommand(commandType, "phase", (Integer) model.getValueAt(i, 0));
 
             /*
              * Type (phase type)
@@ -196,7 +196,7 @@ public class PhaseEditDialog extends JDialog {
              */
             if (model.getValueAt(i, 4) != null) {
                 // TODO old value can be read from database
-                formulateCommand.addAttribute("timeshift", (Integer) model.getValueAt(i, 3), null);
+                formulateCommand.addAttribute("timeshift", (Integer) model.getValueAt(i, 4), null);
                 formulateCommand.addSQLFunction("chphase ( "
                         + (Integer) model.getValueAt(i, 0) + ", "
                         + "''timeshift'', "
@@ -219,8 +219,8 @@ public class PhaseEditDialog extends JDialog {
                 formulateCommand.addAttribute("phasebreak", (String) model.getValueAt(i, 6), null);
 
                 /*
-                     * Put (Event)
-                     * Check hypocentre value inserted & it is a valid integer.
+                 * Put (Event)
+                 * Check hypocentre value inserted & it is a valid integer.
                  */
                 if (model.getValueAt(i, 6).equals("Put")) {
                     if (model.getValueAt(i, 7) != null) {

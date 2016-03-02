@@ -71,7 +71,7 @@ public class HTMLSchema {
 
                 bufferedWriter.write("<div>");
                 bufferedWriter.newLine();
-                bufferedWriter.write("<h2> table </h2>");
+                bufferedWriter.write("<h2> " + table + " </h2>");
                 bufferedWriter.newLine();
 
                 bufferedWriter.write("<table>");

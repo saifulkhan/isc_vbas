@@ -78,6 +78,9 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
 
         selectedSeisEvent.addChangeListener(this);
 
+        /* 
+         * Create 2 phase views. 
+         */
         loadTTDData(hyposList.getHypocentres().get(0).getEvid());
 
         for (int i = 0; i < hyposList.getHypocentres().size(); i++) {
@@ -88,19 +91,15 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
 
         phaseTVPanel = new PhaseTravelViewPanel(phasesList, primeHypocentre, ttdData);
         phaseDVPanel = new PhaseDetailViewPanel(phaseTVPanel, ttdData);
-
-        //handle general view first
         phaseTVPanel.setPrime(primeHypocentre);
-        //pgvp.setTTDData(ttdData);
 
         phaseViewControlPanel = new PhaseViewControlPanel(phaseTVPanel, phaseDVPanel);
 
+        // add them together to the top component
         leftPane = new JScrollPane(phaseTVPanel);
         rightPane = new JScrollPane(phaseDVPanel);
-
         pairViewsPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPane, rightPane);
         pairViewsPane.setResizeWeight(0.5d);
-
         this.setLayout(new BorderLayout());
         this.add(phaseViewControlPanel, BorderLayout.NORTH);
         this.add(pairViewsPane, BorderLayout.CENTER);

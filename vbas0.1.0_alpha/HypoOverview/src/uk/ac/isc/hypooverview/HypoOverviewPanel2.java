@@ -192,7 +192,7 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
     public int getHeight() {
         return mapHeight;
     }
-    
+
     public BufferedImage getMiniMap() {
         return this.miniMap;
     } // saiful
@@ -842,21 +842,21 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
             hypoAnimThread.start();
         }
 
-        // TEST: 
-        Global.logDebug("Write BufferedImage.");
+        /*// TEST: 
+       //Global.logDebug("Write BufferedImage.");
         try {
-            ImageIO.write(baseMap, "png", 
+            ImageIO.write(baseMap, "png",
                     new File("/export/home/saiful/assess/temp/HypocentreOverview.png"));
             //ImageIO.write(dotImg, "png", new File("/export/home/saiful/assess/dotImg.png"));
             //ImageIO.write(rawMiniMap, "png", new File("/export/home/saiful/assess/rawMiniMap.png"));
             //ImageIO.write(miniMap, "png", new File("/export/home/saiful/assess/miniMap.png"));
         } catch (Exception e) {
             Global.logSevere("Error creating a png.");
-        }
+        }*/
 
     }
 
-     void drawBaseMap() {
+    void drawBaseMap() {
 
         baseMap = new BufferedImage(mapWidth, mapHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = baseMap.createGraphics();

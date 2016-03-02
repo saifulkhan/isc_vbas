@@ -1,9 +1,5 @@
 package uk.ac.isc.processcommand;
 
-import com.orsoncharts.util.json.JSONArray;
-import com.orsoncharts.util.json.JSONObject;
-import com.orsoncharts.util.json.parser.JSONParser;
-import com.orsoncharts.util.json.parser.ParseException;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -172,26 +168,25 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
                 /*
                  * Check if multiple 'seiseventrelocate' or 'setprime' commands are selected for Assess.
                  */
-                
                 /*
-                //HashSet set = new HashSet();
-                Boolean similar = false;
-                for (int r : table.getSelectedRows()) {
-                    String commandType = (String) table.getValueAt(r, 4);
-                    Global.logDebug("Row=" + r + "; Selected commndType=" + commandType);
-                    if (commandType.equals("seiseventrelocate") || commandType.equals("setprime")) {
-                        //if (set.add(commandType) == false) {
-                        if (similar == false) {
-                            similar = true;
-                        } else if (similar == true) {
-                            JOptionPane.showMessageDialog(null,
-                                    "Selected multiple 'SiesEvent Relocate' commands.", "Warning",
-                                    JOptionPane.WARNING_MESSAGE);
-                        }
-                        table.getSelectionModel().clearSelection();
-                        table.getColumnModel().getSelectionModel().clearSelection();
-                    }
-                }*/
+                 //HashSet set = new HashSet();
+                 Boolean similar = false;
+                 for (int r : table.getSelectedRows()) {
+                 String commandType = (String) table.getValueAt(r, 4);
+                 Global.logDebug("Row=" + r + "; Selected commndType=" + commandType);
+                 if (commandType.equals("seiseventrelocate") || commandType.equals("setprime")) {
+                 //if (set.add(commandType) == false) {
+                 if (similar == false) {
+                 similar = true;
+                 } else if (similar == true) {
+                 JOptionPane.showMessageDialog(null,
+                 "Selected multiple 'SiesEvent Relocate' commands.", "Warning",
+                 JOptionPane.WARNING_MESSAGE);
+                 }
+                 table.getSelectionModel().clearSelection();
+                 table.getColumnModel().getSelectionModel().clearSelection();
+                 }
+                 }*/
             }
 
         }
@@ -260,43 +255,49 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
 
             }
 
-            Path assessDir = Paths.get(SeisDataDAOAssess.getAssessDir().toString()
+            Path eventLogDir = Paths.get(SeisDataDAOAssess.getAssessDir().toString()
                     + File.separator + Global.getSelectedSeisEvent().getEvid());
-            File htmlReport = new File(assessDir
-                    + File.separator + Global.getSelectedSeisEvent().getEvid() + ".html");
+            
+            //formulateCommand.addAttribute("commands", commandIds.toString(), null);
+            //formulateCommand.addAttribute("report", htmlReport, null);
 
-            formulateCommand.addAttribute("commands", commandIds.toString(), null);
-            formulateCommand.addAttribute("report", htmlReport, null);
+            
+            /*
+             * Now writw the assessed details 
+             */
+            int newAssessId = 0;
+            if (formulateCommand.isValidCommand()) {
 
+                Global.logDebug("commandProvenance= " + formulateCommand.getCmdProvenance().toString());
+                Global.logDebug("systemCommand= " + formulateCommand.getSystemCommand().toString());
+
+                newAssessId = SeisDataDAO.updateAssessedCommandTable(Global.getSelectedSeisEvent().getEvid(), commandType, commandIds, eventLogDir,
+                        ""); // TODO write the nsystemCommand
+
+                if (newAssessId > 0) {
+                    Global.logDebug(" Fired: " + commandType);
+                    assessedCommandEvent.fireSeisDataChanged();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            } else {
+                return;
+            }
+            
+            
             /*
              * ***************************************************************************
              * Assess: run relocator, generate html etc.. If susccess write the
              * assess info in the AssessedCommand table
              * ****************************************************************************
              */
+       
+            Path assessDir = Paths.get(eventLogDir + File.separator + newAssessId);
+            File htmlReport = new File(assessDir + File.separator + newAssessId + ".html");
+            
             assess.runLocator(assessDir, formulateCommand.getSQLFunctionArray(), formulateCommand.getLocatorArgStr());
             assess.generateReport(htmlReport);
-
-            /*
-             * Now writw the assessed details 
-             */
-            if (formulateCommand.isValidCommand()) {
-
-                Global.logDebug("\ncommandProvenance= " + formulateCommand.getCmdProvenance().toString()
-                        + "\nsystemCommand= " + formulateCommand.getSystemCommand().toString());
-
-                boolean ret = SeisDataDAO.updateAssessedCommandTable(Global.getSelectedSeisEvent().getEvid(), commandType,
-                        formulateCommand.getCmdProvenance().toString(), 
-                        commandIds.toString(), /*Note: we are just writing the command IDs*/
-                        commandIds);
-
-                if (ret) {
-                    Global.logDebug(" Fired: " + commandType);
-                    assessedCommandEvent.fireSeisDataChanged();
-                } else {
-                    JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
 
         }
     }

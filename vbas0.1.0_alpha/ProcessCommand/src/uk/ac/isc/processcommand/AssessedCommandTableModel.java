@@ -1,13 +1,11 @@
 package uk.ac.isc.processcommand;
 
-
 import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
 import uk.ac.isc.seisdata.AssessedCommand;
 import uk.ac.isc.seisdata.Global;
-
 
 public class AssessedCommandTableModel extends AbstractTableModel {
 
@@ -16,28 +14,25 @@ public class AssessedCommandTableModel extends AbstractTableModel {
         "Analyst",
         "Report"
     };
-    
+
     private final Class[] columns = new Class[]{
         // Boolean.class, 
-        String.class, 
         String.class,
-        JButton.class
+        String.class,
+        Object.class
     };
-    
-    public final Object[] longValues = {
-        new String(new char[500]),
-        new String(new char[10]),
-        new String(new char[10])
-    };
-        
-    private final ArrayList<AssessedCommand> assessedCommandList;
 
+    /*public final Object[] longValues = {
+     new String(new char[500]),
+     new String(new char[10]),
+     new String(new char[10])
+     };*/
+    private final ArrayList<AssessedCommand> assessedCommandList;
 
     AssessedCommandTableModel(ArrayList<AssessedCommand> assessedCommandList) {
         this.assessedCommandList = assessedCommandList;
     }
 
-        
     @Override
     public int getRowCount() {
         return assessedCommandList.size();
@@ -56,10 +51,10 @@ public class AssessedCommandTableModel extends AbstractTableModel {
     // overide it for setting values in each row and each column
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-                
+
         Object retObject = null;
-        
-        switch(columnIndex) {
+
+        switch (columnIndex) {
             case 0:
                 retObject = assessedCommandList.get(rowIndex).getIds();
                 break;
@@ -67,18 +62,26 @@ public class AssessedCommandTableModel extends AbstractTableModel {
                 retObject = assessedCommandList.get(rowIndex).getAnalyst();
                 break;
             case 2:
-                //retObject = assessedCommandList.get(rowIndex).getReport();
-                final JButton button = new JButton();              
-                return button;
-                //break;
+                final JButton button = new JButton();/*
+                button.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent ae) {
+                        Global.logDebug("Clicked.." + "row= " + rowIndex + ", column= " + columnIndex + ", report:"
+                                + assessedCommandList.get(rowIndex).getReport());
+                    }
+                });*/
+
+                retObject = button;
+                break;
+                
             default:
                 String message = Global.debugAt() + "\nSee the error log file for more information. ";
-                JOptionPane.showMessageDialog(null, message, "Error",  JOptionPane.ERROR_MESSAGE);
-            
+                JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+
         }
 
         return retObject;
-       
+
     }
 
     /*
@@ -88,21 +91,23 @@ public class AssessedCommandTableModel extends AbstractTableModel {
      */
     @Override
     public Class getColumnClass(int c) {
-        return getValueAt(0, c).getClass();
+        //return getValueAt(0, c).getClass();
+        return columns[c];
+
     }
 
-    // cell is editable.
-    // only the select column is editable.
-    @Override
-    public boolean isCellEditable(int row, int col) {
-        // return (col == 0) ? true : false;
-        return false;
-    }
+    /*
+     // cell is editable.
+     // only the select column is editable.
+     @Override
+     public boolean isCellEditable(int row, int col) {
+     // return (col == 0) ? true : false;
+     return false;
+     }
 
-    // when something is selected.
-    @Override
-    public void setValueAt(Object value, int row, int col) {
-        fireTableCellUpdated(row, col);
-    }
-    
+     // when something is selected.
+     @Override
+     public void setValueAt(Object value, int row, int col) {
+     fireTableCellUpdated(row, col);
+     }*/
 }

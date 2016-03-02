@@ -83,7 +83,7 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         setName(Bundle.CTL_HypoTextViewTopComponent());
         setToolTipText(Bundle.HINT_HypoTextViewTopComponent());
         Global.logDebug("Loaded...");
-        
+
         selectedSeisEvent.addChangeListener(this);
 
         table = new JTable();
@@ -126,13 +126,13 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
      * When a row (Hypocentre) is selected. Fire an event.
      */
     public void onValueChanged(ListSelectionEvent lse) {
-        System.out.println(Global.debugAt() + " New Hypocentre is selected.");
+        Global.logDebug("New Hypocentre is selected.");
         int selectedRowNum = table.getSelectedRow();
-
         Hypocentre hypocentre = hypocentresList.getHypocentres().get(selectedRowNum);
+
         selectedHypocentre.setValues(hypocentre);
         Global.logDebug("'SeisEvent' changed, fire an event."
-                + "\nSelected row=" + selectedRowNum
+                + ", Selected row=" + selectedRowNum
                 + ", Hypocentre= " + (Integer) table.getValueAt(selectedRowNum, 9));
         selectedHypocentre.fireSeisDataChanged();
     }
@@ -157,7 +157,7 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
 
             if (SwingUtilities.isRightMouseButton(e)) {
                 Rectangle r = table.getCellRect(row, col, false);
-                htPopupManager.getPopupMenu().show(table, r.x, r.y + r.height);               
+                htPopupManager.getPopupMenu().show(table, r.x, r.y + r.height);
             } else {
                 e.consume();
             }
@@ -170,7 +170,7 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
      */
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
-        System.out.println(Global.debugAt() + " Event received from " + event.getData().getClass().getName());
+        Global.logDebug("Event received from " + event.getData().getClass().getName());
         // Types of event: Selected Event, Selected Hypocentre (?).
 
         // Remove the previous (row) selection listener, if any.

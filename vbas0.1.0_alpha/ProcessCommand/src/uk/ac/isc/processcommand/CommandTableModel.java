@@ -1,46 +1,42 @@
 package uk.ac.isc.processcommand;
 
-
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
 import uk.ac.isc.seisdata.Command;
 import uk.ac.isc.seisdata.Global;
 
-
 public class CommandTableModel extends AbstractTableModel {
 
     private final String[] columnNames = {
         "Command ID",
-        "Analyst", 
+        "Analyst",
         "Command",
         "Status",
         "Type"
     };
-    
+
     private final Class[] columns = new Class[]{
         Integer.class,
-        String.class, 
+        String.class,
         String.class,
         String.class,
         String.class
     };
-    
+
     public final Object[] longValues = {
         new Integer(999999),
-        new String(new char[50]), 
+        new String(new char[50]),
         new String(new char[500]),
         new String(new char[10]),
         new String(new char[10])};
-        
-    private final ArrayList<Command> commandList;
 
+    private final ArrayList<Command> commandList;
 
     CommandTableModel(ArrayList<Command> commandList) {
         this.commandList = commandList;
     }
 
-        
     @Override
     public int getRowCount() {
         return commandList.size();
@@ -59,10 +55,10 @@ public class CommandTableModel extends AbstractTableModel {
     // overide it for setting values in each row and each column
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-                
+
         Object retObject = null;
-        
-        switch(columnIndex) {
+
+        switch (columnIndex) {
             case 0:
                 retObject = commandList.get(rowIndex).getId();
                 break;
@@ -70,27 +66,26 @@ public class CommandTableModel extends AbstractTableModel {
                 retObject = commandList.get(rowIndex).getAnalyst();
                 break;
             case 2:
-                retObject = commandList.get(rowIndex).getCommandStr();
+                retObject = commandList.get(rowIndex).getRedableCommandStr();
                 break;
             case 3:
                 retObject = commandList.get(rowIndex).getStatus();
                 break;
             case 4:
                 retObject = commandList.get(rowIndex).getType();
-                break;    
+                break;
             default:
                 String message = Global.debugAt() + "\nSee the error log file for more information. ";
-                JOptionPane.showMessageDialog(null, message, "Error",  JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
         }
 
         return retObject;
     }
 
-    
     @Override
     public Class getColumnClass(int c) {
         //System.out.println(Global.debugAt() + "c= " + c + ", getValueAt(0, c)=" + getValueAt(0, c));
-        return getValueAt(0, c).getClass();        
+        return getValueAt(0, c).getClass();
     }
 
     // cell is editable.

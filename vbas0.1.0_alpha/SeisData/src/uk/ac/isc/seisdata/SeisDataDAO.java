@@ -1,5 +1,7 @@
 package uk.ac.isc.seisdata;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -2722,12 +2724,15 @@ public class SeisDataDAO {
     /*
      * Update the Command table: add new "Assessed" command (string) generated.
      */
-    public static boolean updateAssessedCommandTable(
+    public static int updateAssessedCommandTable(
             Integer evid,
-            String type,
-            String commandStr,
-            String functionStr,
-            ArrayList<Integer> commandIds) {
+            String commandType,
+            ArrayList<Integer> commandIds,
+            Path eventLogDir,  
+            String systemCommandStr /*systemCommand executed*/
+    ) {
+
+        int newAssessId = 0;
 
         Connection con = null;
         Statement st = null;
@@ -2760,10 +2765,11 @@ public class SeisDataDAO {
             Global.logDebug("query= " + query);
             rs = st.executeQuery(query);
 
-            int newAssessId = 0;
             while (rs.next()) {
                 newAssessId = rs.getInt("nextval");
             }
+            
+            File report  = new File(eventLogDir + File.separator + newAssessId + File.separator + newAssessId + ".html");
 
             query = "INSERT INTO edit_commands ( "
                     + "id, "
@@ -2773,16 +2779,16 @@ public class SeisDataDAO {
                     + "adddate, "
                     + "type, "
                     + "command, "
-                    + "functions)\n"
+                    + "functions) "
                     + "VALUES ( "
                     + newAssessId + ", "
                     + evid + ", "
                     + "NULL, "
                     + block_allocation_id + ", "
                     + "NOW(), '"
-                    + type + "', '"
-                    + commandStr + "', '"
-                    + functionStr + "');";
+                    + commandType + "', '"
+                    + report + "', '"
+                    + systemCommandStr + "');";
 
             Global.logDebug("query= " + query);
             st.executeUpdate(query);
@@ -2807,7 +2813,7 @@ public class SeisDataDAO {
             JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
             logger.log(Level.SEVERE, message);
 
-            return false;
+            return 0;
         } finally {
             try {
                 if (rs != null) {
@@ -2821,11 +2827,11 @@ public class SeisDataDAO {
                 }
 
             } catch (SQLException ex) {
-                return false;
+                return 0;
             }
         }
-        return true;
 
+        return newAssessId;
     }
 
     /*
@@ -2843,7 +2849,7 @@ public class SeisDataDAO {
             con = DriverManager.getConnection(url, user, password);
             st = con.createStatement();
 
-            String query = "SELECT ba.pass, a.name, ec.id AS assessid, ec.command AS report, eca.id AS cmdids\n"
+            String query = "SELECT ba.pass, a.name, ec.id AS assessid, ec.command AS command, eca.id AS cmdids\n"
                     + " FROM analyst a, edit_commands ec, block_allocation ba, command_group cg, edit_commands eca\n"
                     + " WHERE ec.evid = " + evid
                     + " AND ec.type = 'assess'\n"
@@ -2858,15 +2864,16 @@ public class SeisDataDAO {
 
             Hashtable<String, AssessedCommand> hashtable = new Hashtable<String, AssessedCommand>();;
 
+            //Global.logDebug("commandId" + " | " + "analyst" + " | " + "report" + " | " + "pass" + " | " + "assessId");
+
             while (rs.next()) {
                 String analyst = rs.getString("name");
                 String pass = rs.getString("pass");
-                String report = rs.getString("report");
+                String report = rs.getString("command");  // we store the html report in the command field.
                 String assessId = rs.getString("assessid");
                 String commandId = rs.getString("cmdids");
-                //String commandStr = rs.getString("command");
-
-                Global.logDebug(commandId + " | " + analyst + " | " + report + " | " + pass + " | " + assessId);
+ 
+                //Global.logDebug(commandId + " | " + analyst + " | " + report + " | " + pass + " | " + assessId);
                 AssessedCommand ac = hashtable.get(assessId);
                 if (ac == null) {
                     ac = new AssessedCommand(evid, commandId, analyst, report);
@@ -2880,7 +2887,7 @@ public class SeisDataDAO {
             Iterator<String> itr = keys.iterator();
             while (itr.hasNext()) {
                 String str = itr.next();
-                Global.logDebug("Key: " + str + " & Value: " + hashtable.get(str));
+                //Global.logDebug("Key: " + str + " & Value: " + hashtable.get(str));
                 assessedCommandList.add(hashtable.get(str));
             }
 

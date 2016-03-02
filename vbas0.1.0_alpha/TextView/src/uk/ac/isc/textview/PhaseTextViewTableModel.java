@@ -59,7 +59,7 @@ public class PhaseTextViewTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        
+
         Object retObject = null;
 
         NumberFormat numFormat = DecimalFormat.getInstance();
@@ -149,13 +149,12 @@ public class PhaseTextViewTableModel extends AbstractTableModel {
                 break;
             default:
                 String message = Global.debugAt() + "\nSee the error log file for more information. ";
-                JOptionPane.showMessageDialog(null, message, "Error",  JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
         }
 
         return retObject;
     }
 
-    
     @Override
     public Class getColumnClass(int c) {
         return columns[c];

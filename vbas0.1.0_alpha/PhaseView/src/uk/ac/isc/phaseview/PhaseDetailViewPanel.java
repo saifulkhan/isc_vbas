@@ -31,7 +31,7 @@ class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListener {
 
     private final int imageWidth = 500;
     private final int imageHeight = 1000;
-    
+
     private final PhasesList detailPList;
 
     //reference of travel view in order to get range information 
@@ -44,8 +44,6 @@ class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListener {
     private final DuplicateUnorderTimeSeriesCollection detailDataset = new DuplicateUnorderTimeSeriesCollection();
 
     private JFreeChart freechart = null;
-
-
 
     private BufferedImage phasesImage = null;
 
@@ -91,15 +89,13 @@ class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListener {
         createTravelImage();
     }
 
-    
-        //repaint when the data changes
+    //repaint when the data changes
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
         setRange(pgvp.getRange());
         UpdateData();
     }
-    
-    
+
     public void setRange(double[] range) {
         zoomMinTime = range[0];
         zoomMaxTime = range[1];
@@ -250,16 +246,14 @@ class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListener {
 
         g2.drawImage(phasesImage, xOffset, yOffset, this);
 
-        // TEST: 
-        Global.logDebug("Write BufferedImage.");
+        /*// TEST: 
+        //Global.logDebug("Write BufferedImage.");
         try {
             ImageIO.write(phasesImage, "png",
                     new File("/export/home/saiful/assess/temp/phaseDetailView.png"));
         } catch (Exception e) {
             Global.logSevere("Error creating a png.");
-        }
+        }*/
     }
-
-
 
 }

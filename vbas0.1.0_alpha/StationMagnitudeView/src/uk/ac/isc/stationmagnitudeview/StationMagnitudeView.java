@@ -23,6 +23,7 @@ import org.openide.util.Exceptions;
 import org.openstreetmap.gui.jmapviewer.OsmMercator;
 import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.Hypocentre;
+import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.SeisDataDAO;
 import uk.ac.isc.seisdata.SeisUtils;
 import uk.ac.isc.seisdata.Station;
@@ -30,9 +31,18 @@ import uk.ac.isc.seisdata.Station;
 /**
  * The station Magnitude view
  *
- * @author hui
  */
-class StationMagnitudeView extends JPanel {
+
+public class StationMagnitudeView extends JPanel {
+
+    //image size of the source
+    private final int srcImgSize = 512;
+    //the image size of the station map
+    private final int StaImSize = 400;
+    //the height of station histogram
+    private final int StaHistHeight = 200;
+    //tile size
+    private final int imSize = 256;
 
     //place to keep the data
     private Hypocentre ph;
@@ -51,18 +61,6 @@ class StationMagnitudeView extends JPanel {
     //median value of MS
     private Double netMs;
 
-    //image size of the source
-    private final int srcImgSize = 512;
-
-    //the image size of the station map
-    private final int StaImSize = 400;
-
-    //the height of station histogram
-    private final int StaHistHeight = 200;
-
-    //tile size
-    private final int imSize = 256;
-
     final static double deg2rad = 3.14159 / 180.0;
     final static double rad2deg = 180.0 / 3.14159;
 
@@ -72,40 +70,39 @@ class StationMagnitudeView extends JPanel {
     private final int stationIconSize = 10;
 
     //buffer images of the maps
-    private final BufferedImage srcImg = new BufferedImage(srcImgSize, srcImgSize, BufferedImage.TYPE_INT_ARGB);
-
-    private final BufferedImage dstImgMb = new BufferedImage(StaImSize, StaImSize, BufferedImage.TYPE_INT_ARGB);
-
-    private final BufferedImage dstImgMs = new BufferedImage(StaImSize, StaImSize, BufferedImage.TYPE_INT_ARGB);
+    private final BufferedImage srcBufferedImage = new BufferedImage(srcImgSize, srcImgSize, BufferedImage.TYPE_INT_ARGB);
+    private final BufferedImage dstMbBufferedImage = new BufferedImage(StaImSize, StaImSize, BufferedImage.TYPE_INT_ARGB);
+    private final BufferedImage dstMsBufferedImage = new BufferedImage(StaImSize, StaImSize, BufferedImage.TYPE_INT_ARGB);
+    // draw the two histograms
+    private BufferedImage histMbBufferedImage = null;
+    private BufferedImage histMsBufferedImage = null;
 
     //for histogram
     private int mbSize = 0;
-
     private int msSize = 0;
-
     private double minMag = 10;
-
     private double maxMag = 0;
 
     //private int mbMaxCount = 1;
     //private int msMaxCount = 1;
-    //here are the objects to draw the two histograms
-    private BufferedImage histMb = null;
-
-    private BufferedImage histMs = null;
-
     private JFreeChart freeChartMb = null;
-
     private JFreeChart freeChartMs = null;
+    private HypocentresList hyposList;
 
-    public StationMagnitudeView(Hypocentre ph) {
+    public StationMagnitudeView(HypocentresList hyposList) {
+
+        this.hyposList = hyposList;
+        for (int i = 0; i < hyposList.getHypocentres().size(); i++) {
+            if (hyposList.getHypocentres().get(i).getIsPrime()) {
+                ph = hyposList.getHypocentres().get(i);
+            }
+        }
 
         //fill the data
         allStaMag = new ArrayList<Station>();
         SeisDataDAO.retrieveStationMags(ph.getHypid(), allStaMag);
 
-        this.ph = ph;
-
+        //this.ph = ph;
         if (ph.getMagnitude().get("mb") != null) {
             netMb = ph.getMagnitude().get("mb");
         }
@@ -207,14 +204,19 @@ class StationMagnitudeView extends JPanel {
         drawHist();
     }
 
-    public void reset(Hypocentre ph) {
+    public void reset(HypocentresList hyposList) {
+        this.hyposList = hyposList;
+        for (int i = 0; i < hyposList.getHypocentres().size(); i++) {
+            if (hyposList.getHypocentres().get(i).getIsPrime()) {
+                ph = hyposList.getHypocentres().get(i);
+            }
+        }
 
         //fill the data
         allStaMag.clear();
         SeisDataDAO.retrieveStationMags(ph.getHypid(), allStaMag);
 
-        this.ph = ph;
-
+        //this.ph = ph;
         if (ph.getMagnitude().get("mb") != null) {
             netMb = ph.getMagnitude().get("mb");
         }
@@ -322,7 +324,7 @@ class StationMagnitudeView extends JPanel {
 
     private void loadSrcImage() {
 
-        Graphics2D g2 = srcImg.createGraphics();
+        Graphics2D g2 = srcBufferedImage.createGraphics();
 
         //Tile tile;
         int zoom = 1;//(int) (Math.log(srcImgSize/imSize)/Math.log(2));
@@ -380,7 +382,7 @@ class StationMagnitudeView extends JPanel {
     //it is the mb map image on the left above corner
     private void drawBufferedImageMb() {
 
-        Graphics2D g2 = dstImgMb.createGraphics();
+        Graphics2D g2 = dstMbBufferedImage.createGraphics();
 
         for (int i = 0; i < StaImSize; i++) {
             for (int j = 0; j < StaImSize; j++) {
@@ -391,7 +393,7 @@ class StationMagnitudeView extends JPanel {
 
                 double dist = Math.sqrt((double) ((i - StaImSize / 2) * (i - StaImSize / 2) + (j - StaImSize / 2) * (j - StaImSize / 2)));
                 if (dist > StaImSize / 2) {
-                    dstImgMb.setRGB(i, j, 0xFF888888);
+                    dstMbBufferedImage.setRGB(i, j, 0xFF888888);
                 } else {
                     azi = rad2deg * Math.atan2(i - StaImSize / 2, StaImSize / 2 - j);
                     if (azi < 0.0) {
@@ -411,8 +413,8 @@ class StationMagnitudeView extends JPanel {
                     int samplingLevel = (int) (Math.log(srcImgSize / imSize) / Math.log(2));
                     px = OsmMercator.LonToX(lon, samplingLevel);
                     py = OsmMercator.LatToY(lat, samplingLevel);
-                    rgb = srcImg.getRGB((int) px, (int) py);
-                    dstImgMb.setRGB(i, j, rgb);
+                    rgb = srcBufferedImage.getRGB((int) px, (int) py);
+                    dstMbBufferedImage.setRGB(i, j, rgb);
                 }
             }
         }
@@ -424,10 +426,10 @@ class StationMagnitudeView extends JPanel {
             //distance on pixel
             if (sta.getDelta() <= mapDegree && null != sta.getStaMb()) {
 
-                double d1 = sta.getDelta() / (double) mapDegree * (dstImgMb.getWidth() / 2);
+                double d1 = sta.getDelta() / (double) mapDegree * (dstMbBufferedImage.getWidth() / 2);
                 double azi = sta.getAzimuth() / 180.0 * Math.PI;
-                double y = dstImgMb.getWidth() / 2 - d1 * Math.cos(azi);
-                double x = dstImgMb.getWidth() / 2 + d1 * Math.sin(azi);
+                double y = dstMbBufferedImage.getWidth() / 2 - d1 * Math.cos(azi);
+                double x = dstMbBufferedImage.getWidth() / 2 + d1 * Math.sin(azi);
                 if (sta.getMbRes() != null) {
                     g2.setPaint(getColor(sta.getMbRes()));
 
@@ -442,7 +444,7 @@ class StationMagnitudeView extends JPanel {
         g2.setPaint(new Color(0, 0, 0));
         g2.setStroke(new BasicStroke(2));
         //innerG2.fillOval((tmpImg2.getWidth()/2-7),(tmpImg2.getWidth()/2-7),15,15);
-        int tt = dstImgMb.getWidth() / 2;
+        int tt = dstMbBufferedImage.getWidth() / 2;
         g2.drawLine(tt - 3, tt - 3, tt + 3, tt + 3);
         g2.drawLine(tt - 3, tt + 3, tt + 3, tt - 3);
 
@@ -451,7 +453,7 @@ class StationMagnitudeView extends JPanel {
     //it is the MS map image on the right above corner
     private void drawBufferedImageMs() {
 
-        Graphics2D g2 = dstImgMs.createGraphics();
+        Graphics2D g2 = dstMsBufferedImage.createGraphics();
 
         for (int i = 0; i < StaImSize; i++) {
             for (int j = 0; j < StaImSize; j++) {
@@ -462,7 +464,7 @@ class StationMagnitudeView extends JPanel {
 
                 double dist = Math.sqrt((double) ((i - StaImSize / 2) * (i - StaImSize / 2) + (j - StaImSize / 2) * (j - StaImSize / 2)));
                 if (dist > StaImSize / 2) {
-                    dstImgMs.setRGB(i, j, 0xFF888888);
+                    dstMsBufferedImage.setRGB(i, j, 0xFF888888);
                 } else {
                     azi = rad2deg * Math.atan2(i - StaImSize / 2, StaImSize / 2 - j);
                     if (azi < 0.0) {
@@ -482,8 +484,8 @@ class StationMagnitudeView extends JPanel {
                     int samplingLevel = (int) (Math.log(srcImgSize / imSize) / Math.log(2));
                     px = OsmMercator.LonToX(lon, samplingLevel);
                     py = OsmMercator.LatToY(lat, samplingLevel);
-                    rgb = srcImg.getRGB((int) px, (int) py);
-                    dstImgMs.setRGB(i, j, rgb);
+                    rgb = srcBufferedImage.getRGB((int) px, (int) py);
+                    dstMsBufferedImage.setRGB(i, j, rgb);
                 }
             }
         }
@@ -495,10 +497,10 @@ class StationMagnitudeView extends JPanel {
             //distance on pixel
             if (sta.getDelta() <= mapDegree && null != sta.getStaMs()) {
 
-                double d1 = sta.getDelta() / (double) mapDegree * (dstImgMs.getWidth() / 2);
+                double d1 = sta.getDelta() / (double) mapDegree * (dstMsBufferedImage.getWidth() / 2);
                 double azi = sta.getAzimuth() / 180.0 * Math.PI;
-                double y = dstImgMs.getWidth() / 2 - d1 * Math.cos(azi);
-                double x = dstImgMs.getWidth() / 2 + d1 * Math.sin(azi);
+                double y = dstMsBufferedImage.getWidth() / 2 - d1 * Math.cos(azi);
+                double x = dstMsBufferedImage.getWidth() / 2 + d1 * Math.sin(azi);
 
                 if (sta.getMsRes() != null) {
                     g2.setPaint(getColor(sta.getMsRes()));
@@ -514,7 +516,7 @@ class StationMagnitudeView extends JPanel {
         g2.setPaint(new Color(0, 0, 0));
         g2.setStroke(new BasicStroke(2));
         //innerG2.fillOval((tmpImg2.getWidth()/2-7),(tmpImg2.getWidth()/2-7),15,15);
-        int tt = dstImgMs.getWidth() / 2;
+        int tt = dstMsBufferedImage.getWidth() / 2;
         g2.drawLine(tt - 3, tt - 3, tt + 3, tt + 3);
         g2.drawLine(tt - 3, tt + 3, tt + 3, tt - 3);
 
@@ -607,35 +609,54 @@ class StationMagnitudeView extends JPanel {
         int xOffset = (getWidth() - 2 * StaImSize - 20) / 2;
         int yOffset = (getHeight() - StaImSize - StaHistHeight) / 2;
 
-        g2.drawImage(dstImgMb, xOffset, yOffset, StaImSize, StaImSize, null);
+        g2.drawImage(dstMbBufferedImage, xOffset, yOffset, StaImSize, StaImSize, null);
 
-        g2.drawImage(dstImgMs, xOffset + StaImSize + 20, yOffset, StaImSize, StaImSize, null);
+        g2.drawImage(dstMsBufferedImage, xOffset + StaImSize + 20, yOffset, StaImSize, StaImSize, null);
 
-        histMb = freeChartMb.createBufferedImage(StaImSize, StaHistHeight);
-        histMs = freeChartMs.createBufferedImage(StaImSize, StaHistHeight);
+        histMbBufferedImage = freeChartMb.createBufferedImage(StaImSize, StaHistHeight);
+        histMsBufferedImage = freeChartMs.createBufferedImage(StaImSize, StaHistHeight);
 
-        g2.drawImage(histMb, xOffset, yOffset + StaImSize + 20, StaImSize, StaHistHeight, null);
-        g2.drawImage(histMs, xOffset + StaImSize + 20, yOffset + StaImSize + 20, StaImSize, StaHistHeight, null);
+        g2.drawImage(histMbBufferedImage, xOffset, yOffset + StaImSize + 20, StaImSize, StaHistHeight, null);
+        g2.drawImage(histMsBufferedImage, xOffset + StaImSize + 20, yOffset + StaImSize + 20, StaImSize, StaHistHeight, null);
 
-        // TEST:
+        /*// TEST:
         BufferedImage combined = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
         // paint both images, preserving the alpha channels
         Graphics graphics = combined.getGraphics();
-        graphics.drawImage(dstImgMb, 0, 0, StaImSize, StaImSize, null);
-        graphics.drawImage(dstImgMs, StaImSize + 20, 0, StaImSize, StaImSize, null);
-        graphics.drawImage(histMb, 0, StaImSize + 20, StaImSize, StaHistHeight, null);
-        graphics.drawImage(histMs, 0 + StaImSize + 20, 0 + StaImSize + 20, StaImSize, StaHistHeight, null);
+        graphics.drawImage(dstMbBufferedImage, 0, 0, StaImSize, StaImSize, null);
+        graphics.drawImage(dstMsBufferedImage, StaImSize + 20, 0, StaImSize, StaImSize, null);
+        graphics.drawImage(histMbBufferedImage, 0, StaImSize + 20, StaImSize, StaHistHeight, null);
+        graphics.drawImage(histMsBufferedImage, 0 + StaImSize + 20, 0 + StaImSize + 20, StaImSize, StaHistHeight, null);
 
-        Global.logDebug("Write BufferedImage.");
         try {
-
             ImageIO.write(combined, "png",
                     new File("/export/home/saiful/assess/temp/StationMagnitudeView.png"));
-
         } catch (Exception e) {
             Global.logSevere("Error creating a png.");
-        }
+        }*/
 
     }
 
+    
+    public BufferedImage getBufferedImage() {
+        BufferedImage combined = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+
+        Graphics graphics = combined.getGraphics();
+        graphics.drawImage(dstMbBufferedImage, 0, 0, StaImSize, StaImSize, null);
+        graphics.drawImage(dstMsBufferedImage, StaImSize + 20, 0, StaImSize, StaImSize, null);
+        graphics.drawImage(histMbBufferedImage, 0, StaImSize + 20, StaImSize, StaHistHeight, null);
+        graphics.drawImage(histMsBufferedImage, StaImSize + 20, StaImSize + 20, StaImSize, StaHistHeight, null);
+        
+        return combined;
+    }
+
+    
+    public int getStationMagnitudeViewWidth() {
+        return StaImSize + 20 + StaImSize;
+    }
+
+    
+    public int getStationMagnitudeViewHeight() {
+        return StaImSize + 20 + StaHistHeight;
+    }
 }

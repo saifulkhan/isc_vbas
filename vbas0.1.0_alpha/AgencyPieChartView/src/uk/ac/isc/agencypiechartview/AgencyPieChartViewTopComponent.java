@@ -47,22 +47,42 @@ public final class AgencyPieChartViewTopComponent extends TopComponent implement
 
     private static SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
     private final PhasesList phasesList = Global.getPhasesList();
-    
+
     public AgencyPieChartViewTopComponent() {
         initComponents();
         setName(Bundle.CTL_AgencyPieChartViewTopComponent());
         setToolTipText(Bundle.HINT_AgencyPieChartViewTopComponent());
- 
+
+        Global.logDebug("Loaded... #phases: " + phasesList.getPhases().size());
         selectedSeisEvent.addChangeListener(this);
-        
-        System.out.println(Global.debugAt() + "Total no of phases: " + phasesList.getPhases().size());
-        
+
         pcData = new PieChartData(phasesList.getPhases());
         apcView.setData(pcData);
 
         scrollPane = new JScrollPane(apcView);
         this.setLayout(new BorderLayout());
         this.add(scrollPane, BorderLayout.CENTER);
+    }
+
+    //once the phase data changes, repaint the figure
+    @Override
+    public void SeisDataChanged(SeisDataChangeEvent event) {
+
+        String eventName = event.getData().getClass().getName();
+        Global.logDebug(" Event received from " + eventName);
+
+        // It only received SeiesEvent selected/changed now
+        switch (eventName) {
+            case ("uk.ac.isc.seisdata.SeisEvent"):
+                //SeisEvent seisEvent = (SeisEvent) event.getData();
+                Global.logDebug("SeisEvent= " + selectedSeisEvent.getEvid());
+
+                pcData.UpdateData(phasesList.getPhases());
+                apcView.repaint();
+                scrollPane.setViewportView(apcView);
+                break;
+        }
+
     }
 
     /**
@@ -111,17 +131,4 @@ public final class AgencyPieChartViewTopComponent extends TopComponent implement
         // TODO read your settings according to their version
     }
 
-    //once the phase data changes, repaint the figure
-    @Override
-    public void SeisDataChanged(SeisDataChangeEvent event) {
-
-        pcData.UpdateData(phasesList.getPhases());
-        apcView.repaint();
-        //evid = ((EventsControlViewTopComponent) tc).getControlPanel().getSelectedSeisEvent().getEvid();
-
-        //agencyLikelihood.clear();
-        //SeisDataDAO.retrieveAgencyLikelihood(agencyLikelihood, evid);
-        //alView.repaint();
-        scrollPane.setViewportView(apcView);
-    }
 }

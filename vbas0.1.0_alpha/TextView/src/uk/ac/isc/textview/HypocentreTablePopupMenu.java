@@ -53,7 +53,7 @@ class HypocentreTablePopupMenu implements ActionListener {
         if ("Set Prime".equals(e.getActionCommand())) {
 
             String commandType = "setprime";
-            FormulateCommand composeCommand = new FormulateCommand(commandType, "seisevent", selectedHypocentre.getHypid());
+            FormulateCommand composeCommand = new FormulateCommand(commandType, "hypocentre", selectedHypocentre.getHypid());
             composeCommand.addAttribute("primehypocentre", table.getValueAt(selectedRow, 0), null);
             composeCommand.addSQLFunction("rf ( " + selectedHypocentre.getHypid() + ", " + selectedSeisEvent.getEvid() + " )");
             composeCommand.addLocatorArg("fix_hypo=" + table.getValueAt(selectedRow, 0));

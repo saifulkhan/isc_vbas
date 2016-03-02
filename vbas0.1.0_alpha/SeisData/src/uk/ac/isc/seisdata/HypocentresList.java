@@ -5,7 +5,6 @@ import java.util.ArrayList;
 /**
  * A wrapper to keep the list of Hypocentres
  */
-
 public class HypocentresList extends AbstractSeisData {
 
     private final ArrayList<Hypocentre> hypos;

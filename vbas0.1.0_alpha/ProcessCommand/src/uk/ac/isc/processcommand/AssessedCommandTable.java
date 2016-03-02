@@ -3,6 +3,7 @@ package uk.ac.isc.processcommand;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
@@ -10,6 +11,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -21,6 +25,7 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
+import org.openide.util.Exceptions;
 import uk.ac.isc.seisdata.AssessedCommand;
 import uk.ac.isc.seisdata.AssessedCommandList;
 import uk.ac.isc.seisdata.Global;
@@ -29,6 +34,14 @@ import uk.ac.isc.seisdata.SeisDataChangeListener;
 import uk.ac.isc.seisdata.SeisDataDAO;
 import uk.ac.isc.seisdata.SeisEvent;
 
+
+/*
+ * ****************************************************************************************************************
+ * Displays the assessed commands.
+ * A details on how to add button in a cell (column) can be found in:
+ *  http://stackoverflow.com/questions/13833688/adding-jbutton-to-jtable
+ ******************************************************************************************************************
+ */
 public class AssessedCommandTable extends JPanel implements SeisDataChangeListener {
 
     private JTable table = null;
@@ -44,8 +57,8 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
     public AssessedCommandTable() {
 
         table = new JTable();
-        scrollPane = new JScrollPane(table);
-        
+        table.addMouseListener(new JTableButtonMouseListener(table));
+
         Global.logDebug(" #AssessedCommands:" + assessedCommandList.getAssessedCommandList().size());
         model = new AssessedCommandTableModel(assessedCommandList.getAssessedCommandList());
         table.setModel(model);
@@ -57,6 +70,7 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
 
         // Action buttons
         // layout all together
+        scrollPane = new JScrollPane(table);
         assessedCommandPanel = new AssessedCommandPanel(table);
         this.setLayout(new BorderLayout());
         this.add(assessedCommandPanel, BorderLayout.PAGE_START);
@@ -73,25 +87,28 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
 
             case "uk.ac.isc.seisdata.AssessedCommand":
                 SeisDataDAO.readAssessedCommandTable(selectedSeisEvent.getEvid(),
-                        assessedCommandList.getAssessedCommandList());             
+                        assessedCommandList.getAssessedCommandList());
                 break;
         }
-        
+
         Global.logDebug(" #AssessedCommands:" + assessedCommandList.getAssessedCommandList().size());
-        
+
         model = new AssessedCommandTableModel(assessedCommandList.getAssessedCommandList());
         table.setModel(model);
 
         table.clearSelection();
+        setupTableVisualAttributes(); // Note: otherwise the buttons fails to render.
+
         scrollPane.setViewportView(table);
         scrollPane.repaint();
     }
 
     private void setupTableVisualAttributes() {
 
+        Global.logDebug("Here...");
+
         TableCellRenderer buttonRenderer = new JTableButtonRenderer();
         table.getColumn("Report").setCellRenderer(buttonRenderer);
-        table.addMouseListener(new JTableButtonMouseListener(table));
 
         JTableHeader th = table.getTableHeader();
         th.setFont(new Font("Sans-serif", Font.PLAIN, 14));
@@ -123,71 +140,65 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
 
         table.getColumnModel().getColumn(0).setCellRenderer(leftRenderer);
         table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
-        table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+        // table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer); // Note: never for button col
 
     }
 
     /*
      *****************************************************************************************
-     * XX
+     * The cells in the "Report" column are clickable button.
      *****************************************************************************************
      */
     class JTableButtonRenderer implements TableCellRenderer {
 
-        /*the three reference variables for the use of the actionlistener*/
-        //private JTable lctable = null;
-        //private int lcRow;
-        //private int lcColumn;
-        private JButton button;
-
         @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            button = (JButton) value;
-            ImageIcon icon = new ImageIcon(getClass().getClassLoader()
-                    .getResource("uk/ac/isc/eventscontrolview/pdf-icon.png"));
-            // Resize the image
-            Image img = icon.getImage();
-            Image newimg = img.getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
-            icon = new ImageIcon(newimg);
+        public Component getTableCellRendererComponent(
+                JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            JButton button = (JButton) value;
+
+            // load resource images
+            URL url = getClass().getClassLoader().getResource("resources/html.png");
+            ImageIcon icon = new ImageIcon(url);
 
             button.setIcon(icon);
             return button;
         }
-
     }
 
 
     /*
      *****************************************************************************************
-     * xx
+     * When the button is clicked, the html report opens.
      *****************************************************************************************
      */
-    class JTableButtonMouseListener extends MouseAdapter {
+    private static class JTableButtonMouseListener extends MouseAdapter {
 
         private final JTable table;
 
-        public JTableButtonMouseListener(JTable phasesTable) {
-            this.table = phasesTable;
+        public JTableButtonMouseListener(JTable table) {
+            this.table = table;
         }
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            int column = table.getColumnModel().getColumnIndexAtX(e.getX());
-            int row = e.getY() / table.getRowHeight();
+            int column = table.getColumnModel().getColumnIndexAtX(e.getX()); // get the coloum of the button
+            int row = e.getY() / table.getRowHeight(); //get the row of the button
 
-            if (column == 0) {
+            /*Checking the row or column is valid or not*/
+            if (row < table.getRowCount() && row >= 0 && column < table.getColumnCount() && column >= 0) {
                 Object value = table.getValueAt(row, column);
                 if (value instanceof JButton) {
-                    /**
-                     * Here is the code for popup a dialog to edit the phase
-                     * reading
-                     */
-                    //((JButton)value).doClick(); 
-                    System.out.println("JTableButtonMouseListener: Mouse Clicked." + this.table.getValueAt(row, 2));
+
+                    File htmlFile = new File(Global.getAssessedCommandList().getAssessedCommandList().get(row).getReport());
+                    try {
+                        Desktop.getDesktop().browse(htmlFile.toURI());
+                    } catch (IOException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                    Global.logDebug("Clicked.." + "row= " + row + ", column= " + column + ", report: " + htmlFile);
                 }
             }
         }
-
     }
 
 
