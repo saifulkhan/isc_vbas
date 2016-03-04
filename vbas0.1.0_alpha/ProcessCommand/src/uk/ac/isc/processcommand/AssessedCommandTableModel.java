@@ -10,13 +10,14 @@ import uk.ac.isc.seisdata.Global;
 public class AssessedCommandTableModel extends AbstractTableModel {
 
     private final String[] columnNames = {
+        "Assess ID",
         "Selected Commands",
         "Analyst",
         "Report"
     };
 
     private final Class[] columns = new Class[]{
-        // Boolean.class, 
+        String.class,
         String.class,
         String.class,
         Object.class
@@ -55,25 +56,29 @@ public class AssessedCommandTableModel extends AbstractTableModel {
         Object retObject = null;
 
         switch (columnIndex) {
+
             case 0:
-                retObject = assessedCommandList.get(rowIndex).getIds();
+                retObject = assessedCommandList.get(rowIndex).getId();
                 break;
             case 1:
-                retObject = assessedCommandList.get(rowIndex).getAnalyst();
+                retObject = assessedCommandList.get(rowIndex).getIds();
                 break;
             case 2:
+                retObject = assessedCommandList.get(rowIndex).getAnalyst();
+                break;
+            case 3:
                 final JButton button = new JButton();/*
-                button.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent ae) {
-                        Global.logDebug("Clicked.." + "row= " + rowIndex + ", column= " + columnIndex + ", report:"
-                                + assessedCommandList.get(rowIndex).getReport());
-                    }
-                });*/
+                 button.addActionListener(new ActionListener() {
+                 @Override
+                 public void actionPerformed(ActionEvent ae) {
+                 Global.logDebug("Clicked.." + "row= " + rowIndex + ", column= " + columnIndex + ", report:"
+                 + assessedCommandList.get(rowIndex).getReport());
+                 }
+                 });*/
 
                 retObject = button;
                 break;
-                
+
             default:
                 String message = Global.debugAt() + "\nSee the error log file for more information. ";
                 JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);

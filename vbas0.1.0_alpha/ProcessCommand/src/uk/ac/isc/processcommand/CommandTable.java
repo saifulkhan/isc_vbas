@@ -2,12 +2,14 @@ package uk.ac.isc.processcommand;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
+import org.openide.util.Exceptions;
 import uk.ac.isc.seisdata.AssessedCommand;
 import uk.ac.isc.seisdata.Command;
 import uk.ac.isc.seisdata.CommandList;
@@ -121,8 +124,8 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
 
         JTableHeader th = table.getTableHeader();
         th.setFont(new Font("Sans-serif", Font.PLAIN, 14));
-        th.setBackground(new Color(43, 87, 151));            // Blue
-        th.setForeground(Color.white);
+        /*th.setBackground(new Color(43, 87, 151));            // Blue
+         th.setForeground(Color.white);*/
 
         table.setRowSelectionAllowed(true);
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -210,8 +213,8 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
             Font font = new Font("Sans-serif", Font.PLAIN, 14);
 
             button_assess = new JButton("Assess");
-            button_assess.setBackground(new Color(45, 137, 239));
-            button_assess.setForeground(new Color(255, 255, 255));
+            /*button_assess.setBackground(new Color(45, 137, 239));
+             button_assess.setForeground(new Color(255, 255, 255));*/
             button_assess.setFont(font);
 
             label_total = new JLabel("");
@@ -230,6 +233,8 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
         }
 
         public void onButtonAssessActionPerformed(ActionEvent e) {
+
+            button_assess.setEnabled(false);
 
             /*
              *  Stage-1 Write the commands in the database.
@@ -257,11 +262,9 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
 
             Path eventLogDir = Paths.get(SeisDataDAOAssess.getAssessDir().toString()
                     + File.separator + Global.getSelectedSeisEvent().getEvid());
-            
+
             //formulateCommand.addAttribute("commands", commandIds.toString(), null);
             //formulateCommand.addAttribute("report", htmlReport, null);
-
-            
             /*
              * Now writw the assessed details 
              */
@@ -284,20 +287,27 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
             } else {
                 return;
             }
-            
-            
+
             /*
              * ***************************************************************************
              * Assess: run relocator, generate html etc.. If susccess write the
              * assess info in the AssessedCommand table
              * ****************************************************************************
              */
-       
             Path assessDir = Paths.get(eventLogDir + File.separator + newAssessId);
             File htmlReport = new File(assessDir + File.separator + newAssessId + ".html");
-            
+
             assess.runLocator(assessDir, formulateCommand.getSQLFunctionArray(), formulateCommand.getLocatorArgStr());
             assess.generateReport(htmlReport);
+
+            try {
+                Desktop.getDesktop().browse(htmlReport.toURI());
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+
+            JOptionPane.showMessageDialog(null, "Assess Complete. Please see the report in your browser.", "Complete", JOptionPane.NO_OPTION);
+            button_assess.setEnabled(true);
 
         }
     }

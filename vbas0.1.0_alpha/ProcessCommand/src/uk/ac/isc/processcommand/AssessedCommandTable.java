@@ -112,8 +112,8 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
 
         JTableHeader th = table.getTableHeader();
         th.setFont(new Font("Sans-serif", Font.PLAIN, 14));
-        th.setBackground(new Color(43, 87, 151));            // Blue
-        th.setForeground(Color.white);
+        /*th.setBackground(new Color(43, 87, 151));            // Blue
+         th.setForeground(Color.white);*/
 
         table.setRowSelectionAllowed(true);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -219,8 +219,8 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
             Font font = new Font("Sans-serif", Font.PLAIN, 14);
 
             button_commit = new JButton("Commit");
-            button_commit.setBackground(new Color(45, 137, 239));
-            button_commit.setForeground(new Color(255, 255, 255));
+            /*button_commit.setBackground(new Color(45, 137, 239));
+             button_commit.setForeground(new Color(255, 255, 255));*/
             button_commit.setFont(font);
 
             label_total = new JLabel("");

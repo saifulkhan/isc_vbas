@@ -1,0 +1,125 @@
+
+clang!
+
+cd /usr/lib
+
+ln -s liblapack.so.3 liblapack.so
+ln -s libblas.so.3 libblas.so
+
+make
+
+make iscloc_parallel_db
+
+
+laptop
+------
+
+time echo '602392263' | ./iscloc_parallel_db -
+
+125.91
+106.78
+119.79
+
+time echo '602392263' | ./iscloc -
+
+168.98
+143.64
+137.63
+
+
+beast
+-----
+
+time echo '602392263' | ./iscloc_parallel_db -
+
+109.83
+104.47
+136.75  ???
+
+ 127.00 2m 7.026s
+ 102.65 1m42.667s
+  82.10 1m22.115s
+
+time echo '602392263' | ./iscloc -
+
+149.49
+129.00
+127.16
+
+126.48 2m 6.492s
+126.78 2m6.791s
+
+cp -r /export/isc-linux/ops/etc /home/james/
+
+export QETC=/home/james/etc
+
+update_db = 0
+
+
+117.44
+real    1m57.461s
+user    3m20.072s
+sys     0m4.612s
+
+97.56
+real    1m37.577s
+user    2m58.432s
+sys     0m4.452s
+
+101.84
+
+real    1m41.856s
+user    3m3.492s
+sys     0m4.532s
+
+
+---
+
+122.34
+
+real    2m2.357s
+user    2m1.620s
+sys     0m0.152s
+
+122.33
+
+real    2m2.340s
+user    2m1.560s
+sys     0m0.180s
+
+125.82
+
+real    2m5.841s
+user    2m5.012s
+sys     0m0.136s
+
+
+
+time echo '602392263' | /export/isc-linux/ops/bin/iscloc_parallel_db - > /export/isc-linux/src/iscloc/current_llvm/out.para
+time echo '602392263' | /export/isc-linux/ops/bin/iscloc_parallel_db - > /export/isc-linux/src/iscloc/current_llvm/out.para2
+time echo '602392263' | /export/isc-linux/ops/bin/iscloc_parallel_db - > /export/isc-linux/src/iscloc/current_llvm/out.para3
+
+
+time echo '602392263' | /export/isc-linux/ops/bin/iscloc - > /export/isc-linux/src/iscloc/current_llvm/out.serial
+time echo '602392263' | /export/isc-linux/ops/bin/iscloc - > /export/isc-linux/src/iscloc/current_llvm/out.serial2
+time echo '602392263' | /export/isc-linux/ops/bin/iscloc - > /export/isc-linux/src/iscloc/current_llvm/out.serial3
+
+
+edit these back
+
+Not pass_rebuild
+search is not parallel but is set back to beast.
+
+/export/isc-linux/src/assess/assess.pl:             $run .= "ssh shadowcat";
+/export/isc-linux/src/assess/assess_rebuild.pl:     $run .= "ssh shadowcat";
+
+/export/isc-linux/src/pull/pull.pl:                 print `ssh beast \"export PGUSER=$ENV{PGUSER}; export PGPASSWORD=$ENV{PGPASSWORD}; $ENV{OPSBIN}/iscloc $monthpass\"`;
+/export/isc-linux/src/pass/pass.pl:                 print `ssh beast \"export PGUSER=$ENV{PGUSER}; export PGPASSWORD=$ENV{PGPASSWORD}; $ENV{OPSBIN}/iscloc $monthpass\"`;
+/export/isc-linux/src/search/search.pl:             print `ssh beast \"export PGUSER=$ENV{PGUSER}; export PGPASSWORD=$ENV{PGPASSWORD}; $ENV{OPSBIN}/iscloc_search $monthpass"`;
+/export/isc-linux/src/late_report/late_report.pl:   $shell_output = `ssh beast \"export PGUSER=$ENV{PGUSER}; export PGPASSWORD=$ENV{PGPASSWORD}; $ENV{OPSBIN}/iscloc $timepass\"`;
+
+
+
+
+
+

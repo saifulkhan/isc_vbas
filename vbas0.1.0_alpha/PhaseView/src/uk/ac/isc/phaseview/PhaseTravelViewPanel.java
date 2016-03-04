@@ -13,9 +13,12 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.JFreeChart;
@@ -27,6 +30,7 @@ import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.Second;
 import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.Hypocentre;
+import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.Phase;
 import uk.ac.isc.seisdata.PhasesList;
 import uk.ac.isc.seisdata.SeisUtils;
@@ -39,54 +43,29 @@ import uk.ac.isc.seisdata.SeisUtils;
  */
 public class PhaseTravelViewPanel extends JPanel implements MouseListener, MouseMotionListener {
 
-    //the data of all the phases
-    private final PhasesList pList;
-
-    //the data in the seleted range
-    private final PhasesList detailedPList = new PhasesList();
-
-    private Hypocentre prime;
-
     //for filtering the data
     private double residualCutoffLevel = 0.0;
-
     //switch between the roi box (coordinates are bit different), this makes the double boxes and needs been fixed
     private boolean initFlag = true;
-
-    //these two for showing the phases data
-    private DuplicateUnorderTimeSeries phaseSeries;
-
-    private final DuplicateUnorderTimeSeriesCollection dataset = new DuplicateUnorderTimeSeriesCollection();
-
-    //curve data
-    private DuplicateUnorderTimeSeriesCollection ttdData = null;
-
     //freechart object for drawing the image
     private JFreeChart freechart = null;
 
     private final int imageWidth = 500;
-
     private final int imageHeight = 1000;
-
     //buffer images of the view
     private BufferedImage phasesImage = null;
-
     private final BufferedImage phaseImageWithRect = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
 
     //for filtering the data with phase types
     private final boolean[] typesVisible = {true, true, true, true, true};
-
     private final String[][] phaseTypes = SeisUtils.getGroupedPhaseTypes();
-    //private double pageNumber = 10.0;
 
     //get ranges, the view should be fixed
     private Long minTime;
-
     private Long maxTime;
 
     private double maxDist;
 
-    //interaction with detailed view
     /**
      * The drawing info collected the last time the chart was drawn.
      */
@@ -104,92 +83,64 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
      */
     private Rectangle2D zoomRectangle = null;
 
-    private double zoomMinTime;
-
-    private double zoomMaxTime;
-
-    private double zoomMinDist;
-
-    private double zoomMaxDist;
-
+    private double zoomMinTime = Double.MAX_VALUE;
+    private double zoomMaxTime = Double.MIN_VALUE;
+    private double zoomMinDist = Double.MAX_VALUE;
+    private double zoomMaxDist = Double.MIN_VALUE;
     private int xOffset;
-
     private int yOffset;
 
-    /*
-     PhaseTravelViewPanel(PhasesList pList, Hypocentre ph) {
-     this.pList = pList;
-     setPreferredSize(new Dimension(500, 1000));
+    private final PhasesList pList;
+    private final HypocentresList hList;
+    private Hypocentre prime;
+    //seleted list of Phases for details view
+    private final PhasesList detailedPList = new PhasesList();
 
-     phaseSeries = new DuplicateUnorderTimeSeries("");
+    //these two for showing the phases data
+    private File ttimesScript;
+    private DuplicateUnorderTimeSeries phaseSeries;
+    private final DuplicateUnorderTimeSeriesCollection dataset = new DuplicateUnorderTimeSeriesCollection();
+    //curve data
+    private DuplicateUnorderTimeSeriesCollection ttdData = null;
 
-     zoomMinTime = Double.MAX_VALUE;
-     zoomMaxTime = Double.MIN_VALUE;
-     zoomMinDist = Double.MAX_VALUE;
-     zoomMaxDist = Double.MIN_VALUE;
-
-     //put phases into the dataseries
-     for (Phase p : pList.getPhases()) {
-     if ((p.getArrivalTime() != null) && ((p.getTimeResidual() != null && Math.abs(p.getTimeResidual()) > residualCutoffLevel) || (p.getTimeResidual() == null))) {
-     RegularTimePeriod rp = new Second(p.getArrivalTime());
-     phaseSeries.add(rp, p.getDistance());
-     if (detailedPList.getPhases().size() < 20) {
-     detailedPList.getPhases().add(p);
-
-     //get zoom range
-     if ((double) p.getArrivalTime().getTime() < zoomMinTime) {
-     zoomMinTime = (double) p.getArrivalTime().getTime();
-     }
-
-     if ((double) p.getArrivalTime().getTime() > zoomMaxTime) {
-     zoomMaxTime = (double) p.getArrivalTime().getTime();
-     }
-
-     if (p.getDistance() < zoomMinDist) {
-     zoomMinDist = p.getDistance();
-     }
-
-     if (p.getDistance() > zoomMaxDist) {
-     zoomMaxDist = p.getDistance();
-     }
-     }
-
-     }
-     }
-     dataset.addSeries(phaseSeries);
-
-     this.prime = ph;
-
-     minTime = Math.min(ph.getOrigTime().getTime(), phaseSeries.getMinX());
-     maxTime = phaseSeries.getMaxX();
-     maxDist = phaseSeries.getMaxY();
-
-     createTravelImage();
-
-     //get the rectangle based on the freechart, reverse the min and max
-     double yMax = freechart.getXYPlot().getDomainAxis().valueToJava2D(zoomMinTime, info.getPlotInfo().getDataArea(), freechart.getXYPlot().getDomainAxisEdge());
-     double yMin = freechart.getXYPlot().getDomainAxis().valueToJava2D(zoomMaxTime, info.getPlotInfo().getDataArea(), freechart.getXYPlot().getDomainAxisEdge());
-     double xMin = freechart.getXYPlot().getRangeAxis().valueToJava2D(zoomMinDist, info.getPlotInfo().getDataArea(), freechart.getXYPlot().getRangeAxisEdge());
-     double xMax = freechart.getXYPlot().getRangeAxis().valueToJava2D(zoomMaxDist, info.getPlotInfo().getDataArea(), freechart.getXYPlot().getRangeAxisEdge());
-
-     //define the rectangle and draw it in the buffer
-     Graphics2D g2 = (Graphics2D) phaseImageWithRect.getGraphics();
-     zoomRectangle = new Rectangle2D.Double(xMin, yMin, xMax - xMin, yMax - yMin);
-     drawZoomRectangle(g2, true);
-
-     addMouseListener(this);
-     }
-     */
-    PhaseTravelViewPanel(PhasesList pList, Hypocentre ph, DuplicateUnorderTimeSeriesCollection ttdData) {
+    public PhaseTravelViewPanel(PhasesList pList, HypocentresList hList) {
         this.pList = pList;
+        this.hList = hList;
+
+        for (int i = 0; i < hList.getHypocentres().size(); i++) {
+            if (hList.getHypocentres().get(i).getIsPrime()) {
+                prime = hList.getHypocentres().get(i);
+            }
+        }
+
+        // read the resourse file (perl script) inside jar.
+        if (getClass().getClassLoader().getResource("resources" + File.separator + "ttimes.pl") == null) {
+            Global.logDebug("Resource does not exist. resource: " + getClass().getClassLoader().getResource("resources" + File.separator + "ttimes.pl"));
+        }
+
+        InputStream inSream = getClass().getClassLoader().getResourceAsStream("resources" + File.separator + "ttimes.pl");
+        if (inSream != null) {
+            try {
+                ttimesScript = File.createTempFile("ttimes", ".pl"); // create temp file & copy the content of the perl script in resource folder.
+                //ttimesScript = new File("tmp/ttimes.pl");
+                ttimesScript.setReadable(true, false);
+                ttimesScript.setExecutable(true, false);
+                Global.logDebug("Perl script location for TTDData, ttimesScript= " + ttimesScript.toPath());
+
+                Files.copy(inSream, ttimesScript.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                DuplicateUnorderTimeSeriesCollection ttdData = LoadTTDData.loadTTDData(Global.getSelectedSeisEvent().getEvid(), ttimesScript);
+                inSream.close();
+
+            } catch (IOException e) {
+                // TODO
+            }
+        } else {
+            Global.logDebug("Null inStream; resource: " + getClass().getClassLoader().getResource("resources" + File.separator + "ttimes.pl").toString());
+        }
+
         setPreferredSize(new Dimension(500, 1000));
 
         phaseSeries = new DuplicateUnorderTimeSeries("");
-
-        zoomMinTime = Double.MAX_VALUE;
-        zoomMaxTime = Double.MIN_VALUE;
-        zoomMinDist = Double.MAX_VALUE;
-        zoomMaxDist = Double.MIN_VALUE;
 
         //put phases into the dataseries
         for (Phase p : pList.getPhases()) {
@@ -221,12 +172,9 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
         }
         dataset.addSeries(phaseSeries);
 
-        this.prime = ph;
-
-        minTime = Math.min(ph.getOrigTime().getTime(), phaseSeries.getMinX());
+        minTime = Math.min(prime.getOrigTime().getTime(), phaseSeries.getMinX());
         maxTime = phaseSeries.getMaxX();
         maxDist = phaseSeries.getMaxY();
-        this.ttdData = ttdData;
 
         createTravelImage();
 
@@ -242,11 +190,10 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
         drawZoomRectangle(g2, false);
 
         addMouseListener(this);
-
     }
 
-    public void setPrime(Hypocentre ph) {
-        this.prime = ph;
+    public DuplicateUnorderTimeSeriesCollection getTtdData() {
+        return ttdData;
     }
 
     public void setPhaseTypeVisible(int type, boolean vis) {
@@ -269,7 +216,18 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
     }
 
     //once the data changes, call this function
-    public void UpdateData() {
+    public void updateData() {
+
+        // get the prime hypocentre from the new hypocentres list
+        for (int i = 0; i < hList.getHypocentres().size(); i++) {
+            if (hList.getHypocentres().get(i).getIsPrime()) {
+                prime = hList.getHypocentres().get(i);
+            }
+        }
+
+        // TODO: not sure if it needs to call again
+        ttdData = LoadTTDData.loadTTDData(Global.getSelectedSeisEvent().getEvid(), ttimesScript);
+
         detailedPList.getPhases().clear();
         dataset.removeAllSeries();
 
@@ -519,14 +477,17 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
         g2.drawImage(phaseImageWithRect, xOffset, yOffset, this);
 
         /*// TEST: 
-        //Global.logDebug("Write BufferedImage.");
-        try {
-            ImageIO.write(phaseImageWithRect, "png",
-                    new File("/export/home/saiful/assess/temp/phaseImageWithRect.png"));
-        } catch (Exception e) {
-            Global.logSevere("Error creating a png.");
-        }*/
+         //Global.logDebug("Write BufferedImage.");
+         try {
+         ImageIO.write(phaseImageWithRect, "png",
+         new File("/export/home/saiful/assess/temp/phaseImageWithRect.png"));
+         } catch (Exception e) {
+         Global.logSevere("Error creating a png.");
+         }*/
+    }
 
+    public BufferedImage getBufferedImage() {
+        return phaseImageWithRect;
     }
 
     @Override

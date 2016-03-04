@@ -2,7 +2,9 @@ package uk.ac.isc.phaseview;
 
 import java.awt.BorderLayout;
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Scanner;
 import javax.swing.JScrollPane;
@@ -58,7 +60,7 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
     /*
      * This is for saving the theoretical travel time points
      */
-    private final DuplicateUnorderTimeSeriesCollection ttdData = new DuplicateUnorderTimeSeriesCollection();
+    //private final DuplicateUnorderTimeSeriesCollection ttdData = new DuplicateUnorderTimeSeriesCollection();
     private boolean showTTDFlag = true;
 
     // Other
@@ -66,7 +68,7 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
 
     // Data
     private static final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
-    private final HypocentresList hyposList = Global.getHypocentresList();
+    private final HypocentresList hypocentresList = Global.getHypocentresList();
     private static final PhasesList phasesList = Global.getPhasesList();
 
     // Pane and panels for views
@@ -81,18 +83,22 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
         /* 
          * Create 2 phase views. 
          */
-        loadTTDData(hyposList.getHypocentres().get(0).getEvid());
+        phaseTVPanel = new PhaseTravelViewPanel(phasesList, hypocentresList);
+        phaseDVPanel = new PhaseDetailViewPanel(phaseTVPanel);
 
-        for (int i = 0; i < hyposList.getHypocentres().size(); i++) {
-            if (hyposList.getHypocentres().get(i).getIsPrime()) {
-                primeHypocentre = hyposList.getHypocentres().get(i);
-            }
-        }
+        /*
+         DuplicateUnorderTimeSeriesCollection ttdData = LoadTTDData.loadTTDData(selectedSeisEvent.getEvid(), perlScript.toString());
 
-        phaseTVPanel = new PhaseTravelViewPanel(phasesList, primeHypocentre, ttdData);
-        phaseDVPanel = new PhaseDetailViewPanel(phaseTVPanel, ttdData);
-        phaseTVPanel.setPrime(primeHypocentre);
+         for (int i = 0; i < hypocentresList.getHypocentres().size(); i++) {
+         if (hypocentresList.getHypocentres().get(i).getIsPrime()) {
+         primeHypocentre = hypocentresList.getHypocentres().get(i);
+         }
+         }
 
+         phaseTVPanel = new PhaseTravelViewPanel(phasesList, primeHypocentre, ttdData);
+         phaseDVPanel = new PhaseDetailViewPanel(phaseTVPanel, ttdData);
+         phaseTVPanel.setPrime(primeHypocentre);
+         */
         phaseViewControlPanel = new PhaseViewControlPanel(phaseTVPanel, phaseDVPanel);
 
         // add them together to the top component
@@ -115,88 +121,23 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
                 //SeisEvent seisEvent = (SeisEvent) event.getData();
                 Global.logDebug("SeisEvent= " + selectedSeisEvent.getEvid());
 
-                if (showTTDFlag == true) {
-                    loadTTDData(hyposList.getHypocentres().get(0).getEvid());
-                }
-
-                for (int i = 0; i < hyposList.getHypocentres().size(); i++) {
-                    if (hyposList.getHypocentres().get(i).getIsPrime()) {
-                        primeHypocentre = hyposList.getHypocentres().get(i);
-                    }
-                }
-                phaseTVPanel.setPrime(primeHypocentre);
-                phaseTVPanel.setTTDData(ttdData);
-
                 phaseViewControlPanel.reset();
-                phaseTVPanel.UpdateData();
 
+                /*
+                 DuplicateUnorderTimeSeriesCollection ttdData = LoadTTDData.loadTTDData(selectedSeisEvent.getEvid(), perlScript.toString());
+                 for (int i = 0; i < hypocentresList.getHypocentres().size(); i++) {
+                 if (hypocentresList.getHypocentres().get(i).getIsPrime()) {
+                 primeHypocentre = hypocentresList.getHypocentres().get(i);
+                 }
+                 }
+                 phaseTVPanel.setPrime(primeHypocentre);
+                 phaseTVPanel.setTTDData(ttdData);
+                 */
+                phaseTVPanel.updateData();
                 phaseDVPanel.setRange(phaseTVPanel.getRange());
-                phaseDVPanel.UpdateData();
+                phaseDVPanel.updateData();
 
                 break;
-        }
-
-    }
-
-    /**
-     * helper function to call perl for calculating ttd curves based on evid
-     *
-     * @param evid
-     */
-    private void loadTTDData(Integer evid) {
-
-        ttdData.removeAllSeries();
-
-        ArrayList<TTDTriplet> ttdList = new ArrayList<TTDTriplet>();
-
-        /**
-         * call perl script to get the theoretical time curves
-         */
-        String commandLine = "perl /export/home/james/VBAS/TT/ttimes.pl " + evid.toString();
-
-        //execute the perl script and read the data into ttdList
-        try {
-            Process proc = Runtime.getRuntime().exec(commandLine);
-
-            BufferedInputStream in = new BufferedInputStream(proc.getInputStream());
-            Scanner bscanner = new Scanner(in);
-
-            while (bscanner.hasNextLine()) {
-                String temp = bscanner.nextLine();
-                TTDTriplet tempTriplet = new TTDTriplet(temp);
-                ttdList.add(tempTriplet);
-                //System.out.println(tempTriplet);
-                //if(!pnameList.contains(tempTriplet.getPhaseType()))
-                //{
-                //    pnameList.add(tempTriplet.getPhaseType());
-                //}
-            }
-            proc.waitFor();
-
-        } catch (IOException ioe) {
-            System.out.println("Exception: " + ioe.toString());
-        } catch (InterruptedException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-
-        //iterate the ttdlist and put them into different seriers based on their phase types
-        //return time series collections
-        DuplicateUnorderTimeSeries dts = null;
-        for (int i = 0; i < ttdList.size(); i++) {
-            if (i == 0) {
-                dts = new DuplicateUnorderTimeSeries(ttdList.get(0).getPhaseType());
-                dts.add(new Second(ttdList.get(0).getArrivalTime()), ttdList.get(0).getDelta());
-            } else if (i == ttdList.size() - 1) {
-                ttdData.addSeries(dts);
-            } else {
-                if (ttdList.get(i).getPhaseType().equals(ttdList.get(i - 1).getPhaseType())) {
-                    dts.add(new Second(ttdList.get(i).getArrivalTime()), ttdList.get(i).getDelta());
-                } else {
-                    ttdData.addSeries(dts);
-                    dts = new DuplicateUnorderTimeSeries(ttdList.get(i).getPhaseType());
-                    dts.add(new Second(ttdList.get(i).getArrivalTime()), ttdList.get(i).getDelta());
-                }
-            }
         }
 
     }

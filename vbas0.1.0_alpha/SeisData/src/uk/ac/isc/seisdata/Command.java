@@ -69,12 +69,12 @@ public class Command extends AbstractSeisData {
     public String getCommandStr() {
         return commandLogStr;
     }
-    
+
     // Reformat the commandLogStr for user.
     public String getRedableCommandStr() {
         return FormulateCommand.getRedableCommandStr(commandLogStr);
     }
-    
+
     public void setCommandStr(String command) {
         this.commandLogStr = command;
     }

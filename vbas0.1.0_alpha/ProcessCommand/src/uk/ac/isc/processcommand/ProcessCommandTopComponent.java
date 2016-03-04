@@ -59,7 +59,6 @@ public final class ProcessCommandTopComponent extends TopComponent {
         sp.setResizeWeight(0.5);
         this.setLayout(new BorderLayout());
         this.add(sp, BorderLayout.CENTER);
-
     }
 
     /**

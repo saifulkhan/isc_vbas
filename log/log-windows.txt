@@ -1,0 +1,514 @@
+-------------------------------------------------------------------------------
+>Log Session: Friday, March 4, 2016 1:00:51 PM GMT
+>System Info: 
+  Product Version         = vbas0.1.0_alpha 201411181905
+  Operating System        = Windows 8 version 6.2 running on amd64
+  Java; VM; Vendor        = 1.8.0_45; Java HotSpot(TM) 64-Bit Server VM 25.45-b02; Oracle Corporation
+  Runtime                 = Java(TM) SE Runtime Environment 1.8.0_45-b15
+  Java Home               = C:\Program Files\Java\jdk1.8.0_45\jre
+  System Locale; Encoding = en_GB (vbas_alpha); Cp1252
+  Home Directory          = C:\Users\presentations
+  Current Directory       = C:\Users\presentations\Documents\vbas_alpha
+  User Directory          = C:\Users\presentations\AppData\Roaming\.vbas_alpha\dev
+  Cache Directory         = C:\Users\presentations\AppData\Roaming\.vbas_alpha\dev\var\cache
+  Installation            = C:\Users\presentations\Documents\vbas_alpha\vbas_alpha
+                            C:\Users\presentations\Documents\vbas_alpha\platform
+  Boot & Ext. Classpath   = C:\Program Files\Java\jdk1.8.0_45\jre\lib\resources.jar;C:\Program Files\Java\jdk1.8.0_45\jre\lib\rt.jar;C:\Program Files\Java\jdk1.8.0_45\jre\lib\sunrsasign.jar;C:\Program Files\Java\jdk1.8.0_45\jre\lib\jsse.jar;C:\Program Files\Java\jdk1.8.0_45\jre\lib\jce.jar;C:\Program Files\Java\jdk1.8.0_45\jre\lib\charsets.jar;C:\Program Files\Java\jdk1.8.0_45\jre\lib\jfr.jar;C:\Program Files\Java\jdk1.8.0_45\jre\classes;C:\Program Files\Java\jdk1.8.0_45\jre\lib\ext\access-bridge-64.jar;C:\Program Files\Java\jdk1.8.0_45\jre\lib\ext\cldrdata.jar;C:\Program Files\Java\jdk1.8.0_45\jre\lib\ext\dnsns.jar;C:\Program Files\Java\jdk1.8.0_45\jre\lib\ext\jaccess.jar;C:\Program Files\Java\jdk1.8.0_45\jre\lib\ext\jfxrt.jar;C:\Program Files\Java\jdk1.8.0_45\jre\lib\ext\localedata.jar;C:\Program Files\Java\jdk1.8.0_45\jre\lib\ext\nashorn.jar;C:\Program Files\Java\jdk1.8.0_45\jre\lib\ext\sunec.jar;C:\Program Files\Java\jdk1.8.0_45\jre\lib\ext\sunjce_provider.jar;C:\Program Files\Java\jdk1.8.0_45\jre\lib\ext\sunmscapi.jar;C:\Program Files\Java\jdk1.8.0_45\jre\lib\ext\sunpkcs11.jar;C:\Program Files\Java\jdk1.8.0_45\jre\lib\ext\zipfs.jar
+  Application Classpath   = C:\Users\presentations\Documents\vbas_alpha\platform\lib\boot.jar;C:\Users\presentations\Documents\vbas_alpha\platform\lib\org-openide-modules.jar;C:\Users\presentations\Documents\vbas_alpha\platform\lib\org-openide-util-lookup.jar;C:\Users\presentations\Documents\vbas_alpha\platform\lib\org-openide-util.jar;C:\Users\presentations\Documents\vbas_alpha\platform\lib\locale\boot_ja.jar;C:\Users\presentations\Documents\vbas_alpha\platform\lib\locale\boot_pt_BR.jar;C:\Users\presentations\Documents\vbas_alpha\platform\lib\locale\boot_ru.jar;C:\Users\presentations\Documents\vbas_alpha\platform\lib\locale\boot_zh_CN.jar;C:\Users\presentations\Documents\vbas_alpha\platform\lib\locale\org-openide-modules_ja.jar;C:\Users\presentations\Documents\vbas_alpha\platform\lib\locale\org-openide-modules_pt_BR.jar;C:\Users\presentations\Documents\vbas_alpha\platform\lib\locale\org-openide-modules_ru.jar;C:\Users\presentations\Documents\vbas_alpha\platform\lib\locale\org-openide-modules_zh_CN.jar;C:\Users\presentations\Documents\vbas_alpha\platform\lib\locale\org-openide-util-lookup_ja.jar;C:\Users\presentations\Documents\vbas_alpha\platform\lib\locale\org-openide-util-lookup_pt_BR.jar;C:\Users\presentations\Documents\vbas_alpha\platform\lib\locale\org-openide-util-lookup_ru.jar;C:\Users\presentations\Documents\vbas_alpha\platform\lib\locale\org-openide-util-lookup_zh_CN.jar;C:\Users\presentations\Documents\vbas_alpha\platform\lib\locale\org-openide-util_ja.jar;C:\Users\presentations\Documents\vbas_alpha\platform\lib\locale\org-openide-util_pt_BR.jar;C:\Users\presentations\Documents\vbas_alpha\platform\lib\locale\org-openide-util_ru.jar;C:\Users\presentations\Documents\vbas_alpha\platform\lib\locale\org-openide-util_zh_CN.jar;C:\Program Files\Java\jdk1.8.0_45\lib\dt.jar;C:\Program Files\Java\jdk1.8.0_45\lib\tools.jar
+  Startup Classpath       = C:\Users\presentations\Documents\vbas_alpha\platform\core\core.jar;C:\Users\presentations\Documents\vbas_alpha\platform\core\org-openide-filesystems.jar;C:\Users\presentations\Documents\vbas_alpha\platform\core\locale\core_ja.jar;C:\Users\presentations\Documents\vbas_alpha\platform\core\locale\core_pt_BR.jar;C:\Users\presentations\Documents\vbas_alpha\platform\core\locale\core_ru.jar;C:\Users\presentations\Documents\vbas_alpha\platform\core\locale\core_zh_CN.jar;C:\Users\presentations\Documents\vbas_alpha\platform\core\locale\org-openide-filesystems_ja.jar;C:\Users\presentations\Documents\vbas_alpha\platform\core\locale\org-openide-filesystems_pt_BR.jar;C:\Users\presentations\Documents\vbas_alpha\platform\core\locale\org-openide-filesystems_ru.jar;C:\Users\presentations\Documents\vbas_alpha\platform\core\locale\org-openide-filesystems_zh_CN.jar;C:\Users\presentations\Documents\vbas_alpha\vbas_alpha\core\locale\core_vbas_alpha.jar
+-------------------------------------------------------------------------------
+INFO [org.netbeans.core.startup.NbEvents]: Turning on modules:
+	org.openide.util.lookup [8.25.2 201505281753]
+	org.openide.util [8.39.1 201411181905]
+	org.openide.modules [7.43.1 201411181905]
+	org.netbeans.api.annotations.common/1 [1.24.1 201411181905]
+	org.openide.filesystems [8.12.1 201411181905]
+	org.openide.awt [7.62.1 201411181905]
+	uk.ac.isc.jfreechartwrapper [1.0 160303]
+	uk.ac.isc.seisdata [1.0 160304]
+	org.netbeans.api.progress/1 [1.38.1 201411181905]
+	org.openide.dialogs [7.38.1 201411181905]
+	org.openide.nodes [7.39.1 201411181905]
+	org.openide.windows [6.71.1 201411181905]
+	org.netbeans.swing.tabcontrol [1.51.1 201411181905]
+	org.netbeans.swing.outline [1.30.1 201411181905]
+	org.openide.explorer [6.57.1 201411181905]
+	org.netbeans.modules.editor.mimelookup/1 [1.36.1 201411181905]
+	org.openide.text [6.62.2 201411181905]
+	org.openide.actions [6.35.1 201411181905]
+	org.netbeans.bootstrap/1 [2.69.3 201411181905]
+	org.netbeans.core.startup/1 [1.55.2 201411181905]
+	org.netbeans.modules.queries/1 [1.39.1 201411181905]
+	org.openide.loaders [7.57.2 201411181905]
+	org.netbeans.modules.settings/1 [1.45.1 201411181905]
+	org.netbeans.swing.plaf [1.37.1 201411181905]
+	org.netbeans.modules.keyring [1.20.1 201411181905]
+	org.openide.io [1.45.1 201411181905]
+	org.netbeans.modules.sampler [1.10.1 201411181905]
+	org.netbeans.core/2 [3.46.1 201411181905]
+	org.netbeans.spi.quicksearch [1.23.1 201411181905]
+	org.netbeans.modules.options.api/1 [1.41.1 201411181905]
+	org.netbeans.core.windows/2 [2.77.2 201411181905]
+	uk.ac.isc.eveentscontrolview [1.0 160304]
+	uk.ac.isc.textview [1.0 160304]
+	isc.ac.uk.jmappviewerwrapper [1.0 160303]
+	uk.ac.isc.stationmagnitudeview [1.0 160304]
+	uk.ac.isc.hypooverview [1.0 160304]
+	uk.ac.isc.stationazimuthview [1.0 160304]
+	uk.ac.isc.hypodepthview [1.0 160304]
+	uk.ac.isc.agencypiechartview [1.0 160304]
+	uk.ac.isc.commonswrapper [1.0 160303]
+	uk.ac.isc.phaseview [1.0 160304]
+	uk.ac.isc.hypomagnitudeview [1.0 160304]
+	uk.ac.isc.processcommand [1.0 160304]
+	org.netbeans.modules.progress.ui [1.29.2 201411181905]
+	org.netbeans.modules.print [7.22.1 201411181905]
+	org.netbeans.modules.options.keymap [1.31.1 201411181905]
+	org.netbeans.libs.jna/1 [1.38.1 201411181905]
+	org.netbeans.modules.masterfs/2 [2.48.3 201502261250]
+	org.netbeans.modules.masterfs.windows [1.13.1 201411181905]
+	org.netbeans.modules.masterfs.nio2 [1.12.1 201411181905]
+	org.netbeans.modules.keyring.fallback [1.4.1 201411181905]
+	org.netbeans.modules.keyring.impl [1.20.1 201411181905]
+	org.netbeans.modules.editor.mimelookup.impl/1 [1.27.1 201411181905]
+	org.netbeans.libs.osgi [1.18.1 201411181905]
+	org.netbeans.libs.jna.platform/1 [1.8.1 201411181905]
+	org.netbeans.libs.felix [2.12.1 201411181905]
+	org.netbeans.core.ui/1 [1.41.1 201411181905]
+	org.netbeans.core.output2/1 [1.37.1 201411181905]
+	org.netbeans.core.network [1.6.1 201411181905]
+	org.netbeans.core.netigso [1.27.1 201411181905]
+	org.netbeans.core.nativeaccess/1 [1.27.1 201411181905]
+	org.netbeans.core.multitabs/1 [1.8.1.1 1 201411181905]
+	org.netbeans.core.io.ui/1 [1.26.1 201411181905]
+WARNING [org.netbeans.swing.plaf.Startup]: L&F Warning: Nimbus L&F is not supported L&F yet and system may exhibit various drawing problems. Please use for experimental purposes only.
+INFO [org.netbeans.core.network.proxy.NetworkProxyReloader]: System network proxy resolver: Windows
+INFO [org.netbeans.core.network.proxy.windows.WindowsNetworkProxy]: Windows system proxy resolver: auto detect
+INFO [org.netbeans.core.network.proxy.NetworkProxyReloader]: System network proxy reloading succeeded.
+INFO [org.netbeans.core.network.proxy.NetworkProxyReloader]: System network proxy - mode: direct
+INFO [org.netbeans.core.network.proxy.NetworkProxyReloader]: System network proxy: fell to default (correct if direct mode went before)
+INFO [org.netbeans.ui.metrics.laf]: USG_LOOK_AND_FEEL
+INFO [40:Global:loadSeisEventsList]: Loading all SeisEvents.
+INFO [44:SeisDataDAO:<clinit>]: Windows 8
+INFO [59:Global:loadSelectedSeisEventData]: Load list of Hypocentre, Phase, Commmands, and AssessedCommands for SeisEvent: 602854909
+query= SELECT ec.id, ec.command, ec.functions, a.name, ba.pass, ec.adddate, ec.type, ec.status FROM analyst a, edit_commands ec, block_allocation ba WHERE ec.evid = 602854909 AND ec.type != 'assess' AND ba.id = ec.block_allocation_id AND ba.analyst_id = a.id ORDER BY ec.adddate;
+rs= org.postgresql.jdbc4.Jdbc4ResultSet@68c82284
+INFO [2688:SeisDataDAO:readCommandTable]: 1 | James | {"commandType":"setprime","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":"JMA","name":"primehypocentre"}]} | i | 2016-03-03 | null | setprime
+INFO [2688:SeisDataDAO:readCommandTable]: 3 | James | {"commandType":"hypocentreedit","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":46,"name":"depth","oldValue":40},{"newValue":"NA","name":"reason"}]} | i | 2016-03-03 | null | hypocentreedit
+INFO [2688:SeisDataDAO:readCommandTable]: 9 | James | {"commandType":"setprime","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":"JMA","name":"primehypocentre"}]} | i | 2016-03-03 | null | setprime
+query= SELECT ba.pass, a.name, ec.id AS assessid, ec.command AS command, eca.id AS cmdids
+ FROM analyst a, edit_commands ec, block_allocation ba, command_group cg, edit_commands eca
+ WHERE ec.evid = 602854909 AND ec.type = 'assess'
+ AND ba.id = ec.block_allocation_id
+ AND ba.analyst_id = a.id
+ AND cg.id = ec.id
+ AND cg.edit_commands_id = eca.id
+ ORDER BY ec.adddate;
+rs= org.postgresql.jdbc4.Jdbc4ResultSet@4ef0cd46
+INFO [107:Global:loadSelectedSeisEventData]: Selected SeisEvent=602854909, #Hypocentres:2, #Phases:23, #Commands:3, #AssessedCommands:10
+INFO [85:HypoTextViewTopComponent:<init>]: Loaded...
+INFO [220:HypoTextViewTopComponent:setHeaderText]: 602854909, Tue Jan 01 00:26:17 GMT 2013
+INFO [56:AgencyPieChartViewTopComponent:<init>]: Loaded... #phases: 23
+INFO [75:PhaseTextViewTopComponent:<init>]: Here...
+INFO [54:HypoMagnitudeViewTopComponent:<init>]: Loaded...
+INFO [74:HypoMagnitudeViewPanel:<init>]: Here...
+INFO [56:StationMagnitudeViewTopComponent:<init>]: Loaded..., #SiesEvent=602854909, #Hypocentre=2
+SEVERE [org.openide.util.Exceptions]
+javax.imageio.IIOException: Can't read input file!
+	at javax.imageio.ImageIO.read(ImageIO.java:1301)
+[catch] at uk.ac.isc.stationmagnitudeview.StationMagnitudeView.loadSrcImage(StationMagnitudeView.java:339)
+	at uk.ac.isc.stationmagnitudeview.StationMagnitudeView.<init>(StationMagnitudeView.java:198)
+	at uk.ac.isc.stationmagnitudeview.StationMagnitudeViewTopComponent.<init>(StationMagnitudeViewTopComponent.java:67)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:422)
+	at org.netbeans.modules.settings.convertors.XMLSettingsSupport.newInstance(XMLSettingsSupport.java:100)
+	at org.netbeans.modules.settings.convertors.XMLPropertiesConvertor.defaultInstanceCreate(XMLPropertiesConvertor.java:228)
+	at org.netbeans.modules.settings.convertors.XMLPropertiesConvertor.read(XMLPropertiesConvertor.java:99)
+	at org.netbeans.modules.settings.InstanceProvider$InstanceCookieImpl.instanceCreate(InstanceProvider.java:317)
+	at org.netbeans.core.windows.persistence.PersistenceManager.getTopComponentPersistentForID(PersistenceManager.java:571)
+	at org.netbeans.core.windows.persistence.PersistenceManager.getTopComponentForID(PersistenceManager.java:681)
+	at org.netbeans.core.windows.PersistenceHandler.getTopComponentForID(PersistenceHandler.java:478)
+	at org.netbeans.core.windows.LazyLoader.lazyLoad(LazyLoader.java:138)
+	at org.netbeans.core.windows.PersistenceHandler.initModeFromConfig(PersistenceHandler.java:441)
+	at org.netbeans.core.windows.PersistenceHandler.load(PersistenceHandler.java:204)
+	at org.netbeans.core.windows.WindowSystemImpl.load(WindowSystemImpl.java:81)
+	at org.netbeans.core.GuiRunLevel$InitWinSys.run(GuiRunLevel.java:229)
+	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:311)
+	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:756)
+	at java.awt.EventQueue.access$500(EventQueue.java:97)
+	at java.awt.EventQueue$3.run(EventQueue.java:709)
+	at java.awt.EventQueue$3.run(EventQueue.java:703)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(ProtectionDomain.java:75)
+	at java.awt.EventQueue.dispatchEvent(EventQueue.java:726)
+	at org.netbeans.core.TimableEventQueue.dispatchEvent(TimableEventQueue.java:159)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:201)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:116)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:105)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:93)
+	at java.awt.EventDispatchThread.run(EventDispatchThread.java:82)
+SEVERE [org.openide.util.Exceptions]
+javax.imageio.IIOException: Can't read input file!
+	at javax.imageio.ImageIO.read(ImageIO.java:1301)
+[catch] at uk.ac.isc.stationmagnitudeview.StationMagnitudeView.loadSrcImage(StationMagnitudeView.java:339)
+	at uk.ac.isc.stationmagnitudeview.StationMagnitudeView.<init>(StationMagnitudeView.java:198)
+	at uk.ac.isc.stationmagnitudeview.StationMagnitudeViewTopComponent.<init>(StationMagnitudeViewTopComponent.java:67)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:422)
+	at org.netbeans.modules.settings.convertors.XMLSettingsSupport.newInstance(XMLSettingsSupport.java:100)
+	at org.netbeans.modules.settings.convertors.XMLPropertiesConvertor.defaultInstanceCreate(XMLPropertiesConvertor.java:228)
+	at org.netbeans.modules.settings.convertors.XMLPropertiesConvertor.read(XMLPropertiesConvertor.java:99)
+	at org.netbeans.modules.settings.InstanceProvider$InstanceCookieImpl.instanceCreate(InstanceProvider.java:317)
+	at org.netbeans.core.windows.persistence.PersistenceManager.getTopComponentPersistentForID(PersistenceManager.java:571)
+	at org.netbeans.core.windows.persistence.PersistenceManager.getTopComponentForID(PersistenceManager.java:681)
+	at org.netbeans.core.windows.PersistenceHandler.getTopComponentForID(PersistenceHandler.java:478)
+	at org.netbeans.core.windows.LazyLoader.lazyLoad(LazyLoader.java:138)
+	at org.netbeans.core.windows.PersistenceHandler.initModeFromConfig(PersistenceHandler.java:441)
+	at org.netbeans.core.windows.PersistenceHandler.load(PersistenceHandler.java:204)
+	at org.netbeans.core.windows.WindowSystemImpl.load(WindowSystemImpl.java:81)
+	at org.netbeans.core.GuiRunLevel$InitWinSys.run(GuiRunLevel.java:229)
+	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:311)
+	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:756)
+	at java.awt.EventQueue.access$500(EventQueue.java:97)
+	at java.awt.EventQueue$3.run(EventQueue.java:709)
+	at java.awt.EventQueue$3.run(EventQueue.java:703)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(ProtectionDomain.java:75)
+	at java.awt.EventQueue.dispatchEvent(EventQueue.java:726)
+	at org.netbeans.core.TimableEventQueue.dispatchEvent(TimableEventQueue.java:159)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:201)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:116)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:105)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:93)
+	at java.awt.EventDispatchThread.run(EventDispatchThread.java:82)
+SEVERE [org.openide.util.Exceptions]
+javax.imageio.IIOException: Can't read input file!
+	at javax.imageio.ImageIO.read(ImageIO.java:1301)
+[catch] at uk.ac.isc.stationmagnitudeview.StationMagnitudeView.loadSrcImage(StationMagnitudeView.java:339)
+	at uk.ac.isc.stationmagnitudeview.StationMagnitudeView.<init>(StationMagnitudeView.java:198)
+	at uk.ac.isc.stationmagnitudeview.StationMagnitudeViewTopComponent.<init>(StationMagnitudeViewTopComponent.java:67)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:422)
+	at org.netbeans.modules.settings.convertors.XMLSettingsSupport.newInstance(XMLSettingsSupport.java:100)
+	at org.netbeans.modules.settings.convertors.XMLPropertiesConvertor.defaultInstanceCreate(XMLPropertiesConvertor.java:228)
+	at org.netbeans.modules.settings.convertors.XMLPropertiesConvertor.read(XMLPropertiesConvertor.java:99)
+	at org.netbeans.modules.settings.InstanceProvider$InstanceCookieImpl.instanceCreate(InstanceProvider.java:317)
+	at org.netbeans.core.windows.persistence.PersistenceManager.getTopComponentPersistentForID(PersistenceManager.java:571)
+	at org.netbeans.core.windows.persistence.PersistenceManager.getTopComponentForID(PersistenceManager.java:681)
+	at org.netbeans.core.windows.PersistenceHandler.getTopComponentForID(PersistenceHandler.java:478)
+	at org.netbeans.core.windows.LazyLoader.lazyLoad(LazyLoader.java:138)
+	at org.netbeans.core.windows.PersistenceHandler.initModeFromConfig(PersistenceHandler.java:441)
+	at org.netbeans.core.windows.PersistenceHandler.load(PersistenceHandler.java:204)
+	at org.netbeans.core.windows.WindowSystemImpl.load(WindowSystemImpl.java:81)
+	at org.netbeans.core.GuiRunLevel$InitWinSys.run(GuiRunLevel.java:229)
+	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:311)
+	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:756)
+	at java.awt.EventQueue.access$500(EventQueue.java:97)
+	at java.awt.EventQueue$3.run(EventQueue.java:709)
+	at java.awt.EventQueue$3.run(EventQueue.java:703)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(ProtectionDomain.java:75)
+	at java.awt.EventQueue.dispatchEvent(EventQueue.java:726)
+	at org.netbeans.core.TimableEventQueue.dispatchEvent(TimableEventQueue.java:159)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:201)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:116)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:105)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:93)
+	at java.awt.EventDispatchThread.run(EventDispatchThread.java:82)
+SEVERE [org.openide.util.Exceptions]
+javax.imageio.IIOException: Can't read input file!
+	at javax.imageio.ImageIO.read(ImageIO.java:1301)
+[catch] at uk.ac.isc.stationmagnitudeview.StationMagnitudeView.loadSrcImage(StationMagnitudeView.java:339)
+	at uk.ac.isc.stationmagnitudeview.StationMagnitudeView.<init>(StationMagnitudeView.java:198)
+	at uk.ac.isc.stationmagnitudeview.StationMagnitudeViewTopComponent.<init>(StationMagnitudeViewTopComponent.java:67)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:422)
+	at org.netbeans.modules.settings.convertors.XMLSettingsSupport.newInstance(XMLSettingsSupport.java:100)
+	at org.netbeans.modules.settings.convertors.XMLPropertiesConvertor.defaultInstanceCreate(XMLPropertiesConvertor.java:228)
+	at org.netbeans.modules.settings.convertors.XMLPropertiesConvertor.read(XMLPropertiesConvertor.java:99)
+	at org.netbeans.modules.settings.InstanceProvider$InstanceCookieImpl.instanceCreate(InstanceProvider.java:317)
+	at org.netbeans.core.windows.persistence.PersistenceManager.getTopComponentPersistentForID(PersistenceManager.java:571)
+	at org.netbeans.core.windows.persistence.PersistenceManager.getTopComponentForID(PersistenceManager.java:681)
+	at org.netbeans.core.windows.PersistenceHandler.getTopComponentForID(PersistenceHandler.java:478)
+	at org.netbeans.core.windows.LazyLoader.lazyLoad(LazyLoader.java:138)
+	at org.netbeans.core.windows.PersistenceHandler.initModeFromConfig(PersistenceHandler.java:441)
+	at org.netbeans.core.windows.PersistenceHandler.load(PersistenceHandler.java:204)
+	at org.netbeans.core.windows.WindowSystemImpl.load(WindowSystemImpl.java:81)
+	at org.netbeans.core.GuiRunLevel$InitWinSys.run(GuiRunLevel.java:229)
+	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:311)
+	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:756)
+	at java.awt.EventQueue.access$500(EventQueue.java:97)
+	at java.awt.EventQueue$3.run(EventQueue.java:709)
+	at java.awt.EventQueue$3.run(EventQueue.java:703)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(ProtectionDomain.java:75)
+	at java.awt.EventQueue.dispatchEvent(EventQueue.java:726)
+	at org.netbeans.core.TimableEventQueue.dispatchEvent(TimableEventQueue.java:159)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:201)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:116)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:105)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:93)
+	at java.awt.EventDispatchThread.run(EventDispatchThread.java:82)
+INFO [77:PhaseViewTopComponent:<init>]: Loaded...
+INFO [60:StationAzimuthViewTopComponent:<init>]: Loaded...
+INFO [103:StationAzimuthView:<init>]: Here...
+SEVERE [org.openide.util.Exceptions]
+javax.imageio.IIOException: Can't read input file!
+	at javax.imageio.ImageIO.read(ImageIO.java:1301)
+[catch] at uk.ac.isc.stationazimuthview.StationAzimuthView.loadSrcImage(StationAzimuthView.java:259)
+	at uk.ac.isc.stationazimuthview.StationAzimuthView.<init>(StationAzimuthView.java:109)
+	at uk.ac.isc.stationazimuthview.StationAzimuthViewTopComponent.<init>(StationAzimuthViewTopComponent.java:64)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:422)
+	at org.netbeans.modules.settings.convertors.XMLSettingsSupport.newInstance(XMLSettingsSupport.java:100)
+	at org.netbeans.modules.settings.convertors.XMLPropertiesConvertor.defaultInstanceCreate(XMLPropertiesConvertor.java:228)
+	at org.netbeans.modules.settings.convertors.XMLPropertiesConvertor.read(XMLPropertiesConvertor.java:99)
+	at org.netbeans.modules.settings.InstanceProvider$InstanceCookieImpl.instanceCreate(InstanceProvider.java:317)
+	at org.netbeans.core.windows.persistence.PersistenceManager.getTopComponentPersistentForID(PersistenceManager.java:571)
+	at org.netbeans.core.windows.persistence.PersistenceManager.getTopComponentForID(PersistenceManager.java:681)
+	at org.netbeans.core.windows.PersistenceHandler.getTopComponentForID(PersistenceHandler.java:478)
+	at org.netbeans.core.windows.LazyLoader.lazyLoad(LazyLoader.java:138)
+	at org.netbeans.core.windows.PersistenceHandler.initModeFromConfig(PersistenceHandler.java:441)
+	at org.netbeans.core.windows.PersistenceHandler.load(PersistenceHandler.java:204)
+	at org.netbeans.core.windows.WindowSystemImpl.load(WindowSystemImpl.java:81)
+	at org.netbeans.core.GuiRunLevel$InitWinSys.run(GuiRunLevel.java:229)
+	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:311)
+	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:756)
+	at java.awt.EventQueue.access$500(EventQueue.java:97)
+	at java.awt.EventQueue$3.run(EventQueue.java:709)
+	at java.awt.EventQueue$3.run(EventQueue.java:703)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(ProtectionDomain.java:75)
+	at java.awt.EventQueue.dispatchEvent(EventQueue.java:726)
+	at org.netbeans.core.TimableEventQueue.dispatchEvent(TimableEventQueue.java:159)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:201)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:116)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:105)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:93)
+	at java.awt.EventDispatchThread.run(EventDispatchThread.java:82)
+SEVERE [org.openide.util.Exceptions]
+javax.imageio.IIOException: Can't read input file!
+	at javax.imageio.ImageIO.read(ImageIO.java:1301)
+[catch] at uk.ac.isc.stationazimuthview.StationAzimuthView.loadSrcImage(StationAzimuthView.java:259)
+	at uk.ac.isc.stationazimuthview.StationAzimuthView.<init>(StationAzimuthView.java:109)
+	at uk.ac.isc.stationazimuthview.StationAzimuthViewTopComponent.<init>(StationAzimuthViewTopComponent.java:64)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:422)
+	at org.netbeans.modules.settings.convertors.XMLSettingsSupport.newInstance(XMLSettingsSupport.java:100)
+	at org.netbeans.modules.settings.convertors.XMLPropertiesConvertor.defaultInstanceCreate(XMLPropertiesConvertor.java:228)
+	at org.netbeans.modules.settings.convertors.XMLPropertiesConvertor.read(XMLPropertiesConvertor.java:99)
+	at org.netbeans.modules.settings.InstanceProvider$InstanceCookieImpl.instanceCreate(InstanceProvider.java:317)
+	at org.netbeans.core.windows.persistence.PersistenceManager.getTopComponentPersistentForID(PersistenceManager.java:571)
+	at org.netbeans.core.windows.persistence.PersistenceManager.getTopComponentForID(PersistenceManager.java:681)
+	at org.netbeans.core.windows.PersistenceHandler.getTopComponentForID(PersistenceHandler.java:478)
+	at org.netbeans.core.windows.LazyLoader.lazyLoad(LazyLoader.java:138)
+	at org.netbeans.core.windows.PersistenceHandler.initModeFromConfig(PersistenceHandler.java:441)
+	at org.netbeans.core.windows.PersistenceHandler.load(PersistenceHandler.java:204)
+	at org.netbeans.core.windows.WindowSystemImpl.load(WindowSystemImpl.java:81)
+	at org.netbeans.core.GuiRunLevel$InitWinSys.run(GuiRunLevel.java:229)
+	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:311)
+	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:756)
+	at java.awt.EventQueue.access$500(EventQueue.java:97)
+	at java.awt.EventQueue$3.run(EventQueue.java:709)
+	at java.awt.EventQueue$3.run(EventQueue.java:703)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(ProtectionDomain.java:75)
+	at java.awt.EventQueue.dispatchEvent(EventQueue.java:726)
+	at org.netbeans.core.TimableEventQueue.dispatchEvent(TimableEventQueue.java:159)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:201)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:116)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:105)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:93)
+	at java.awt.EventDispatchThread.run(EventDispatchThread.java:82)
+SEVERE [org.openide.util.Exceptions]
+javax.imageio.IIOException: Can't read input file!
+	at javax.imageio.ImageIO.read(ImageIO.java:1301)
+[catch] at uk.ac.isc.stationazimuthview.StationAzimuthView.loadSrcImage(StationAzimuthView.java:259)
+	at uk.ac.isc.stationazimuthview.StationAzimuthView.<init>(StationAzimuthView.java:109)
+	at uk.ac.isc.stationazimuthview.StationAzimuthViewTopComponent.<init>(StationAzimuthViewTopComponent.java:64)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:422)
+	at org.netbeans.modules.settings.convertors.XMLSettingsSupport.newInstance(XMLSettingsSupport.java:100)
+	at org.netbeans.modules.settings.convertors.XMLPropertiesConvertor.defaultInstanceCreate(XMLPropertiesConvertor.java:228)
+	at org.netbeans.modules.settings.convertors.XMLPropertiesConvertor.read(XMLPropertiesConvertor.java:99)
+	at org.netbeans.modules.settings.InstanceProvider$InstanceCookieImpl.instanceCreate(InstanceProvider.java:317)
+	at org.netbeans.core.windows.persistence.PersistenceManager.getTopComponentPersistentForID(PersistenceManager.java:571)
+	at org.netbeans.core.windows.persistence.PersistenceManager.getTopComponentForID(PersistenceManager.java:681)
+	at org.netbeans.core.windows.PersistenceHandler.getTopComponentForID(PersistenceHandler.java:478)
+	at org.netbeans.core.windows.LazyLoader.lazyLoad(LazyLoader.java:138)
+	at org.netbeans.core.windows.PersistenceHandler.initModeFromConfig(PersistenceHandler.java:441)
+	at org.netbeans.core.windows.PersistenceHandler.load(PersistenceHandler.java:204)
+	at org.netbeans.core.windows.WindowSystemImpl.load(WindowSystemImpl.java:81)
+	at org.netbeans.core.GuiRunLevel$InitWinSys.run(GuiRunLevel.java:229)
+	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:311)
+	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:756)
+	at java.awt.EventQueue.access$500(EventQueue.java:97)
+	at java.awt.EventQueue$3.run(EventQueue.java:709)
+	at java.awt.EventQueue$3.run(EventQueue.java:703)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(ProtectionDomain.java:75)
+	at java.awt.EventQueue.dispatchEvent(EventQueue.java:726)
+	at org.netbeans.core.TimableEventQueue.dispatchEvent(TimableEventQueue.java:159)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:201)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:116)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:105)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:93)
+	at java.awt.EventDispatchThread.run(EventDispatchThread.java:82)
+SEVERE [org.openide.util.Exceptions]
+javax.imageio.IIOException: Can't read input file!
+	at javax.imageio.ImageIO.read(ImageIO.java:1301)
+[catch] at uk.ac.isc.stationazimuthview.StationAzimuthView.loadSrcImage(StationAzimuthView.java:259)
+	at uk.ac.isc.stationazimuthview.StationAzimuthView.<init>(StationAzimuthView.java:109)
+	at uk.ac.isc.stationazimuthview.StationAzimuthViewTopComponent.<init>(StationAzimuthViewTopComponent.java:64)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:422)
+	at org.netbeans.modules.settings.convertors.XMLSettingsSupport.newInstance(XMLSettingsSupport.java:100)
+	at org.netbeans.modules.settings.convertors.XMLPropertiesConvertor.defaultInstanceCreate(XMLPropertiesConvertor.java:228)
+	at org.netbeans.modules.settings.convertors.XMLPropertiesConvertor.read(XMLPropertiesConvertor.java:99)
+	at org.netbeans.modules.settings.InstanceProvider$InstanceCookieImpl.instanceCreate(InstanceProvider.java:317)
+	at org.netbeans.core.windows.persistence.PersistenceManager.getTopComponentPersistentForID(PersistenceManager.java:571)
+	at org.netbeans.core.windows.persistence.PersistenceManager.getTopComponentForID(PersistenceManager.java:681)
+	at org.netbeans.core.windows.PersistenceHandler.getTopComponentForID(PersistenceHandler.java:478)
+	at org.netbeans.core.windows.LazyLoader.lazyLoad(LazyLoader.java:138)
+	at org.netbeans.core.windows.PersistenceHandler.initModeFromConfig(PersistenceHandler.java:441)
+	at org.netbeans.core.windows.PersistenceHandler.load(PersistenceHandler.java:204)
+	at org.netbeans.core.windows.WindowSystemImpl.load(WindowSystemImpl.java:81)
+	at org.netbeans.core.GuiRunLevel$InitWinSys.run(GuiRunLevel.java:229)
+	at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:311)
+	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:756)
+	at java.awt.EventQueue.access$500(EventQueue.java:97)
+	at java.awt.EventQueue$3.run(EventQueue.java:709)
+	at java.awt.EventQueue$3.run(EventQueue.java:703)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(ProtectionDomain.java:75)
+	at java.awt.EventQueue.dispatchEvent(EventQueue.java:726)
+	at org.netbeans.core.TimableEventQueue.dispatchEvent(TimableEventQueue.java:159)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:201)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:116)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:105)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:93)
+	at java.awt.EventDispatchThread.run(EventDispatchThread.java:82)
+INFO [61:HypoOverviewTopComponent:<init>]: Loaded...
+INFO [126:HypoOverviewPanel2:<init>]: Here...
+INFO [51:ProcessCommandTopComponent:<init>]: Loaded...
+INFO [80:CommandTable:<init>]:  #Commands:3
+INFO [62:AssessedCommandTable:<init>]:  #AssessedCommands:10
+INFO [108:AssessedCommandTable:setupTableVisualAttributes]: Here...
+INFO [56:EventsControlViewTopComponent:<init>]: Here...
+Failed loading file:/export/home/hui/perl/6/57/24.png: \export\home\hui\perl\6\57\24.png (The system cannot find the path specified)
+Failed loading file:/export/home/hui/perl/6/56/25.png: \export\home\hui\perl\6\56\25.png (The system cannot find the path specified)
+Failed loading file:/export/home/hui/perl/6/56/24.png: \export\home\hui\perl\6\56\24.png (The system cannot find the path specified)
+Failed loading file:/export/home/hui/perl/6/56/23.png: \export\home\hui\perl\6\56\23.png (The system cannot find the path specified)
+Failed loading file:/export/home/hui/perl/6/57/23.png: \export\home\hui\perl\6\57\23.png (The system cannot find the path specified)
+Failed loading file:/export/home/hui/perl/6/58/23.png: \export\home\hui\perl\6\58\23.png (The system cannot find the path specified)
+Failed loading file:/export/home/hui/perl/6/58/24.png: \export\home\hui\perl\6\58\24.png (The system cannot find the path specified)
+Failed loading file:/export/home/hui/perl/6/58/25.png: \export\home\hui\perl\6\58\25.png (The system cannot find the path specified)
+Failed loading file:/export/home/hui/perl/6/57/25.png: \export\home\hui\perl\6\57\25.png (The system cannot find the path specified)
+Failed loading file:/export/home/hui/perl/6/58/26.png: \export\home\hui\perl\6\58\26.png (The system cannot find the path specified)
+Failed loading file:/export/home/hui/perl/6/57/26.png: \export\home\hui\perl\6\57\26.png (The system cannot find the path specified)
+Failed loading file:/export/home/hui/perl/6/56/26.png: \export\home\hui\perl\6\56\26.png (The system cannot find the path specified)
+Failed loading file:/export/home/hui/perl/6/55/26.png: \export\home\hui\perl\6\55\26.png (The system cannot find the path specified)
+Failed loading file:/export/home/hui/perl/6/55/25.png: \export\home\hui\perl\6\55\25.png (The system cannot find the path specified)
+Failed loading file:/export/home/hui/perl/6/55/24.png: \export\home\hui\perl\6\55\24.png (The system cannot find the path specified)
+Failed loading file:/export/home/hui/perl/6/55/23.png: \export\home\hui\perl\6\55\23.png (The system cannot find the path specified)
+Failed loading file:/export/home/hui/perl/6/55/22.png: \export\home\hui\perl\6\55\22.png (The system cannot find the path specified)
+Failed loading file:/export/home/hui/perl/6/56/22.png: \export\home\hui\perl\6\56\22.png (The system cannot find the path specified)
+Failed loading file:/export/home/hui/perl/6/57/22.png: \export\home\hui\perl\6\57\22.png (The system cannot find the path specified)
+Failed loading file:/export/home/hui/perl/6/58/22.png: \export\home\hui\perl\6\58\22.png (The system cannot find the path specified)
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"setprime","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":"JMA","name":"primehypocentre"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: primehypocentre:JMA 
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"hypocentreedit","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":46,"name":"depth","oldValue":40},{"newValue":"NA","name":"reason"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: depth:40->46 reason:NA 
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"setprime","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":"JMA","name":"primehypocentre"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: primehypocentre:JMA 
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"setprime","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":"JMA","name":"primehypocentre"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: primehypocentre:JMA 
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"hypocentreedit","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":46,"name":"depth","oldValue":40},{"newValue":"NA","name":"reason"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: depth:40->46 reason:NA 
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"setprime","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":"JMA","name":"primehypocentre"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: primehypocentre:JMA 
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"setprime","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":"JMA","name":"primehypocentre"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: primehypocentre:JMA 
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"hypocentreedit","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":46,"name":"depth","oldValue":40},{"newValue":"NA","name":"reason"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: depth:40->46 reason:NA 
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"setprime","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":"JMA","name":"primehypocentre"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: primehypocentre:JMA 
+Diagnostic information
+Input arguments:
+	-Xms24m
+	-Xmx64m
+	-XX:MaxPermSize=384m
+	-Dnetbeans.user.dir=C:\Users\presentations\Documents\vbas_alpha\bin
+	-Djdk.home=C:\Program Files\Java\jdk1.8.0_45
+	-splash:C:\Users\presentations\AppData\Roaming\.vbas_alpha\dev\var\cache\splash.png
+	-Dnetbeans.home=C:\Users\presentations\Documents\vbas_alpha\platform
+	-Dnetbeans.user=C:\Users\presentations\AppData\Roaming\.vbas_alpha\dev
+	-Dnetbeans.default_userdir_root=
+	-XX:+HeapDumpOnOutOfMemoryError
+	-XX:HeapDumpPath=C:\Users\presentations\AppData\Roaming\.vbas_alpha\dev\var\log\heapdump.hprof
+	-Dsun.awt.keepWorkingSetOnMinimize=true
+	-Dnetbeans.dirs=C:\Users\presentations\Documents\vbas_alpha\vbas_alpha
+	exit
+Compiler: HotSpot 64-Bit Tiered Compilers
+Heap memory usage: initial 24.0MB maximum 57.0MB
+Non heap memory usage: initial 2.4MB maximum -1b
+Garbage collector: PS Scavenge (Collections=46 Total time spent=0s)
+Garbage collector: PS MarkSweep (Collections=8 Total time spent=0s)
+Classes: loaded=5457 total loaded=5457 unloaded 0
+INFO [org.netbeans.core.ui.warmup.DiagnosticTask]: Total memory 8,526,319,616
+INFO [null]: Total physical memory 8,526,319,616
+WARNING [org.openide.filesystems.Ordering]: Not all children in Menu/Window/ marked with the position attribute: [uk-ac-isc-agencypiechartview-AgencyPieChartViewTopComponent.shadow, uk-ac-isc-eventscontrolview-EventsControlViewTopComponent.shadow, uk-ac-isc-hypodepthview-HypoDepthViewTopComponent.shadow, uk-ac-isc-hypomagnitudeview-HypoMagnitudeViewTopComponent.shadow, uk-ac-isc-hypooverview-HypoOverviewTopComponent.shadow, uk-ac-isc-phaseview-PhaseViewTopComponent.shadow, uk-ac-isc-processcommand-AllCommandsTopComponent.shadow, uk-ac-isc-stationazimuthview-StationAzimuthViewTopComponent.shadow, uk-ac-isc-stationmagnitudeview-StationMagnitudeViewTopComponent.shadow, uk-ac-isc-textview-HypoTextViewTopComponent.shadow, uk-ac-isc-textview-PhaseTextViewTopComponent.shadow], but some are: [org-netbeans-core-io-ui-IOWindowAction.shadow, SwitchToRecentDocumentAction.shadow, Web, Tools, Separator3.instance, ConfigureWindow, org-netbeans-core-windows-actions-ResetWindowsAction.shadow, Separator4.instance, CloseWindowAction.shadow, CloseAllDocumentsAction.shadow, CloseAllButThisAction.shadow, GroupsMenuAction.shadow, DocumentsAction.shadow]
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"setprime","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":"JMA","name":"primehypocentre"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: primehypocentre:JMA 
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"hypocentreedit","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":46,"name":"depth","oldValue":40},{"newValue":"NA","name":"reason"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: depth:40->46 reason:NA 
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"setprime","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":"JMA","name":"primehypocentre"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: primehypocentre:JMA 
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"setprime","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":"JMA","name":"primehypocentre"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: primehypocentre:JMA 
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"hypocentreedit","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":46,"name":"depth","oldValue":40},{"newValue":"NA","name":"reason"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: depth:40->46 reason:NA 
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"setprime","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":"JMA","name":"primehypocentre"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: primehypocentre:JMA 
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"setprime","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":"JMA","name":"primehypocentre"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: primehypocentre:JMA 
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"hypocentreedit","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":46,"name":"depth","oldValue":40},{"newValue":"NA","name":"reason"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: depth:40->46 reason:NA 
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"setprime","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":"JMA","name":"primehypocentre"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: primehypocentre:JMA 
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"setprime","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":"JMA","name":"primehypocentre"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: primehypocentre:JMA 
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"hypocentreedit","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":46,"name":"depth","oldValue":40},{"newValue":"NA","name":"reason"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: depth:40->46 reason:NA 
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"setprime","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":"JMA","name":"primehypocentre"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: primehypocentre:JMA 
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"setprime","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":"JMA","name":"primehypocentre"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: primehypocentre:JMA 
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"hypocentreedit","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":46,"name":"depth","oldValue":40},{"newValue":"NA","name":"reason"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: depth:40->46 reason:NA 
+INFO [180:FormulateCommand:getRedableCommandStr]: json: {"commandType":"setprime","dataType":"hypocentre","id":604801170,"attributeArray":[{"newValue":"JMA","name":"primehypocentre"}]}
+INFO [229:FormulateCommand:getRedableCommandStr]: readable format: hypocentre#604801170: primehypocentre:JMA 

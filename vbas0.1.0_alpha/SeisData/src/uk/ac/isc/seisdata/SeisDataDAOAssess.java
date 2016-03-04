@@ -33,29 +33,30 @@ public final class SeisDataDAOAssess {
     private static Path assessDir = null;
 
     static {
-        String osName = System.getProperty("os.name");
-        if (osName.equals("Linux")) {
-            Map<String, String> env = System.getenv();
-            url = "jdbc:postgresql://"
-                    + env.get("PGHOSTADDR") + ":"
-                    + env.get("PGPORT") + "/"
-                    + env.get("PGDATABASE");
-            assessUser = env.get("ASSESS_USER");
-            assessPassword = env.get("ASSESS_PW");
-            pgUser = env.get("PGUSER");
+        //String osName = System.getProperty("os.name");
+        Global.logDebug(System.getProperty("os.name"));
+        //if (osName.equals("Linux")) {
+        Map<String, String> env = System.getenv();
+        url = "jdbc:postgresql://"
+                + env.get("PGHOSTADDR") + ":"
+                + env.get("PGPORT") + "/"
+                + env.get("PGDATABASE");
+        assessUser = env.get("ASSESS_USER");
+        assessPassword = env.get("ASSESS_PW");
+        pgUser = env.get("PGUSER");
 
-            int month = Calendar.getInstance().get(Calendar.MONTH) + 1;
+        int month = Calendar.getInstance().get(Calendar.MONTH) + 1;
 
-            assessDir = Paths.get(env.get("ASSESSDIR")
-                    + File.separator + Calendar.getInstance().get(Calendar.YEAR)
-                    + File.separator + month);
-        } else {
-            // Saiful: Windows 10 laptop
-            //url = "jdbc:postgresql://127.0.0.1:5432/isc";
-            //user = "saiful";
-            //password = "saiful";
-        }
-        Global.logDebug(osName);
+        assessDir = Paths.get(env.get("ASSESSDIR")
+                + File.separator + Calendar.getInstance().get(Calendar.YEAR)
+                + File.separator + month);
+        //} else {
+        // Saiful: Windows 10 laptop
+        //url = "jdbc:postgresql://127.0.0.1:5432/isc";
+        //user = "saiful";
+        //password = "saiful";
+        //}
+        //Global.logDebug(osName);
     }
 
     private SeisDataDAOAssess() {
@@ -63,7 +64,7 @@ public final class SeisDataDAOAssess {
     }
 
     public static Path getAssessDir() {
-        Global.logDebug("assessDir=" + assessDir + ", url=" + url  
+        Global.logDebug("assessDir=" + assessDir + ", url=" + url
                 + ", user=" + assessUser + ", password=" + assessPassword);
         return assessDir;
     }

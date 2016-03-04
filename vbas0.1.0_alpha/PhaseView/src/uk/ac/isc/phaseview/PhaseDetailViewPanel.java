@@ -27,7 +27,7 @@ import uk.ac.isc.seisdata.SeisDataChangeListener;
  *
  * @author hui
  */
-class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListener {
+public class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListener {
 
     private final int imageWidth = 500;
     private final int imageHeight = 1000;
@@ -58,9 +58,10 @@ class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListener {
     //curve data
     private DuplicateUnorderTimeSeriesCollection ttdData = null;
 
-    PhaseDetailViewPanel(PhaseTravelViewPanel pgvp, DuplicateUnorderTimeSeriesCollection ttdData) {
+    public PhaseDetailViewPanel(PhaseTravelViewPanel pgvp) {
         this.pgvp = pgvp;
         this.detailPList = pgvp.getDetailedPList();
+        this.ttdData = pgvp.getTtdData();
 
         setPreferredSize(new Dimension(500, 1000));
 
@@ -84,7 +85,6 @@ class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListener {
         zoomMinDist = range[2];
         zoomMaxDist = range[3];
 
-        this.ttdData = ttdData;
 
         createTravelImage();
     }
@@ -93,7 +93,7 @@ class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListener {
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
         setRange(pgvp.getRange());
-        UpdateData();
+        updateData();
     }
 
     public void setRange(double[] range) {
@@ -103,7 +103,7 @@ class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListener {
         zoomMaxDist = range[3];
     }
 
-    public void UpdateData() {
+    public void updateData() {
         //this.detailPList = pList;
         detailDataset.removeAllSeries();
         detailPhaseSeries = new DuplicateUnorderTimeSeries("");
@@ -247,13 +247,17 @@ class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListener {
         g2.drawImage(phasesImage, xOffset, yOffset, this);
 
         /*// TEST: 
-        //Global.logDebug("Write BufferedImage.");
-        try {
-            ImageIO.write(phasesImage, "png",
-                    new File("/export/home/saiful/assess/temp/phaseDetailView.png"));
-        } catch (Exception e) {
-            Global.logSevere("Error creating a png.");
-        }*/
+         //Global.logDebug("Write BufferedImage.");
+         try {
+         ImageIO.write(phasesImage, "png",
+         new File("/export/home/saiful/assess/temp/phaseDetailView.png"));
+         } catch (Exception e) {
+         Global.logSevere("Error creating a png.");
+         }*/
+    }
+
+    public BufferedImage getBufferedImage() {
+        return phasesImage;
     }
 
 }

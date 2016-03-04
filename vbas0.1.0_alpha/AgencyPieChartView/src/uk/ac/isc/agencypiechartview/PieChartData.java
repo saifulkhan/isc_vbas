@@ -14,7 +14,7 @@ import uk.ac.isc.seisdata.Phase;
  *
  * @author hui
  */
-class PieChartData {
+public class PieChartData {
 
     //agency with its percetage of phases
     private TreeMap<String, Double> agencyMap;
@@ -22,7 +22,7 @@ class PieChartData {
     //get all the reported agency for each phase
     private ArrayList<String> agenciesList = new ArrayList<String>();
 
-    PieChartData(ArrayList<Phase> phases) {
+    public PieChartData(ArrayList<Phase> phases) {
 
         if (phases.isEmpty()) {
             return;

@@ -56,6 +56,14 @@
                     </run-dependency>
                 </dependency>
                 <dependency>
+                    <code-name-base>uk.ac.isc.agencypiechartview</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <specification-version>1.0</specification-version>
+                    </run-dependency>
+                </dependency>
+                <dependency>
                     <code-name-base>uk.ac.isc.hypodepthview</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
@@ -81,6 +89,14 @@
                 </dependency>
                 <dependency>
                     <code-name-base>uk.ac.isc.jfreechartwrapper</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <specification-version>1.0</specification-version>
+                    </run-dependency>
+                </dependency>
+                <dependency>
+                    <code-name-base>uk.ac.isc.phaseview</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
                     <run-dependency>

@@ -2,39 +2,36 @@ package uk.ac.isc.seisdata;
 
 public class AssessedCommand extends AbstractSeisData {
 
-    private Boolean select; // the selection flag of the assessed command
-    private Integer evid;   // event id
+    private final Integer id; // assess id
+
+    private final Integer evid;   // event id
     // populate from the database
     private String ids;     // command id(s)
-    private String analyst; // analyst name
-    private String report;    // the report to the pdf file (assessed report)
+    private final String analyst; // analyst name
+    private final String report;    // the report to the pdf file (assessed report)
 
     public AssessedCommand() {
-
+        this.id = 0;
+        this.evid = 0;
+        this.ids = "";
+        this.analyst = "";
+        this.report = "";
     }
 
-    public AssessedCommand(Integer evid, String ids, String analyst, String report) {
-        this.select = false;
+    public AssessedCommand(Integer id, Integer evid, String ids, String analyst, String report) {
+        this.id = id;
         this.evid = evid;
         this.ids = ids;
         this.analyst = analyst;
         this.report = report;
     }
 
-    public Boolean getSelect() {
-        return select;
-    }
-
-    public void setSelect(Boolean select) {
-        this.select = select;
+    public Integer getId() {
+        return id;
     }
 
     public Integer getEvid() {
         return evid;
-    }
-
-    public void setEvid(Integer evid) {
-        this.evid = evid;
     }
 
     public String getIds() {
@@ -49,16 +46,8 @@ public class AssessedCommand extends AbstractSeisData {
         return analyst;
     }
 
-    public void setAnalyst(String analyst) {
-        this.analyst = analyst;
-    }
-
     public String getReport() {
         return report;
-    }
-
-    public void setReport(String path) {
-        this.report = path;
     }
 
 }

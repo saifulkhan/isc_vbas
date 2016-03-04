@@ -49,6 +49,10 @@ public final class EventsControlViewTopComponent extends TopComponent {
         setToolTipText(Bundle.HINT_EventsControlViewTopComponent());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+
+        setName("Event Selection");
+
         Global.logDebug("Here...");
 
         eventsTable = new SeisEventsTable();

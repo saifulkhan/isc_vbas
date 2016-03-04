@@ -193,8 +193,8 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
 
         JTableHeader th = table.getTableHeader();
         th.setFont(new Font("Sans-serif", Font.PLAIN, 14));
-        th.setBackground(new Color(43, 87, 151));            // Blue
-        th.setForeground(Color.white);
+        /*th.setBackground(new Color(43, 87, 151));            // Blue
+         th.setForeground(Color.white);*/
 
         table.setRowSelectionAllowed(true);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

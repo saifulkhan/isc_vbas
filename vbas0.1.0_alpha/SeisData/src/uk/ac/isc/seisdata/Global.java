@@ -159,12 +159,10 @@ public class Global {
         }
         return commandList;
     }
-    
-    
+
     /*
      * Events related
      */
-
     public static Command getCommandEvent() {
         return commandEvent;
     }
@@ -204,8 +202,7 @@ public class Global {
                 + Thread.currentThread().getStackTrace()[2].getMethodName();
 
         Logger.getLogger(at).log(Level.SEVERE, debugString);
-        
-        System.out.println("[" + at + "]->" + debugString);
+        //System.out.println("[" + at + "]->" + debugString);
     }
 
     public static void logDebug(String debugString) {
@@ -215,8 +212,7 @@ public class Global {
                         lastIndexOf(".") + 1) + ":"
                 + Thread.currentThread().getStackTrace()[2].getMethodName();
         Logger.getLogger(at).log(Level.INFO, debugString);
-        
-        System.out.println("[" + at + "]->" + debugString);
+        //System.out.println("[" + at + "]->" + debugString);
     }
 
 }

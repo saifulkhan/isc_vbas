@@ -31,8 +31,8 @@ import uk.ac.isc.seisdata.SeisEvent;
 
 public class PhaseEditDialog extends JDialog {
 
-    private JButton buttonCancel;
-    private JButton buttonOK;
+    private JButton button_Cancel;
+    private JButton button_OK;
     private JButton button_applyToAll;
     private JComboBox comboBox_deleteAmp;
     private JComboBox comboBox_fix;
@@ -351,8 +351,8 @@ public class PhaseEditDialog extends JDialog {
 
     private void initComponents() {
 
-        buttonOK = new JButton();
-        buttonCancel = new JButton();
+        button_OK = new JButton();
+        button_Cancel = new JButton();
         jPanel1 = new JPanel();
         jScrollPane1 = new JScrollPane();
         table_edit = new JTable();
@@ -365,19 +365,19 @@ public class PhaseEditDialog extends JDialog {
         comboBox_deleteAmp = new JComboBox();
         comboBox_phaseBreak = new JComboBox();
 
-        buttonOK.setBackground(new java.awt.Color(45, 137, 239));
-        buttonOK.setForeground(new java.awt.Color(255, 255, 255));
-        buttonOK.setText("OK");
-        buttonOK.addActionListener(new ActionListener() {
+        /*button_OK.setBackground(new java.awt.Color(45, 137, 239));
+         button_OK.setForeground(new java.awt.Color(255, 255, 255));*/
+        button_OK.setText("OK");
+        button_OK.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 buttonOKActionPerformed(evt);
             }
         });
 
-        buttonCancel.setBackground(new java.awt.Color(45, 137, 239));
-        buttonCancel.setForeground(new java.awt.Color(255, 255, 255));
-        buttonCancel.setText("Cancel");
-        buttonCancel.addActionListener(new ActionListener() {
+        /*button_Cancel.setBackground(new java.awt.Color(45, 137, 239));
+         button_Cancel.setForeground(new java.awt.Color(255, 255, 255));*/
+        button_Cancel.setText("Cancel");
+        button_Cancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 buttonCancelActionPerformed(evt);
             }
@@ -408,8 +408,8 @@ public class PhaseEditDialog extends JDialog {
             }
         });
 
-        button_applyToAll.setBackground(new java.awt.Color(45, 137, 239));
-        button_applyToAll.setForeground(new java.awt.Color(255, 255, 255));
+        /*button_applyToAll.setBackground(new java.awt.Color(45, 137, 239));
+         button_applyToAll.setForeground(new java.awt.Color(255, 255, 255));*/
         button_applyToAll.setText("Apply all");
         button_applyToAll.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -488,23 +488,21 @@ public class PhaseEditDialog extends JDialog {
 
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+        layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                 .addComponent(jPanel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(buttonOK, GroupLayout.PREFERRED_SIZE, 67, GroupLayout.PREFERRED_SIZE)
+                        .addComponent(button_OK, GroupLayout.PREFERRED_SIZE, 67, GroupLayout.PREFERRED_SIZE)
                         .addGap(11, 11, 11)
-                        .addComponent(buttonCancel))
+                        .addComponent(button_Cancel))
         );
-        layout.setVerticalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+        layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                .addComponent(buttonOK)
-                                .addComponent(buttonCancel))
+                                .addComponent(button_OK)
+                                .addComponent(button_Cancel))
                         .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 

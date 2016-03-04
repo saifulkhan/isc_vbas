@@ -1,0 +1,12 @@
+#!/usr/bin/perl
+
+#test purpose
+
+use strict;
+
+my $lon0 = 130;
+my $lat0 = 30;
+my $hypo = sprintf "%4.3f %4.3f", $lon0, $lat0;
+
+print $hypo;
+

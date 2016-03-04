@@ -8,6 +8,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -32,7 +33,6 @@ import uk.ac.isc.seisdata.Station;
  * The station Magnitude view
  *
  */
-
 public class StationMagnitudeView extends JPanel {
 
     //image size of the source
@@ -331,13 +331,16 @@ public class StationMagnitudeView extends JPanel {
         BufferedImage tmpImg;
         for (int i = 0; i < zoom * 2; i++) {
             for (int j = 0; j < zoom * 2; j++) {
-                String fileName = "/export/home/hui/perl/" + zoom + "/" + i + "/" + j + ".png";
+                //String fileName = "/export/home/hui/perl/" + zoom + "/" + i + "/" + j + ".png";
+                String fileName = "resources" + File.separator
+                        + zoom + File.separator
+                        + i + File.separator
+                        + j + ".png";
+                URL url1 = getClass().getClassLoader().getResource(fileName);
 
-                //String fileName = "main/resources/"+zoom+"/"+i+"/"+j+".png";
-                //URL url1 = HypoOverviewTopComponent.class.getClassLoader().getResource(fileName);
                 try {
-                    tmpImg = ImageIO.read(new File(fileName));
-                    //tmpImg = ImageIO.read(url1);
+                    //tmpImg = ImageIO.read(new File(fileName));
+                    tmpImg = ImageIO.read(url1);
                     g2.drawImage(tmpImg, i * 256, j * 256, null);
                 } catch (IOException ex) {
                     Exceptions.printStackTrace(ex);
@@ -620,24 +623,22 @@ public class StationMagnitudeView extends JPanel {
         g2.drawImage(histMsBufferedImage, xOffset + StaImSize + 20, yOffset + StaImSize + 20, StaImSize, StaHistHeight, null);
 
         /*// TEST:
-        BufferedImage combined = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-        // paint both images, preserving the alpha channels
-        Graphics graphics = combined.getGraphics();
-        graphics.drawImage(dstMbBufferedImage, 0, 0, StaImSize, StaImSize, null);
-        graphics.drawImage(dstMsBufferedImage, StaImSize + 20, 0, StaImSize, StaImSize, null);
-        graphics.drawImage(histMbBufferedImage, 0, StaImSize + 20, StaImSize, StaHistHeight, null);
-        graphics.drawImage(histMsBufferedImage, 0 + StaImSize + 20, 0 + StaImSize + 20, StaImSize, StaHistHeight, null);
+         BufferedImage combined = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+         // paint both images, preserving the alpha channels
+         Graphics graphics = combined.getGraphics();
+         graphics.drawImage(dstMbBufferedImage, 0, 0, StaImSize, StaImSize, null);
+         graphics.drawImage(dstMsBufferedImage, StaImSize + 20, 0, StaImSize, StaImSize, null);
+         graphics.drawImage(histMbBufferedImage, 0, StaImSize + 20, StaImSize, StaHistHeight, null);
+         graphics.drawImage(histMsBufferedImage, 0 + StaImSize + 20, 0 + StaImSize + 20, StaImSize, StaHistHeight, null);
 
-        try {
-            ImageIO.write(combined, "png",
-                    new File("/export/home/saiful/assess/temp/StationMagnitudeView.png"));
-        } catch (Exception e) {
-            Global.logSevere("Error creating a png.");
-        }*/
-
+         try {
+         ImageIO.write(combined, "png",
+         new File("/export/home/saiful/assess/temp/StationMagnitudeView.png"));
+         } catch (Exception e) {
+         Global.logSevere("Error creating a png.");
+         }*/
     }
 
-    
     public BufferedImage getBufferedImage() {
         BufferedImage combined = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
 
@@ -646,16 +647,14 @@ public class StationMagnitudeView extends JPanel {
         graphics.drawImage(dstMsBufferedImage, StaImSize + 20, 0, StaImSize, StaImSize, null);
         graphics.drawImage(histMbBufferedImage, 0, StaImSize + 20, StaImSize, StaHistHeight, null);
         graphics.drawImage(histMsBufferedImage, StaImSize + 20, StaImSize + 20, StaImSize, StaHistHeight, null);
-        
+
         return combined;
     }
 
-    
     public int getStationMagnitudeViewWidth() {
         return StaImSize + 20 + StaImSize;
     }
 
-    
     public int getStationMagnitudeViewHeight() {
         return StaImSize + 20 + StaHistHeight;
     }

@@ -81,7 +81,9 @@
                     </test-dependency>
                 </test-type>
             </test-dependencies>
-            <public-packages/>
+            <public-packages>
+                <package>uk.ac.isc.agencypiechartview</package>
+            </public-packages>
         </data>
     </configuration>
 </project>

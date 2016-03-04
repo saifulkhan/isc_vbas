@@ -240,8 +240,8 @@ public class SeisEventRelocateDialog extends JDialog {
         jScrollPane1 = new JScrollPane();
         text_comment = new JTextArea();
 
-        button_ok.setBackground(new Color(45, 137, 239));
-        button_ok.setForeground(new Color(255, 255, 255));
+        /*button_ok.setBackground(new Color(45, 137, 239));
+         button_ok.setForeground(new Color(255, 255, 255));*/
         button_ok.setText("OK");
         button_ok.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -249,8 +249,8 @@ public class SeisEventRelocateDialog extends JDialog {
             }
         });
 
-        button_cancel.setBackground(new Color(45, 137, 239));
-        button_cancel.setForeground(new Color(255, 255, 255));
+        /*button_cancel.setBackground(new Color(45, 137, 239));
+         button_cancel.setForeground(new Color(255, 255, 255));*/
         button_cancel.setText("Cancel");
         button_cancel.setActionCommand("Cancel");
         button_cancel.addActionListener(new ActionListener() {

@@ -14,7 +14,7 @@ import org.jfree.text.TextUtilities;
  *
  * @author hui
  */
-class AgencyPieChartView extends JPanel {
+public class AgencyPieChartView extends JPanel {
 
     //sorted data 
     PieChartData piedata;
@@ -26,13 +26,12 @@ class AgencyPieChartView extends JPanel {
     private final int radius = 150;
 
     private final int imWidth = 600;
-
     private final int imHeight = 600;
 
     //buffer image of the piechart
     private BufferedImage pieChartImg;
 
-    void setData(PieChartData piedata) {
+    public void setData(PieChartData piedata) {
         this.piedata = piedata;
     }
 
@@ -53,6 +52,18 @@ class AgencyPieChartView extends JPanel {
         //g2.drawImage(DepthHistImg, null, 0, 0);
         g2.dispose();
 
+    }
+
+    public int getAgencyPieChartViewWidth() {
+        return imWidth;
+    }
+
+    public int getAgencyPieChartViewHeight() {
+        return imHeight;
+    }
+
+    public BufferedImage getBufferedImage() {
+        return pieChartImg;
     }
 
     //function to generate the piechart image

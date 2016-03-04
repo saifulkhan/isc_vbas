@@ -450,14 +450,13 @@ public class HypoMagnitudeViewPanel extends JPanel {
         graphics.drawImage(magDeltaImg, hypocentreMagnitudeViewWidth, 0, null);
 
         /*// Save as new image
-        try {
+         try {
 
-            ImageIO.write(combined, "png",
-                    new File("/export/home/saiful/assess/temp/HypocentreMagnitudeview.png"));
-        } catch (Exception e) {
-            Global.logSevere("Error creating a png.");
-        }*/
-
+         ImageIO.write(combined, "png",
+         new File("/export/home/saiful/assess/temp/HypocentreMagnitudeview.png"));
+         } catch (Exception e) {
+         Global.logSevere("Error creating a png.");
+         }*/
     }
 
     public BufferedImage getBufferedImage() {

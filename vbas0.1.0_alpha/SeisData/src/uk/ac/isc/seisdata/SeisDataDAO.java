@@ -40,22 +40,23 @@ public class SeisDataDAO {
     protected static String password;
 
     static {
-        String osName = System.getProperty("os.name");
-        if (osName.equals("Linux")) {
-            Map<String, String> env = System.getenv();
-            url = "jdbc:postgresql://"
-                    + env.get("PGHOSTADDR") + ":"
-                    + env.get("PGPORT") + "/"
-                    + env.get("PGDATABASE");
-            user = env.get("PGUSER");
-            password = env.get("PGPASSWORD");
-        } else {
-            // Saiful: Windows 10 laptop
-            url = "jdbc:postgresql://127.0.0.1:5432/isc";
-            user = "saiful";
-            password = "saiful";
-        }
-        Global.logDebug(osName);
+        //String osName = System.getProperty("os.name");
+        Global.logDebug(System.getProperty("os.name"));
+        //if (osName.equals("Linux")) {
+        Map<String, String> env = System.getenv();
+        url = "jdbc:postgresql://"
+                + env.get("PGHOSTADDR") + ":"
+                + env.get("PGPORT") + "/"
+                + env.get("PGDATABASE");
+        user = env.get("PGUSER");
+        password = env.get("PGPASSWORD");
+        /*} else {
+         // Saiful: Windows 10 laptop
+         url = "jdbc:postgresql://127.0.0.1:5432/isc";
+         user = "saiful";
+         password = "saiful";
+         }*/
+
     }
 
     public SeisDataDAO() {
@@ -2601,7 +2602,7 @@ public class SeisDataDAO {
                     + "command, "
                     + "functions)\n"
                     + "VALUES ( "
-                    + "NEXTVAL('isc.id')" + ", "
+                    + "edit_commands_id(" + evid + ") " + ", "
                     + evid + ", "
                     + "NULL, "
                     + block_allocation_id + ", "
@@ -2728,7 +2729,7 @@ public class SeisDataDAO {
             Integer evid,
             String commandType,
             ArrayList<Integer> commandIds,
-            Path eventLogDir,  
+            Path eventLogDir,
             String systemCommandStr /*systemCommand executed*/
     ) {
 
@@ -2760,7 +2761,8 @@ public class SeisDataDAO {
                 block_allocation_id = rs.getInt("id");
             }
 
-            query = "select NEXTVAL('isc.id');";
+            //query = "select NEXTVAL('isc.id');";
+            query = "select edit_commands_id(" + evid + ") AS nextval";
 
             Global.logDebug("query= " + query);
             rs = st.executeQuery(query);
@@ -2768,8 +2770,8 @@ public class SeisDataDAO {
             while (rs.next()) {
                 newAssessId = rs.getInt("nextval");
             }
-            
-            File report  = new File(eventLogDir + File.separator + newAssessId + File.separator + newAssessId + ".html");
+
+            File report = new File(eventLogDir + File.separator + newAssessId + File.separator + newAssessId + ".html");
 
             query = "INSERT INTO edit_commands ( "
                     + "id, "
@@ -2862,33 +2864,32 @@ public class SeisDataDAO {
             rs = st.executeQuery(query);
             Global.logDebug("query= " + query + "\nrs= " + rs);
 
-            Hashtable<String, AssessedCommand> hashtable = new Hashtable<String, AssessedCommand>();;
+            Hashtable<Integer, AssessedCommand> hashtable = new Hashtable<Integer, AssessedCommand>();;
 
             //Global.logDebug("commandId" + " | " + "analyst" + " | " + "report" + " | " + "pass" + " | " + "assessId");
-
             while (rs.next()) {
                 String analyst = rs.getString("name");
                 String pass = rs.getString("pass");
                 String report = rs.getString("command");  // we store the html report in the command field.
-                String assessId = rs.getString("assessid");
+                int assessId = rs.getInt("assessid");
                 String commandId = rs.getString("cmdids");
- 
+
                 //Global.logDebug(commandId + " | " + analyst + " | " + report + " | " + pass + " | " + assessId);
                 AssessedCommand ac = hashtable.get(assessId);
                 if (ac == null) {
-                    ac = new AssessedCommand(evid, commandId, analyst, report);
+                    ac = new AssessedCommand(assessId, evid, commandId, analyst, report);
                 } else {
                     ac.setIds(ac.getIds() + ", " + commandId);
                 }
                 hashtable.put(assessId, ac);
             }
 
-            Set<String> keys = hashtable.keySet();
-            Iterator<String> itr = keys.iterator();
+            Set<Integer> keys = hashtable.keySet();
+            Iterator<Integer> itr = keys.iterator();
             while (itr.hasNext()) {
-                String str = itr.next();
+                Integer i = itr.next();
                 //Global.logDebug("Key: " + str + " & Value: " + hashtable.get(str));
-                assessedCommandList.add(hashtable.get(str));
+                assessedCommandList.add(hashtable.get(i));
             }
 
             rs.close();

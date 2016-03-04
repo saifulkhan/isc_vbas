@@ -2,6 +2,7 @@ package uk.ac.isc.processcommand;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -13,11 +14,11 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.TreeMap;
 import javax.imageio.ImageIO;
-import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.Timer;
 import uk.ac.isc.hypodepthview.HypoDepthViewPanel;
 import uk.ac.isc.hypooverview.HypoOverviewPanel2;
@@ -28,7 +29,13 @@ import uk.ac.isc.seisdata.PhasesList;
 import uk.ac.isc.seisdata.SeisDataDAOAssess;
 import uk.ac.isc.seisdata.SeisEvent;
 import org.openstreetmap.gui.jmapviewer.interfaces.TileLoaderListener; // Note: Required to avoid compilation error.
+import uk.ac.isc.agencypiechartview.AgencyPieChartView;
+import uk.ac.isc.agencypiechartview.PieChartData;
 import uk.ac.isc.hypomagnitudeview.HypoMagnitudeViewPanel;
+import uk.ac.isc.phaseview.DuplicateUnorderTimeSeriesCollection;
+import uk.ac.isc.phaseview.LoadTTDData;
+import uk.ac.isc.phaseview.PhaseDetailViewPanel;
+import uk.ac.isc.phaseview.PhaseTravelViewPanel;
 import uk.ac.isc.stationazimuthview.StationAzimuthView;
 import uk.ac.isc.stationmagnitudeview.StationMagnitudeView;
 import uk.ac.isc.textview.HypocentreTableModel;
@@ -43,9 +50,19 @@ public class Assess {
     private final TreeMap<String, String> stations = new TreeMap<String, String>();
 
     private Path assessDir;
+    JProgressBar pbar;
+    private final JDialog f;
 
     Assess() {
 
+        f = new JDialog();
+        f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        f.setModal(true);
+        f.setLayout(new BorderLayout());
+
+        pbar = new JProgressBar();
+        pbar.setMinimum(0);
+        pbar.setMaximum(100);
     }
 
     public Boolean runLocator(Path assessDir, ArrayList<String> functionArray, String locatorArgStr) {
@@ -131,13 +148,7 @@ public class Assess {
          * Generate the PNG files
          */
         for (final String view : HTMLSchema.getViews()) {
-
-            //generatePNG(, "HypocentreOverview");
-            //generatePNG(), "HypocentreDepthview");
             Global.logDebug("Generating: " + view + ".png");
-
-            JPanel panel = null;
-            int width = 0, height = 0;
 
             switch (view) {
                 case "HypocentreOverview":
@@ -145,9 +156,18 @@ public class Assess {
                     genetarePNG(view, hop, hop.getWidth(), hop.getHeight());
                     break;
 
-                case "PhaseView":
-                    //HypoDepthViewPanel hdv = new HypoDepthViewPanel(hypocentresList.getHypocentres());
-                    //genetarePNG(view, hdv, hdv.getWidth(), hdv.getHeight());
+                case "PhaseDetailView":
+
+                    PhaseTravelViewPanel phaseTVPanel = new PhaseTravelViewPanel(phasesList, hypocentresList);
+                    PhaseDetailViewPanel phaseDVPanel = new PhaseDetailViewPanel(phaseTVPanel);
+ 
+                    genetarePNG("PhaseDetailView", phaseDVPanel, phaseDVPanel.getWidth(), phaseDVPanel.getHeight());
+                    genetarePNG("PhaseTravelView", phaseTVPanel, phaseTVPanel.getWidth(), phaseTVPanel.getHeight());
+
+                    break;
+
+                case "PhaseTravelView":
+                    // drawn along with detail view
                     break;
 
                 case "HypocentreDepthView":
@@ -171,37 +191,34 @@ public class Assess {
                     break;
 
                 case "AgencyPieChartView":
-                    //HypoDepthViewPanel hdv = new HypoDepthViewPanel(hypocentresList.getHypocentres());
-                    //genetarePNG(view, hdv, hdv.getWidth(), hdv.getHeight());
+                    AgencyPieChartView apcView = new AgencyPieChartView();
+                    apcView.setData(new PieChartData(phasesList.getPhases()));
+                    genetarePNG(view, apcView, apcView.getAgencyPieChartViewWidth(), apcView.getAgencyPieChartViewHeight());
                     break;
             }
 
         }
+
+        f.dispose();
     }
 
     private void genetarePNG(final String view, final JPanel panel, final int width, final int height) {
-
-        final JDialog f = new JDialog();
-        f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        f.setModal(true);
-        f.setLayout(new BorderLayout());
         f.setPreferredSize(new Dimension(width + 40, height + 40));
         f.add(panel, BorderLayout.CENTER);
         f.pack();
 
         // Note: see tutorial
         // http://stackoverflow.com/questions/1306868/can-i-set-a-timer-on-a-java-swing-jdialog-box-to-close-after-a-number-of-millise
-        Timer timer = new Timer(500, new ActionListener() {
+        Timer timer = new Timer(1000, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                f.remove(panel);
                 f.setVisible(false);
-                f.dispose();
             }
         });
         timer.setRepeats(false);
         timer.start();
         f.setVisible(true);
-        
-      
+
         File outputFile = new File(assessDir + File.separator + view + ".png");
         BufferedImage bi = null;
 
@@ -211,7 +228,14 @@ public class Assess {
                 bi = hop.getBaseMap();
                 break;
 
-            case "PhaseView":
+            case "PhaseDetailView":
+                PhaseDetailViewPanel phaseDVPanel = (PhaseDetailViewPanel) panel;
+                bi = phaseDVPanel.getBufferedImage();
+                break;
+
+            case "PhaseTravelView":
+                PhaseTravelViewPanel phaseTVPanel = (PhaseTravelViewPanel) panel;
+                bi = phaseTVPanel.getBufferedImage();
                 break;
 
             case "HypocentreDepthView":
@@ -235,6 +259,8 @@ public class Assess {
                 break;
 
             case "AgencyPieChartView":
+                AgencyPieChartView apcView = (AgencyPieChartView) panel;
+                bi = apcView.getBufferedImage();
                 break;
         }
 
@@ -290,6 +316,26 @@ public class Assess {
         Global.logDebug("SeisEvent=" + selectedSeisEvent.getEvid()
                 + ", #Hypocentres:" + hypocentresList.getHypocentres().size()
                 + ", #Phases:" + phasesList.getPhases().size());
+
+    }
+
+    /*
+     * ***************************************************************************
+     * Add a ProgressBar in future
+     * ****************************************************************************
+     */
+    public class Progress {
+
+        Timer t;
+        JProgressBar prg;
+
+        public Progress() {
+            JFrame frame = new JFrame();
+            frame.setLayout(new FlowLayout());
+            prg = new JProgressBar(0, 100);
+            prg.setValue(0);
+            prg.setStringPainted(true);
+        }
 
     }
 

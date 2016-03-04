@@ -20,7 +20,8 @@ public class HTMLSchema {
 
     private static final String[] tables = {"HypocentreTable", "PhaseTable"};
     private static final String[] views = {"HypocentreOverview",
-        "PhaseView",
+        "PhaseTravelView",
+        "PhaseDetailView",
         "HypocentreDepthView",
         "HypocentreMagnitudeView",
         "StationAzimuthView",

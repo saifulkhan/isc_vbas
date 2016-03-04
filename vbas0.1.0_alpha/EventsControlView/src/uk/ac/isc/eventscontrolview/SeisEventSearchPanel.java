@@ -48,8 +48,8 @@ public class SeisEventSearchPanel extends JPanel {
         label_input = new JLabel("Event Number: ");
         text_search = new JTextField("", 10);
         button_search = new JButton("Search");
-        button_search.setBackground(new Color(45, 137, 239));
-        button_search.setForeground(new Color(255, 255, 255));
+        /*button_search.setBackground(new Color(45, 137, 239));
+         button_search.setForeground(new Color(255, 255, 255));*/
 
         label_input.setFont(font);
         text_search.setFont(font);
@@ -64,8 +64,8 @@ public class SeisEventSearchPanel extends JPanel {
 
         // banish and Un-banish button
         button_banish = new JButton("Banish");
-        button_banish.setBackground(new Color(45, 137, 239));
-        button_banish.setForeground(new Color(255, 255, 255));
+        /*button_banish.setBackground(new Color(45, 137, 239));
+         button_banish.setForeground(new Color(255, 255, 255));*/
         button_banish.setFont(font);
         button_banish.addActionListener(new ActionListener() {
             @Override
@@ -75,8 +75,8 @@ public class SeisEventSearchPanel extends JPanel {
         });
 
         button_unbanish = new JButton("Unbanish");
-        button_unbanish.setBackground(new Color(45, 137, 239));
-        button_unbanish.setForeground(new Color(255, 255, 255));
+        /*button_unbanish.setBackground(new Color(45, 137, 239));
+         button_unbanish.setForeground(new Color(255, 255, 255));*/
         button_unbanish.setFont(font);
         button_unbanish.addActionListener(new ActionListener() {
             @Override
@@ -86,8 +86,8 @@ public class SeisEventSearchPanel extends JPanel {
         });
 
         button_done = new JButton("Done");
-        button_done.setBackground(new Color(45, 137, 239));
-        button_done.setForeground(new Color(255, 255, 255));
+        /*button_done.setBackground(new Color(45, 137, 239));
+         button_done.setForeground(new Color(255, 255, 255));*/
         button_done.setFont(font);
         button_done.addActionListener(new ActionListener() {
             @Override

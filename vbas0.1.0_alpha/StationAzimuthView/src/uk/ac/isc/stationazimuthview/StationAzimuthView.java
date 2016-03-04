@@ -10,8 +10,10 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import org.jfree.text.TextUtilities;
 import org.openide.util.Exceptions;
@@ -249,24 +251,23 @@ public class StationAzimuthView extends JPanel {
         //Tile tile;
         int zoom = (int) (Math.log(srcImgSize / warpedImgSize) / Math.log(2));
         BufferedImage tmpImg;
+
         for (int i = 0; i < zoom * 2; i++) {
             for (int j = 0; j < zoom * 2; j++) {
-                String fileName = "/export/home/hui/perl/" + zoom + "/" + i + "/" + j + ".png";
+                //String fileName = "/export/home/hui/perl/" + zoom + "/" + i + "/" + j + ".png";
+                String fileName = "resources" + File.separator
+                        + zoom + File.separator
+                        + i + File.separator
+                        + j + ".png";
+                URL url1 = getClass().getClassLoader().getResource(fileName);
 
-                //String fileName = "main/resources/"+zoom+"/"+i+"/"+j+".png";
-                //URL url1 = HypoOverviewTopComponent.class.getClassLoader().getResource(fileName);
                 try {
-                    tmpImg = ImageIO.read(new File(fileName));
-                    //tmpImg = ImageIO.read(url1);
+                    //tmpImg = ImageIO.read(new File(fileName));
+                    tmpImg = ImageIO.read(url1);
                     g2.drawImage(tmpImg, i * 256, j * 256, null);
                 } catch (IOException ex) {
                     Exceptions.printStackTrace(ex);
                 }
-
-                //tile = tileController.getTile(i, j, zoom);
-                //if (tile != null) {
-                //    tile.paint(g2, i*256, j*256);
-                //}
             }
         }
     }
@@ -471,20 +472,19 @@ public class StationAzimuthView extends JPanel {
         graphics.drawImage(dstImg, 0, 0, null);
 
         /*//Global.logDebug("Write BufferedImage.");
-        try {
+         try {
 
-            ImageIO.write(combined, "png",
-                    new File("/export/home/saiful/assess/temp/StationAzimuthView.png"));
+         ImageIO.write(combined, "png",
+         new File("/export/home/saiful/assess/temp/StationAzimuthView.png"));
 
-            ImageIO.write(dstImg, "png",
-                    new File("/export/home/saiful/assess/temp/StationAzimuthView-1.png"));
-            ImageIO.write(azImg, "png",
-                    new File("/export/home/saiful/assess/temp/StationAzimuthView-2.png"));
+         ImageIO.write(dstImg, "png",
+         new File("/export/home/saiful/assess/temp/StationAzimuthView-1.png"));
+         ImageIO.write(azImg, "png",
+         new File("/export/home/saiful/assess/temp/StationAzimuthView-2.png"));
 
-        } catch (Exception e) {
-            Global.logSevere("Error creating a png.");
-        }*/
-
+         } catch (Exception e) {
+         Global.logSevere("Error creating a png.");
+         }*/
     }
 
     public BufferedImage getBufferedImage() {

@@ -60,8 +60,8 @@ class PhaseTablePopupManager implements ActionListener {
         popupMenu = new JPopupMenu();
 
         JMenuItem menuItem_edit = new JMenuItem("Phase Edit..");
-        menuItem_edit.setBackground(new Color(218, 83, 44));
-        menuItem_edit.setForeground(Color.WHITE);
+        /*menuItem_edit.setBackground(new Color(218, 83, 44));
+         menuItem_edit.setForeground(Color.WHITE);*/
         menuItem_edit.setFont(new Font("Sans-serif", Font.PLAIN, 14));
 
         popupMenu.add(menuItem_edit);

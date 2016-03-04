@@ -91,22 +91,21 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         table.getRowSorter().setSortKeys(sortKeys);
 
         /*        
-         * Selection : selection of row(s) and col(s) generate mouse event.
-         * Click : Click of mouse generate another event.
+         * Selection : selection of row(s) and col(s) generate mouse-event, handled by MyRowSelectionListener.
+         * Click : Mouse-click generate another event, handled by MyMouseAdapter.
          */
         MyRowSelectionListener rowListener = new MyRowSelectionListener();
         table.getSelectionModel().addListSelectionListener(rowListener);
-        //table.getColumnModel().getSelectionModel().addListSelectionListener(new ColumnListener());
         MyMouseAdapter myMouseAdapter = new MyMouseAdapter();
         table.addMouseListener(myMouseAdapter);
 
         // add the popup-menu
         ptPopupManager = new PhaseTablePopupManager(table);
 
+        // layout
         scrollPane = new JScrollPane(table);
         this.setLayout(new BorderLayout());
         this.add(scrollPane, BorderLayout.CENTER);
-
         phaseTableSortPanel = new PhaseTableSortPanel(table);
         this.add(phaseTableSortPanel, BorderLayout.PAGE_START);
     }
@@ -130,8 +129,8 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
 
         JTableHeader th = table.getTableHeader();
         th.setFont(new Font("Sans-serif", Font.PLAIN, 14));
-        th.setBackground(new Color(43, 87, 151));            // Blue
-        th.setForeground(Color.white);
+        /*th.setBackground(new Color(43, 87, 151));            // Blue
+         th.setForeground(Color.white);*/
 
         table.setRowSelectionAllowed(true);
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);

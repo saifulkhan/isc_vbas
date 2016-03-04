@@ -104,40 +104,30 @@ class HypocentreTablePopupMenu implements ActionListener {
         popupMenu = new JPopupMenu();
 
         JMenuItem menuItem_setprime = new JMenuItem("Set Prime");
-        menuItem_setprime.setBackground(new Color(218, 83, 44));
-        menuItem_setprime.setForeground(Color.WHITE);
+        /*menuItem_setprime.setBackground(new Color(218, 83, 44));
+         menuItem_setprime.setForeground(Color.WHITE);*/
         menuItem_setprime.setFont(new Font("Sans-serif", Font.PLAIN, 14));
         JMenuItem menuItem_relocate = new JMenuItem("SeisEvent Relocate..");
-        menuItem_relocate.setBackground(new Color(218, 83, 44));
-        menuItem_relocate.setForeground(Color.WHITE);
         menuItem_relocate.setFont(new Font("Sans-serif", Font.PLAIN, 14));
         JMenuItem menuItem_depricate = new JMenuItem("Deprecate");
-        menuItem_depricate.setBackground(new Color(218, 83, 44));
-        menuItem_depricate.setForeground(Color.WHITE);
         menuItem_depricate.setFont(new Font("Sans-serif", Font.PLAIN, 14));
         JMenuItem menuItem_edit = new JMenuItem("Hypocentre Edit..");
-        menuItem_edit.setBackground(new Color(218, 83, 44));
-        menuItem_edit.setForeground(Color.WHITE);
         menuItem_edit.setFont(new Font("Sans-serif", Font.PLAIN, 14));
         JMenuItem menuItem_create = new JMenuItem("Create..");
-        menuItem_create.setBackground(new Color(218, 83, 44));
-        menuItem_create.setForeground(Color.WHITE);
         menuItem_create.setFont(new Font("Sans-serif", Font.PLAIN, 14));
         JMenuItem menuItem_move = new JMenuItem("Move..");
-        menuItem_move.setBackground(new Color(218, 83, 44));
-        menuItem_move.setForeground(Color.WHITE);
         menuItem_move.setFont(new Font("Sans-serif", Font.PLAIN, 14));
 
         popupMenu.add(menuItem_setprime);
-        //popupMenu.addSeparator();
+        popupMenu.addSeparator();
         popupMenu.add(menuItem_edit);
-        //popupMenu.addSeparator();
+        popupMenu.addSeparator();
         popupMenu.add(menuItem_relocate);
-        //popupMenu.addSeparator();
+        popupMenu.addSeparator();
         popupMenu.add(menuItem_depricate);
-        //popupMenu.addSeparator();
+        popupMenu.addSeparator();
         popupMenu.add(menuItem_create);
-        //popupMenu.addSeparator();
+        popupMenu.addSeparator();
         popupMenu.add(menuItem_move);
 
         menuItem_setprime.addActionListener(this);

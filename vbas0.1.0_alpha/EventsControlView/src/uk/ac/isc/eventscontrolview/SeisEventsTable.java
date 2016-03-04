@@ -52,7 +52,6 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
     //private final TreeMap<String, String> stations = new TreeMap<String, String>();
     //private final AssessedCommandList assessedCommandList = Global.getAssessedCommandList();
     //private final CommandList commandList = Global.getCommandList();
-
     public SeisEventsTable() {
         table = new JTable();
         tableModel = new EventsTableModel(eventsList.getEvents());
@@ -71,21 +70,20 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
     }
 
     /*public void loadSeisEventsList() {
-        Global.logDebug("Load SeisEvents list.");
-        // fill in the events number
-        SeisDataDAO.retrieveBlockEventNumber(blockTableModel.getTaskBlocks());
-        SeisDataDAO.retrieveBlockReviewedEventNumber(blockTableModel.getTaskBlocks());
+     Global.logDebug("Load SeisEvents list.");
+     // fill in the events number
+     SeisDataDAO.retrieveBlockEventNumber(blockTableModel.getTaskBlocks());
+     SeisDataDAO.retrieveBlockReviewedEventNumber(blockTableModel.getTaskBlocks());
 
-        // add data into evets list : retrieve the events from the database
-        SeisDataDAO.retrieveAllEvents(eventsList.getEvents());
-        SeisDataDAO.retrieveEventsMagnitude(eventsList.getEvents());
-        SeisDataDAO.retrieveAllPhaseNumber(eventsList.getEvents());
-        SeisDataDAO.retrieveAllRegionName(eventsList.getEvents());
+     // add data into evets list : retrieve the events from the database
+     SeisDataDAO.retrieveAllEvents(eventsList.getEvents());
+     SeisDataDAO.retrieveEventsMagnitude(eventsList.getEvents());
+     SeisDataDAO.retrieveAllPhaseNumber(eventsList.getEvents());
+     SeisDataDAO.retrieveAllRegionName(eventsList.getEvents());
 
-        selectedSeisEvent.setValues(eventsList.getEvents().get(0));
-        loadSelectedSeisEventData();
-    }*/
-
+     selectedSeisEvent.setValues(eventsList.getEvents().get(0));
+     loadSelectedSeisEventData();
+     }*/
 //    public void loadSelectedSeisEventData() {
 //
 //        System.out.println(Global.debugAt() + "Load list of Hypocentre, Phase, Commmands, and AssessedCommands for SeisEvent: "
@@ -141,18 +139,13 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
 //                + " #AssessedCommands:" + assessedCommandList.getAssessedCommandList().size());
 //
 //    }
-    
-        /*public BlockTableModel getBlockTableModel() {
-        return this.blockTableModel;
-    }*/
-
-    
-
+    /*public BlockTableModel getBlockTableModel() {
+     return this.blockTableModel;
+     }*/
     /*
      * Table's new row or new event is selected 
      * Trigger the change of all the regestered listeners (observers)
      */
-
     @Override
     public void valueChanged(ListSelectionEvent e) {
         Global.logDebug("New SeisEvent is selected.");
@@ -161,7 +154,7 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
             int selectedRowNum = table.getSelectedRow();
             // get selected evid.
             int selectedEvid = (Integer) table.getValueAt(selectedRowNum, 0);
-            
+
             // another SeisEvent is selected
             selectedSeisEvent.setValues(eventsList.getEvents().get(selectedRowNum));
             Global.loadSelectedSeisEventData();
@@ -175,8 +168,8 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
 
         JTableHeader th = table.getTableHeader();
         th.setFont(new Font("Sans-serif", Font.PLAIN, 14));
-        th.setBackground(new Color(43, 87, 151));
-        th.setForeground(Color.white);
+        /*th.setBackground(new Color(43, 87, 151));
+         th.setForeground(Color.white);*/
 
         table.setRowSelectionAllowed(true);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -237,6 +230,5 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
         }
 
     }
-
 
 }
