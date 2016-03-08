@@ -116,8 +116,7 @@ public class HTMLSchema {
                 bufferedWriter.newLine();
                 bufferedWriter.write("<h2> " + view + " </h2>");
                 bufferedWriter.newLine();
-                bufferedWriter.write("<img src=\"" + view + ".png\" "
-                        + "alt=\"" + view + "\" >");
+                bufferedWriter.write("<img src=\"" + view + ".png\" " + "alt=\"" + view + "\" >");
                 bufferedWriter.newLine();
                 bufferedWriter.write("</div>");
                 bufferedWriter.newLine();

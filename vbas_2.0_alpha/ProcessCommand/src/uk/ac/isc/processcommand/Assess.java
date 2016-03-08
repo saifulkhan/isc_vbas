@@ -32,8 +32,6 @@ import org.openstreetmap.gui.jmapviewer.interfaces.TileLoaderListener; // Note: 
 import uk.ac.isc.agencypiechartview.AgencyPieChartView;
 import uk.ac.isc.agencypiechartview.PieChartData;
 import uk.ac.isc.hypomagnitudeview.HypoMagnitudeViewPanel;
-import uk.ac.isc.phaseview.DuplicateUnorderTimeSeriesCollection;
-import uk.ac.isc.phaseview.LoadTTDData;
 import uk.ac.isc.phaseview.PhaseDetailViewPanel;
 import uk.ac.isc.phaseview.PhaseTravelViewPanel;
 import uk.ac.isc.stationazimuthview.StationAzimuthView;

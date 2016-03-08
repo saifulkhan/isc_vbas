@@ -16,9 +16,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.JFreeChart;
@@ -33,6 +36,7 @@ import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.Phase;
 import uk.ac.isc.seisdata.PhasesList;
+import uk.ac.isc.seisdata.SeisDataDAOAssess;
 import uk.ac.isc.seisdata.SeisUtils;
 
 /**
@@ -120,26 +124,40 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
 
         InputStream inSream = getClass().getClassLoader().getResourceAsStream("resources" + File.separator + "ttimes.pl");
         if (inSream != null) {
+
+            // create a temp directory and copy the content of the perl script from resource folder.
             try {
-                ttimesScript = File.createTempFile("ttimes", ".pl"); // create temp file & copy the content of the perl script in resource folder.
-                //ttimesScript = new File("tmp/ttimes.pl");
-                ttimesScript.setReadable(true, false);
-                ttimesScript.setExecutable(true, false);
+                Path scriptpath = Paths.get(SeisDataDAOAssess.getAssessDir() + File.separator + "temp");
+                if (!new File(scriptpath.toString()).exists()) {
+                    boolean success = (new File(scriptpath.toString())).mkdirs();
+                    if (!success) {
+                        String message = "Error creating the directory " + scriptpath;
+                        Global.logSevere(message);
+                        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+                //ttimesScript = File.createTempFile("ttimes", ".pl"); 
+                ttimesScript = new File(scriptpath + File.separator + "ttimes.pl");
+                ttimesScript.setReadable(true, true);
+                ttimesScript.setExecutable(true, true);
                 Global.logDebug("Perl script location for TTDData, ttimesScript= " + ttimesScript.toPath());
 
                 Files.copy(inSream, ttimesScript.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                DuplicateUnorderTimeSeriesCollection ttdData = LoadTTDData.loadTTDData(Global.getSelectedSeisEvent().getEvid(), ttimesScript);
+                ttdData = LoadTTDData.loadTTDData(Global.getSelectedSeisEvent().getEvid(), ttimesScript);
+                
+                //Global.logDebug();
                 inSream.close();
 
             } catch (IOException e) {
                 // TODO
             }
         } else {
-            Global.logDebug("Null inStream; resource: " + getClass().getClassLoader().getResource("resources" + File.separator + "ttimes.pl").toString());
+            Global.logDebug("Null 'inStream', resource: " + 
+                    getClass().getClassLoader().getResource("resources" + File.separator + "ttimes.pl").toString());
         }
 
+        
         setPreferredSize(new Dimension(500, 1000));
-
         phaseSeries = new DuplicateUnorderTimeSeries("");
 
         //put phases into the dataseries
@@ -200,9 +218,9 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
         typesVisible[type] = vis;
     }
 
-    public void setTTDData(DuplicateUnorderTimeSeriesCollection ttdData) {
+    /*public void setTTDData(DuplicateUnorderTimeSeriesCollection ttdData) {
         this.ttdData = ttdData;
-    }
+    }*/
 
     public double[] getRange() {
         double[] range = new double[4];

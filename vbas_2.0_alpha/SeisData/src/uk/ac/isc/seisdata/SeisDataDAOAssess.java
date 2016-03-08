@@ -47,16 +47,11 @@ public final class SeisDataDAOAssess {
 
         int month = Calendar.getInstance().get(Calendar.MONTH) + 1;
 
+        
         assessDir = Paths.get(env.get("ASSESSDIR")
                 + File.separator + Calendar.getInstance().get(Calendar.YEAR)
                 + File.separator + month);
-        //} else {
-        // Saiful: Windows 10 laptop
-        //url = "jdbc:postgresql://127.0.0.1:5432/isc";
-        //user = "saiful";
-        //password = "saiful";
-        //}
-        //Global.logDebug(osName);
+         
     }
 
     private SeisDataDAOAssess() {

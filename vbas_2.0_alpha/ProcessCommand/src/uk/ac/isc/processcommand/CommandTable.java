@@ -306,7 +306,8 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
                 Exceptions.printStackTrace(ex);
             }
 
-            JOptionPane.showMessageDialog(null, "Assess Complete. Please see the report in your browser.", "Complete", JOptionPane.NO_OPTION);
+            JOptionPane.showMessageDialog(null, "Assess Complete. Please see the report in your browser.", 
+                    "Complete", JOptionPane.NO_OPTION);
             button_assess.setEnabled(true);
 
         }

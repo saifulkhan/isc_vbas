@@ -6,17 +6,18 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Scanner;
+import javax.swing.JOptionPane;
 import org.jfree.data.time.Second;
 import org.openide.util.Exceptions;
 import uk.ac.isc.seisdata.Global;
 
+/**
+ * helper function to call perl for calculating ttd curves based on evid
+ */
 public class LoadTTDData {
 
     private final static DuplicateUnorderTimeSeriesCollection ttdData = new DuplicateUnorderTimeSeriesCollection();
 
-    /**
-     * helper function to call perl for calculating ttd curves based on evid
-     */
     public static DuplicateUnorderTimeSeriesCollection loadTTDData(Integer evid, File perlScript) {
         Global.logDebug("Here...");
 
@@ -24,7 +25,6 @@ public class LoadTTDData {
         ArrayList<TTDTriplet> ttdList = new ArrayList<TTDTriplet>();
 
         //Execute the Perl script to get the theoretical time curves.
-        //String commandLine = "perl /export/home/james/VBAS/TT/ttimes.pl " + evid.toString();
         String perlCommand = "perl" + " " + perlScript + " " + evid.toString();
         Global.logDebug("Execute: " + perlCommand);
 
@@ -52,6 +52,11 @@ public class LoadTTDData {
             System.out.println("Exception: " + ioe.toString());
         } catch (InterruptedException ex) {
             Exceptions.printStackTrace(ex);
+        }
+
+        if (ttdList.isEmpty()) {
+            JOptionPane.showMessageDialog(null, perlCommand + " returned " + ttdList.size() + " items.", 
+                    "Warning", JOptionPane.WARNING_MESSAGE);
         }
 
         //iterate the ttdlist and put them into different seriers based on their phase types
