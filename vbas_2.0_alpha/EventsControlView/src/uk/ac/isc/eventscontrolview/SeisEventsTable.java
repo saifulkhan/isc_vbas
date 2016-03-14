@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-import java.util.TreeMap;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -16,14 +15,11 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import uk.ac.isc.seisdata.BlockTableModel;
-import uk.ac.isc.seisdata.CommandList;
 import uk.ac.isc.seisdata.EventsTableModel;
-import uk.ac.isc.seisdata.Global;
-import uk.ac.isc.seisdata.HypocentresList;
-import uk.ac.isc.seisdata.PhasesList;
+import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.SeisEvent;
 import uk.ac.isc.seisdata.SeisEventsList;
+import uk.ac.isc.seisdata.VBASLogger;
 
 /**
  * It holds all the "phases", "hypocentres", and "events" data and passes
@@ -40,18 +36,7 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
      */
     private static final SeisEventsList eventsList = Global.getSeisEventsList();
     private static SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
-    //private final BlockTableModel blockTableModel = new BlockTableModel();
 
-    /*
-     * All seisevents will be loaded first and data, e.g., hypocentres, phase, comamnds, 
-     * assessedcommands related to the selected seisevent will be loaded.
-     * These data (array list) will be used by the tables & views.
-     */
-    //private final HypocentresList hypocentresList = Global.getHypocentresList();
-    //private static final PhasesList phasesList = Global.getPhasesList();
-    //private final TreeMap<String, String> stations = new TreeMap<String, String>();
-    //private final AssessedCommandList assessedCommandList = Global.getAssessedCommandList();
-    //private final CommandList commandList = Global.getCommandList();
     public SeisEventsTable() {
         table = new JTable();
         tableModel = new EventsTableModel(eventsList.getEvents());
@@ -69,86 +54,14 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
         this.add(new JScrollPane(table), BorderLayout.CENTER);
     }
 
-    /*public void loadSeisEventsList() {
-     Global.logDebug("Load SeisEvents list.");
-     // fill in the events number
-     SeisDataDAO.retrieveBlockEventNumber(blockTableModel.getTaskBlocks());
-     SeisDataDAO.retrieveBlockReviewedEventNumber(blockTableModel.getTaskBlocks());
 
-     // add data into evets list : retrieve the events from the database
-     SeisDataDAO.retrieveAllEvents(eventsList.getEvents());
-     SeisDataDAO.retrieveEventsMagnitude(eventsList.getEvents());
-     SeisDataDAO.retrieveAllPhaseNumber(eventsList.getEvents());
-     SeisDataDAO.retrieveAllRegionName(eventsList.getEvents());
-
-     selectedSeisEvent.setValues(eventsList.getEvents().get(0));
-     loadSelectedSeisEventData();
-     }*/
-//    public void loadSelectedSeisEventData() {
-//
-//        System.out.println(Global.debugAt() + "Load list of Hypocentre, Phase, Commmands, and AssessedCommands for SeisEvent: "
-//                + selectedSeisEvent.getEvid());
-//
-//        /*
-//         * Hypocentre
-//         */
-//        SeisDataDAO.retrieveHypos(selectedSeisEvent.getEvid(),
-//                hypocentresList.getHypocentres());
-//        SeisDataDAO.retrieveHyposMagnitude(hypocentresList.getHypocentres());
-//        // as I remove all the hypos when clicking an event to retrieve the hypos, 
-//        // so need reset prime hypo every time
-//        // TODO: Saiful, What is this?
-//        for (Hypocentre hypo : hypocentresList.getHypocentres()) {
-//            if (hypo.getIsPrime() == true) {
-//                selectedSeisEvent.setPrimeHypo(hypo);
-//            }
-//        }
-//
-//        /*
-//         * Phase
-//         */
-//        SeisDataDAO.retrieveAllPhases(selectedSeisEvent.getEvid(), phasesList.getPhases());
-//        SeisDataDAO.retrieveAllPhasesAmpMag(selectedSeisEvent.getEvid(),
-//                phasesList.getPhases());
-//        SeisDataDAO.retrieveAllStationsWithRegions(stations);
-//        // load the correspondent map into the stataions
-//        // put the region name into the pahseList
-//        for (int i = 0; i < phasesList.getPhases().size(); i++) {
-//            phasesList.getPhases()
-//                    .get(i)
-//                    .setRegionName(stations
-//                            .get(phasesList
-//                                    .getPhases()
-//                                    .get(i)
-//                                    .getReportStation()));
-//        }
-//
-//        /*
-//         * Commands
-//         */
-//        SeisDataDAO.readCommandTable(selectedSeisEvent.getEvid(), commandList.getCommandList());
-//
-//        /*
-//         * AssessedCommand 
-//         */
-//        SeisDataDAO.readAssessedCommandTable(selectedSeisEvent.getEvid(), assessedCommandList.getAssessedCommandList());
-//
-//        Global.logDebug("#Hypocentres:" + hypocentresList.getHypocentres().size()
-//                + " #Phases:" + phasesList.getPhases().size()
-//                + " #Commands:" + commandList.getCommandList().size()
-//                + " #AssessedCommands:" + assessedCommandList.getAssessedCommandList().size());
-//
-//    }
-    /*public BlockTableModel getBlockTableModel() {
-     return this.blockTableModel;
-     }*/
     /*
      * Table's new row or new event is selected 
      * Trigger the change of all the regestered listeners (observers)
      */
     @Override
     public void valueChanged(ListSelectionEvent e) {
-        Global.logDebug("New SeisEvent is selected.");
+        VBASLogger.logDebug("New SeisEvent is selected.");
         // disable the double calls
         if (!e.getValueIsAdjusting()) {
             int selectedRowNum = table.getSelectedRow();
@@ -159,7 +72,7 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
             selectedSeisEvent.setValues(eventsList.getEvents().get(selectedRowNum));
             Global.loadSelectedSeisEventData();
 
-            Global.logDebug("SiesEvent= " + selectedEvid + ". Fire SiesEvent selected event.");
+            VBASLogger.logDebug("SiesEvent= " + selectedEvid + ". Fire SiesEvent selected event.");
             selectedSeisEvent.fireSeisDataChanged();
         }
     }
@@ -231,4 +144,80 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
 
     }
 
+    // NOTE: For future reference: How Block table is loaded?
+    
+    
+    /*public void loadSeisEventsList() {
+     VBASLogger.logDebug("Load SeisEvents list.");
+     // fill in the events number
+     SeisDataDAO.retrieveBlockEventNumber(blockTableModel.getTaskBlocks());
+     SeisDataDAO.retrieveBlockReviewedEventNumber(blockTableModel.getTaskBlocks());
+
+     // add data into evets list : retrieve the events from the database
+     SeisDataDAO.retrieveAllEvents(eventsList.getEvents());
+     SeisDataDAO.retrieveEventsMagnitude(eventsList.getEvents());
+     SeisDataDAO.retrieveAllPhaseNumber(eventsList.getEvents());
+     SeisDataDAO.retrieveAllRegionName(eventsList.getEvents());
+
+     selectedSeisEvent.setValues(eventsList.getEvents().get(0));
+     loadSelectedSeisEventData();
+     }*/
+//    public void loadSelectedSeisEventData() {
+//
+//        System.out.println(Global.debugAt() + "Load list of Hypocentre, Phase, Commmands, and AssessedCommands for SeisEvent: "
+//                + selectedSeisEvent.getEvid());
+//
+//        /*
+//         * Hypocentre
+//         */
+//        SeisDataDAO.retrieveHypos(selectedSeisEvent.getEvid(),
+//                hypocentresList.getHypocentres());
+//        SeisDataDAO.retrieveHyposMagnitude(hypocentresList.getHypocentres());
+//        // as I remove all the hypos when clicking an event to retrieve the hypos, 
+//        // so need reset prime hypo every time
+//        // TODO: Saiful, What is this?
+//        for (Hypocentre hypo : hypocentresList.getHypocentres()) {
+//            if (hypo.getIsPrime() == true) {
+//                selectedSeisEvent.setPrimeHypo(hypo);
+//            }
+//        }
+//
+//        /*
+//         * Phase
+//         */
+//        SeisDataDAO.retrieveAllPhases(selectedSeisEvent.getEvid(), phasesList.getPhases());
+//        SeisDataDAO.retrieveAllPhasesAmpMag(selectedSeisEvent.getEvid(),
+//                phasesList.getPhases());
+//        SeisDataDAO.retrieveAllStationsWithRegions(stations);
+//        // load the correspondent map into the stataions
+//        // put the region name into the pahseList
+//        for (int i = 0; i < phasesList.getPhases().size(); i++) {
+//            phasesList.getPhases()
+//                    .get(i)
+//                    .setRegionName(stations
+//                            .get(phasesList
+//                                    .getPhases()
+//                                    .get(i)
+//                                    .getReportStation()));
+//        }
+//
+//        /*
+//         * Commands
+//         */
+//        SeisDataDAO.readCommandTable(selectedSeisEvent.getEvid(), commandList.getCommandList());
+//
+//        /*
+//         * AssessedCommand 
+//         */
+//        SeisDataDAO.readAssessedCommandTable(selectedSeisEvent.getEvid(), assessedCommandList.getAssessedCommandList());
+//
+//        VBASLogger.logDebug("#Hypocentres:" + hypocentresList.getHypocentres().size()
+//                + " #Phases:" + phasesList.getPhases().size()
+//                + " #Commands:" + commandList.getCommandList().size()
+//                + " #AssessedCommands:" + assessedCommandList.getAssessedCommandList().size());
+//
+//    }
+    /*public BlockTableModel getBlockTableModel() {
+     return this.blockTableModel;
+     }*/
 }

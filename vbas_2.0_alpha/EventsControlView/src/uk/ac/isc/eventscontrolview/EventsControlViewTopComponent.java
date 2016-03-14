@@ -2,14 +2,14 @@ package uk.ac.isc.eventscontrolview;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
-import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdata.VBASLogger;
+
 
 /**
  * Top component which displays the events control list that the analyst can
@@ -31,7 +31,7 @@ import uk.ac.isc.seisdata.Global;
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(
         displayName = "#CTL_EventsControlViewAction",
-        preferredID = "EventsControlViewTopComponent"
+        preferredID = "SeisEvent Selection Window"
 )
 @Messages({
     "CTL_EventsControlViewAction=EventsControlView",
@@ -50,15 +50,15 @@ public final class EventsControlViewTopComponent extends TopComponent {
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        setName("SeisEvent Selection");
 
-        setName("Event Selection");
-
-        Global.logDebug("Here...");
+        VBASLogger.logDebug("Here...");
 
         eventsTable = new SeisEventsTable();
         this.setLayout(new BorderLayout());
         this.add(eventsTable, BorderLayout.CENTER);
-
+        
+        //setLocation();
     }
 
     /* 

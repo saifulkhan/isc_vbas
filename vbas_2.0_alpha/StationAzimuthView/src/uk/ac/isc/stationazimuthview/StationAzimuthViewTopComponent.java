@@ -7,13 +7,14 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.PhasesList;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
 import uk.ac.isc.seisdata.SeisEvent;
+import uk.ac.isc.seisdata.VBASLogger;
 
 /**
  * Top component which displays station azimuth view.
@@ -57,7 +58,12 @@ public final class StationAzimuthViewTopComponent extends TopComponent implement
         initComponents();
         setName(Bundle.CTL_StationAzimuthViewTopComponent());
         setToolTipText(Bundle.HINT_StationAzimuthViewTopComponent());
-        Global.logDebug("Loaded...");
+        putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        setName("Station Geometry");
+
+        VBASLogger.logDebug("Loaded...");
 
         selectedSeisEvent.addChangeListener(this);
 
@@ -74,12 +80,12 @@ public final class StationAzimuthViewTopComponent extends TopComponent implement
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
         String eventName = event.getData().getClass().getName();
-        Global.logDebug("Event received from: " + eventName);
+        VBASLogger.logDebug("Event received from: " + eventName);
 
         switch (eventName) {
             case "uk.ac.isc.seisdata.SeisEvent":
                 //SeisEvent seisEvent = (SeisEvent) event.getData();
-                Global.logDebug("SeisEvent= " + selectedSeisEvent.getEvid());
+                VBASLogger.logDebug("SeisEvent= " + selectedSeisEvent.getEvid());
                 saView.updateData();
                 scrollPane.setViewportView(saView);
                 break;

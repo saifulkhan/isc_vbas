@@ -9,7 +9,6 @@ import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Stroke;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import static java.lang.Thread.sleep;
 import java.net.URL;
@@ -33,12 +32,13 @@ import org.openstreetmap.gui.jmapviewer.interfaces.TileLoaderListener;
 import org.openstreetmap.gui.jmapviewer.interfaces.TileSource;
 import org.openstreetmap.gui.jmapviewer.tilesources.OfflineOsmTileSource;
 import uk.ac.isc.seisdata.ColorUtils;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.HistoricEvent;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
-import uk.ac.isc.seisdata.SeisDataDAO;
 import uk.ac.isc.seisdata.SeisUtils;
+import uk.ac.isc.seisdata.VBASLogger;
+import uk.ac.isc.seisdatainterface.SeisDataDAO;
 
 /**
  * This the main map panel to show the seismicity, hypocentres and minimap for
@@ -123,7 +123,7 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
     ArrayList<HistoricEvent> seisList;
 
     public HypoOverviewPanel2(HypocentresList hyposList) {
-        Global.logDebug("Here...");
+        VBASLogger.logDebug("Here...");
         this.hyposList = hyposList;
 
         JobDispatcher.setMaxWorkers(2);
@@ -843,7 +843,7 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
         }
 
         /*// TEST: 
-         //Global.logDebug("Write BufferedImage.");
+         //VBASLogger.logDebug("Write BufferedImage.");
          try {
          ImageIO.write(baseMap, "png",
          new File("/export/home/saiful/assess/temp/HypocentreOverview.png"));

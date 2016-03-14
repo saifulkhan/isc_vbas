@@ -4,9 +4,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.text.SimpleDateFormat;
-import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
@@ -15,18 +13,18 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.xy.XYDotRenderer;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.Second;
-import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.Phase;
 import uk.ac.isc.seisdata.PhasesList;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
+ 
 
 /**
  * PhaseDetailView is the right panel for showing the zoom-in version of the
  * phase view
  *
- * @author hui
  */
+
 public class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListener {
 
     private final int imageWidth = 500;
@@ -35,7 +33,7 @@ public class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListen
     private final PhasesList detailPList;
 
     //reference of travel view in order to get range information 
-    private final PhaseTravelViewPanel pgvp;
+    private final PhaseTravelViewPanel phaseTVPanel;
 
     private double residualCutoffLevel = 0.0;
 
@@ -58,10 +56,10 @@ public class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListen
     //curve data
     private DuplicateUnorderTimeSeriesCollection ttdData = null;
 
-    public PhaseDetailViewPanel(PhaseTravelViewPanel pgvp) {
-        this.pgvp = pgvp;
-        this.detailPList = pgvp.getDetailedPList();
-        this.ttdData = pgvp.getTtdData();
+    public PhaseDetailViewPanel(PhaseTravelViewPanel phaseTVPanel) {
+        this.phaseTVPanel = phaseTVPanel;
+        this.detailPList = phaseTVPanel.getDetailedPList();
+        this.ttdData = phaseTVPanel.getTtdData();
 
         setPreferredSize(new Dimension(500, 1000));
 
@@ -78,13 +76,12 @@ public class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListen
         detailDataset.addSeries(detailPhaseSeries);
 
         detailPList.addChangeListener(this);
-        double[] range = pgvp.getRange();
+        double[] range = phaseTVPanel.getRange();
 
         zoomMinTime = range[0];
         zoomMaxTime = range[1];
         zoomMinDist = range[2];
         zoomMaxDist = range[3];
-
 
         createTravelImage();
     }
@@ -92,7 +89,6 @@ public class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListen
     //repaint when the data changes
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
-        setRange(pgvp.getRange());
         updateData();
     }
 
@@ -104,6 +100,8 @@ public class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListen
     }
 
     public void updateData() {
+        setRange(phaseTVPanel.getRange());
+
         //this.detailPList = pList;
         detailDataset.removeAllSeries();
         detailPhaseSeries = new DuplicateUnorderTimeSeries("");
@@ -112,7 +110,7 @@ public class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListen
         if (detailPList != null) {
             for (Phase p : detailPList.getPhases()) {
 
-                if (p.getArrivalTime() != null)// && ((p.getTimeResidual()!=null && Math.abs(p.getTimeResidual())>residualCutoffLevel)||(p.getTimeResidual()==null)))
+                if (p.getArrivalTime() != null) // && ((p.getTimeResidual()!=null && Math.abs(p.getTimeResidual())>residualCutoffLevel)||(p.getTimeResidual()==null)))
                 {
                     if (residualCutoffLevel == 0) {
                         RegularTimePeriod rp = new Second(p.getArrivalTime());
@@ -190,7 +188,6 @@ public class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListen
         detailDataset.addSeries(detailPhaseSeries);
 
         createTravelImage();
-
         repaint();
     }
 
@@ -246,7 +243,7 @@ public class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListen
 
         g2.drawImage(phasesImage, xOffset, yOffset, this);
 
-        /*// TEST: 
+        /*// TEST: BufferedImage to png
          //Global.logDebug("Write BufferedImage.");
          try {
          ImageIO.write(phasesImage, "png",

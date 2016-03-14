@@ -14,7 +14,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
-import uk.ac.isc.seisdata.SeisDataDAO;
+import uk.ac.isc.seisdatainterface.SeisDataDAO;
 
 /**
  *

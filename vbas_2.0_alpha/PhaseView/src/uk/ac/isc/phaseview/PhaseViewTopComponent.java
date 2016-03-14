@@ -1,28 +1,21 @@
 package uk.ac.isc.phaseview;
 
 import java.awt.BorderLayout;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Scanner;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import org.jfree.data.time.Second;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.PhasesList;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
 import uk.ac.isc.seisdata.SeisEvent;
+import uk.ac.isc.seisdata.VBASLogger;
 
 /**
  * Top component which displays the phase view.
@@ -36,7 +29,7 @@ import uk.ac.isc.seisdata.SeisEvent;
         //iconBase="SET/PATH/TO/ICON/HERE",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "phasearrivalview", openAtStartup = true)
+@TopComponent.Registration(mode = "explorer", openAtStartup = true)
 @ActionID(category = "Window", id = "uk.ac.isc.phaseview.PhaseViewTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(
@@ -57,10 +50,6 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
     private PhaseTravelViewPanel phaseTVPanel = null;
     private PhaseDetailViewPanel phaseDVPanel = null;
 
-    /*
-     * This is for saving the theoretical travel time points
-     */
-    //private final DuplicateUnorderTimeSeriesCollection ttdData = new DuplicateUnorderTimeSeriesCollection();
     private boolean showTTDFlag = true;
 
     // Other
@@ -76,7 +65,12 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
         initComponents();
         setName(Bundle.CTL_PhaseViewTopComponent());
         setToolTipText(Bundle.HINT_PhaseViewTopComponent());
-        Global.logDebug("Loaded...");
+        putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        setName("Phase TT Curves");
+
+        VBASLogger.logDebug("Loaded...");
 
         selectedSeisEvent.addChangeListener(this);
 
@@ -86,21 +80,7 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
         phaseTVPanel = new PhaseTravelViewPanel(phasesList, hypocentresList);
         phaseDVPanel = new PhaseDetailViewPanel(phaseTVPanel);
 
-        /*
-         DuplicateUnorderTimeSeriesCollection ttdData = LoadTTDData.loadTTDData(selectedSeisEvent.getEvid(), perlScript.toString());
-
-         for (int i = 0; i < hypocentresList.getHypocentres().size(); i++) {
-         if (hypocentresList.getHypocentres().get(i).getIsPrime()) {
-         primeHypocentre = hypocentresList.getHypocentres().get(i);
-         }
-         }
-
-         phaseTVPanel = new PhaseTravelViewPanel(phasesList, primeHypocentre, ttdData);
-         phaseDVPanel = new PhaseDetailViewPanel(phaseTVPanel, ttdData);
-         phaseTVPanel.setPrime(primeHypocentre);
-         */
         phaseViewControlPanel = new PhaseViewControlPanel(phaseTVPanel, phaseDVPanel);
-
         // add them together to the top component
         leftPane = new JScrollPane(phaseTVPanel);
         rightPane = new JScrollPane(phaseDVPanel);
@@ -115,28 +95,24 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
         String eventName = event.getData().getClass().getName();
-        Global.logDebug("Event received from: " + eventName);
+        VBASLogger.logDebug("Event received from: " + eventName);
         switch (eventName) {
             case "uk.ac.isc.seisdata.SeisEvent":
                 //SeisEvent seisEvent = (SeisEvent) event.getData();
-                Global.logDebug("SeisEvent= " + selectedSeisEvent.getEvid());
+                VBASLogger.logDebug("SeisEvent= " + selectedSeisEvent.getEvid());
 
                 phaseViewControlPanel.reset();
-
-                /*
-                 DuplicateUnorderTimeSeriesCollection ttdData = LoadTTDData.loadTTDData(selectedSeisEvent.getEvid(), perlScript.toString());
-                 for (int i = 0; i < hypocentresList.getHypocentres().size(); i++) {
-                 if (hypocentresList.getHypocentres().get(i).getIsPrime()) {
-                 primeHypocentre = hypocentresList.getHypocentres().get(i);
-                 }
-                 }
-                 phaseTVPanel.setPrime(primeHypocentre);
-                 phaseTVPanel.setTTDData(ttdData);
-                 */
                 phaseTVPanel.updateData();
-                phaseDVPanel.setRange(phaseTVPanel.getRange());
                 phaseDVPanel.updateData();
+                break;
 
+            case "uk.ac.isc.seisdata.Phase":
+                // TODO: do not redraw everything!
+                //Hypocentre hypocentre = (Hypocentre) event.getData();
+                //VBASLogger.logDebug("Hypocentre= " + selectedHypocentre.getHypid());
+                phaseViewControlPanel.reset();
+                phaseTVPanel.updateData();
+                phaseDVPanel.updateData();
                 break;
         }
 

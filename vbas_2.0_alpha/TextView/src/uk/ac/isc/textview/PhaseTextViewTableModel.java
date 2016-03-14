@@ -7,8 +7,9 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.Phase;
+import uk.ac.isc.seisdata.VBASLogger;
 
 /**
  * The phase table model for the phase table
@@ -39,7 +40,7 @@ public class PhaseTextViewTableModel extends AbstractTableModel {
 
     @Override
     public int getRowCount() {
-        //System.out.println(Global.debugAt() + "phasesList.size() = " + phasesList.size());
+        //System.out.println(VBASLogger.debugAt() + "phasesList.size() = " + phasesList.size());
         return phasesList.size();
     }
 
@@ -148,7 +149,7 @@ public class PhaseTextViewTableModel extends AbstractTableModel {
                 retObject = phasesList.get(rowIndex).getRdid();
                 break;
             default:
-                String message = Global.debugAt() + "\nSee the error log file for more information. ";
+                String message = VBASLogger.debugAt() + "\nSee the error log file for more information. ";
                 JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
         }
 

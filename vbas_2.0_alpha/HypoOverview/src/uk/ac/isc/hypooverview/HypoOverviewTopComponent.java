@@ -12,12 +12,13 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
 import uk.ac.isc.seisdata.SeisEvent;
+import uk.ac.isc.seisdata.VBASLogger;
 
 /**
  * Top component which displays seismicity map and hypocentre position.
@@ -31,7 +32,7 @@ import uk.ac.isc.seisdata.SeisEvent;
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "mapview", openAtStartup = true)
+@TopComponent.Registration(mode = "explorer", openAtStartup = true)
 @ActionID(category = "Window", id = "uk.ac.isc.hypooverview.HypoOverviewTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(
@@ -58,7 +59,11 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
         setName(Bundle.CTL_HypoOverviewTopComponent());
         setToolTipText(Bundle.HINT_HypoOverviewTopComponent());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
-        Global.logDebug("Loaded...");
+        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        setName("Hypocentre Seismicity");
+
+        VBASLogger.logDebug("Loaded...");
 
         selectedSeisEvent.addChangeListener(this);
         selectedHypocentre.addChangeListener(this);
@@ -76,12 +81,12 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
         String eventName = event.getData().getClass().getName();
-        Global.logDebug("Event received from: " + eventName);
+        VBASLogger.logDebug("Event received from: " + eventName);
 
         switch (eventName) {
             case "uk.ac.isc.seisdata.SeisEvent":
                 //SeisEvent seisEvent = (SeisEvent) event.getData();
-                Global.logDebug("SeisEvent= " + selectedSeisEvent.getEvid());
+                VBASLogger.logDebug("SeisEvent= " + selectedSeisEvent.getEvid());
 
                 for (Hypocentre hypo : hypoList.getHypocentres()) {
                     if (hypo.getIsPrime() == true) {
@@ -94,7 +99,7 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
 
             case "uk.ac.isc.seisdata.Hypocentre":
                 //Hypocentre hypocentre = (Hypocentre) event.getData();
-                Global.logDebug("Hypocentre= " + selectedHypocentre.getHypid());
+                VBASLogger.logDebug("Hypocentre= " + selectedHypocentre.getHypid());
                 break;
         }
 

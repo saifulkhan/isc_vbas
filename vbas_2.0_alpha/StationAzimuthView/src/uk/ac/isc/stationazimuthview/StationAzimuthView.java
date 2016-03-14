@@ -18,14 +18,15 @@ import javax.swing.JPanel;
 import org.jfree.text.TextUtilities;
 import org.openide.util.Exceptions;
 import org.openstreetmap.gui.jmapviewer.OsmMercator;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.Phase;
 import uk.ac.isc.seisdata.PhasesList;
-import uk.ac.isc.seisdata.SeisDataDAO;
+import uk.ac.isc.seisdatainterface.SeisDataDAO;
 import uk.ac.isc.seisdata.SeisUtils;
 import uk.ac.isc.seisdata.Station;
+import uk.ac.isc.seisdata.VBASLogger;
 
 /**
  * This view is for showing the stations' distribution on the map and phase
@@ -102,7 +103,7 @@ public class StationAzimuthView extends JPanel {
      * @param phasesList
      */
     public StationAzimuthView(HypocentresList hyposList, PhasesList phasesList) {
-        Global.logDebug("Here...");
+        VBASLogger.logDebug("Here...");
 
         this.phasesList = phasesList;
         this.hyposList = hyposList;
@@ -471,7 +472,7 @@ public class StationAzimuthView extends JPanel {
         graphics.setClip(new Ellipse2D.Double(0 + imSize / 8, 0 + imSize / 8, imSize * 0.75, imSize * 0.75));
         graphics.drawImage(dstImg, 0, 0, null);
 
-        /*//Global.logDebug("Write BufferedImage.");
+        /*//VBASLogger.logDebug("Write BufferedImage.");
          try {
 
          ImageIO.write(combined, "png",

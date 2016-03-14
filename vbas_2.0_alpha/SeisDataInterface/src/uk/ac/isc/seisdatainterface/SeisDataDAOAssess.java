@@ -1,6 +1,5 @@
-package uk.ac.isc.seisdata;
+package uk.ac.isc.seisdatainterface;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
@@ -11,13 +10,15 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.swing.JOptionPane;
+import uk.ac.isc.seisdata.Hypocentre;
+import uk.ac.isc.seisdata.Phase;
+import uk.ac.isc.seisdata.VBASLogger;
 
 /**
  * This is the database access object which provides functions to read and write
@@ -29,12 +30,11 @@ public final class SeisDataDAOAssess {
     protected static String assessUser;
     protected static String assessPassword;
     protected static String pgUser;
-
     private static Path assessDir = null;
 
     static {
         //String osName = System.getProperty("os.name");
-        Global.logDebug(System.getProperty("os.name"));
+        VBASLogger.logDebug(System.getProperty("os.name"));
         //if (osName.equals("Linux")) {
         Map<String, String> env = System.getenv();
         url = "jdbc:postgresql://"
@@ -44,14 +44,7 @@ public final class SeisDataDAOAssess {
         assessUser = env.get("ASSESS_USER");
         assessPassword = env.get("ASSESS_PW");
         pgUser = env.get("PGUSER");
-
-        int month = Calendar.getInstance().get(Calendar.MONTH) + 1;
-
-        
-        assessDir = Paths.get(env.get("ASSESSDIR")
-                + File.separator + Calendar.getInstance().get(Calendar.YEAR)
-                + File.separator + month);
-         
+        assessDir = Paths.get(env.get("ASSESSDIR")); 
     }
 
     private SeisDataDAOAssess() {
@@ -59,7 +52,7 @@ public final class SeisDataDAOAssess {
     }
 
     public static Path getAssessDir() {
-        Global.logDebug("assessDir=" + assessDir + ", url=" + url
+        VBASLogger.logDebug("assessDir=" + assessDir + ", url=" + url
                 + ", user=" + assessUser + ", password=" + assessPassword);
         return assessDir;
     }
@@ -76,14 +69,13 @@ public final class SeisDataDAOAssess {
      * Update the Assess Schema
      * Return the locatorCommandStr
      */
-    public static String processAssessData(int evid, ArrayList<String> functionArray) {
-        Global.logDebug("url=" + url + ", user=" + assessUser + ", password=" + assessPassword);
+    public static Boolean processAssessData(int evid, ArrayList<String> functionArray) {
+        VBASLogger.logDebug("url=" + url + ", user=" + assessUser + ", password=" + assessPassword);
 
         Connection con = null;
         Statement st = null;
         ResultSet rs = null;
 
-        String locatorCommandStr = null;
         String query = null;
 
         try {
@@ -95,7 +87,7 @@ public final class SeisDataDAOAssess {
              * 1: delete existing data in assess schema
              */
             query = "SELECT CLEAR_ASSESS();";
-            Global.logDebug("query= " + query);
+            VBASLogger.logDebug("query= " + query);
             rs = st.executeQuery(query);
 
             /*
@@ -103,7 +95,7 @@ public final class SeisDataDAOAssess {
              * Note: the FILL_ASSESS will read data from PGUSER.
              */
             query = "SELECT FILL_ASSESS (" + evid + ", '" + pgUser + "');";
-            Global.logDebug("query= " + query);
+            VBASLogger.logDebug("query= " + query);
             rs = st.executeQuery(query);
 
             /*
@@ -112,7 +104,7 @@ public final class SeisDataDAOAssess {
             for (String funtion : functionArray) {
 
                 query = "SELECT " + funtion;
-                Global.logDebug("query= " + query);
+                VBASLogger.logDebug("query= " + query);
                 rs = st.executeQuery(query);
             }
 
@@ -123,9 +115,9 @@ public final class SeisDataDAOAssess {
                     + "\nSee the error log file for more information. ";
 
             JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
-            Global.logSevere(message);
+            VBASLogger.logSevere(message);
 
-            return null;
+            return false;
         } finally {
             try {
                 if (rs != null) {
@@ -143,7 +135,7 @@ public final class SeisDataDAOAssess {
             }
         }
 
-        return locatorCommandStr;
+        return true;
     }
 
     /**
@@ -154,7 +146,7 @@ public final class SeisDataDAOAssess {
      * @return
      */
     public static boolean retrieveHypos(Integer evid, ArrayList<Hypocentre> HypoList) {
-        Global.logDebug("url=" + url + ", user=" + assessUser + ", password=" + assessPassword);
+        VBASLogger.logDebug("url=" + url + ", user=" + assessUser + ", password=" + assessPassword);
 
         Connection con = null;
         Statement st = null;
@@ -257,7 +249,7 @@ public final class SeisDataDAOAssess {
      * @return
      */
     public static boolean retrieveHyposMagnitude(ArrayList<Hypocentre> HypoList) {
-        Global.logDebug("url=" + url + ", user=" + assessUser + ", password=" + assessPassword);
+        VBASLogger.logDebug("url=" + url + ", user=" + assessUser + ", password=" + assessPassword);
 
         Connection con = null;
         Statement st = null;
@@ -315,7 +307,7 @@ public final class SeisDataDAOAssess {
      * @return filled phases list
      */
     public static boolean retrieveAllPhases(Integer evid, ArrayList<Phase> PhasesList) {
-        Global.logDebug("url=" + url + ", user=" + assessUser + ", password=" + assessPassword);
+        VBASLogger.logDebug("url=" + url + ", user=" + assessUser + ", password=" + assessPassword);
 
         Connection con = null;
         Statement st = null;
@@ -429,7 +421,7 @@ public final class SeisDataDAOAssess {
      * @return
      */
     public static boolean retrieveAllPhasesAmpMag(Integer evid, ArrayList<Phase> PhaseList) {
-        Global.logDebug("url=" + url + ", user=" + assessUser + ", password=" + assessPassword);
+        VBASLogger.logDebug("url=" + url + ", user=" + assessUser + ", password=" + assessPassword);
 
         Connection con = null;
         Statement st = null;
@@ -497,7 +489,7 @@ public final class SeisDataDAOAssess {
      * @return
      */
     public static boolean retrieveAllStationsWithRegions(TreeMap<String, String> allStations) {
-        Global.logDebug("url=" + url + ", user=" + assessUser + ", password=" + assessPassword);
+        VBASLogger.logDebug("url=" + url + ", user=" + assessUser + ", password=" + assessPassword);
 
         Connection con = null;
         Statement st = null;

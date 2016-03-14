@@ -7,7 +7,6 @@ import javax.swing.table.AbstractTableModel;
 
 /**
  *
- * @author hui
  */
 public class BlockTableModel extends AbstractTableModel {
 
@@ -31,18 +30,20 @@ public class BlockTableModel extends AbstractTableModel {
     private HashSet<TaskBlock> blockSet;
 
     public BlockTableModel() {
-        blockSet = new HashSet<TaskBlock>();
-
-        //load the block table from the database
-        SeisDataDAO.loadBlocks(blockSet);
-
-        blockArray = new ArrayList<TaskBlock>(blockSet);
-
-        Collections.sort(blockArray);
-
-        //System.out.println(blockArray);
+         blockSet = new HashSet<TaskBlock>();
     }
-
+    
+    
+    public HashSet<TaskBlock> getBlockSet() {
+        return blockSet;
+    }
+    
+    public void initBlockArray() {
+        blockArray = new ArrayList<TaskBlock>(blockSet);
+        Collections.sort(blockArray);
+    }
+    
+    
     public ArrayList<TaskBlock> getTaskBlocks() {
         return this.blockArray;
     }
@@ -98,6 +99,8 @@ public class BlockTableModel extends AbstractTableModel {
         return columns[c];
     }
 
+    /* 
+    // Saiful commented
     public void reload() {
 
         blockSet = new HashSet<TaskBlock>();
@@ -115,6 +118,6 @@ public class BlockTableModel extends AbstractTableModel {
         SeisDataDAO.retrieveBlockReviewedEventNumber(blockArray);
 
         //this.fireTableDataChanged();
-    }
+    }*/
 
 }

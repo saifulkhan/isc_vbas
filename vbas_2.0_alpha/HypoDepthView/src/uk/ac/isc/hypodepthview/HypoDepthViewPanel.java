@@ -21,8 +21,8 @@ import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.DefaultCategoryDataset;
-import uk.ac.isc.seisdata.Global;
 import uk.ac.isc.seisdata.Hypocentre;
+import uk.ac.isc.seisdata.VBASLogger;
 
 
 /*
@@ -47,7 +47,7 @@ public class HypoDepthViewPanel extends JPanel {
     private BufferedImage depthHistImg;
 
     public HypoDepthViewPanel(ArrayList<Hypocentre> hypos) {
-        Global.logDebug("Here...");
+        VBASLogger.logDebug("Here...");
 
         this.hyposList.addAll(hypos);
         //sort the hypolist
@@ -244,7 +244,7 @@ public class HypoDepthViewPanel extends JPanel {
         g2.dispose();
 
         /*// TEST: 
-         Global.logDebug("Write BufferedImage.");
+         VBASLogger.logDebug("Write BufferedImage.");
          try {
          ImageIO.write(depthHistImg, "png",
          new File("/export/home/saiful/assess/temp/HypocentreDepthView.png"));

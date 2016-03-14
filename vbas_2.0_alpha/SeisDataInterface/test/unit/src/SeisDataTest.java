@@ -3,12 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package uk.ac.isc.seisdata;
+package uk.ac.isc.seisdatainterface;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,6 +13,12 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import uk.ac.isc.seisdata.Hypocentre;
+import uk.ac.isc.seisdata.HypocentresList;
+import uk.ac.isc.seisdata.PhasesList;
+import uk.ac.isc.seisdata.SeisEventsList;
+import uk.ac.isc.seisdata.SeisUtils;
+import uk.ac.isc.seisdata.Station;
 
 /**
  *

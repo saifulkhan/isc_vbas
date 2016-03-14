@@ -1,16 +1,15 @@
 package uk.ac.isc.textview;
 
-import java.awt.Color;
+
 import java.awt.Font;
-import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdata.VBASLogger;
+ 
 
 class PhaseTablePopupManager implements ActionListener {
 
@@ -35,7 +34,7 @@ class PhaseTablePopupManager implements ActionListener {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println(Global.debugAt());
+        System.out.println(VBASLogger.debugAt());
 
         // Selected row values
         int[] selectedRows = table.getSelectedRows();

@@ -7,11 +7,12 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.PhasesList;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
 import uk.ac.isc.seisdata.SeisEvent;
+import uk.ac.isc.seisdata.VBASLogger;
 
 /**
  * Top component which displays pie chart view.
@@ -52,8 +53,13 @@ public final class AgencyPieChartViewTopComponent extends TopComponent implement
         initComponents();
         setName(Bundle.CTL_AgencyPieChartViewTopComponent());
         setToolTipText(Bundle.HINT_AgencyPieChartViewTopComponent());
+        putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        setName("Agency Summary");
 
-        Global.logDebug("Loaded... #phases: " + phasesList.getPhases().size());
+        VBASLogger.logDebug("Loaded... #phases: " + phasesList.getPhases().size());
+
         selectedSeisEvent.addChangeListener(this);
 
         pcData = new PieChartData(phasesList.getPhases());
@@ -69,13 +75,13 @@ public final class AgencyPieChartViewTopComponent extends TopComponent implement
     public void SeisDataChanged(SeisDataChangeEvent event) {
 
         String eventName = event.getData().getClass().getName();
-        Global.logDebug(" Event received from " + eventName);
+        VBASLogger.logDebug(" Event received from " + eventName);
 
         // It only received SeiesEvent selected/changed now
         switch (eventName) {
             case ("uk.ac.isc.seisdata.SeisEvent"):
                 //SeisEvent seisEvent = (SeisEvent) event.getData();
-                Global.logDebug("SeisEvent= " + selectedSeisEvent.getEvid());
+                VBASLogger.logDebug("SeisEvent= " + selectedSeisEvent.getEvid());
 
                 pcData.UpdateData(phasesList.getPhases());
                 apcView.repaint();

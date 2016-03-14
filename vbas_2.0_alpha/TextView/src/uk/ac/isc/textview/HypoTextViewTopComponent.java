@@ -31,13 +31,14 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
-import uk.ac.isc.seisdata.SeisDataDAO;
+import uk.ac.isc.seisdatainterface.SeisDataDAO;
 import uk.ac.isc.seisdata.SeisEvent;
+import uk.ac.isc.seisdata.VBASLogger;
 
 /**
  * Top component which displays the hypocentre table of the selected event. It
@@ -82,12 +83,16 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         initComponents();
         setName(Bundle.CTL_HypoTextViewTopComponent());
         setToolTipText(Bundle.HINT_HypoTextViewTopComponent());
-        Global.logDebug("Loaded...");
+        putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        setName("Hypocentre Selection");
 
+        VBASLogger.logDebug("Loaded...");
+        
         selectedSeisEvent.addChangeListener(this);
 
         table = new JTable();
-
         lsl = new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent lse) {
@@ -126,12 +131,12 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
      * When a row (Hypocentre) is selected. Fire an event.
      */
     public void onValueChanged(ListSelectionEvent lse) {
-        Global.logDebug("New Hypocentre is selected.");
+        VBASLogger.logDebug("New Hypocentre is selected.");
         int selectedRowNum = table.getSelectedRow();
         Hypocentre hypocentre = hypocentresList.getHypocentres().get(selectedRowNum);
 
         selectedHypocentre.setValues(hypocentre);
-        Global.logDebug("'SeisEvent' changed, fire an event."
+        VBASLogger.logDebug("'SeisEvent' changed, fire an event."
                 + ", Selected row=" + selectedRowNum
                 + ", Hypocentre= " + (Integer) table.getValueAt(selectedRowNum, 9));
         selectedHypocentre.fireSeisDataChanged();
@@ -152,7 +157,7 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         // Specify the condition(s) you want for htPopupManager display.
         // For Example: show htPopupManager only if a row & column is selected.
         if (selectedRow >= 0 && selectedCol >= 0) {
-            Global.logDebug("selectedRow=" + selectedRow
+            VBASLogger.logDebug("selectedRow=" + selectedRow
                     + ", selectedCol=" + selectedCol);
 
             if (SwingUtilities.isRightMouseButton(e)) {
@@ -170,7 +175,7 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
      */
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
-        Global.logDebug("Event received from " + event.getData().getClass().getName());
+        VBASLogger.logDebug("Event received from " + event.getData().getClass().getName());
         // Types of event: Selected Event, Selected Hypocentre (?).
 
         // Remove the previous (row) selection listener, if any.
@@ -217,7 +222,7 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
     }
 
     private void setHeaderText() {
-        Global.logDebug(selectedSeisEvent.getEvid() + ", "
+        VBASLogger.logDebug(selectedSeisEvent.getEvid() + ", "
                 + selectedSeisEvent.getPrimeHypo().getOrigTime());
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");

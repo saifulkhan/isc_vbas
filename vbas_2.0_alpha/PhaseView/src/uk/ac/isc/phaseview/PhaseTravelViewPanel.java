@@ -31,13 +31,13 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.xy.XYDotRenderer;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.Second;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.Phase;
 import uk.ac.isc.seisdata.PhasesList;
-import uk.ac.isc.seisdata.SeisDataDAOAssess;
 import uk.ac.isc.seisdata.SeisUtils;
+import uk.ac.isc.seisdata.VBASLogger;
 
 /**
  *
@@ -97,9 +97,12 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
     private final PhasesList pList;
     private final HypocentresList hList;
     private Hypocentre prime;
-    //seleted list of Phases for details view
+    // seleted list of Phases for details view
     private final PhasesList detailedPList = new PhasesList();
-
+    // selected phases in the Phase Selection table
+    private final PhasesList selectedPhaseList = new PhasesList();
+    
+    
     //these two for showing the phases data
     private File ttimesScript;
     private DuplicateUnorderTimeSeries phaseSeries;
@@ -119,7 +122,7 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
 
         // read the resourse file (perl script) inside jar.
         if (getClass().getClassLoader().getResource("resources" + File.separator + "ttimes.pl") == null) {
-            Global.logDebug("Resource does not exist. resource: " + getClass().getClassLoader().getResource("resources" + File.separator + "ttimes.pl"));
+            VBASLogger.logDebug("Resource does not exist. resource: " + getClass().getClassLoader().getResource("resources" + File.separator + "ttimes.pl"));
         }
 
         InputStream inSream = getClass().getClassLoader().getResourceAsStream("resources" + File.separator + "ttimes.pl");
@@ -127,12 +130,12 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
 
             // create a temp directory and copy the content of the perl script from resource folder.
             try {
-                Path scriptpath = Paths.get(SeisDataDAOAssess.getAssessDir() + File.separator + "temp");
+                Path scriptpath = Paths.get(System.getProperty("user.dir") + File.separator + "temp");
                 if (!new File(scriptpath.toString()).exists()) {
                     boolean success = (new File(scriptpath.toString())).mkdirs();
                     if (!success) {
                         String message = "Error creating the directory " + scriptpath;
-                        Global.logSevere(message);
+                        VBASLogger.logSevere(message);
                         JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
@@ -140,19 +143,19 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
                 ttimesScript = new File(scriptpath + File.separator + "ttimes.pl");
                 ttimesScript.setReadable(true, true);
                 ttimesScript.setExecutable(true, true);
-                Global.logDebug("Perl script location for TTDData, ttimesScript= " + ttimesScript.toPath());
+                VBASLogger.logDebug("Perl script location for TTDData, ttimesScript= " + ttimesScript.toPath());
 
                 Files.copy(inSream, ttimesScript.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 ttdData = LoadTTDData.loadTTDData(Global.getSelectedSeisEvent().getEvid(), ttimesScript);
                 
-                //Global.logDebug();
+                //VBASLogger.logDebug();
                 inSream.close();
 
             } catch (IOException e) {
                 // TODO
             }
         } else {
-            Global.logDebug("Null 'inStream', resource: " + 
+            VBASLogger.logDebug("Null 'inStream', resource: " + 
                     getClass().getClassLoader().getResource("resources" + File.separator + "ttimes.pl").toString());
         }
 
@@ -495,7 +498,7 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
         g2.drawImage(phaseImageWithRect, xOffset, yOffset, this);
 
         /*// TEST: 
-         //Global.logDebug("Write BufferedImage.");
+         //VBASLogger.logDebug("Write BufferedImage.");
          try {
          ImageIO.write(phaseImageWithRect, "png",
          new File("/export/home/saiful/assess/temp/phaseImageWithRect.png"));

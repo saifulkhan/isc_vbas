@@ -23,11 +23,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
 import uk.ac.isc.seisdata.Command;
-import uk.ac.isc.seisdata.FormulateCommand;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdatainterface.FormulateCommand;
+import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.Hypocentre;
-import uk.ac.isc.seisdata.SeisDataDAO;
+import uk.ac.isc.seisdatainterface.SeisDataDAO;
 import uk.ac.isc.seisdata.SeisEvent;
+import uk.ac.isc.seisdata.VBASLogger;
 
 public class SeisEventRelocateDialog extends JDialog {
 
@@ -190,14 +191,14 @@ public class SeisEventRelocateDialog extends JDialog {
                 composeCommand.addAttribute("comment", text_comment.getText(), null);
             }
 
-            Global.logDebug("\ncommandLog= " + composeCommand.getCmdProvenance().toString()
+            VBASLogger.logDebug("\ncommandLog= " + composeCommand.getCmdProvenance().toString()
                     + "\nsystemCommand= " + composeCommand.getSystemCommand().toString());
 
             boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), commandType,
                     composeCommand.getCmdProvenance().toString(), composeCommand.getSystemCommand().toString());
 
             if (ret) {
-                Global.logDebug(" Fired: " + commandType);
+                VBASLogger.logDebug(" Fired: " + commandType);
                 commandEvent.fireSeisDataChanged();
             } else {
                 JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);

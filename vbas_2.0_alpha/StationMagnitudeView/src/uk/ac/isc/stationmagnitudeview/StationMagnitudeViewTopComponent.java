@@ -7,12 +7,13 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
 import uk.ac.isc.seisdata.SeisEvent;
+import uk.ac.isc.seisdata.VBASLogger;
 
 /**
  * Top component which displays the station magnitude view.
@@ -53,7 +54,12 @@ public final class StationMagnitudeViewTopComponent extends TopComponent impleme
         initComponents();
         setName(Bundle.CTL_StationMagnitudeViewTopComponent());
         setToolTipText(Bundle.HINT_StationMagnitudeViewTopComponent());
-        Global.logDebug("Loaded..."
+        putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        setName("Station Magnitudes");
+
+        VBASLogger.logDebug("Loaded..."
                 + ", #SiesEvent=" + Global.getSelectedSeisEvent().getEvid()
                 + ", #Hypocentre=" + hyposList.getHypocentres().size());
 
@@ -75,7 +81,7 @@ public final class StationMagnitudeViewTopComponent extends TopComponent impleme
     public void SeisDataChanged(SeisDataChangeEvent event) {
 
         String eventName = event.getData().getClass().getName();
-        Global.logDebug(" Event received from " + eventName
+        VBASLogger.logDebug(" Event received from " + eventName
                 + ", SiesEvent=" + Global.getSelectedSeisEvent().getEvid()
                 + ", #Hypocentres=" + hyposList.getHypocentres().size());
 

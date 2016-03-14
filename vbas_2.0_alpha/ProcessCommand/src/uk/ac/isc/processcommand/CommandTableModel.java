@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
 import uk.ac.isc.seisdata.Command;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdata.VBASLogger;
 
 public class CommandTableModel extends AbstractTableModel {
 
@@ -75,7 +75,7 @@ public class CommandTableModel extends AbstractTableModel {
                 retObject = commandList.get(rowIndex).getType();
                 break;
             default:
-                String message = Global.debugAt() + "\nSee the error log file for more information. ";
+                String message = VBASLogger.debugAt() + "\nSee the error log file for more information. ";
                 JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
         }
 

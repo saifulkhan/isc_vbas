@@ -9,11 +9,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import uk.ac.isc.seisdata.Command;
-import uk.ac.isc.seisdata.FormulateCommand;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdatainterface.FormulateCommand;
+import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.Hypocentre;
-import uk.ac.isc.seisdata.SeisDataDAO;
+import uk.ac.isc.seisdatainterface.SeisDataDAO;
 import uk.ac.isc.seisdata.SeisEvent;
+import uk.ac.isc.seisdata.VBASLogger;
 
 class HypocentreTablePopupMenu implements ActionListener {
 
@@ -60,14 +61,14 @@ class HypocentreTablePopupMenu implements ActionListener {
 
             if (composeCommand.isValidCommand()) {
 
-                Global.logDebug("\ncommandLog= " + composeCommand.getCmdProvenance().toString()
+                VBASLogger.logDebug("\ncommandLog= " + composeCommand.getCmdProvenance().toString()
                         + "\nsystemCommand= " + composeCommand.getSystemCommand().toString());
 
                 boolean ret = SeisDataDAO.updateCommandTable(Global.getSelectedSeisEvent().getEvid(), commandType,
                         composeCommand.getCmdProvenance().toString(), composeCommand.getSystemCommand().toString());
 
                 if (ret) {
-                    Global.logDebug(" Fired: " + commandType);
+                    VBASLogger.logDebug(" Fired: " + commandType);
                     commandEvent.fireSeisDataChanged();
                 } else {
                     JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);

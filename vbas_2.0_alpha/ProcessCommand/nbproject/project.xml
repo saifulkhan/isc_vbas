@@ -64,6 +64,14 @@
                     </run-dependency>
                 </dependency>
                 <dependency>
+                    <code-name-base>uk.ac.isc.commonswrapper</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <specification-version>1.0</specification-version>
+                    </run-dependency>
+                </dependency>
+                <dependency>
                     <code-name-base>uk.ac.isc.hypodepthview</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
@@ -105,6 +113,14 @@
                 </dependency>
                 <dependency>
                     <code-name-base>uk.ac.isc.seisdata</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <specification-version>1.0</specification-version>
+                    </run-dependency>
+                </dependency>
+                <dependency>
+                    <code-name-base>uk.ac.isc.seisdatainterface</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
                     <run-dependency>

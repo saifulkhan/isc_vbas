@@ -13,12 +13,13 @@ import org.openide.awt.ActionReference;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.WindowManager;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
 import uk.ac.isc.seisdata.SeisEvent;
+import uk.ac.isc.seisdata.VBASLogger;
 
 
 /*
@@ -63,7 +64,12 @@ public final class HypoDepthViewTopComponent extends TopComponent implements Sei
         initComponents();
         setName(Bundle.CTL_HypoDepthViewTopComponent());
         setToolTipText(Bundle.HINT_HypoDepthViewTopComponent());
-        Global.logDebug("Loaded...");
+        putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        setName("Hypocentre Depths");
+
+        VBASLogger.logDebug("Loaded...");
 
         selectedSeisEvent.addChangeListener(this);
         selectedHypocentre.addChangeListener(this);
@@ -80,18 +86,18 @@ public final class HypoDepthViewTopComponent extends TopComponent implements Sei
     public void SeisDataChanged(SeisDataChangeEvent event) {
 
         String eventName = event.getData().getClass().getName();
-        Global.logDebug(" Event received from " + eventName);
+        VBASLogger.logDebug(" Event received from " + eventName);
 
         // TODO: Probably don't need to redraw everything.
         switch (eventName) {
             case ("uk.ac.isc.seisdata.SeisEvent"):
                 //SeisEvent seisEvent = (SeisEvent) event.getData();
-                Global.logDebug("SeisEvent= " + selectedSeisEvent.getEvid());
+                VBASLogger.logDebug("SeisEvent= " + selectedSeisEvent.getEvid());
                 break;
 
             case ("uk.ac.isc.seisdata.Hypocentre"):
                 //Hypocentre hypocentre = (Hypocentre) event.getData();
-                Global.logDebug("Hypocentre= " + selectedHypocentre.getHypid());
+                VBASLogger.logDebug("Hypocentre= " + selectedHypocentre.getHypid());
                 break;
         }
 

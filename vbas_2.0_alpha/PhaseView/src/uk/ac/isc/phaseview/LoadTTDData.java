@@ -3,30 +3,32 @@ package uk.ac.isc.phaseview;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
 import org.jfree.data.time.Second;
 import org.openide.util.Exceptions;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdata.VBASLogger;
 
 /**
  * helper function to call perl for calculating ttd curves based on evid
  */
 public class LoadTTDData {
 
+    /*
+     * This is for saving the theoretical travel time points
+     */
     private final static DuplicateUnorderTimeSeriesCollection ttdData = new DuplicateUnorderTimeSeriesCollection();
 
     public static DuplicateUnorderTimeSeriesCollection loadTTDData(Integer evid, File perlScript) {
-        Global.logDebug("Here...");
+        VBASLogger.logDebug("Here...");
 
         ttdData.removeAllSeries();
         ArrayList<TTDTriplet> ttdList = new ArrayList<TTDTriplet>();
 
         //Execute the Perl script to get the theoretical time curves.
         String perlCommand = "perl" + " " + perlScript + " " + evid.toString();
-        Global.logDebug("Execute: " + perlCommand);
+        VBASLogger.logDebug("Execute: " + perlCommand);
 
         //execute the perl script and read the data into ttdList
         try {
@@ -55,7 +57,7 @@ public class LoadTTDData {
         }
 
         if (ttdList.isEmpty()) {
-            JOptionPane.showMessageDialog(null, perlCommand + " returned " + ttdList.size() + " items.", 
+            JOptionPane.showMessageDialog(null, perlCommand + " returned " + ttdList.size() + " items.",
                     "Warning", JOptionPane.WARNING_MESSAGE);
         }
 

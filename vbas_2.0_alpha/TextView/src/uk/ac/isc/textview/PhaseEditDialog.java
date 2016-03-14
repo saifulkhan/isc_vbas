@@ -24,10 +24,11 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 import uk.ac.isc.seisdata.Command;
-import uk.ac.isc.seisdata.FormulateCommand;
-import uk.ac.isc.seisdata.Global;
-import uk.ac.isc.seisdata.SeisDataDAO;
+import uk.ac.isc.seisdatainterface.FormulateCommand;
+import uk.ac.isc.seisdatainterface.Global;
+import uk.ac.isc.seisdatainterface.SeisDataDAO;
 import uk.ac.isc.seisdata.SeisEvent;
+import uk.ac.isc.seisdata.VBASLogger;
 
 public class PhaseEditDialog extends JDialog {
 
@@ -136,7 +137,7 @@ public class PhaseEditDialog extends JDialog {
 
     private void buttonOKActionPerformed(ActionEvent evt) {
 
-        System.out.println(Global.debugAt());
+        System.out.println(VBASLogger.debugAt());
 
         PhaseEditTableModel model = (PhaseEditTableModel) table_edit.getModel();
         int nRow = model.getRowCount();
@@ -157,7 +158,7 @@ public class PhaseEditDialog extends JDialog {
              */
             String oldPhaseType = origPhaseEditDataList.get(i).getType();
             String newPhaseType = (String) model.getValueAt(i, 1);
-            Global.logDebug("oldPhaseType= " + oldPhaseType + ", newPhaseType= " + newPhaseType);
+            VBASLogger.logDebug("oldPhaseType= " + oldPhaseType + ", newPhaseType= " + newPhaseType);
 
             if (!newPhaseType.equals(oldPhaseType) && !newPhaseType.equals("")) {
                 formulateCommand.addAttribute("phasetype", (String) model.getValueAt(i, 1), oldPhaseType);
@@ -272,13 +273,13 @@ public class PhaseEditDialog extends JDialog {
 
         // In phase edit, an array of system commands is created/
         if (jSystemCommandArray.size() > 0) {
-            Global.logDebug("\ncommandLog= " + jCommandLogArray.toString()
+            VBASLogger.logDebug("\ncommandLog= " + jCommandLogArray.toString()
                     + "\nsystemCommand= " + jSystemCommandArray.toString());
 
             boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), commandType,
                     jCommandLogArray.toString(), jSystemCommandArray.toString());
             if (ret) {
-                Global.logDebug(" Fired: " + commandType);
+                VBASLogger.logDebug(" Fired: " + commandType);
                 commandEvent.fireSeisDataChanged();
             } else {
                 JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -588,7 +589,7 @@ public class PhaseEditDialog extends JDialog {
                     retObject = phaseEditDataList.get(r).getPutSeisEvent();
                     break;
                 default:
-                    String message = Global.debugAt() + "\nSee the error log file for more information. ";
+                    String message = VBASLogger.debugAt() + "\nSee the error log file for more information. ";
                     JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
             }
 
@@ -602,7 +603,7 @@ public class PhaseEditDialog extends JDialog {
 
         @Override
         public Class getColumnClass(int c) {
-            //System.out.println(Global.debugAt() + "c= " + c + ", getValueAt(0, c)=" + getValueAt(0, c));
+            //System.out.println(VBASLogger.debugAt() + "c= " + c + ", getValueAt(0, c)=" + getValueAt(0, c));
             //return getValueAt(0, c).getClass();
             return columnTypes[c];
         }
@@ -647,7 +648,7 @@ public class PhaseEditDialog extends JDialog {
                     editedData.setPutSeisEvent((Integer) value);
                     break;
                 default:
-                    String message = Global.debugAt() + "\nSee the error log file for more information. ";
+                    String message = VBASLogger.debugAt() + "\nSee the error log file for more information. ";
                     JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
             }
 
@@ -659,7 +660,7 @@ public class PhaseEditDialog extends JDialog {
 
         private void printDebugData() {
 
-            System.out.println(Global.debugAt());
+            System.out.println(VBASLogger.debugAt());
 
             int numRows = getRowCount();
             int numCols = getColumnCount();

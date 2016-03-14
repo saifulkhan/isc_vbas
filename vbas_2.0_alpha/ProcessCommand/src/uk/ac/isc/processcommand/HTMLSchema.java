@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import javax.swing.table.AbstractTableModel;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdata.VBASLogger;
 
 /**
  * TODO: the phase table and hypocentre table code are repetitive. Try
@@ -43,7 +43,7 @@ public class HTMLSchema {
     }
 
     public void generateHTMLSchema() {
-        Global.logDebug("Here...");
+        VBASLogger.logDebug("Here...");
 
         try {
             // if the file doesnt exists, then create it
@@ -58,7 +58,7 @@ public class HTMLSchema {
              * Write the table data first. 
              */
             for (String table : tables) {
-                Global.logDebug(table);
+                VBASLogger.logDebug(table);
 
                 AbstractTableModel model = null;
                 switch (table) {
@@ -94,7 +94,7 @@ public class HTMLSchema {
                     bufferedWriter.write("<tr>");
                     for (int c = 0; c < model.getColumnCount(); ++c) {
                         bufferedWriter.write("<td>");
-                        //Global.logDebug(model.getValueAt(r, c) == null ? "" : model.getValueAt(r, c).toString());
+                        //VBASLogger.logDebug(model.getValueAt(r, c) == null ? "" : model.getValueAt(r, c).toString());
                         bufferedWriter.write(model.getValueAt(r, c) == null ? "" : model.getValueAt(r, c).toString());
                         bufferedWriter.write("</td>");
                     }
@@ -110,7 +110,7 @@ public class HTMLSchema {
              * Write the images (just name and structure) 
              */
             for (String view : views) {
-                Global.logDebug(view);
+                VBASLogger.logDebug(view);
 
                 bufferedWriter.write("<div>");
                 bufferedWriter.newLine();
@@ -124,10 +124,10 @@ public class HTMLSchema {
 
             //bufferedWriter.close();
             //fileWritter.close();
-            Global.logDebug("Complete...");
+            VBASLogger.logDebug("Complete...");
 
         } catch (IOException e) {
-            Global.logSevere("Error writing to html file.");
+            VBASLogger.logSevere("Error writing to html file.");
             e.printStackTrace();
         } finally {
 
@@ -142,7 +142,7 @@ public class HTMLSchema {
                  }*/
 
             } catch (IOException e) {
-                Global.logSevere("Error releasing resources.");
+                VBASLogger.logSevere("Error releasing resources.");
                 e.printStackTrace();
             }
         }

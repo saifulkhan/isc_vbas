@@ -5,7 +5,7 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
 import uk.ac.isc.seisdata.AssessedCommand;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdata.VBASLogger;
 
 public class AssessedCommandTableModel extends AbstractTableModel {
 
@@ -71,7 +71,7 @@ public class AssessedCommandTableModel extends AbstractTableModel {
                  button.addActionListener(new ActionListener() {
                  @Override
                  public void actionPerformed(ActionEvent ae) {
-                 Global.logDebug("Clicked.." + "row= " + rowIndex + ", column= " + columnIndex + ", report:"
+                 VBASLogger.logDebug("Clicked.." + "row= " + rowIndex + ", column= " + columnIndex + ", report:"
                  + assessedCommandList.get(rowIndex).getReport());
                  }
                  });*/
@@ -80,9 +80,8 @@ public class AssessedCommandTableModel extends AbstractTableModel {
                 break;
 
             default:
-                String message = Global.debugAt() + "\nSee the error log file for more information. ";
+                String message = VBASLogger.debugAt() + "\nSee the error log file for more information. ";
                 JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
-
         }
 
         return retObject;

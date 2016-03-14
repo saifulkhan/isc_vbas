@@ -43,10 +43,6 @@
             <public-packages>
                 <package>uk.ac.isc.seisdata</package>
             </public-packages>
-            <class-path-extension>
-                <runtime-relative-path>ext/postgresql-9.2-1002.jdbc4.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/postgresql-9.2-1002.jdbc4.jar</binary-origin>
-            </class-path-extension>
         </data>
     </configuration>
 </project>

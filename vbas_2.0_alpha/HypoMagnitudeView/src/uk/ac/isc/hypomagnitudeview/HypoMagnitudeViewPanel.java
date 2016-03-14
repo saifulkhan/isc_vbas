@@ -5,12 +5,10 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisLocation;
@@ -24,9 +22,10 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.DefaultCategoryDataset;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.SeisUtils;
+import uk.ac.isc.seisdata.VBASLogger;
 
 /**
  * The panel to draw the view
@@ -71,7 +70,7 @@ public class HypoMagnitudeViewPanel extends JPanel {
     static Font tickMarkDomainLabelFont = new Font("Verdana", Font.BOLD, 12);
 
     public HypoMagnitudeViewPanel(ArrayList<Hypocentre> hypos) {
-        Global.logDebug("Here...");
+        VBASLogger.logDebug("Here...");
 
         this.hyposList.addAll(hypos);
 
@@ -93,7 +92,7 @@ public class HypoMagnitudeViewPanel extends JPanel {
      *
      * @param hypos
      */
-    public void UpdateData(ArrayList<Hypocentre> hypos) {
+    public void updateData(ArrayList<Hypocentre> hypos) {
         this.hyposList.clear();
         this.hyposList.addAll(hypos);
 

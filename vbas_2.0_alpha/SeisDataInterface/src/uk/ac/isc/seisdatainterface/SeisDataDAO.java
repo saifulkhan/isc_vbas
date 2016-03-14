@@ -1,4 +1,4 @@
-package uk.ac.isc.seisdata;
+ package uk.ac.isc.seisdatainterface;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -25,6 +25,16 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import uk.ac.isc.seisdata.AssessedCommand;
+import uk.ac.isc.seisdata.Command;
+import uk.ac.isc.seisdata.HistoricEvent;
+import uk.ac.isc.seisdata.Hypocentre;
+import uk.ac.isc.seisdata.LikeliTriplet;
+import uk.ac.isc.seisdata.Phase;
+import uk.ac.isc.seisdata.SeisEvent;
+import uk.ac.isc.seisdata.Station;
+import uk.ac.isc.seisdata.TaskBlock;
+import uk.ac.isc.seisdata.VBASLogger;
 
 /**
  * This is the database access object which provides functions to read and write
@@ -38,10 +48,11 @@ public class SeisDataDAO {
     protected static String url;
     protected static String user;
     protected static String password;
+    protected static String systemUserName;
 
     static {
         //String osName = System.getProperty("os.name");
-        Global.logDebug(System.getProperty("os.name"));
+        VBASLogger.logDebug(System.getProperty("os.name"));
         //if (osName.equals("Linux")) {
         Map<String, String> env = System.getenv();
         url = "jdbc:postgresql://"
@@ -50,13 +61,14 @@ public class SeisDataDAO {
                 + env.get("PGDATABASE");
         user = env.get("PGUSER");
         password = env.get("PGPASSWORD");
+        systemUserName = env.get("USER");
+
         /*} else {
          // Saiful: Windows 10 laptop
          url = "jdbc:postgresql://127.0.0.1:5432/isc";
          user = "saiful";
          password = "saiful";
          }*/
-
     }
 
     public SeisDataDAO() {
@@ -2581,15 +2593,22 @@ public class SeisDataDAO {
                     + " WHERE ea.evid = " + evid
                     + " AND ba.id = ea.block_allocation_id"
                     + " AND ba.analyst_id = a.id"
-                    + " AND a.username = '" + user + "' "
+                    + " AND a.username = '" + systemUserName + "' "
                     + " ORDER BY ba.start DESC"
                     + " LIMIT 1;";
 
-            Global.logDebug("query= " + query);
+            VBASLogger.logDebug("query= " + query);
             rs = st.executeQuery(query);
 
             while (rs.next()) {
                 block_allocation_id = rs.getInt("id");
+            }
+
+            if (block_allocation_id == 0) {
+                String message = "The block_allocation_id is 0, report to the system admin.";
+                JOptionPane.showMessageDialog(null, message, "Warning", JOptionPane.WARNING_MESSAGE);
+                VBASLogger.logDebug(message);
+                return false;
             }
 
             query = "INSERT INTO edit_commands ( "
@@ -2611,7 +2630,7 @@ public class SeisDataDAO {
                     + commandStr + "', '"
                     + functionStr + "');";
 
-            Global.logDebug("query= " + query);
+            VBASLogger.logDebug("query= " + query);
             st.executeUpdate(query);
 
             rs.close();
@@ -2620,13 +2639,13 @@ public class SeisDataDAO {
             ex.printStackTrace();
 
             String message = ex.toString() + "\n\n"
-                    + Global.debugAt()
+                    + VBASLogger.debugAt()
                     + "Query= " + ex.getSQLState()
                     + "\nFailed to update Command history table."
                     + "\nSee the error log file for more information. ";
 
             JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
-            Global.logSevere(message);
+            VBASLogger.logSevere(message);
 
             return false;
         } finally {
@@ -2673,7 +2692,7 @@ public class SeisDataDAO {
                     + " ORDER BY ec.adddate;";
 
             rs = st.executeQuery(query);
-            Global.logDebug("query= " + query + "\nrs= " + rs);
+            VBASLogger.logDebug("query= " + query + "\nrs= " + rs);
 
             while (rs.next()) {
                 String commandStr = rs.getString("command") + "";
@@ -2685,7 +2704,7 @@ public class SeisDataDAO {
                 String status = rs.getString("status") + "";
                 String type = rs.getString("type") + "";
 
-                Global.logDebug(id + " | " + analyst + " | " + commandStr + " | " + pass + " | " + date + " | " + status + " | " + type);
+                VBASLogger.logDebug(id + " | " + analyst + " | " + commandStr + " | " + pass + " | " + date + " | " + status + " | " + type);
                 Command command = new Command(evid, commandStr, functionsStr, id, analyst, pass, date, status, type);
                 commandList.add(command);
             }
@@ -2694,7 +2713,7 @@ public class SeisDataDAO {
 
         } catch (SQLException ex) {
             String message = ex.toString() + "\n\n"
-                    + Global.debugAt()
+                    + VBASLogger.debugAt()
                     + "\nFailed to load Command history list from database."
                     + "\nSee the error log file for more information. ";
 
@@ -2750,11 +2769,11 @@ public class SeisDataDAO {
                     + " WHERE ea.evid = " + evid
                     + " AND ba.id = ea.block_allocation_id"
                     + " AND ba.analyst_id = a.id"
-                    + " AND a.username = '" + user + "'"
+                    + " AND a.username = '" + systemUserName + "'"
                     + " ORDER BY ba.start DESC"
                     + " LIMIT 1;";
 
-            Global.logDebug("query= " + query);
+            VBASLogger.logDebug("query= " + query);
             rs = st.executeQuery(query);
 
             while (rs.next()) {
@@ -2764,7 +2783,7 @@ public class SeisDataDAO {
             //query = "select NEXTVAL('isc.id');";
             query = "select edit_commands_id(" + evid + ") AS nextval";
 
-            Global.logDebug("query= " + query);
+            VBASLogger.logDebug("query= " + query);
             rs = st.executeQuery(query);
 
             while (rs.next()) {
@@ -2792,14 +2811,14 @@ public class SeisDataDAO {
                     + report + "', '"
                     + systemCommandStr + "');";
 
-            Global.logDebug("query= " + query);
+            VBASLogger.logDebug("query= " + query);
             st.executeUpdate(query);
 
             for (int commandId : commandIds) {
                 query = "INSERT INTO command_group VALUES ( "
                         + newAssessId + ", "
                         + commandId + ")";
-                Global.logDebug("query= " + query);
+                VBASLogger.logDebug("query= " + query);
                 st.executeUpdate(query);
             }
 
@@ -2807,7 +2826,7 @@ public class SeisDataDAO {
 
         } catch (SQLException ex) {
             String message = ex.toString() + "\n\n"
-                    + Global.debugAt()
+                    + VBASLogger.debugAt()
                     + "Query= " + ex.getSQLState()
                     + "\nFailed to update Command history table."
                     + "\nSee the error log file for more information. ";
@@ -2862,11 +2881,11 @@ public class SeisDataDAO {
                     + " ORDER BY ec.adddate;";
 
             rs = st.executeQuery(query);
-            Global.logDebug("query= " + query + "\nrs= " + rs);
+            VBASLogger.logDebug("query= " + query + "\nrs= " + rs);
 
             Hashtable<Integer, AssessedCommand> hashtable = new Hashtable<Integer, AssessedCommand>();;
 
-            //Global.logDebug("commandId" + " | " + "analyst" + " | " + "report" + " | " + "pass" + " | " + "assessId");
+            //VBASLogger.logDebug("commandId" + " | " + "analyst" + " | " + "report" + " | " + "pass" + " | " + "assessId");
             while (rs.next()) {
                 String analyst = rs.getString("name");
                 String pass = rs.getString("pass");
@@ -2874,7 +2893,7 @@ public class SeisDataDAO {
                 int assessId = rs.getInt("assessid");
                 String commandId = rs.getString("cmdids");
 
-                //Global.logDebug(commandId + " | " + analyst + " | " + report + " | " + pass + " | " + assessId);
+                //VBASLogger.logDebug(commandId + " | " + analyst + " | " + report + " | " + pass + " | " + assessId);
                 AssessedCommand ac = hashtable.get(assessId);
                 if (ac == null) {
                     ac = new AssessedCommand(assessId, evid, commandId, analyst, report);
@@ -2888,7 +2907,7 @@ public class SeisDataDAO {
             Iterator<Integer> itr = keys.iterator();
             while (itr.hasNext()) {
                 Integer i = itr.next();
-                //Global.logDebug("Key: " + str + " & Value: " + hashtable.get(str));
+                //VBASLogger.logDebug("Key: " + str + " & Value: " + hashtable.get(str));
                 assessedCommandList.add(hashtable.get(i));
             }
 
@@ -2896,7 +2915,7 @@ public class SeisDataDAO {
 
         } catch (SQLException ex) {
             String message = ex.toString() + "\n\n"
-                    + Global.debugAt()
+                    + VBASLogger.debugAt()
                     + "\nFailed to load Command history list from database."
                     + "\nSee the error log file for more information. ";
 

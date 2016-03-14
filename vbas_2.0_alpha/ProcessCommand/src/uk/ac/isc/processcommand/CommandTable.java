@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -30,13 +33,15 @@ import org.openide.util.Exceptions;
 import uk.ac.isc.seisdata.AssessedCommand;
 import uk.ac.isc.seisdata.Command;
 import uk.ac.isc.seisdata.CommandList;
-import uk.ac.isc.seisdata.FormulateCommand;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdatainterface.FormulateCommand;
+import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
-import uk.ac.isc.seisdata.SeisDataDAO;
-import uk.ac.isc.seisdata.SeisDataDAOAssess;
+import uk.ac.isc.seisdatainterface.SeisDataDAO;
+import uk.ac.isc.seisdatainterface.SeisDataDAOAssess;
 import uk.ac.isc.seisdata.SeisEvent;
+import uk.ac.isc.seisdata.VBASLogger;
+import uk.ac.isc.seisdatainterface.Locator;
 
 public class CommandTable extends JPanel implements SeisDataChangeListener {
 
@@ -50,7 +55,7 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
     private final Command commandEvent = Global.getCommandEvent();
     private final AssessedCommand assessedCommandEvent = Global.getAssessedComamndEvent(); // send event to AssessedCommand table
 
-    private final Assess assess = new Assess();
+    private final Report report = new Report();
 
     public CommandTable() {
 
@@ -77,7 +82,7 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
         MyRowSelectionListener rowListener = new MyRowSelectionListener();
         table.getSelectionModel().addListSelectionListener(rowListener);
 
-        Global.logDebug(" #Commands:" + commandList.getCommandList().size());
+        VBASLogger.logDebug(" #Commands:" + commandList.getCommandList().size());
         model = new CommandTableModel(commandList.getCommandList());
         table.setModel(model);
 
@@ -99,7 +104,7 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
     public void SeisDataChanged(SeisDataChangeEvent event) {
 
         String eventName = event.getData().getClass().getName();
-        Global.logDebug("Event received from " + eventName);
+        VBASLogger.logDebug("Event received from " + eventName);
         switch (eventName) {
             case "uk.ac.isc.seisdata.SeisEvent":
                 break;
@@ -110,7 +115,7 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
                 break;
         }
 
-        Global.logDebug(" #Commands:" + commandList.getCommandList().size());
+        VBASLogger.logDebug(" #Commands:" + commandList.getCommandList().size());
 
         model = new CommandTableModel(commandList.getCommandList());
         table.setModel(model);
@@ -169,14 +174,14 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
             if (!event.getValueIsAdjusting()) {
 
                 /*
-                 * Check if multiple 'seiseventrelocate' or 'setprime' commands are selected for Assess.
+                 * Check if multiple 'seiseventrelocate' or 'setprime' commands are selected for Report.
                  */
                 /*
                  //HashSet set = new HashSet();
                  Boolean similar = false;
                  for (int r : table.getSelectedRows()) {
                  String commandType = (String) table.getValueAt(r, 4);
-                 Global.logDebug("Row=" + r + "; Selected commndType=" + commandType);
+                 VBASLogger.logDebug("Row=" + r + "; Selected commndType=" + commandType);
                  if (commandType.equals("seiseventrelocate") || commandType.equals("setprime")) {
                  //if (set.add(commandType) == false) {
                  if (similar == false) {
@@ -242,6 +247,7 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
             int[] selectedRows = table.getSelectedRows();
             if (selectedRows.length <= 0) {
                 JOptionPane.showMessageDialog(null, "Select a command.", "Warning", JOptionPane.WARNING_MESSAGE);
+                button_assess.setEnabled(true);
                 return;
             }
 
@@ -255,61 +261,76 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
                 String systemCommandStr = commandList.getCommandList().get(row).getSystemCommandStr();
 
                 // add/append the command to the formulated asses command
-                Global.logDebug("Append the cmd: " + systemCommandStr);
+                VBASLogger.logDebug("Append the cmd: " + systemCommandStr);
                 formulateCommand.addSystemCommand(systemCommandStr);
 
             }
 
+            // the 
+            Date date = Global.getSelectedSeisEvent().getPrimeHypo().getOrigTime();
+            Calendar calendar = new GregorianCalendar();
+            calendar.setTime(date);
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH) + 1;
+
             Path eventLogDir = Paths.get(SeisDataDAOAssess.getAssessDir().toString()
+                    + File.separator + year
+                    + File.separator + month
                     + File.separator + Global.getSelectedSeisEvent().getEvid());
 
             //formulateCommand.addAttribute("commands", commandIds.toString(), null);
             //formulateCommand.addAttribute("report", htmlReport, null);
             /*
-             * Now writw the assessed details 
+             * Now write the assessed details 
              */
             int newAssessId = 0;
             if (formulateCommand.isValidCommand()) {
 
-                Global.logDebug("commandProvenance= " + formulateCommand.getCmdProvenance().toString());
-                Global.logDebug("systemCommand= " + formulateCommand.getSystemCommand().toString());
+                VBASLogger.logDebug("commandProvenance= " + formulateCommand.getCmdProvenance().toString());
+                VBASLogger.logDebug("systemCommand= " + formulateCommand.getSystemCommand().toString());
 
-                newAssessId = SeisDataDAO.updateAssessedCommandTable(Global.getSelectedSeisEvent().getEvid(), commandType, commandIds, eventLogDir,
-                        ""); // TODO write the nsystemCommand
+                newAssessId = SeisDataDAO.updateAssessedCommandTable(Global.getSelectedSeisEvent().getEvid(), commandType, commandIds, eventLogDir, ""); // TODO write the nsystemCommand
 
                 if (newAssessId > 0) {
-                    Global.logDebug(" Fired: " + commandType);
+                    VBASLogger.logDebug(" Fired: " + commandType);
                     assessedCommandEvent.fireSeisDataChanged();
                 } else {
                     JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
+                    button_assess.setEnabled(true);
                     return;
                 }
             } else {
+                button_assess.setEnabled(true);
                 return;
             }
 
             /*
              * ***************************************************************************
-             * Assess: run relocator, generate html etc.. If susccess write the
-             * assess info in the AssessedCommand table
+             * Report: run relocator, generate html etc.. If susccess write the
+             * report info in the AssessedCommand table
              * ****************************************************************************
              */
             Path assessDir = Paths.get(eventLogDir + File.separator + newAssessId);
-            File htmlReport = new File(assessDir + File.separator + newAssessId + ".html");
 
-            assess.runLocator(assessDir, formulateCommand.getSQLFunctionArray(), formulateCommand.getLocatorArgStr());
-            assess.generateReport(htmlReport);
+            Boolean ret = Locator.run(assessDir, formulateCommand.getSQLFunctionArray(), formulateCommand.getLocatorArgStr());
 
-            try {
-                Desktop.getDesktop().browse(htmlReport.toURI());
-            } catch (IOException ex) {
-                Exceptions.printStackTrace(ex);
+            if (ret == true) {
+                File htmlReport = new File(assessDir + File.separator + newAssessId + ".html");
+                report.generateReport(assessDir, htmlReport);
+
+                try {
+                    Desktop.getDesktop().browse(htmlReport.toURI());
+                } catch (IOException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+                JOptionPane.showMessageDialog(null, "Assess Complete. Please see the report in your browser.",
+                        "Complete", JOptionPane.NO_OPTION);
+
+            } else {
+                JOptionPane.showMessageDialog(null, "Assess (locator command) failed.", "Warning", JOptionPane.WARNING_MESSAGE);
             }
 
-            JOptionPane.showMessageDialog(null, "Assess Complete. Please see the report in your browser.", 
-                    "Complete", JOptionPane.NO_OPTION);
             button_assess.setEnabled(true);
-
         }
     }
 }

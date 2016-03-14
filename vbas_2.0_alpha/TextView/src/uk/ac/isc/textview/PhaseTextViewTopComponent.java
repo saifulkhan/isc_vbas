@@ -26,11 +26,12 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.PhasesList;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
 import uk.ac.isc.seisdata.SeisEvent;
+import uk.ac.isc.seisdata.VBASLogger;
 
 /**
  * Top component which displays phase table.
@@ -72,7 +73,12 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         initComponents();
         setName(Bundle.CTL_PhaseTextViewTopComponent());
         setToolTipText(Bundle.HINT_PhaseTextViewTopComponent());
-        Global.logDebug("Here...");
+        putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        setName("Phase Selection");
+
+        VBASLogger.logDebug("Here...");
 
         selectedSeisEvent.addChangeListener(this);
 
@@ -113,10 +119,10 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
     // Receive SeisEvent changes and redraw the table.
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
-        Global.logDebug("Event received from " + event.getData().getClass().getName());
+        VBASLogger.logDebug("Event received from " + event.getData().getClass().getName());
         selectedSeisEvent = Global.getSelectedSeisEvent();
 
-        Global.logDebug("#Phases= " + phasesList.getPhases().size());
+        VBASLogger.logDebug("#Phases= " + phasesList.getPhases().size());
         model = new PhaseTextViewTableModel(phasesList.getPhases());
         table.setModel(model);
 
@@ -240,7 +246,7 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
     private class MyMouseAdapter extends MouseAdapter {
 
         public void mouseClicked(MouseEvent e) {
-            Global.logDebug("");
+            VBASLogger.logDebug("");
 
             Point p = e.getPoint();
             final int row = table.rowAtPoint(p);
@@ -257,7 +263,7 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
             if (selectedRows.length > 0 && selectedCols.length > 0 && SwingUtilities.isRightMouseButton(e)) {
                 Rectangle r = table.getCellRect(row, col, false);
                 ptPopupManager.getPopupMenu().show(table, r.x, r.y + r.height);
-                Global.logDebug("selectedRows: " + Arrays.toString(selectedRows)
+                VBASLogger.logDebug("selectedRows: " + Arrays.toString(selectedRows)
                         + ", selectedCols: " + Arrays.toString(selectedCols));
             } else {
                 e.consume();

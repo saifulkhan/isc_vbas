@@ -41,7 +41,7 @@ public class Hypocentre extends AbstractSeisData implements Cloneable {
         magMap = new LinkedHashMap<String, Double>();
     }
 
-    Hypocentre(String agency, Date dd, double lat, double lon, int depth) {
+    public Hypocentre(String agency, Date dd, double lat, double lon, int depth) {
 
         this.origTime = dd;
         this.agency = agency;

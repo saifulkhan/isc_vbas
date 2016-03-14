@@ -12,7 +12,7 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdata.VBASLogger;
 
 /**
  * Top component which displays something.
@@ -48,7 +48,12 @@ public final class ProcessCommandTopComponent extends TopComponent {
         initComponents();
         setName(Bundle.CTL_AllCommandsTopComponent());
         setToolTipText(Bundle.HINT_AllCommandsTopComponent());
-        Global.logDebug("Loaded...");
+        putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        setName("Command Selection | Assessed Reports");
+
+        VBASLogger.logDebug("Loaded...");
 
         commandTable = new CommandTable();
         assessedCommandTable = new AssessedCommandTable();
@@ -96,7 +101,7 @@ public final class ProcessCommandTopComponent extends TopComponent {
     void writeProperties(java.util.Properties p) {
         // better to version settings since initial version as advocated at
         // http://wiki.apidesign.org/wiki/PropertyFiles
-        p.setProperty("version", "1.0");
+        p.setProperty("version", "2.0");
         // TODO store your settings
     }
 

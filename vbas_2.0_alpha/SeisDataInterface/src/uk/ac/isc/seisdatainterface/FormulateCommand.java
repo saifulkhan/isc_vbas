@@ -1,12 +1,13 @@
-package uk.ac.isc.seisdata;
+package uk.ac.isc.seisdatainterface;
 
+import uk.ac.isc.seisdata.VBASLogger;
 import com.orsoncharts.util.json.JSONArray;
 import com.orsoncharts.util.json.JSONObject;
 import java.util.Arrays;
 import com.orsoncharts.util.json.parser.JSONParser;
 import java.util.ArrayList;
 import org.openide.util.Exceptions;
-
+ 
 /**
  * **********************************************************************************************************
  * TODO: Move out of SeisData module.
@@ -34,11 +35,11 @@ public class FormulateCommand {
     public FormulateCommand(String commandType, String dataType, int id) {
 
         if (!Arrays.asList(COMMAND_TYPES).contains(commandType)) {
-            Global.logSevere("commandType=" + commandType + ", Supported:" + Arrays.toString(COMMAND_TYPES));
+            VBASLogger.logSevere("commandType=" + commandType + ", Supported:" + Arrays.toString(COMMAND_TYPES));
         }
 
         if (!Arrays.asList(DATA_TYPES).contains(dataType)) {
-            Global.logSevere("dataType=" + dataType + ", Supported:" + Arrays.toString(DATA_TYPES));
+            VBASLogger.logSevere("dataType=" + dataType + ", Supported:" + Arrays.toString(DATA_TYPES));
         }
 
         this.commandType = commandType;
@@ -93,7 +94,7 @@ public class FormulateCommand {
         try {
             obj = parser.parse(cmd);
         } catch (com.orsoncharts.util.json.parser.ParseException ex) {
-            Global.logSevere("cmd=" + cmd + " is not a valid json format.");
+            VBASLogger.logSevere("cmd=" + cmd + " is not a valid json format.");
         }
 
         if (isArray(cmd)) { // array of System Command
@@ -116,8 +117,8 @@ public class FormulateCommand {
             addLocatorArg(jObj.get("locatorArgStr").toString());
         }
 
-        Global.logDebug("sqlFunctionArray= " + sqlFunctionArray.toString());
-        Global.logDebug("locatorArgStr= " + locatorArgStr);
+        VBASLogger.logDebug("sqlFunctionArray= " + sqlFunctionArray.toString());
+        VBASLogger.logDebug("locatorArgStr= " + locatorArgStr);
     }
 
     public ArrayList<String> getSQLFunctionArray() {
@@ -144,7 +145,7 @@ public class FormulateCommand {
 
     public void addAttribute(String attributeName, Object newValue, Object oldValue) {
         if (!Arrays.asList(ATTRIBUTES).contains(attributeName)) {
-            Global.logSevere("attributeName=" + attributeName + ", Supported:" + Arrays.toString(ATTRIBUTES));
+            VBASLogger.logSevere("attributeName=" + attributeName + ", Supported:" + Arrays.toString(ATTRIBUTES));
         }
 
         JSONObject attrObj = new JSONObject();
@@ -177,14 +178,14 @@ public class FormulateCommand {
     // Reformat the input command (Command Provenance format) for user.
     public static String getRedableCommandStr(String cmd) {
 
-        Global.logDebug("json: " + cmd);
+        VBASLogger.logDebug("json: " + cmd);
 
         JSONParser parser = new JSONParser();
         Object obj = null;
         try {
             obj = parser.parse(cmd);
         } catch (com.orsoncharts.util.json.parser.ParseException ex) {
-            Global.logSevere("cmd=" + cmd + " is not a valid json format.");
+            VBASLogger.logSevere("cmd=" + cmd + " is not a valid json format.");
         }
 
         String str = "";
@@ -226,7 +227,7 @@ public class FormulateCommand {
 
         }
 
-        Global.logDebug("readable format: " + str);
+        VBASLogger.logDebug("readable format: " + str);
         return str;
     }
 
@@ -242,7 +243,7 @@ public class FormulateCommand {
             }
         } catch (com.orsoncharts.util.json.parser.ParseException ex) {
             Exceptions.printStackTrace(ex);
-            Global.logSevere("str=" + str + " is not a valid json format.");
+            VBASLogger.logSevere("str=" + str + " is not a valid json format.");
         }
         return false;
     }
@@ -256,7 +257,7 @@ public class FormulateCommand {
             }
         } catch (com.orsoncharts.util.json.parser.ParseException ex) {
             Exceptions.printStackTrace(ex);
-            Global.logSevere("str=" + str + " is not a valid json format.");
+            VBASLogger.logSevere("str=" + str + " is not a valid json format.");
         }
         return false;
     }

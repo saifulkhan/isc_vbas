@@ -14,9 +14,10 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JViewport;
 import uk.ac.isc.seisdata.Command;
-import uk.ac.isc.seisdata.Global;
-import uk.ac.isc.seisdata.SeisDataDAO;
-import uk.ac.isc.seisdata.FormulateCommand;
+import uk.ac.isc.seisdatainterface.Global;
+import uk.ac.isc.seisdata.VBASLogger;
+import uk.ac.isc.seisdatainterface.FormulateCommand;
+import uk.ac.isc.seisdatainterface.SeisDataDAO;
 
 
 /*
@@ -148,7 +149,7 @@ public class SeisEventSearchPanel extends JPanel {
 
     private void onButtonBanishActionPerformed(ActionEvent ae) {
 
-        System.out.print(Global.debugAt());
+        System.out.print(VBASLogger.debugAt());
         int row = table.getSelectedRow();
         if (row < 0) {
             JOptionPane.showMessageDialog(null, "Select an event to banish.",
@@ -165,14 +166,14 @@ public class SeisEventSearchPanel extends JPanel {
 
         if (formulateCommand.isValidCommand()) {
 
-            Global.logDebug("\ncommandLog= " + formulateCommand.getCmdProvenance().toString()
+            VBASLogger.logDebug("\ncommandLog= " + formulateCommand.getCmdProvenance().toString()
                     + "\nsystemCommand= " + formulateCommand.getSystemCommand());
 
             boolean ret = SeisDataDAO.updateCommandTable(Global.getSelectedSeisEvent().getEvid(), commandType,
                     formulateCommand.getCmdProvenance().toString(), formulateCommand.getSystemCommand().toString());
 
             if (ret) {
-                Global.logDebug(" Fired: " + commandType);
+                VBASLogger.logDebug(" Fired: " + commandType);
                 commandEvent.fireSeisDataChanged();
             } else {
                 JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);

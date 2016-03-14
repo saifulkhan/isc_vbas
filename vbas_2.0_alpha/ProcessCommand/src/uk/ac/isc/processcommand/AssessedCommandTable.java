@@ -28,10 +28,11 @@ import javax.swing.table.TableCellRenderer;
 import org.openide.util.Exceptions;
 import uk.ac.isc.seisdata.AssessedCommand;
 import uk.ac.isc.seisdata.AssessedCommandList;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdatainterface.Global;
+import uk.ac.isc.seisdata.VBASLogger;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
-import uk.ac.isc.seisdata.SeisDataDAO;
+import uk.ac.isc.seisdatainterface.SeisDataDAO;
 import uk.ac.isc.seisdata.SeisEvent;
 
 
@@ -59,7 +60,7 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
         table = new JTable();
         table.addMouseListener(new JTableButtonMouseListener(table));
 
-        Global.logDebug(" #AssessedCommands:" + assessedCommandList.getAssessedCommandList().size());
+        VBASLogger.logDebug(" #AssessedCommands:" + assessedCommandList.getAssessedCommandList().size());
         model = new AssessedCommandTableModel(assessedCommandList.getAssessedCommandList());
         table.setModel(model);
 
@@ -80,7 +81,7 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
         String eventName = event.getData().getClass().getName();
-        Global.logDebug("Event received from " + eventName);
+        VBASLogger.logDebug("Event received from " + eventName);
         switch (eventName) {
             case "uk.ac.isc.seisdata.SeisEvent":
                 break;
@@ -91,7 +92,7 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
                 break;
         }
 
-        Global.logDebug(" #AssessedCommands:" + assessedCommandList.getAssessedCommandList().size());
+        VBASLogger.logDebug(" #AssessedCommands:" + assessedCommandList.getAssessedCommandList().size());
 
         model = new AssessedCommandTableModel(assessedCommandList.getAssessedCommandList());
         table.setModel(model);
@@ -105,7 +106,7 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
 
     private void setupTableVisualAttributes() {
 
-        Global.logDebug("Here...");
+        VBASLogger.logDebug("Here...");
 
         TableCellRenderer buttonRenderer = new JTableButtonRenderer();
         table.getColumn("Report").setCellRenderer(buttonRenderer);
@@ -195,7 +196,7 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
                     } catch (IOException ex) {
                         Exceptions.printStackTrace(ex);
                     }
-                    Global.logDebug("Clicked.." + "row= " + row + ", column= " + column + ", report: " + htmlFile);
+                    VBASLogger.logDebug("Clicked.." + "row= " + row + ", column= " + column + ", report: " + htmlFile);
                 }
             }
         }

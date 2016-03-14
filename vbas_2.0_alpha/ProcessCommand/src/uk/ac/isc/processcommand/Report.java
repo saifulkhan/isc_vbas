@@ -6,40 +6,36 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.TreeMap;
+ import java.io.File;
+ import java.nio.file.Path;
+ import java.util.TreeMap;
 import javax.imageio.ImageIO;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.Timer;
 import uk.ac.isc.hypodepthview.HypoDepthViewPanel;
 import uk.ac.isc.hypooverview.HypoOverviewPanel2;
-import uk.ac.isc.seisdata.Global;
+import uk.ac.isc.seisdata.VBASLogger;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.PhasesList;
-import uk.ac.isc.seisdata.SeisDataDAOAssess;
-import uk.ac.isc.seisdata.SeisEvent;
+ import uk.ac.isc.seisdata.SeisEvent;
 import org.openstreetmap.gui.jmapviewer.interfaces.TileLoaderListener; // Note: Required to avoid compilation error.
 import uk.ac.isc.agencypiechartview.AgencyPieChartView;
 import uk.ac.isc.agencypiechartview.PieChartData;
 import uk.ac.isc.hypomagnitudeview.HypoMagnitudeViewPanel;
 import uk.ac.isc.phaseview.PhaseDetailViewPanel;
 import uk.ac.isc.phaseview.PhaseTravelViewPanel;
+import uk.ac.isc.seisdatainterface.Global;
+import uk.ac.isc.seisdatainterface.SeisDataDAOAssess;
 import uk.ac.isc.stationazimuthview.StationAzimuthView;
 import uk.ac.isc.stationmagnitudeview.StationMagnitudeView;
 import uk.ac.isc.textview.HypocentreTableModel;
 import uk.ac.isc.textview.PhaseTextViewTableModel;
 
-public class Assess {
+public class Report {
 
     private static final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
     // New (relocator generated) Hypocentre & Phase data for the selected SeisEvent.
@@ -48,11 +44,10 @@ public class Assess {
     private final TreeMap<String, String> stations = new TreeMap<String, String>();
 
     private Path assessDir;
-    JProgressBar pbar;
     private final JDialog f;
-
-    Assess() {
-
+    JProgressBar pbar;
+        
+    public Report() {
         f = new JDialog();
         f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         f.setModal(true);
@@ -63,76 +58,17 @@ public class Assess {
         pbar.setMaximum(100);
     }
 
-    public Boolean runLocator(Path assessDir, ArrayList<String> functionArray, String locatorArgStr) {
-
+    public void generateReport(Path assessDir, File htmlReport) {
         this.assessDir = assessDir;
-
-        String iscLocOut = assessDir + File.separator + "iscloc.out";
-
-        Global.logDebug("nassessDir= " + assessDir);
-        Global.logDebug("functionArray= " + functionArray.toString());
-        Global.logDebug("locatorCommandStr= " + locatorArgStr);
-        Global.logDebug("iscLocOut= " + iscLocOut);
-
-        SeisDataDAOAssess.processAssessData(Global.getSelectedSeisEvent().getEvid(), functionArray);
-
-        if (!new File(assessDir.toString()).exists()) {
-            boolean success = (new File(assessDir.toString())).mkdirs();
-            if (!success) {
-                String message = "Error creating the directory " + assessDir;
-                Global.logSevere(message);
-                JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-        }
-
-        String runLocatorStr = "ssh beast "
-                + "export PGUSER=" + SeisDataDAOAssess.getAssessUser() + "; "
-                + "export PGPASSWORD=" + SeisDataDAOAssess.getAssessPassword() + "; "
-                + "echo " + "\"" + Global.getSelectedSeisEvent().getEvid() + " " + locatorArgStr + "\"" + " | iscloc_parallel_db - > "
-                + iscLocOut;
-        Global.logDebug(runLocatorStr);
-
-        String output = null;
-        try {
-            Process p = Runtime.getRuntime().exec(runLocatorStr);
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-
-            Global.logDebug("The standard output of the command:\n");
-            while ((output = stdInput.readLine()) != null) {
-                Global.logDebug(output);
-            }
-
-            // TODO: find out if locator failed, James has to do it.
-            /*Global.logDebug("The standard error of the locator command:\n");
-             while ((output = stdError.readLine()) != null) {
-             String message = "The standard error of the locator command: " + output;
-             Global.logSevere(message);
-             JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
-             return false;
-             }*/
-        } catch (IOException e2) {
-            String message = "The standard error of the locator command: ";
-            e2.printStackTrace();
-            Global.logSevere(message);
-            JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-
-        return true;
-
-    }
-
-    public void generateReport(File htmlReport) {
-        Global.logDebug("htmlReport:" + htmlReport);
-
+        VBASLogger.logDebug("assessDir: " + assessDir + ", htmlReport:" + htmlReport);
+        
         /*
          * Load assessed data.
          */
-        loadSelectedSeisEventData();
+        loadAssessedData();
 
-        Global.logDebug("Assessed Schema: #Hypocentres=" + hypocentresList.getHypocentres().size()
+        VBASLogger.logDebug("Assessed Data: " 
+                + "#Hypocentres=" + hypocentresList.getHypocentres().size()
                 + "#Phases=" + phasesList.getPhases().size());
 
         /*
@@ -146,7 +82,7 @@ public class Assess {
          * Generate the PNG files
          */
         for (final String view : HTMLSchema.getViews()) {
-            Global.logDebug("Generating: " + view + ".png");
+            VBASLogger.logDebug("Generating: " + view + ".png");
 
             switch (view) {
                 case "HypocentreOverview":
@@ -158,7 +94,7 @@ public class Assess {
 
                     PhaseTravelViewPanel phaseTVPanel = new PhaseTravelViewPanel(phasesList, hypocentresList);
                     PhaseDetailViewPanel phaseDVPanel = new PhaseDetailViewPanel(phaseTVPanel);
- 
+
                     genetarePNG("PhaseDetailView", phaseDVPanel, phaseDVPanel.getWidth(), phaseDVPanel.getHeight());
                     genetarePNG("PhaseTravelView", phaseTVPanel, phaseTVPanel.getWidth(), phaseTVPanel.getHeight());
 
@@ -266,15 +202,15 @@ public class Assess {
 
             ImageIO.write(bi, "png", outputFile);
         } catch (Exception e) {
-            Global.logSevere("Error creating a png file: " + outputFile.toString());
+            VBASLogger.logSevere("Error creating a png file: " + outputFile.toString());
             e.printStackTrace();
         }
 
     }
 
-    private void loadSelectedSeisEventData() {
+    private void loadAssessedData() {
 
-        System.out.println(Global.debugAt() + "Load list of Hypocentre and Phase for SeisEvent: "
+        System.out.println(VBASLogger.debugAt() + "Load list of Hypocentre and Phase for SeisEvent: "
                 + selectedSeisEvent.getEvid());
 
         /*
@@ -311,7 +247,7 @@ public class Assess {
                                     .getReportStation()));
         }
 
-        Global.logDebug("SeisEvent=" + selectedSeisEvent.getEvid()
+        VBASLogger.logDebug("SeisEvent=" + selectedSeisEvent.getEvid()
                 + ", #Hypocentres:" + hypocentresList.getHypocentres().size()
                 + ", #Phases:" + phasesList.getPhases().size());
 
