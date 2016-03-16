@@ -3,6 +3,7 @@ package uk.ac.isc.textview;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -64,6 +65,7 @@ public class HypocentreEditDialog extends JDialog {
 
         setTitle("Edit Hypocentre");
         setModal(true);
+        setResizable(false);
         layoutComponents();
 
     }
@@ -167,17 +169,19 @@ public class HypocentreEditDialog extends JDialog {
     public void showHypoEditDialog() {
 
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        DecimalFormat df2 = new DecimalFormat(".##");
 
         label_evid.setText(selectedHypocentre.getEvid().toString());
         label_hypid.setText(selectedHypocentre.getHypid().toString());
         label_time.setText(df.format(selectedHypocentre.getOrigTime()));
-        label_coord.setText(selectedHypocentre.getLat().toString() + "N " + selectedHypocentre.getLon().toString() + "W");
+        label_coord.setText(df2.format(selectedHypocentre.getLat()) + "N "
+                + df2.format(selectedHypocentre.getLon()) + "W");
         label_depth.setText(selectedHypocentre.getDepth().toString());
         label_prime.setText(selectedHypocentre.getIsPrime().toString());
 
         text_depth.setText(selectedHypocentre.getDepth().toString());
-        text_lat.setText(selectedHypocentre.getLat().toString());
-        text_lon.setText(selectedHypocentre.getLon().toString());
+        text_lat.setText(df2.format(selectedHypocentre.getLat()));
+        text_lon.setText(df2.format(selectedHypocentre.getLon()));
         text_time.setText(df.format(selectedHypocentre.getOrigTime()));
 
         textArea_reason.setText(null);

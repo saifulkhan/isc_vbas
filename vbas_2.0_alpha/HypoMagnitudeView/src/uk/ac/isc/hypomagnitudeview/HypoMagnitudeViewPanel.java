@@ -390,7 +390,8 @@ public class HypoMagnitudeViewPanel extends JPanel {
         cPlotMain.getRangeAxis().setRange(0, 10);
 
         cPlotDelta.getRangeAxis().setLabelFont(domainLabelFont);
-        String label2 = "Residual " + "\u229F  " + medMag.toString();
+        // TODO: Saiful we need to fix it while the data is read from the database itself.
+        String label2 = "Residual " + "\u229F  " + (medMag == null ? " " : medMag.toString());  
         cPlotDelta.getRangeAxis().setLabel(label2);
         cPlotDelta.getRangeAxis().setTickLabelFont(tickMarkRangeLabelFont);
         cPlotDelta.getRangeAxis().setRange(-2, 2);

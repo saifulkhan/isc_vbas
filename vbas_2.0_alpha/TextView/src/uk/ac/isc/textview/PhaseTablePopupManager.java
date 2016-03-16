@@ -1,6 +1,5 @@
 package uk.ac.isc.textview;
 
-
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,7 +8,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import uk.ac.isc.seisdata.VBASLogger;
- 
 
 class PhaseTablePopupManager implements ActionListener {
 
@@ -41,10 +39,18 @@ class PhaseTablePopupManager implements ActionListener {
         int[] selectedColumns = table.getSelectedColumns();
 
         phaseEditDataList.clear();
-        for (int i : selectedRows) {
-            int phaseId = (Integer) table.getValueAt(i, 14);
-            String type = (String) table.getValueAt(i, 6);
-            phaseEditDataList.add(new PhaseEditData(phaseId, type, false, false, null, false, "", null));
+
+        //Issue #8 : Single Phase Edit
+        if (selectedRows.length == 1) {
+            int phaseId = (Integer) table.getValueAt(selectedRows[0], 14);
+            String type = (String) table.getValueAt(selectedRows[0], 6);
+            phaseEditDataList.add(new PhaseEditData(phaseId, type, true, false, null, false, "", null));
+        } else {
+            for (int i : selectedRows) {
+                int phaseId = (Integer) table.getValueAt(i, 14);
+                String type = (String) table.getValueAt(i, 6);
+                phaseEditDataList.add(new PhaseEditData(phaseId, type, false, false, null, false, "", null));
+            }
         }
 
         if ("Phase Edit..".equals(e.getActionCommand())) {

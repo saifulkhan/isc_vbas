@@ -68,6 +68,8 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
 
     private static SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
     private static final PhasesList phasesList = Global.getPhasesList();
+    // selected phase in Phase Selection table
+    private static final PhasesList selectedPhaseList = Global.getSelectedPhaseList();
 
     public PhaseTextViewTopComponent() {
         initComponents();
@@ -208,30 +210,41 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
      *****************************************************************************************
      */
     private class MyRowSelectionListener implements ListSelectionListener {
-
+        
+        // Row selection event
         @Override
         public void valueChanged(ListSelectionEvent event) {
             // disable the double calls
             if (!event.getValueIsAdjusting()) {
+                int[] selectedRows = table.getSelectedRows();
+                if (selectedRows.length > 0) {
+                    VBASLogger.logDebug("selected rows: " + Arrays.toString(selectedRows) + ", Fired event...");
+                    
+                    //selectedPhaseList
+                    
+                    VBASLogger.logDebug("selected rows: "
+                    selectedPhaseList.fireSeisDataChanged();
+                }
+
                 /*
-                 System.out.println("ROW SELECTION EVENT. ");
+                System.out.println("ROW SELECTION EVENT. ");
 
-                 System.out.print(String.format("Lead: %d, %d. ",
-                 table.getSelectionModel().getLeadSelectionIndex(),
-                 table.getColumnModel().getSelectionModel().
-                 getLeadSelectionIndex()));
-                 System.out.print("Rows:");
-                 for (int c : table.getSelectedRows()) {
-                 System.out.println(String.format(" %d", c));
-                 }
-                 System.out.print(". Columns:");
-                 for (int c : table.getSelectedColumns()) {
-                 System.out.print(String.format(" %d", c));
-                 }
-                 System.out.print(".\n\n");
-                 */
+                System.out.print(String.format("Lead: %d, %d. ",
+                        table.getSelectionModel().getLeadSelectionIndex(),
+                        table.getColumnModel().getSelectionModel().
+                        getLeadSelectionIndex()));
+                System.out.print("Rows:");
+                
+                for (int c : table.getSelectedRows()) {
+                    System.out.println(String.format(" %d", c));
+                }
+                System.out.print(". Columns:");
+                for (int c : table.getSelectedColumns()) {
+                    System.out.print(String.format(" %d", c));
+                }
+                System.out.print(".\n\n");
 
-                // fire event for the 
+                // fire event for the */
             }
         }
     }
@@ -263,8 +276,7 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
             if (selectedRows.length > 0 && selectedCols.length > 0 && SwingUtilities.isRightMouseButton(e)) {
                 Rectangle r = table.getCellRect(row, col, false);
                 ptPopupManager.getPopupMenu().show(table, r.x, r.y + r.height);
-                VBASLogger.logDebug("selectedRows: " + Arrays.toString(selectedRows)
-                        + ", selectedCols: " + Arrays.toString(selectedCols));
+                VBASLogger.logDebug("selected rows: " + Arrays.toString(selectedRows));
             } else {
                 e.consume();
             }

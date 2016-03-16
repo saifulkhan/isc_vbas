@@ -1,7 +1,7 @@
 package uk.ac.isc.textview;
 
 import com.orsoncharts.util.json.JSONArray;
-import com.orsoncharts.util.json.JSONObject;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -55,10 +55,14 @@ public class PhaseEditDialog extends JDialog {
     public PhaseEditDialog() {
         setTitle("Phase Edit");
         setModal(true);
+        setResizable(false);
         initComponents();
         table_edit.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table_edit.setSelectionBackground(new Color(45, 137, 239));
+        table_edit.setSelectionForeground(Color.WHITE);
     }
 
+    
     public void showPhaseEditDialog(ArrayList<PhaseEditData> list) {
 
         textField_phaseType.setText("");

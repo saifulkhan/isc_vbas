@@ -45,15 +45,15 @@ public final class SeisDataDAOAssess {
         assessPassword = env.get("ASSESS_PW");
         pgUser = env.get("PGUSER");
         assessDir = Paths.get(env.get("ASSESSDIR")); 
+        VBASLogger.logDebug("url=" + url + ", user=" + assessUser 
+                + ", password=" + assessPassword + ", assessDir=" + assessDir );
     }
 
     private SeisDataDAOAssess() {
         //
     }
 
-    public static Path getAssessDir() {
-        VBASLogger.logDebug("assessDir=" + assessDir + ", url=" + url
-                + ", user=" + assessUser + ", password=" + assessPassword);
+    public static Path getAssessDir() {        
         return assessDir;
     }
 

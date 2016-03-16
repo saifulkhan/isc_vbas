@@ -69,6 +69,9 @@ public class SeisDataDAO {
          user = "saiful";
          password = "saiful";
          }*/
+        
+        VBASLogger.logDebug("url=" + url + ", user=" + user 
+                + ", password=" + password + ", systemUserName=" + systemUserName);
     }
 
     public SeisDataDAO() {

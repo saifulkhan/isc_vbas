@@ -51,14 +51,14 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
     private PhaseDetailViewPanel phaseDVPanel = null;
 
     private boolean showTTDFlag = true;
-
     // Other
     private Hypocentre primeHypocentre;
-
     // Data
     private static final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
     private final HypocentresList hypocentresList = Global.getHypocentresList();
     private static final PhasesList phasesList = Global.getPhasesList();
+    // selected phase in Phase Selection table
+    private static final PhasesList selectedPhaseList = Global.getSelectedPhaseList();
 
     // Pane and panels for views
     public PhaseViewTopComponent() {
@@ -73,7 +73,8 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
         VBASLogger.logDebug("Loaded...");
 
         selectedSeisEvent.addChangeListener(this);
-
+        selectedPhaseList.addChangeListener(this);
+        
         /* 
          * Create 2 phase views. 
          */
@@ -95,7 +96,7 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
     @Override
     public void SeisDataChanged(SeisDataChangeEvent event) {
         String eventName = event.getData().getClass().getName();
-        VBASLogger.logDebug("Event received from: " + eventName);
+        //VBASLogger.logDebug("Event received from: " + eventName);
         switch (eventName) {
             case "uk.ac.isc.seisdata.SeisEvent":
                 //SeisEvent seisEvent = (SeisEvent) event.getData();
@@ -106,13 +107,13 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
                 phaseDVPanel.updateData();
                 break;
 
-            case "uk.ac.isc.seisdata.Phase":
+            case "uk.ac.isc.seisdata.PhasesList":
+                VBASLogger.logDebug("In case:" + eventName);
+
                 // TODO: do not redraw everything!
                 //Hypocentre hypocentre = (Hypocentre) event.getData();
                 //VBASLogger.logDebug("Hypocentre= " + selectedHypocentre.getHypid());
-                phaseViewControlPanel.reset();
-                phaseTVPanel.updateData();
-                phaseDVPanel.updateData();
+                
                 break;
         }
 

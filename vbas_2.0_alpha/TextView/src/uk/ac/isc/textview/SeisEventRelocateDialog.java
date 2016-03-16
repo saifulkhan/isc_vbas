@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
@@ -68,6 +70,7 @@ public class SeisEventRelocateDialog extends JDialog {
     public SeisEventRelocateDialog() {
         setTitle("SeisEvent Relocate");
         setModal(true);
+        setResizable(false);
         layoutComponents();
         groupRadioButton();
     }
@@ -113,10 +116,15 @@ public class SeisEventRelocateDialog extends JDialog {
     }
 
     public void showHypoTableRelocateDialog() {
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        DecimalFormat df2 = new DecimalFormat(".##");
+
         label_evid.setText(selectedHypocentre.getEvid().toString());
         label_hypid.setText(selectedHypocentre.getHypid().toString());
-        label_time.setText(selectedHypocentre.getOrigTime().toString());
-        label_coord.setText(selectedHypocentre.getLat().toString() + "N " + selectedHypocentre.getLon().toString() + "W");
+        label_time.setText(df.format(selectedHypocentre.getOrigTime()));
+        label_coord.setText(df2.format(selectedHypocentre.getLat()) + "N "
+                + df2.format(selectedHypocentre.getLon()) + "W");
         label_depth.setText(selectedHypocentre.getDepth().toString());
         label_prime.setText(selectedHypocentre.getIsPrime().toString());
 
@@ -389,7 +397,7 @@ public class SeisEventRelocateDialog extends JDialog {
                                         .addComponent(radio_default)
                                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(radio_median))
-                                .addComponent(checkbox_gridSearch, GroupLayout.PREFERRED_SIZE, 15, GroupLayout.PREFERRED_SIZE))
+                                .addComponent(checkbox_gridSearch, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
                         .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)

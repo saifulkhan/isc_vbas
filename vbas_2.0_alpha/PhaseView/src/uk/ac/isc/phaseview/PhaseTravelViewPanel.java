@@ -101,8 +101,7 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
     private final PhasesList detailedPList = new PhasesList();
     // selected phases in the Phase Selection table
     private final PhasesList selectedPhaseList = new PhasesList();
-    
-    
+
     //these two for showing the phases data
     private File ttimesScript;
     private DuplicateUnorderTimeSeries phaseSeries;
@@ -120,15 +119,15 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
             }
         }
 
-        // read the resourse file (perl script) inside jar.
+        // Read the perl script, a resourse file inside jar.
         if (getClass().getClassLoader().getResource("resources" + File.separator + "ttimes.pl") == null) {
-            VBASLogger.logDebug("Resource does not exist. resource: " + getClass().getClassLoader().getResource("resources" + File.separator + "ttimes.pl"));
+            VBASLogger.logDebug("Resource does not exist. resource: "
+                    + getClass().getClassLoader().getResource("resources" + File.separator + "ttimes.pl"));
         }
 
         InputStream inSream = getClass().getClassLoader().getResourceAsStream("resources" + File.separator + "ttimes.pl");
         if (inSream != null) {
-
-            // create a temp directory and copy the content of the perl script from resource folder.
+            // Create a temp directory in the current directory and copy the content of the perl script from resource folder.
             try {
                 Path scriptpath = Paths.get(System.getProperty("user.dir") + File.separator + "temp");
                 if (!new File(scriptpath.toString()).exists()) {
@@ -147,25 +146,25 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
 
                 Files.copy(inSream, ttimesScript.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 ttdData = LoadTTDData.loadTTDData(Global.getSelectedSeisEvent().getEvid(), ttimesScript);
-                
-                //VBASLogger.logDebug();
-                inSream.close();
 
+                inSream.close();
             } catch (IOException e) {
                 // TODO
             }
         } else {
-            VBASLogger.logDebug("Null 'inStream', resource: " + 
-                    getClass().getClassLoader().getResource("resources" + File.separator + "ttimes.pl").toString());
+            VBASLogger.logDebug("Null 'inStream', resource: "
+                    + getClass().getClassLoader().getResource("resources" + File.separator + "ttimes.pl").toString());
         }
 
-        
         setPreferredSize(new Dimension(500, 1000));
         phaseSeries = new DuplicateUnorderTimeSeries("");
 
         //put phases into the dataseries
         for (Phase p : pList.getPhases()) {
-            if ((p.getArrivalTime() != null) && ((p.getTimeResidual() != null && Math.abs(p.getTimeResidual()) > residualCutoffLevel) || (p.getTimeResidual() == null))) {
+            if ((p.getArrivalTime() != null) && ((p.getTimeResidual() != null
+                    && Math.abs(p.getTimeResidual()) > residualCutoffLevel)
+                    || (p.getTimeResidual() == null))) {
+
                 RegularTimePeriod rp = new Second(p.getArrivalTime());
                 phaseSeries.add(rp, p.getDistance());
                 if (detailedPList.getPhases().size() < 20) {
@@ -222,9 +221,8 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
     }
 
     /*public void setTTDData(DuplicateUnorderTimeSeriesCollection ttdData) {
-        this.ttdData = ttdData;
-    }*/
-
+     this.ttdData = ttdData;
+     }*/
     public double[] getRange() {
         double[] range = new double[4];
 
