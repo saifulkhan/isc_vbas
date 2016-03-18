@@ -111,7 +111,7 @@ public class Report {
 
                 case "HypocentreMagnitudeView":
                     HypoMagnitudeViewPanel hmag = new HypoMagnitudeViewPanel(hypocentresList.getHypocentres());
-                    genetarePNG(view, hmag, hmag.getHypocentreMagnitudeViewWidth(), hmag.getHypocentreMagnitudeViewHeight());
+                    genetarePNG(view, hmag, hmag.getViewWidth(), hmag.getViewHeight());
                     break;
 
                 case "StationAzimuthView":
@@ -121,7 +121,7 @@ public class Report {
 
                 case "StationMagnitudeView":
                     StationMagnitudeView smView = new StationMagnitudeView(hypocentresList);
-                    genetarePNG(view, smView, smView.getStationMagnitudeViewWidth(), smView.getStationMagnitudeViewHeight());
+                    genetarePNG(view, smView, smView.getViewWidth(), smView.getViewHeight());
                     break;
 
                 case "AgencyPieChartView":

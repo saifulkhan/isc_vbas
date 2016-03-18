@@ -2,12 +2,15 @@ package uk.ac.isc.stationmagnitudeview;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -19,6 +22,7 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.statistics.HistogramDataset;
+import org.jfree.text.TextUtilities;
 import org.openide.util.Exceptions;
 import org.openstreetmap.gui.jmapviewer.OsmMercator;
 import uk.ac.isc.seisdata.Hypocentre;
@@ -26,6 +30,7 @@ import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdatainterface.SeisDataDAO;
 import uk.ac.isc.seisdata.SeisUtils;
 import uk.ac.isc.seisdata.Station;
+import uk.ac.isc.seisdata.VBASLogger;
 
 /**
  * The station Magnitude view
@@ -36,9 +41,9 @@ public class StationMagnitudeView extends JPanel {
     //image size of the source
     private final int srcImgSize = 512;
     //the image size of the station map
-    private final int StaImSize = 400;
+    private final int mapSize = 400;
     //the height of station histogram
-    private final int StaHistHeight = 200;
+    private final int histHeight = 200;
     //tile size
     private final int imSize = 256;
 
@@ -69,8 +74,8 @@ public class StationMagnitudeView extends JPanel {
 
     //buffer images of the maps
     private final BufferedImage srcBufferedImage = new BufferedImage(srcImgSize, srcImgSize, BufferedImage.TYPE_INT_ARGB);
-    private final BufferedImage dstMbBufferedImage = new BufferedImage(StaImSize, StaImSize, BufferedImage.TYPE_INT_ARGB);
-    private final BufferedImage dstMsBufferedImage = new BufferedImage(StaImSize, StaImSize, BufferedImage.TYPE_INT_ARGB);
+    private final BufferedImage dstMbBufferedImage = new BufferedImage(mapSize, mapSize, BufferedImage.TYPE_INT_ARGB);
+    private final BufferedImage dstMsBufferedImage = new BufferedImage(mapSize, mapSize, BufferedImage.TYPE_INT_ARGB);
     // draw the two histograms
     private BufferedImage histMbBufferedImage = null;
     private BufferedImage histMsBufferedImage = null;
@@ -86,6 +91,8 @@ public class StationMagnitudeView extends JPanel {
     private JFreeChart freeChartMb = null;
     private JFreeChart freeChartMs = null;
     private HypocentresList hyposList;
+
+    static Font chartNameFont = new Font("Verdana", Font.BOLD, 12);
 
     public StationMagnitudeView(HypocentresList hyposList) {
 
@@ -335,17 +342,16 @@ public class StationMagnitudeView extends JPanel {
                         + i + File.separator
                         + j + ".png";
                 URL url1 = getClass().getClassLoader().getResource(fileName);
-
+                VBASLogger.logDebug(fileName);
                 try {
-                    //tmpImg = ImageIO.read(new File(fileName));
-                    tmpImg = ImageIO.read(url1);
-                    g2.drawImage(tmpImg, i * 256, j * 256, null);
+                    tmpImg = ImageIO.read(url1); //tmpImg = ImageIO.read(new File(fileName));
+                    g2.drawImage(tmpImg, i * 256, j * 256, Color.yellow, null);
                 } catch (IOException ex) {
                     Exceptions.printStackTrace(ex);
                 }
-
             }
         }
+
     }
 
     //get the color of each station based on the residual against the mean
@@ -385,25 +391,30 @@ public class StationMagnitudeView extends JPanel {
 
         Graphics2D g2 = dstMbBufferedImage.createGraphics();
 
-        for (int i = 0; i < StaImSize; i++) {
-            for (int j = 0; j < StaImSize; j++) {
+        /*
+         * draw the map (circle)
+         */
+        for (int i = 0; i < mapSize; i++) {
+            for (int j = 0; j < mapSize; j++) {
                 int rgb;
                 double azi;
                 double lat, lon;
                 double px, py;
 
-                double dist = Math.sqrt((double) ((i - StaImSize / 2) * (i - StaImSize / 2) + (j - StaImSize / 2) * (j - StaImSize / 2)));
-                if (dist > StaImSize / 2) {
-                    dstMbBufferedImage.setRGB(i, j, 0xFF888888);
+                double dist = Math.sqrt((double) ((i - mapSize / 2) * (i - mapSize / 2) + (j - mapSize / 2) * (j - mapSize / 2)));
+
+                if (dist > mapSize / 2) {
+                    //dstMbBufferedImage.setRGB(i, j, 0xFF888888);
+                    dstMbBufferedImage.setRGB(i, j, 0xF4E012);  // Issue #15 remove the gray area, color code(?)
                 } else {
-                    azi = rad2deg * Math.atan2(i - StaImSize / 2, StaImSize / 2 - j);
+                    azi = rad2deg * Math.atan2(i - mapSize / 2, mapSize / 2 - j);
                     if (azi < 0.0) {
                         azi = azi + 360.0;
                     }
 
                     //calculate the lat and lon
-                    lat = SeisUtils.LatFromAziDelta(ph.getLat(), ph.getLon(), azi, dist * mapDegree / (StaImSize / 2));
-                    lon = SeisUtils.LonFromAziDelta(ph.getLat(), ph.getLon(), azi, dist * mapDegree / (StaImSize / 2));
+                    lat = SeisUtils.LatFromAziDelta(ph.getLat(), ph.getLon(), azi, dist * mapDegree / (mapSize / 2));
+                    lon = SeisUtils.LonFromAziDelta(ph.getLat(), ph.getLon(), azi, dist * mapDegree / (mapSize / 2));
                     if (lon > 180.0) {
                         lon = lon - 360;
                     } else if (lon < -180.0) {
@@ -420,8 +431,10 @@ public class StationMagnitudeView extends JPanel {
             }
         }
 
-        //draw the station positions
-        //calculate the position and draw all the stations       
+        /*
+         * draw the station positions 
+         * calculate the position and draw all the stations       
+         */
         g2.setPaint(new Color(0, 154, 205));//orig:(0,240,240)     
         for (Station sta : mbList) {
             //distance on pixel
@@ -433,15 +446,22 @@ public class StationMagnitudeView extends JPanel {
                 double x = dstMbBufferedImage.getWidth() / 2 + d1 * Math.sin(azi);
                 if (sta.getMbRes() != null) {
                     g2.setPaint(getColor(sta.getMbRes()));
-
-                    //innerG2.drawRect((int)(x-stationIconSize/2), (int)(y-stationIconSize/2), stationIconSize, stationIconSize);
+                    //g2.drawRect((int)(x-stationIconSize/2), (int)(y-stationIconSize/2), stationIconSize, stationIconSize);
                     g2.fillOval((int) (x - stationIconSize / 2), (int) (y - stationIconSize / 2), stationIconSize, stationIconSize);
 
                 }
             }
         }
 
-        //draw the prime hypocentre location
+        // Issue #15 add gray border
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setPaint(Color.GRAY);
+        g2.setStroke(new BasicStroke(3));
+        g2.drawOval(0, 0, mapSize, mapSize);
+        
+         /*
+         * draw the prime hypocentre location
+         */
         g2.setPaint(new Color(0, 0, 0));
         g2.setStroke(new BasicStroke(2));
         //innerG2.fillOval((tmpImg2.getWidth()/2-7),(tmpImg2.getWidth()/2-7),15,15);
@@ -456,25 +476,27 @@ public class StationMagnitudeView extends JPanel {
 
         Graphics2D g2 = dstMsBufferedImage.createGraphics();
 
-        for (int i = 0; i < StaImSize; i++) {
-            for (int j = 0; j < StaImSize; j++) {
+        for (int i = 0; i < mapSize; i++) {
+            for (int j = 0; j < mapSize; j++) {
                 int rgb;
                 double azi;
                 double lat, lon;
                 double px, py;
 
-                double dist = Math.sqrt((double) ((i - StaImSize / 2) * (i - StaImSize / 2) + (j - StaImSize / 2) * (j - StaImSize / 2)));
-                if (dist > StaImSize / 2) {
-                    dstMsBufferedImage.setRGB(i, j, 0xFF888888);
+                double dist = Math.sqrt((double) ((i - mapSize / 2) * (i - mapSize / 2) + (j - mapSize / 2) * (j - mapSize / 2)));
+                if (dist > mapSize / 2) {
+                    //dstMsBufferedImage.setRGB(i, j, 0xFF888888);
+                    dstMbBufferedImage.setRGB(i, j, 0xF4E012);  // Issue #15 remove the gray area, color code(?)
+
                 } else {
-                    azi = rad2deg * Math.atan2(i - StaImSize / 2, StaImSize / 2 - j);
+                    azi = rad2deg * Math.atan2(i - mapSize / 2, mapSize / 2 - j);
                     if (azi < 0.0) {
                         azi = azi + 360.0;
                     }
 
                     //calculate the lat and lon
-                    lat = SeisUtils.LatFromAziDelta(ph.getLat(), ph.getLon(), azi, dist * mapDegree / (StaImSize / 2));
-                    lon = SeisUtils.LonFromAziDelta(ph.getLat(), ph.getLon(), azi, dist * mapDegree / (StaImSize / 2));
+                    lat = SeisUtils.LatFromAziDelta(ph.getLat(), ph.getLon(), azi, dist * mapDegree / (mapSize / 2));
+                    lon = SeisUtils.LonFromAziDelta(ph.getLat(), ph.getLon(), azi, dist * mapDegree / (mapSize / 2));
                     if (lon > 180.0) {
                         lon = lon - 360;
                     } else if (lon < -180.0) {
@@ -491,9 +513,11 @@ public class StationMagnitudeView extends JPanel {
             }
         }
 
+
         //draw the station positions
         //calculate the position and draw all the stations       
         g2.setPaint(new Color(0, 154, 205));//orig:(0,240,240)     
+
         for (Station sta : msList) {
             //distance on pixel
             if (sta.getDelta() <= mapDegree && null != sta.getStaMs()) {
@@ -513,9 +537,19 @@ public class StationMagnitudeView extends JPanel {
             }
         }
 
-        //draw the prime hypocentre location
-        g2.setPaint(new Color(0, 0, 0));
+        
+        // Issue #15 add gray border
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setPaint(Color.GRAY);
         g2.setStroke(new BasicStroke(2));
+        g2.drawOval(0, 0, mapSize, mapSize);
+    
+        
+        /*
+         * draw the prime hypocentre location (x)
+         */
+        g2.setPaint(new Color(0, 0, 0));
+        //g2.setStroke(new BasicStroke(2));
         //innerG2.fillOval((tmpImg2.getWidth()/2-7),(tmpImg2.getWidth()/2-7),15,15);
         int tt = dstMsBufferedImage.getWidth() / 2;
         g2.drawLine(tt - 3, tt - 3, tt + 3, tt + 3);
@@ -595,6 +629,12 @@ public class StationMagnitudeView extends JPanel {
         freeChartMb = new JFreeChart(mbPlot);
         freeChartMs = new JFreeChart(msPlot);
 
+        // Issue #15 add labels
+        mbPlot.getDomainAxis().setLabelFont(chartNameFont);
+        mbPlot.getDomainAxis().setLabel("mb");
+        msPlot.getDomainAxis().setLabelFont(chartNameFont);
+        msPlot.getDomainAxis().setLabel("MS");
+
         freeChartMb.removeLegend();
         freeChartMs.removeLegend();
     }
@@ -604,56 +644,56 @@ public class StationMagnitudeView extends JPanel {
     protected void paintComponent(Graphics g) {
 
         super.paintComponent(g);
-
         Graphics2D g2 = (Graphics2D) g;
 
-        int xOffset = (getWidth() - 2 * StaImSize - 20) / 2;
-        int yOffset = (getHeight() - StaImSize - StaHistHeight) / 2;
+        int xGap = 20;
+        int xOffset = (getWidth() - 2 * mapSize - 20) / 2;
+        int yOffset = (getHeight() - mapSize - histHeight) / 2;
 
-        g2.drawImage(dstMbBufferedImage, xOffset, yOffset, StaImSize, StaImSize, null);
+        g2.drawImage(dstMbBufferedImage, xOffset, yOffset, mapSize, mapSize, null);
+        g2.drawImage(dstMsBufferedImage, xOffset + mapSize + 20, yOffset, mapSize, mapSize, null);
 
-        g2.drawImage(dstMsBufferedImage, xOffset + StaImSize + 20, yOffset, StaImSize, StaImSize, null);
+        histMbBufferedImage = freeChartMb.createBufferedImage(mapSize, histHeight);
+        histMsBufferedImage = freeChartMs.createBufferedImage(mapSize, histHeight);
 
-        histMbBufferedImage = freeChartMb.createBufferedImage(StaImSize, StaHistHeight);
-        histMsBufferedImage = freeChartMs.createBufferedImage(StaImSize, StaHistHeight);
+        g2.drawImage(histMbBufferedImage, xOffset, yOffset + mapSize + 20, mapSize, histHeight, null);
+        g2.drawImage(histMsBufferedImage, xOffset + mapSize + 20, yOffset + mapSize + 20, mapSize, histHeight, null);
 
-        g2.drawImage(histMbBufferedImage, xOffset, yOffset + StaImSize + 20, StaImSize, StaHistHeight, null);
-        g2.drawImage(histMsBufferedImage, xOffset + StaImSize + 20, yOffset + StaImSize + 20, StaImSize, StaHistHeight, null);
-
-        /*// TEST:
-         BufferedImage combined = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-         // paint both images, preserving the alpha channels
-         Graphics graphics = combined.getGraphics();
-         graphics.drawImage(dstMbBufferedImage, 0, 0, StaImSize, StaImSize, null);
-         graphics.drawImage(dstMsBufferedImage, StaImSize + 20, 0, StaImSize, StaImSize, null);
-         graphics.drawImage(histMbBufferedImage, 0, StaImSize + 20, StaImSize, StaHistHeight, null);
-         graphics.drawImage(histMsBufferedImage, 0 + StaImSize + 20, 0 + StaImSize + 20, StaImSize, StaHistHeight, null);
-
-         try {
-         ImageIO.write(combined, "png",
-         new File("/export/home/saiful/assess/temp/StationMagnitudeView.png"));
-         } catch (Exception e) {
-         Global.logSevere("Error creating a png.");
-         }*/
+        /*String labelText = "mb";
+         float xLabel = (float) xOffset + mapSize / 2;
+         float yLabel = (float) yOffset - 10; // 10 -> height of the text.
+         TextUtilities.drawAlignedString(labelText, g2, xLabel, yLabel, org.jfree.ui.TextAnchor.CENTER);
+         labelText = "MS";
+         xLabel = xLabel + xGap + mapSize;
+         TextUtilities.drawAlignedString(labelText, g2, xLabel, yLabel, org.jfree.ui.TextAnchor.CENTER);
+         */
+        // TEST:
+        try {
+            ImageIO.write(histMsBufferedImage, "png",
+                    new File(Paths.get(System.getProperty("user.dir") + File.separator + "temp" + File.separator + "StationMagnitudeView.png").toString()
+                    ));
+        } catch (Exception e) {
+            VBASLogger.logSevere("Error creating a png.");
+        }
     }
 
     public BufferedImage getBufferedImage() {
         BufferedImage combined = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
 
         Graphics graphics = combined.getGraphics();
-        graphics.drawImage(dstMbBufferedImage, 0, 0, StaImSize, StaImSize, null);
-        graphics.drawImage(dstMsBufferedImage, StaImSize + 20, 0, StaImSize, StaImSize, null);
-        graphics.drawImage(histMbBufferedImage, 0, StaImSize + 20, StaImSize, StaHistHeight, null);
-        graphics.drawImage(histMsBufferedImage, StaImSize + 20, StaImSize + 20, StaImSize, StaHistHeight, null);
+        graphics.drawImage(dstMbBufferedImage, 0, 0, mapSize, mapSize, null);
+        graphics.drawImage(dstMsBufferedImage, mapSize + 20, 0, mapSize, mapSize, null);
+        graphics.drawImage(histMbBufferedImage, 0, mapSize + 20, mapSize, histHeight, null);
+        graphics.drawImage(histMsBufferedImage, mapSize + 20, mapSize + 20, mapSize, histHeight, null);
 
         return combined;
     }
 
-    public int getStationMagnitudeViewWidth() {
-        return StaImSize + 20 + StaImSize;
+    public int getViewWidth() {
+        return mapSize + 20 + mapSize;
     }
 
-    public int getStationMagnitudeViewHeight() {
-        return StaImSize + 20 + StaHistHeight;
+    public int getViewHeight() {
+        return mapSize + 20 + histHeight;
     }
 }

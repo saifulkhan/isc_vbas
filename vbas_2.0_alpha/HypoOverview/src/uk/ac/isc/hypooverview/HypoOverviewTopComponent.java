@@ -32,7 +32,7 @@ import uk.ac.isc.seisdata.VBASLogger;
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "explorer", openAtStartup = true)
+@TopComponent.Registration(mode = "mapview", openAtStartup = true)
 @ActionID(category = "Window", id = "uk.ac.isc.hypooverview.HypoOverviewTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(

@@ -41,7 +41,6 @@ import uk.ac.isc.seisdata.VBASLogger;
 public final class HypoMagnitudeViewTopComponent extends TopComponent implements SeisDataChangeListener {
 
     private final JScrollPane scrollPane;
-    // the panel to have the figure
     HypoMagnitudeViewPanel hmag = null;
 
     // Data

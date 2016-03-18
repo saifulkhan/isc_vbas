@@ -1358,6 +1358,8 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
         return tileController.getTileCache();
     }
 
+    
+    
     /*
      *****************************************************************************************
      * XX

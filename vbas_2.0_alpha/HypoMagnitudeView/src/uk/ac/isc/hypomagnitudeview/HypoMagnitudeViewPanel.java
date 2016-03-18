@@ -22,7 +22,6 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.DefaultCategoryDataset;
-import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.SeisUtils;
 import uk.ac.isc.seisdata.VBASLogger;
@@ -35,8 +34,8 @@ public class HypoMagnitudeViewPanel extends JPanel {
 
     private final ArrayList<Hypocentre> hyposList = new ArrayList<Hypocentre>();
 
-    private int hypocentreMagnitudeViewHeight = 600, hypocentreMagnitudeViewWidth = 300;
-    //set a vertical or horizontal layout 
+    private int viewWidth = 300, viewHeight = 600;
+    //set a vertical or horizontal layout
     private final boolean isVertical = false;
 
     //median magnitude, probably will change to principle magnitude in future
@@ -55,19 +54,18 @@ public class HypoMagnitudeViewPanel extends JPanel {
 
     //the jfreechart for drawing the main view
     private JFreeChart freeChartMain = null;
-
     //the jfreechart for drawing the delta view
     private JFreeChart freeChartDelta = null;
 
-    //image of hypo magnitude 
+    //image of hypo magnitude
     private BufferedImage hypoMagImg;
-
     //image of delta hypo magnitude
     private BufferedImage magDeltaImg;
 
-    static Font domainLabelFont = new Font("Verdana", Font.BOLD, 16);
-    static Font tickMarkRangeLabelFont = new Font("Verdana", Font.BOLD, 10);
-    static Font tickMarkDomainLabelFont = new Font("Verdana", Font.BOLD, 12);
+    static Font chartNameFont = new Font("Verdana", Font.BOLD, 12);
+    static Font domainLabelFont = new Font("Verdana", Font.PLAIN, 12);
+    static Font tickMarkRangeLabelFont = new Font("Verdana", Font.PLAIN, 12);
+    static Font tickMarkDomainLabelFont = new Font("Verdana", Font.PLAIN, 12);
 
     public HypoMagnitudeViewPanel(ArrayList<Hypocentre> hypos) {
         VBASLogger.logDebug("Here...");
@@ -194,7 +192,200 @@ public class HypoMagnitudeViewPanel extends JPanel {
         magTypeMap.put(4, otherHypoMap);
     }
 
-    //if the layout is vertical 
+    //draw horizontal layout
+    private void setTwoHztCharts() {
+        CombinedRangeCategoryPlot cPlotMain = new CombinedRangeCategoryPlot(new NumberAxis());;
+
+        CombinedRangeCategoryPlot cPlotDelta = new CombinedRangeCategoryPlot(new NumberAxis());
+
+        for (int i = 0; i < 5; i++) {
+            DefaultCategoryDataset datasetMain = new DefaultCategoryDataset();
+            DefaultCategoryDataset datasetDelta = new DefaultCategoryDataset();
+
+            String rowKey = "MagType";
+            String columnKey;
+
+            for (Map.Entry<String, Double> entry : magTypeMap.get(i).entrySet()) {
+                columnKey = entry.getKey();
+                if (entry.getValue() > -1.0) {
+                    datasetMain.addValue(entry.getValue(), rowKey, columnKey);
+                    datasetDelta.addValue(entry.getValue() - medMag, rowKey, columnKey);
+                } else {
+                    datasetMain.addValue(0, rowKey, columnKey);
+                    datasetDelta.addValue(0, rowKey, columnKey);
+                }
+            }
+
+            BarRenderer renderer = new BarRenderer();
+            renderer.setShadowVisible(false);
+            renderer.setBarPainter(new StandardBarPainter());
+            renderer.setPaint(Color.BLACK);
+            renderer.setToolTipGenerator(new StandardCategoryToolTipGenerator());
+
+            MagBarRenderer rend2;
+
+            if (i == 0) {
+                rend2 = new MagBarRenderer("local");
+            } else if (i == 2) {
+                rend2 = new MagBarRenderer("mb");
+            } else if (i == 1) {
+                rend2 = new MagBarRenderer("MS");
+            } else if (i == 3) {
+                rend2 = new MagBarRenderer("MW");
+            } else {
+                rend2 = new MagBarRenderer("Other");
+            }
+            renderer.setShadowVisible(false);
+            renderer.setBarPainter(new StandardBarPainter());
+
+            //control bar viewHeight
+            if (magTypeMap.get(i).size() > 1) {
+                renderer.setMaximumBarWidth(0.3);
+                rend2.setMaximumBarWidth(0.3);
+            } else {
+                renderer.setMaximumBarWidth(0.5);
+                rend2.setMaximumBarWidth(0.5);
+            }
+
+            MagSimpleCategoryAxis categoryAxisMain = new MagSimpleCategoryAxis();
+            MagSimpleCategoryAxis categoryAxisDelta = new MagSimpleCategoryAxis();
+
+            categoryAxisDelta.setTickLabelsVisible(true);
+
+            CategoryPlot plotMain = new CategoryPlot(datasetMain, categoryAxisMain, null, rend2);
+            CategoryPlot plotDelta = new CategoryPlot(datasetDelta, categoryAxisDelta, null, renderer);
+
+            plotMain.setDomainAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
+            plotDelta.setDomainAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
+            //plot.setDomainAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
+            //plot.setBackgroundPaint(Color.GRAY);
+            //plot.setBackgroundAlpha((float) 0.1);
+            //plot.getDomainAxis().setLabelPaint(eventPaint[i%5]);
+            plotDelta.getDomainAxis().setTickLabelFont(tickMarkDomainLabelFont);
+            plotMain.getDomainAxis().setTickLabelFont(tickMarkDomainLabelFont);
+            plotMain.getDomainAxis().setVisible(true);
+            plotDelta.getDomainAxis().setVisible(true);
+
+            plotMain.getDomainAxis().setLabelFont(domainLabelFont);
+            if (i == 0) {
+                plotMain.getDomainAxis().setLabel("local");
+            } else if (i == 2) {
+                plotMain.getDomainAxis().setLabel("mb");
+            } else if (i == 1) {
+                plotMain.getDomainAxis().setLabel("MS");
+            } else if (i == 3) {
+                plotMain.getDomainAxis().setLabel("MW");
+            } else {
+                plotMain.getDomainAxis().setLabel("Other");
+            }
+
+            plotMain.getDomainAxis().setLabelFont(domainLabelFont);
+            plotMain.getDomainAxis().setLabelAngle(Math.PI / 2);
+
+            plotMain.getDomainAxis().setTickLabelsVisible(false);
+            //cPlot.getRangeAxis().setInverted(true);
+
+            int weight = datasetMain.getColumnCount();
+            cPlotMain.add(plotMain, weight);
+            cPlotDelta.add(plotDelta, weight);
+        }
+
+        cPlotMain.getRangeAxis().setLabelFont(chartNameFont);
+        cPlotMain.getRangeAxis().setLabel("Magnitude");
+        cPlotMain.getRangeAxis().setTickLabelFont(tickMarkRangeLabelFont);
+        cPlotMain.getRangeAxis().setRange(0, 10);
+
+        cPlotDelta.getRangeAxis().setLabelFont(chartNameFont);
+        String label2 = "Residual " + "\u229F  " + (medMag == null ? " " : medMag.toString()); // Bug#7 
+        cPlotDelta.getRangeAxis().setLabel(label2);
+        cPlotDelta.getRangeAxis().setTickLabelFont(tickMarkRangeLabelFont);
+        cPlotDelta.getRangeAxis().setRange(-2, 2);
+
+        cPlotMain.setOrientation(PlotOrientation.HORIZONTAL);
+        cPlotDelta.setOrientation(PlotOrientation.HORIZONTAL);
+
+        freeChartMain = new JFreeChart(cPlotMain);
+        freeChartDelta = new JFreeChart(cPlotDelta);
+
+        freeChartMain.removeLegend();
+        freeChartDelta.removeLegend();
+    }
+
+    public ArrayList<Hypocentre> getHypos() {
+        return this.hyposList;
+    }
+
+    //paint the figure
+    @Override
+    protected void paintComponent(Graphics g) {
+
+        super.paintComponent(g);
+
+        if (this.freeChartMain == null || this.freeChartDelta == null) {
+            return;
+        }
+
+        Graphics2D g2 = (Graphics2D) g.create();
+
+        // Saiful: isVertical is false (hardcoded)
+        // if (..) not used!
+        if (isVertical) {
+            hypoMagImg = freeChartMain.createBufferedImage(600, 300);
+            magDeltaImg = freeChartDelta.createBufferedImage(600, 150);
+            int xOffset = (getWidth() - 600) / 2;
+            int yOffset = (getHeight() - 450) / 2;
+            
+            g2.drawImage(magDeltaImg, xOffset, yOffset, 600, 150, this);
+            g2.drawImage(hypoMagImg, xOffset, yOffset + 150, 600, 300, this);
+
+        } else {
+            hypoMagImg = freeChartMain.createBufferedImage(viewWidth, viewHeight);
+            magDeltaImg = freeChartDelta.createBufferedImage(viewWidth, viewHeight);
+
+            int xOffset = (getWidth() - viewWidth * 2) / 2;
+            int yOffset = (getHeight() - viewHeight) / 2;
+
+            g2.drawImage(hypoMagImg, xOffset, yOffset, viewWidth, viewHeight, this);
+            g2.drawImage(magDeltaImg, xOffset + viewWidth, yOffset, viewWidth, viewHeight, this);
+        }
+
+        g2.dispose();
+
+        /*
+         // TEST:
+         // create the new image, canvas size is the max. of both image sizes
+         try {
+         ImageIO.write(this.getBufferedImage(), "png",
+         new File("/export/home/saiful/assess/temp/HypocentreMagnitudeview.png"));
+         } catch (Exception e) {
+         Global.logSevere("Error creating a png.");
+         }*/
+    }
+
+    public BufferedImage getBufferedImage() {
+        BufferedImage combined = new BufferedImage(getViewWidth(),
+                getViewHeight(), BufferedImage.TYPE_INT_ARGB);
+
+        // paint both images, preserving the alpha channels
+        Graphics graphics = combined.getGraphics();
+        graphics.drawImage(hypoMagImg, 0, 0, null);
+        graphics.drawImage(magDeltaImg, viewWidth, 0, null);
+
+        return combined;
+    }
+
+    public int getViewWidth() {
+        return viewWidth;
+    }
+
+    public int getViewHeight() {
+        return viewHeight;
+    }
+
+    /*
+     * If the layout is vertical.
+     * Saiful: hard coded and not used.
+     */
     private void setTwoVtcCharts() {
         CombinedRangeCategoryPlot cPlotMain = new CombinedRangeCategoryPlot(new NumberAxis());
 
@@ -284,199 +475,6 @@ public class HypoMagnitudeViewPanel extends JPanel {
 
         freeChartMain.removeLegend();
         freeChartDelta.removeLegend();
-    }
-
-    //draw horizontal layout
-    private void setTwoHztCharts() {
-        CombinedRangeCategoryPlot cPlotMain = new CombinedRangeCategoryPlot(new NumberAxis());;
-
-        CombinedRangeCategoryPlot cPlotDelta = new CombinedRangeCategoryPlot(new NumberAxis());
-
-        for (int i = 0; i < 5; i++) {
-            DefaultCategoryDataset datasetMain = new DefaultCategoryDataset();
-            DefaultCategoryDataset datasetDelta = new DefaultCategoryDataset();
-
-            String rowKey = "MagType";
-            String columnKey;
-
-            for (Map.Entry<String, Double> entry : magTypeMap.get(i).entrySet()) {
-                columnKey = entry.getKey();
-                if (entry.getValue() > -1.0) {
-                    datasetMain.addValue(entry.getValue(), rowKey, columnKey);
-                    datasetDelta.addValue(entry.getValue() - medMag, rowKey, columnKey);
-                } else {
-                    datasetMain.addValue(0, rowKey, columnKey);
-                    datasetDelta.addValue(0, rowKey, columnKey);
-                }
-            }
-
-            BarRenderer renderer = new BarRenderer();
-            renderer.setShadowVisible(false);
-            renderer.setBarPainter(new StandardBarPainter());
-            renderer.setPaint(Color.BLACK);
-            renderer.setToolTipGenerator(new StandardCategoryToolTipGenerator());
-
-            MagBarRenderer rend2;
-
-            if (i == 0) {
-                rend2 = new MagBarRenderer("local");
-            } else if (i == 2) {
-                rend2 = new MagBarRenderer("mb");
-            } else if (i == 1) {
-                rend2 = new MagBarRenderer("MS");
-            } else if (i == 3) {
-                rend2 = new MagBarRenderer("MW");
-            } else {
-                rend2 = new MagBarRenderer("Other");
-            }
-            renderer.setShadowVisible(false);
-            renderer.setBarPainter(new StandardBarPainter());
-
-            //control bar hypocentreMagnitudeViewHeight
-            if (magTypeMap.get(i).size() > 1) {
-                renderer.setMaximumBarWidth(0.3);
-                rend2.setMaximumBarWidth(0.3);
-            } else {
-                renderer.setMaximumBarWidth(0.5);
-                rend2.setMaximumBarWidth(0.5);
-            }
-
-            MagSimpleCategoryAxis categoryAxisMain = new MagSimpleCategoryAxis();
-            MagSimpleCategoryAxis categoryAxisDelta = new MagSimpleCategoryAxis();
-
-            categoryAxisDelta.setTickLabelsVisible(true);
-
-            CategoryPlot plotMain = new CategoryPlot(datasetMain, categoryAxisMain, null, rend2);
-            CategoryPlot plotDelta = new CategoryPlot(datasetDelta, categoryAxisDelta, null, renderer);
-
-            plotMain.setDomainAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
-            plotDelta.setDomainAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
-            //plot.setDomainAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
-            //plot.setBackgroundPaint(Color.GRAY);
-            //plot.setBackgroundAlpha((float) 0.1);
-            //plot.getDomainAxis().setLabelPaint(eventPaint[i%5]);
-            plotDelta.getDomainAxis().setTickLabelFont(tickMarkDomainLabelFont);
-            plotMain.getDomainAxis().setTickLabelFont(tickMarkDomainLabelFont);
-            plotMain.getDomainAxis().setVisible(true);
-            plotDelta.getDomainAxis().setVisible(true);
-
-            plotMain.getDomainAxis().setLabelFont(domainLabelFont);
-            if (i == 0) {
-                plotMain.getDomainAxis().setLabel("local");
-            } else if (i == 2) {
-                plotMain.getDomainAxis().setLabel("mb");
-            } else if (i == 1) {
-                plotMain.getDomainAxis().setLabel("MS");
-            } else if (i == 3) {
-                plotMain.getDomainAxis().setLabel("MW");
-            } else {
-                plotMain.getDomainAxis().setLabel("Other");
-            }
-
-            plotMain.getDomainAxis().setLabelFont(domainLabelFont);
-            plotMain.getDomainAxis().setLabelAngle(Math.PI / 2);
-
-            plotMain.getDomainAxis().setTickLabelsVisible(false);
-            //cPlot.getRangeAxis().setInverted(true);
-
-            int weight = datasetMain.getColumnCount();
-            cPlotMain.add(plotMain, weight);
-            cPlotDelta.add(plotDelta, weight);
-        }
-
-        cPlotMain.getRangeAxis().setLabelFont(domainLabelFont);
-        cPlotMain.getRangeAxis().setLabel("Magnitude");
-        cPlotMain.getRangeAxis().setTickLabelFont(tickMarkRangeLabelFont);
-        cPlotMain.getRangeAxis().setRange(0, 10);
-
-        cPlotDelta.getRangeAxis().setLabelFont(domainLabelFont);
-        // TODO: Saiful we need to fix it while the data is read from the database itself.
-        String label2 = "Residual " + "\u229F  " + (medMag == null ? " " : medMag.toString());  
-        cPlotDelta.getRangeAxis().setLabel(label2);
-        cPlotDelta.getRangeAxis().setTickLabelFont(tickMarkRangeLabelFont);
-        cPlotDelta.getRangeAxis().setRange(-2, 2);
-
-        cPlotMain.setOrientation(PlotOrientation.HORIZONTAL);
-        cPlotDelta.setOrientation(PlotOrientation.HORIZONTAL);
-
-        freeChartMain = new JFreeChart(cPlotMain);
-        freeChartDelta = new JFreeChart(cPlotDelta);
-
-        freeChartMain.removeLegend();
-        freeChartDelta.removeLegend();
-    }
-
-    public ArrayList<Hypocentre> getHypos() {
-        return this.hyposList;
-    }
-
-    //paint the figure
-    @Override
-    protected void paintComponent(Graphics g) {
-
-        super.paintComponent(g);
-
-        if (this.freeChartMain == null || this.freeChartDelta == null) {
-            return;
-        }
-
-        Graphics2D g2 = (Graphics2D) g.create();
-
-        /* Saiful: commented the when vertical section!
-         HypoMagImg = freeChartMain.createBufferedImage(600, 300);
-         MagDeltaImg = freeChartDelta.createBufferedImage(600, 150);
-         int xOffset = (getWidth() - 600) / 2;
-         int yOffset = (getHeight() - 450) / 2;
-         g2.drawImage(MagDeltaImg, xOffset, yOffset, 600, 150, this);
-         g2.drawImage(HypoMagImg, xOffset, yOffset + 150, 600, 300, this);
-         */
-        hypoMagImg = freeChartMain.createBufferedImage(hypocentreMagnitudeViewWidth, hypocentreMagnitudeViewHeight);
-        magDeltaImg = freeChartDelta.createBufferedImage(hypocentreMagnitudeViewWidth, hypocentreMagnitudeViewHeight);
-
-        int xOffset = (getWidth() - hypocentreMagnitudeViewWidth) / 2;
-        int yOffset = (getHeight() - hypocentreMagnitudeViewHeight) / 2;
-
-        g2.drawImage(hypoMagImg, xOffset, yOffset, hypocentreMagnitudeViewWidth, hypocentreMagnitudeViewHeight, this);
-        g2.drawImage(magDeltaImg, xOffset + hypocentreMagnitudeViewWidth, yOffset, hypocentreMagnitudeViewWidth, hypocentreMagnitudeViewHeight, this);
-
-        g2.dispose();
-
-        // TEST: 
-        // create the new image, canvas size is the max. of both image sizes
-        BufferedImage combined = new BufferedImage(2 * hypocentreMagnitudeViewWidth, hypocentreMagnitudeViewHeight, BufferedImage.TYPE_INT_ARGB);
-        // paint both images, preserving the alpha channels
-        Graphics graphics = combined.getGraphics();
-        graphics.drawImage(hypoMagImg, 0, 0, null);
-        graphics.drawImage(magDeltaImg, hypocentreMagnitudeViewWidth, 0, null);
-
-        /*// Save as new image
-         try {
-
-         ImageIO.write(combined, "png",
-         new File("/export/home/saiful/assess/temp/HypocentreMagnitudeview.png"));
-         } catch (Exception e) {
-         Global.logSevere("Error creating a png.");
-         }*/
-    }
-
-    public BufferedImage getBufferedImage() {
-        BufferedImage combined = new BufferedImage(getHypocentreMagnitudeViewWidth(),
-                getHypocentreMagnitudeViewHeight(), BufferedImage.TYPE_INT_ARGB);
-
-        // paint both images, preserving the alpha channels
-        Graphics graphics = combined.getGraphics();
-        graphics.drawImage(hypoMagImg, 0, 0, null);
-        graphics.drawImage(magDeltaImg, hypocentreMagnitudeViewWidth, 0, null);
-
-        return combined;
-    }
-
-    public int getHypocentreMagnitudeViewWidth() {
-        return (2 * hypocentreMagnitudeViewWidth);
-    }
-
-    public int getHypocentreMagnitudeViewHeight() {
-        return hypocentreMagnitudeViewHeight;
     }
 
 }
