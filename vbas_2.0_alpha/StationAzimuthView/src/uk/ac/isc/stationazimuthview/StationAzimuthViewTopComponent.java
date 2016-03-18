@@ -36,9 +36,9 @@ import uk.ac.isc.seisdata.VBASLogger;
         preferredID = "StationAzimuthViewTopComponent"
 )
 @Messages({
-    "CTL_StationAzimuthViewAction=StationAzimuthView",
-    "CTL_StationAzimuthViewTopComponent=StationAzimuthView Window",
-    "HINT_StationAzimuthViewTopComponent=This is a StationAzimuthView window"
+    "CTL_StationAzimuthViewAction=Station Geometry",
+    "CTL_StationAzimuthViewTopComponent=Station Geometry",
+    "HINT_StationAzimuthViewTopComponent=Station Geometry"
 })
 
 public final class StationAzimuthViewTopComponent extends TopComponent implements SeisDataChangeListener {
@@ -61,7 +61,7 @@ public final class StationAzimuthViewTopComponent extends TopComponent implement
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
-        setName("Station Geometry");
+        //setName("Station Geometry");
 
         VBASLogger.logDebug("Loaded...");
 

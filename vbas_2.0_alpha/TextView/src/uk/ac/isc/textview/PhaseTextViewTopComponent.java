@@ -53,9 +53,9 @@ import uk.ac.isc.seisdata.VBASLogger;
         preferredID = "PhaseTextViewTopComponent"
 )
 @Messages({
-    "CTL_PhaseTextViewAction=PhaseTextView",
-    "CTL_PhaseTextViewTopComponent=PhaseTextView Window",
-    "HINT_PhaseTextViewTopComponent=This is a PhaseTextView window"
+    "CTL_PhaseTextViewAction=Phase Selection",
+    "CTL_PhaseTextViewTopComponent=Phase Selection",
+    "HINT_PhaseTextViewTopComponent=Phase Selection"
 })
 
 public final class PhaseTextViewTopComponent extends TopComponent implements SeisDataChangeListener {
@@ -78,7 +78,7 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
-        setName("Phase Selection");
+        //setName("Phase Selection");
 
         VBASLogger.logDebug("Here...");
 
@@ -222,7 +222,6 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
                     
                     //selectedPhaseList
                     
-                    VBASLogger.logDebug("selected rows: "
                     selectedPhaseList.fireSeisDataChanged();
                 }
 
@@ -259,7 +258,7 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
     private class MyMouseAdapter extends MouseAdapter {
 
         public void mouseClicked(MouseEvent e) {
-            VBASLogger.logDebug("");
+            //VBASLogger.logDebug("");
 
             Point p = e.getPoint();
             final int row = table.rowAtPoint(p);

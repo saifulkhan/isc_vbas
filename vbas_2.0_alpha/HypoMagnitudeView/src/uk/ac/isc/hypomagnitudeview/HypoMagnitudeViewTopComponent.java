@@ -34,9 +34,9 @@ import uk.ac.isc.seisdata.VBASLogger;
         preferredID = "HypoMagnitudeViewTopComponent"
 )
 @Messages({
-    "CTL_HypoMagnitudeViewAction=HypoMagnitudeView",
-    "CTL_HypoMagnitudeViewTopComponent=HypoMagnitudeView Window",
-    "HINT_HypoMagnitudeViewTopComponent=This is a HypoMagnitudeView window"
+    "CTL_HypoMagnitudeViewAction=Hypocentre Magnitudes",
+    "CTL_HypoMagnitudeViewTopComponent=Hypocentre Magnitudes",
+    "HINT_HypoMagnitudeViewTopComponent=Hypocentre Magnitudes"
 })
 public final class HypoMagnitudeViewTopComponent extends TopComponent implements SeisDataChangeListener {
 
@@ -55,7 +55,7 @@ public final class HypoMagnitudeViewTopComponent extends TopComponent implements
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
-        setName("Hypocentre Magnitudes");
+        //setName("Hypocentre Magnitudes");
 
         VBASLogger.logDebug("Loaded...");
 

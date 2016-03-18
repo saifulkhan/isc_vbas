@@ -25,15 +25,15 @@ public class Global {
      * 2. Selected SeisEvent is the first one in the list/row.
      */
     private static final SeisEventsList seisEventsList = new SeisEventsList();
-    private static SeisEvent selectedSeisEvent = new SeisEvent();
+    private static final SeisEvent selectedSeisEvent = new SeisEvent();
 
     /*
      * 3. Store the Hypocentres, Phases, Commands, AssessedComamnds for the selected/first SeiesEvent.
      */
-    private static HypocentresList hypocentresList = new HypocentresList();
-    private static PhasesList phasesList = new PhasesList();
-    private static CommandList commandList = new CommandList();
-    private static AssessedCommandList assessedCommandList = new AssessedCommandList();
+    private static final HypocentresList hypocentresList = new HypocentresList();
+    private static final PhasesList phasesList = new PhasesList();
+    private static final CommandList commandList = new CommandList();
+    private static final AssessedCommandList assessedCommandList = new AssessedCommandList();
 
     /*
      * Events notiification related

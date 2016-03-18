@@ -1,4 +1,4 @@
-package uk.ac.isc.eventscontrolview;
+package uk.ac.isc.seiseventselection;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

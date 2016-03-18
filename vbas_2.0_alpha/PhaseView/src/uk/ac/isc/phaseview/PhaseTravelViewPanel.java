@@ -155,6 +155,7 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
             VBASLogger.logDebug("Null 'inStream', resource: "
                     + getClass().getClassLoader().getResource("resources" + File.separator + "ttimes.pl").toString());
         }
+        
 
         setPreferredSize(new Dimension(500, 1000));
         phaseSeries = new DuplicateUnorderTimeSeries("");
@@ -509,6 +510,8 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
         return phaseImageWithRect;
     }
 
+    
+    
     @Override
     public void mouseClicked(MouseEvent e) {
 

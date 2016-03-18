@@ -37,9 +37,9 @@ import uk.ac.isc.seisdata.VBASLogger;
         preferredID = "PhaseViewTopComponent"
 )
 @Messages({
-    "CTL_PhaseViewAction=PhaseView",
-    "CTL_PhaseViewTopComponent=PhaseView Window",
-    "HINT_PhaseViewTopComponent=This is a PhaseView window"
+    "CTL_PhaseViewAction=Phase TT Curves",
+    "CTL_PhaseViewTopComponent=Phase TT Curves",
+    "HINT_PhaseViewTopComponent=Phase TT Curves"
 })
 public final class PhaseViewTopComponent extends TopComponent implements SeisDataChangeListener {
 
@@ -68,7 +68,7 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
-        setName("Phase TT Curves");
+        //setName("Phase TT Curves");
 
         VBASLogger.logDebug("Loaded...");
 
@@ -97,6 +97,7 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
     public void SeisDataChanged(SeisDataChangeEvent event) {
         String eventName = event.getData().getClass().getName();
         //VBASLogger.logDebug("Event received from: " + eventName);
+        
         switch (eventName) {
             case "uk.ac.isc.seisdata.SeisEvent":
                 //SeisEvent seisEvent = (SeisEvent) event.getData();

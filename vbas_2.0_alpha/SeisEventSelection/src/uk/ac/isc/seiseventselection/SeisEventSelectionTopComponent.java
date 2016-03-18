@@ -1,4 +1,4 @@
-package uk.ac.isc.eventscontrolview;
+package uk.ac.isc.seiseventselection;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -18,39 +18,39 @@ import uk.ac.isc.seisdata.VBASLogger;
  * the view cannot be closed
  */
 @ConvertAsProperties(
-        dtd = "-//uk.ac.isc.eventscontrolview//EventsControlView//EN",
+        dtd = "-//uk.ac.isc.seiseventselection//EventsControlView//EN",
         autostore = false
 )
 @TopComponent.Description(
-        preferredID = "EventsControlViewTopComponent",
+        preferredID = "SeisEventSelectionTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "explorer", openAtStartup = true)
-@ActionID(category = "Window", id = "uk.ac.isc.eventscontrolview.EventsControlViewTopComponent")
+@ActionID(category = "Window", id = "uk.ac.isc.seiseventselection.SeisEventSelectionTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(
-        displayName = "#CTL_EventsControlViewAction",
-        preferredID = "SeisEvent Selection Window"
+        displayName = "#CTL_SeisEventSelectionViewAction",
+        preferredID = "SeisEventSelection Window"
 )
 @Messages({
-    "CTL_EventsControlViewAction=EventsControlView",
-    "CTL_EventsControlViewTopComponent=EventsControlView Window",
-    "HINT_EventsControlViewTopComponent=This is a EventsControlView window"
+    "CTL_SeisEventSelectionViewAction=SeisEvent Selection",
+    "CTL_SeisEventSelectionTopComponent=SeisEvent Selection",
+    "HINT_SeisEventSelectionTopComponent=SeisEvent Selection"
 })
 
-public final class EventsControlViewTopComponent extends TopComponent {
+public final class SeisEventSelectionTopComponent extends TopComponent {
 
     SeisEventsTable eventsTable;                    // Event Table
 
-    public EventsControlViewTopComponent() {
+    public SeisEventSelectionTopComponent() {
         initComponents();
-        setName(Bundle.CTL_EventsControlViewTopComponent());
-        setToolTipText(Bundle.HINT_EventsControlViewTopComponent());
+        setName(Bundle.CTL_SeisEventSelectionTopComponent());
+        setToolTipText(Bundle.HINT_SeisEventSelectionTopComponent());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
-        setName("SeisEvent Selection");
+        //setName("SeisEvent Selection");
 
         VBASLogger.logDebug("Here...");
 

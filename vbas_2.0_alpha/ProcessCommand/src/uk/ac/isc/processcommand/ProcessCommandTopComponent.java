@@ -18,25 +18,25 @@ import uk.ac.isc.seisdata.VBASLogger;
  * Top component which displays something.
  */
 @ConvertAsProperties(
-        dtd = "-//uk.ac.isc.processcommand//AllCommands//EN",
+        dtd = "-//uk.ac.isc.processcommand//ProcessCommand//EN",
         autostore = false
 )
 @TopComponent.Description(
-        preferredID = "AllCommandsTopComponent",
+        preferredID = "ProcessCommandTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
 @TopComponent.Registration(mode = "explorer", openAtStartup = true)
-@ActionID(category = "Window", id = "uk.ac.isc.processcommand.AllCommandsTopComponent")
+@ActionID(category = "Window", id = "uk.ac.isc.processcommand.ProcessCommandTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(
-        displayName = "#CTL_AllCommandsAction",
-        preferredID = "AllCommandsTopComponent"
+        displayName = "#CTL_ProcessCommandAction",
+        preferredID = "ProcessCommandTopComponent"
 )
 @Messages({
-    "CTL_AllCommandsAction=AllCommands",
-    "CTL_AllCommandsTopComponent=AllCommands Window",
-    "HINT_AllCommandsTopComponent=This is a AllCommands window"
+    "CTL_ProcessCommandAction=Command Selection | Assessed Reports",
+    "CTL_ProcessCommandTopComponent=Command Selection | Assessed Reports",
+    "HINT_ProcessCommandTopComponent=Command Selection | Assessed Reports"
 })
 
 public final class ProcessCommandTopComponent extends TopComponent {
@@ -46,12 +46,12 @@ public final class ProcessCommandTopComponent extends TopComponent {
 
     public ProcessCommandTopComponent() {
         initComponents();
-        setName(Bundle.CTL_AllCommandsTopComponent());
-        setToolTipText(Bundle.HINT_AllCommandsTopComponent());
+        setName(Bundle.CTL_ProcessCommandTopComponent());
+        setToolTipText(Bundle.HINT_ProcessCommandTopComponent());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
-        setName("Command Selection | Assessed Reports");
+        //setName("Command Selection | Assessed Reports");
 
         VBASLogger.logDebug("Loaded...");
 

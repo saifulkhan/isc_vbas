@@ -6,7 +6,7 @@
 
 import org.junit.Test;
 import static org.junit.Assert.*;
-import uk.ac.isc.eventscontrolview.SeisEventsTable;
+import uk.ac.isc.seiseventselection.SeisEventsTable;
 
 /**
  *

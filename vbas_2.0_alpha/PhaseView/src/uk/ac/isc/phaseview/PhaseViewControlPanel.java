@@ -16,23 +16,15 @@ import javax.swing.event.ChangeListener;
  */
 class PhaseViewControlPanel extends JPanel {
 
-    //private PhaseTravelViewPanel pgvp;
-    //private PhaseDetailViewPanel pdvp;
     private JSlider residualFilter = new JSlider(0, 10, 0);
-
     private final JCheckBox crustalCheckBox = new JCheckBox("Crustal Phases");
-
     private final JCheckBox mantleCheckBox = new JCheckBox("Mantle Phases");
-
     private final JCheckBox coreCheckBox = new JCheckBox("Core Phases");
-
     private final JCheckBox depthCheckBox = new JCheckBox("Depth Phases");
-
     private final JCheckBox othersCheckBox = new JCheckBox("Other Phases");
 
-    public PhaseViewControlPanel(final PhaseTravelViewPanel pgvp, final PhaseDetailViewPanel pdvp) {
-        //this.pgvp = pgvp;
-        //this.pdvp = pdvp;
+    public PhaseViewControlPanel(final PhaseTravelViewPanel ptvp, final PhaseDetailViewPanel pdvp) {
+
         residualFilter.setMajorTickSpacing(2);
         residualFilter.setMinorTickSpacing(1);
         residualFilter.setPaintTicks(true);
@@ -59,9 +51,9 @@ class PhaseViewControlPanel extends JPanel {
                 JSlider source = (JSlider) e.getSource();
                 if (!source.getValueIsAdjusting()) {
                     int fps = (int) source.getValue();
-                    pgvp.setResidualCutoffLevel((double) fps);
+                    ptvp.setResidualCutoffLevel((double) fps);
                     pdvp.setResidualCutoffLevel((double) fps);
-                    pgvp.filterData();
+                    ptvp.filterData();
                     pdvp.filterData();
                 }
 
@@ -74,12 +66,12 @@ class PhaseViewControlPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (crustalCheckBox.isSelected()) {
-                    pgvp.setPhaseTypeVisible(0, true);
+                    ptvp.setPhaseTypeVisible(0, true);
                 } else {
-                    pgvp.setPhaseTypeVisible(0, false);
+                    ptvp.setPhaseTypeVisible(0, false);
                 }
-                pgvp.filterData();
-                pgvp.updateDetailPList();
+                ptvp.filterData();
+                ptvp.updateDetailPList();
                 //pdvp.filterData();
             }
         });
@@ -89,13 +81,13 @@ class PhaseViewControlPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (mantleCheckBox.isSelected()) {
-                    pgvp.setPhaseTypeVisible(1, true);
+                    ptvp.setPhaseTypeVisible(1, true);
                 } else {
-                    pgvp.setPhaseTypeVisible(1, false);
+                    ptvp.setPhaseTypeVisible(1, false);
                 }
 
-                pgvp.filterData();
-                pgvp.updateDetailPList();
+                ptvp.filterData();
+                ptvp.updateDetailPList();
                 //pdvp.filterData();
             }
         });
@@ -105,12 +97,12 @@ class PhaseViewControlPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (coreCheckBox.isSelected()) {
-                    pgvp.setPhaseTypeVisible(2, true);
+                    ptvp.setPhaseTypeVisible(2, true);
                 } else {
-                    pgvp.setPhaseTypeVisible(2, false);
+                    ptvp.setPhaseTypeVisible(2, false);
                 }
-                pgvp.filterData();
-                pgvp.updateDetailPList();
+                ptvp.filterData();
+                ptvp.updateDetailPList();
                 //pdvp.filterData();
             }
         });
@@ -120,12 +112,12 @@ class PhaseViewControlPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (depthCheckBox.isSelected()) {
-                    pgvp.setPhaseTypeVisible(3, true);
+                    ptvp.setPhaseTypeVisible(3, true);
                 } else {
-                    pgvp.setPhaseTypeVisible(3, false);
+                    ptvp.setPhaseTypeVisible(3, false);
                 }
-                pgvp.filterData();
-                pgvp.updateDetailPList();
+                ptvp.filterData();
+                ptvp.updateDetailPList();
                 //pdvp.filterData();
             }
         });
@@ -135,12 +127,12 @@ class PhaseViewControlPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (othersCheckBox.isSelected()) {
-                    pgvp.setPhaseTypeVisible(4, true);
+                    ptvp.setPhaseTypeVisible(4, true);
                 } else {
-                    pgvp.setPhaseTypeVisible(4, false);
+                    ptvp.setPhaseTypeVisible(4, false);
                 }
-                pgvp.filterData();
-                pgvp.updateDetailPList();
+                ptvp.filterData();
+                ptvp.updateDetailPList();
                 //pdvp.filterData();
             }
         });

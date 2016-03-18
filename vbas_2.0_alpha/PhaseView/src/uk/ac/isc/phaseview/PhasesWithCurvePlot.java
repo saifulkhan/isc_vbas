@@ -49,6 +49,7 @@ public class PhasesWithCurvePlot extends XYPlot {
             ValueAxis domainAxis,
             ValueAxis rangeAxis,
             XYItemRenderer renderer) {
+        
         super(dataset, domainAxis, rangeAxis, renderer);
     }
 
@@ -57,6 +58,7 @@ public class PhasesWithCurvePlot extends XYPlot {
             ValueAxis rangeAxis,
             XYItemRenderer renderer,
             DuplicateUnorderTimeSeriesCollection ttdData) {
+        
         super(dataset, domainAxis, rangeAxis, renderer);
         this.ttdData = ttdData;
     }
@@ -204,6 +206,7 @@ public class PhasesWithCurvePlot extends XYPlot {
         Stroke savedStroke = g2.getStroke();
         g2.setStroke(DEFAULT_STROKE);
         g2.setPaint(new Color(128, 128, 128));
+
         if (ttdData != null) {
             for (int i = 0; i < ttdData.getSeriesCount(); i++) {
                 String phaseType = (String) ttdData.getSeriesKey(i);
@@ -213,18 +216,12 @@ public class PhasesWithCurvePlot extends XYPlot {
                     //double x2 = ttdData.getXValue(i, j+1);
                     //double y1 = ttdData.getYValue(i, j);
                     //double y2 = ttdData.getYValue(i, j+1);
-                    int y1 = (int) getDomainAxis().valueToJava2D(ttdData.getXValue(i, j), dataArea,
-                            getDomainAxisEdge());
-                    int y2 = (int) getDomainAxis().valueToJava2D(ttdData.getXValue(i, j + 1), dataArea,
-                            getDomainAxisEdge());
-                    int x1 = (int) getRangeAxis().valueToJava2D(ttdData.getYValue(i, j), dataArea,
-                            getRangeAxisEdge());
-                    int x2 = (int) getRangeAxis().valueToJava2D(ttdData.getYValue(i, j + 1), dataArea,
-                            getRangeAxisEdge());
+                    int y1 = (int) getDomainAxis().valueToJava2D(ttdData.getXValue(i, j), dataArea, getDomainAxisEdge());
+                    int y2 = (int) getDomainAxis().valueToJava2D(ttdData.getXValue(i, j + 1), dataArea, getDomainAxisEdge());
+                    int x1 = (int) getRangeAxis().valueToJava2D(ttdData.getYValue(i, j), dataArea, getRangeAxisEdge());
+                    int x2 = (int) getRangeAxis().valueToJava2D(ttdData.getYValue(i, j + 1), dataArea, getRangeAxisEdge());
                     g2.drawLine(x1, y1, x2, y2);
-
                 }
-
             }
         }
         g2.setPaint(savedPaint);

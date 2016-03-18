@@ -3,7 +3,7 @@
     <type>org.netbeans.modules.apisupport.project</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/nb-module-project/3">
-            <code-name-base>uk.ac.isc.eveentscontrolview</code-name-base>
+            <code-name-base>uk.ac.isc.seiseventselection</code-name-base>
             <suite-component/>
             <module-dependencies>
                 <dependency>
@@ -82,7 +82,7 @@
                 </test-type>
             </test-dependencies>
             <public-packages>
-                <package>uk.ac.isc.eventscontrolview</package>
+                <package>uk.ac.isc.seiseventselection</package>
             </public-packages>
         </data>
     </configuration>

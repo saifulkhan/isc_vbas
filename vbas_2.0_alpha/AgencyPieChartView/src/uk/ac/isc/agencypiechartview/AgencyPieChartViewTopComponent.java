@@ -34,9 +34,9 @@ import uk.ac.isc.seisdata.VBASLogger;
         preferredID = "AgencyPieChartViewTopComponent"
 )
 @Messages({
-    "CTL_AgencyPieChartViewAction=AgencyPieChartView",
-    "CTL_AgencyPieChartViewTopComponent=AgencyPieChartView Window",
-    "HINT_AgencyPieChartViewTopComponent=This is a AgencyPieChartView window"
+    "CTL_AgencyPieChartViewAction=Agency Summary",
+    "CTL_AgencyPieChartViewTopComponent=Agency Summary",
+    "HINT_AgencyPieChartViewTopComponent=Agency Summary"
 })
 public final class AgencyPieChartViewTopComponent extends TopComponent implements SeisDataChangeListener {
 
@@ -56,7 +56,7 @@ public final class AgencyPieChartViewTopComponent extends TopComponent implement
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
-        setName("Agency Summary");
+        //setName("Agency Summary");
 
         VBASLogger.logDebug("Loaded... #phases: " + phasesList.getPhases().size());
 

@@ -42,9 +42,9 @@ import uk.ac.isc.seisdata.VBASLogger;
         preferredID = "HypoDepthViewTopComponent"
 )
 @Messages({
-    "CTL_HypoDepthViewAction=HypoDepthView",
-    "CTL_HypoDepthViewTopComponent=HypoDepthView Window",
-    "HINT_HypoDepthViewTopComponent=This is a HypoDepthView window"
+    "CTL_HypoDepthViewAction=Hypocentre Depths",
+    "CTL_HypoDepthViewTopComponent=Hypocentre Depths",
+    "HINT_HypoDepthViewTopComponent=Hypocentre Depths"
 })
 public final class HypoDepthViewTopComponent extends TopComponent implements SeisDataChangeListener {
 

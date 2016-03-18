@@ -35,9 +35,9 @@ import uk.ac.isc.seisdata.VBASLogger;
         preferredID = "StationMagnitudeViewTopComponent"
 )
 @Messages({
-    "CTL_StationMagnitudeViewAction=StationMagnitudeView",
-    "CTL_StationMagnitudeViewTopComponent=StationMagnitudeView Window",
-    "HINT_StationMagnitudeViewTopComponent=This is a StationMagnitudeView window"
+    "CTL_StationMagnitudeViewAction=Station Magnitudes",
+    "CTL_StationMagnitudeViewTopComponent=Station Magnitudes",
+    "HINT_StationMagnitudeViewTopComponent=Station Magnitudes"
 })
 public final class StationMagnitudeViewTopComponent extends TopComponent implements SeisDataChangeListener {
 
@@ -57,7 +57,7 @@ public final class StationMagnitudeViewTopComponent extends TopComponent impleme
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
-        setName("Station Magnitudes");
+        //setName("Station Magnitudes");
 
         VBASLogger.logDebug("Loaded..."
                 + ", #SiesEvent=" + Global.getSelectedSeisEvent().getEvid()

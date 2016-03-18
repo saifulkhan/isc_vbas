@@ -40,9 +40,9 @@ import uk.ac.isc.seisdata.VBASLogger;
         preferredID = "HypoOverviewTopComponent"
 )
 @Messages({
-    "CTL_HypoOverviewAction=HypoOverview",
-    "CTL_HypoOverviewTopComponent=HypoOverview Window",
-    "HINT_HypoOverviewTopComponent=This is a HypoOverview window"
+    "CTL_HypoOverviewAction=Hypocentre Seismicity",
+    "CTL_HypoOverviewTopComponent=Hypocentre Seismicity",
+    "HINT_HypoOverviewTopComponent=Hypocentre Seismicity"
 })
 public final class HypoOverviewTopComponent extends TopComponent implements SeisDataChangeListener {
 
@@ -61,7 +61,7 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
-        setName("Hypocentre Seismicity");
+        //setName("Hypocentre Seismicity");
 
         VBASLogger.logDebug("Loaded...");
 

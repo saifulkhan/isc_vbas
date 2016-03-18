@@ -61,9 +61,9 @@ import uk.ac.isc.seisdata.VBASLogger;
         preferredID = "HypoTextViewTopComponent"
 )
 @Messages({
-    "CTL_HypoTextViewAction=HypoTextView",
-    "CTL_HypoTextViewTopComponent=HypoTextView Window",
-    "HINT_HypoTextViewTopComponent=This is a HypoTextView window"
+    "CTL_HypoTextViewAction=Hypocentre Selection",
+    "CTL_HypoTextViewTopComponent=Hypocentre Selection",
+    "HINT_HypoTextViewTopComponent=Hypocentre Selection"
 })
 public final class HypoTextViewTopComponent extends TopComponent implements SeisDataChangeListener {
 
@@ -86,7 +86,7 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
         putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
-        setName("Hypocentre Selection");
+        //setName("Hypocentre Selection");
 
         VBASLogger.logDebug("Loaded...");
         
