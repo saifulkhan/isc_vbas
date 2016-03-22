@@ -5,6 +5,7 @@ import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
 import uk.ac.isc.seisdata.Command;
 import uk.ac.isc.seisdata.VBASLogger;
+import uk.ac.isc.seisdatainterface.FormulateCommand;
 
 public class CommandTableModel extends AbstractTableModel {
 
@@ -25,11 +26,12 @@ public class CommandTableModel extends AbstractTableModel {
     };
 
     public final Object[] longValues = {
-        new Integer(999999),
-        new String(new char[50]),
-        new String(new char[500]),
-        new String(new char[10]),
-        new String(new char[10])};
+        new Integer(999999999),
+        "XXXXXXXXXX",
+        new String(new char[75]),
+        "XXXXXX",
+        "XXXXXXXXXX"
+    };
 
     private final ArrayList<Command> commandList;
 
@@ -66,7 +68,8 @@ public class CommandTableModel extends AbstractTableModel {
                 retObject = commandList.get(rowIndex).getAnalyst();
                 break;
             case 2:
-                retObject = commandList.get(rowIndex).getRedableCommandStr();
+                retObject = FormulateCommand.getRedableCommandStr(
+                        commandList.get(rowIndex).getCommandStr());
                 break;
             case 3:
                 retObject = commandList.get(rowIndex).getStatus();
@@ -74,9 +77,10 @@ public class CommandTableModel extends AbstractTableModel {
             case 4:
                 retObject = commandList.get(rowIndex).getType();
                 break;
-            default:
-                String message = VBASLogger.debugAt() + "\nSee the error log file for more information. ";
-                JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+            /*default:
+             String message 
+             = VBASLogger.debugAt() + "\nSee the error log file for more information. ";
+             JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);*/
         }
 
         return retObject;

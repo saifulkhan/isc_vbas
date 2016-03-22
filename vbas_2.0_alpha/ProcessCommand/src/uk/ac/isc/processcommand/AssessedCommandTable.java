@@ -25,6 +25,7 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import org.openide.util.Exceptions;
 import uk.ac.isc.seisdata.AssessedCommand;
 import uk.ac.isc.seisdata.AssessedCommandList;
@@ -119,8 +120,8 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
         table.setRowSelectionAllowed(true);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setColumnSelectionAllowed(false);
-        table.setSelectionBackground(new Color(45, 137, 239));
-        table.setSelectionForeground(Color.WHITE);
+        /*table.setSelectionBackground(new Color(45, 137, 239));
+        table.setSelectionForeground(Color.WHITE);*/
         //commandTable.setRowSelectionInterval(0, 0);
 
         table.setRowSelectionAllowed(false);
@@ -131,7 +132,6 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
         table.setShowVerticalLines(false);
         table.setShowHorizontalLines(false);
 
-        // Set: Left or Right aligned
         DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
         DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
@@ -139,12 +139,38 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
         leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
-        table.getColumnModel().getColumn(0).setCellRenderer(leftRenderer);
-        table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
-        // table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer); // Note: never for button col
+        table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(1).setCellRenderer(leftRenderer);
+        table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+        //table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer); // Note: do not mess with the button.
 
+        // This part of the code picks good column sizes. 
+        // If all column heads are wider than the column's cells'
+        // contents, then you can just use column.sizeWidthToFit().
+        // SiesEventsTableModel model = (SiesEventsTableModel) table.getModel();
+        TableColumn column = null;
+        Component comp = null;
+        int headerWidth = 0;
+        int cellWidth = 0;
+
+        Object[] longValues = model.longValues;
+        TableCellRenderer headerRenderer = table.getTableHeader().getDefaultRenderer();
+
+        for (int i = 0; i < model.getColumnCount() - 1 /*Note: exclude the last col (button)*/; i++) {
+            column = table.getColumnModel().getColumn(i);
+
+            comp = headerRenderer.getTableCellRendererComponent(null, column.getHeaderValue(), false, false, 0, 0);
+            headerWidth = comp.getPreferredSize().width;
+
+            comp = table.getDefaultRenderer(model.getColumnClass(i))
+                    .getTableCellRendererComponent(table, longValues[i], false, false, 0, i);
+
+            cellWidth = comp.getPreferredSize().width;
+            column.setPreferredWidth(Math.max(headerWidth, cellWidth));
+        }
     }
 
+    
     /*
      *****************************************************************************************
      * The cells in the "Report" column are clickable button.

@@ -20,14 +20,16 @@ public class AssessedCommandTableModel extends AbstractTableModel {
         String.class,
         String.class,
         String.class,
-        Object.class
+        JButton.class
     };
 
-    /*public final Object[] longValues = {
-     new String(new char[500]),
-     new String(new char[10]),
-     new String(new char[10])
-     };*/
+    public final Object[] longValues = {
+        new Integer(999999999),
+        new String(new char[30]),
+        "XXXXXXXXXXX",
+        new JButton()
+    };
+    
     private final ArrayList<AssessedCommand> assessedCommandList;
 
     AssessedCommandTableModel(ArrayList<AssessedCommand> assessedCommandList) {

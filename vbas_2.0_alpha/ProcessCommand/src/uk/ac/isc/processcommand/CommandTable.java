@@ -2,6 +2,7 @@ package uk.ac.isc.processcommand;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -29,6 +30,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import org.openide.util.Exceptions;
 import uk.ac.isc.seisdata.AssessedCommand;
 import uk.ac.isc.seisdata.Command;
@@ -136,8 +139,8 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         //table.setCellSelectionEnabled(false);
         table.setColumnSelectionAllowed(false);
-        table.setSelectionBackground(new Color(45, 137, 239));
-        table.setSelectionForeground(Color.WHITE);
+        /* table.setSelectionBackground(new Color(45, 137, 239));
+         table.setSelectionForeground(Color.WHITE);*/
 
         table.setRowHeight(25);
         table.setFont(new Font("Sans-serif", Font.PLAIN, 14));
@@ -145,7 +148,6 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
         table.setShowVerticalLines(false);
         table.setShowHorizontalLines(false);
 
-        // Set: Left or Right aligned
         DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
         DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
@@ -153,11 +155,36 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
         leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
-        table.getColumnModel().getColumn(0).setCellRenderer(rightRenderer);
+        table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
         table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
         table.getColumnModel().getColumn(2).setCellRenderer(leftRenderer);
         table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
         table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
+
+        // This part of the code picks good column sizes. 
+        // If all column heads are wider than the column's cells'
+        // contents, then you can just use column.sizeWidthToFit().
+        // SiesEventsTableModel model = (SiesEventsTableModel) table.getModel();
+        TableColumn column = null;
+        Component comp = null;
+        int headerWidth = 0;
+        int cellWidth = 0;
+
+        Object[] longValues = model.longValues;
+        TableCellRenderer headerRenderer = table.getTableHeader().getDefaultRenderer();
+
+        for (int i = 0; i < model.getColumnCount(); i++) {
+            column = table.getColumnModel().getColumn(i);
+
+            comp = headerRenderer.getTableCellRendererComponent(null, column.getHeaderValue(), false, false, 0, 0);
+            headerWidth = comp.getPreferredSize().width;
+
+            comp = table.getDefaultRenderer(model.getColumnClass(i))
+                    .getTableCellRendererComponent(table, longValues[i], false, false, 0, i);
+
+            cellWidth = comp.getPreferredSize().width;
+            column.setPreferredWidth(Math.max(headerWidth, cellWidth));
+        }
 
     }
 
