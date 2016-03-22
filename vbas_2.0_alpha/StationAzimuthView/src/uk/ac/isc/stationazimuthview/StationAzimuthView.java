@@ -349,13 +349,10 @@ public class StationAzimuthView extends JPanel {
     }
 
     private void drawBufferedImage() {
-       
-      
+
         //draw the background Pie Chart
         Graphics2D g2 = dstImg.createGraphics();
 
-        //g2.setPaint(Color.RED);
-        //g2.fillOval(0, 0, imSize, imSize);
         //draw the base map
         BufferedImage tmpImg1 = new BufferedImage(warpedImgSize, warpedImgSize, BufferedImage.TYPE_INT_ARGB);
         //the inner image
@@ -374,7 +371,7 @@ public class StationAzimuthView extends JPanel {
                         * (i - warpedImgSize / 2)
                         + (j - warpedImgSize / 2)
                         * (j - warpedImgSize / 2)));
-                
+
                 if (dist > warpedImgSize / 2) {
                     tmpImg1.setRGB(i, j, 0xFF000000);
                 } else {
@@ -401,16 +398,16 @@ public class StationAzimuthView extends JPanel {
                 }
             }
         }
+
         AffineTransform at = new AffineTransform();
         double scaleLevel = (double) (imSize * 0.75) / (double) warpedImgSize;
         at.scale(scaleLevel, scaleLevel);
-        //at.translate(0.125*imSize/scaleLevel,0.125*imSize/scaleLevel);
         AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
         tmpImg2 = scaleOp.filter(tmpImg1, tmpImg2);
 
-        //draw the station positions
-        //calculate the position and draw all the stations       
-        innerG2.setPaint(new Color(0, 154, 205));//orig:(0,240,240)     
+        // draw the station positions
+        // calculate the position and draw all the stations       
+        innerG2.setPaint(new Color(0, 154, 205)); // sky color    
         for (Station sta : staList) {
             //distance on pixel
             if (sta.getDelta() <= mapDegree) {
@@ -419,8 +416,7 @@ public class StationAzimuthView extends JPanel {
                 double azi = sta.getAzimuth() / 180.0 * Math.PI;
                 double y = tmpImg2.getWidth() / 2 - d1 * Math.cos(azi);
                 double x = tmpImg2.getWidth() / 2 + d1 * Math.sin(azi);
-                //innerG2.drawRect((int)(x-stationIconSize/2), (int)(y-stationIconSize/2), stationIconSize, stationIconSize);
-                
+
                 innerG2.fillOval((int) (x - stationIconSize / 2), (int) (y - stationIconSize / 2), stationIconSize, stationIconSize);
             }
         }
@@ -428,11 +424,9 @@ public class StationAzimuthView extends JPanel {
         //draw the prime hypocentre location
         innerG2.setPaint(new Color(0, 0, 0));
         innerG2.setStroke(new BasicStroke(2));
-        //innerG2.fillOval((tmpImg2.getWidth()/2-7),(tmpImg2.getWidth()/2-7),15,15);
         int tt = tmpImg2.getWidth() / 2;
         innerG2.drawLine(tt - 3, tt - 3, tt + 3, tt + 3);
         innerG2.drawLine(tt - 3, tt + 3, tt + 3, tt - 3);
-        //innerG2.drawLine(tmpImg2.getWidth()/2-2, (tmpImg2.getWidth()/2-2, tmpImg2.getWidth()/2+2, tmpImg2.getWidth()/2+2);
 
         at = new AffineTransform();
         at.translate(0.125 * imSize, 0.125 * imSize);
@@ -441,14 +435,9 @@ public class StationAzimuthView extends JPanel {
         dstImg = translateOp.filter(tmpImg2, dstImg);
 
         g2.setStroke(new BasicStroke(3));
-
         g2.setPaint(new Color(196, 196, 196));
         g2.drawOval((int) (0.125 * imSize), (int) (0.125 * imSize), (int) (imSize * 0.75), (int) (imSize * 0.75));
 
-        //g2.setPaint(Color.ORANGE);
-        //g2.drawArc((int)(0.125*imSize), (int)(0.125*imSize), (int)(imSize*0.75), (int)(imSize*0.75), 90, -aziSummary.get(0));
-        
-        
     }
 
     //paint function of the view
