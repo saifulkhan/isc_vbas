@@ -2,6 +2,7 @@ package uk.ac.isc.hypooverview;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -55,10 +56,12 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
     //base map size
     private final int mapWidth = 800;
     private final int mapHeight = 800;
-
+    // Border attributes: border width
+    int borderWidth = 8, textToBorder = 30;
     //mini map size
     private final int miniWidth = 200;
     private final int miniHeight = 200;
+    private static Font legendFont = new Font("Verdana", Font.BOLD, 12);
 
     //tile controller for the base map
     private final TileController tileController;
@@ -95,9 +98,6 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
 
     //offset on the panel
     private int xOffset, yOffset;
-
-    // Border attributes: border width
-    int borderWidth = 12, textToBorder = 30;
 
     // longitude is allowed to smaller than -180 or bigger than 180, we norm it when annotating it
     // annotation range
@@ -180,22 +180,27 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
         SeisDataDAO.retrieveHistEvents(seisList, latHigh, latLow, lonLeft, lonRight);
     }
 
-    // saiful
     public BufferedImage getBaseMap() {
         return baseMap;
     }
 
-    public int getWidth() {
+    public int getMapWidth() {
         return mapWidth;
     }
 
-    public int getHeight() {
+    public int getMapHeight() {
         return mapHeight;
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+        // TODO: get the exact text width!
+        return new Dimension(mapWidth + borderWidth + (textToBorder * 4), mapHeight + borderWidth + textToBorder);
     }
 
     public BufferedImage getMiniMap() {
         return this.miniMap;
-    } // saiful
+    }
 
     public int getCurrentBand() {
         return SeisUtils.getNewDepthBand(cenDepth);
@@ -685,154 +690,148 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
             //g2.drawImage(miniMap,miniXOffset, miniYOffset, miniWidth, miniHeight, this);
         }
 
-        //if(showBorder == true)
-        {
-            Stroke savedStroke = g2.getStroke();
-            Font savedFont = g2.getFont();
+        /*
+         * Saiful:
+         * The border (black-white) should be always shown
+         */
+        Stroke savedStroke = g2.getStroke();
+        Font savedFont = g2.getFont();
 
-            //drawing minimap border
-            //if(showMiniMap == true)
-            {
-                g2.setStroke(new BasicStroke(3));
-                //g2.drawRect(miniXOffset, miniYOffset, miniWidth, miniHeight);
+        // Saiful: mini map is always shown
+        g2.setStroke(new BasicStroke(3));
+        //g2.drawRect(miniXOffset, miniYOffset, miniWidth, miniHeight);
+
+        // drawing the big border, if the space is smaller, just draw simple black border
+        // one for border one for annotation
+        if (((getWidth() - mapWidth) / 2 > 2 * borderWidth)) {
+            g2.setStroke(new BasicStroke(3));
+            if ((getHeight() - mapHeight) / 2 > 0) {
+                //left
+                g2.drawRect((getWidth() - mapWidth) / 2 - borderWidth, (getHeight() - mapHeight) / 2, borderWidth, mapHeight);
+                //right
+                g2.drawRect((getWidth() + mapWidth) / 2, (getHeight() - mapHeight) / 2, borderWidth, mapHeight);
+            } else {
+                //left
+                g2.drawRect((getWidth() - mapWidth) / 2 - borderWidth, 0, borderWidth, getHeight());
+                //right
+                g2.drawRect((getWidth() + mapWidth) / 2, 0, borderWidth, getHeight());
             }
-
-            //drawing the big border, if the space is smaller, just draw simple black border
-            //one for border one for annotation
-            if (((getWidth() - mapWidth) / 2 > 2 * borderWidth)) {
-                g2.setStroke(new BasicStroke(3));
-                if ((getHeight() - mapHeight) / 2 > 0) {
-                    //left
-                    g2.drawRect((getWidth() - mapWidth) / 2 - borderWidth, (getHeight() - mapHeight) / 2, borderWidth, mapHeight);
-                    //right
-                    g2.drawRect((getWidth() + mapWidth) / 2, (getHeight() - mapHeight) / 2, borderWidth, mapHeight);
-                } else {
-                    //left
-                    g2.drawRect((getWidth() - mapWidth) / 2 - borderWidth, 0, borderWidth, getHeight());
-                    //right
-                    g2.drawRect((getWidth() + mapWidth) / 2, 0, borderWidth, getHeight());
-                }
-            }
-
-            if (((getHeight() - mapHeight) / 2 > 2 * borderWidth)) {
-                g2.setStroke(new BasicStroke(3));
-                if ((getWidth() - mapWidth) / 2 > 0) {
-                    //top
-                    g2.drawRect((getWidth() - mapWidth) / 2, (getHeight() - mapHeight) / 2 - borderWidth, mapWidth, borderWidth);
-                    //bottom
-                    g2.drawRect((getWidth() - mapWidth) / 2, (getHeight() + mapHeight) / 2, mapWidth, borderWidth);
-                } else {
-                    //top
-                    g2.drawRect(0, (getHeight() - mapHeight) / 2 - borderWidth, getHeight(), borderWidth);
-                    //bottom
-                    g2.drawRect(0, (getHeight() + mapHeight) / 2, getHeight(), borderWidth);
-                }
-            }
-
-            //calculate the boundary lat and lon for annotation
-            //calculateAnnotation(); //results are saved in latLow, latHigh, lonLeft and lonRight
-            //double[] annLatRatio = new double[latAnnotNumber];
-            double[] annLonRatio = new double[lonAnnotNumber];
-
-            int labelY, barYPos;
-            int count;
-
-            if ((getHeight() - mapHeight) > 0) //set map between latitude labels and border ratio
-            {
-                for (int i = (int) Math.round(latLow + 0.5); i <= (int) latHigh; i += 4) {
-
-                    labelY = (int) (getHeight() / 2 + (tileSource.LatToY((double) i, zoom) - center.y));
-                    if ((i + 2) < latHigh) {
-                        barYPos = (int) (getHeight() / 2 + (tileSource.LatToY((double) (i + 2), zoom) - center.y));
-                    } else {
-                        barYPos = (int) (getHeight() / 2 + (tileSource.LatToY(latHigh, zoom) - center.y));
-                    }
-
-                    //draw the rail rectangle
-                    //left
-                    g2.fillRect((getWidth() - mapWidth) / 2 - borderWidth, barYPos,
-                            borderWidth, labelY - barYPos);
-                    //right
-                    g2.fillRect((getWidth() + mapWidth) / 2, barYPos,
-                            borderWidth, labelY - barYPos);
-
-                    //label the latitude
-                    int labelXLeft = (getWidth() - mapWidth) / 2 - borderWidth - textToBorder;
-                    int labelXRight = (getWidth() + mapWidth) / 2 + borderWidth + textToBorder;
-                    //int labelY = (int)((getHeight()-mapHeight)/2 +(1-annLatRatio[count-2])*mapHeight);
-                    String label;
-                    if (i >= 0) {
-                        label = ((Integer) (i)).toString() + "N";
-                    } else {
-                        label = ((Integer) Math.abs(i)).toString() + "S";
-                    }
-
-                    //set font
-                    g2.setFont(new Font("SansSerif", Font.BOLD, 16));
-                    if ((getWidth() - mapWidth) / 2 >= (borderWidth + textToBorder * 2)) {
-                        TextUtilities.drawRotatedString(label, g2, labelXLeft, labelY, TextAnchor.CENTER, 0, TextAnchor.CENTER);
-                        TextUtilities.drawRotatedString(label, g2, labelXRight, labelY, TextAnchor.CENTER, 0, TextAnchor.CENTER);
-                    }
-
-                }
-
-            }
-
-            if ((getWidth() - mapWidth) > 0) {
-                count = 0;
-                int step;
-                if ((lonRight - lonLeft) > 50) {
-                    step = 4;
-                } else {
-                    step = 2;
-                }
-
-                for (int i = (int) Math.round(lonLeft + 0.5); i <= (int) lonRight; i += step) {
-                    annLonRatio[count++] = Math.min(1.0, ((double) i - lonLeft) / (lonRight - lonLeft));
-                    if (count % 2 == 0) {
-                        //draw the rail rectangle
-                        //top
-                        g2.fillRect((int) ((getWidth() - mapWidth) / 2 + annLonRatio[count - 2] * mapWidth), (getHeight() - mapHeight) / 2 - borderWidth,
-                                (int) ((annLonRatio[count - 1] - annLonRatio[count - 2]) * (double) mapWidth), borderWidth);
-                        //bottom
-                        g2.fillRect((int) ((getWidth() - mapWidth) / 2 + annLonRatio[count - 2] * mapWidth), (getHeight() + mapHeight) / 2,
-                                (int) ((annLonRatio[count - 1] - annLonRatio[count - 2]) * (double) mapWidth), borderWidth);
-
-                        //label the longitude
-                        int labelX = (int) ((getWidth() - mapWidth) / 2 + annLonRatio[count - 2] * mapWidth);
-                        int labelYTop = (int) ((getHeight() - mapHeight) / 2) - borderWidth - textToBorder;
-                        int labelYBottom = (int) ((getHeight() + mapHeight) / 2) + borderWidth + textToBorder;
-                        int normLon;
-                        String label;
-                        if ((i - 2) < -180) {
-                            normLon = i - 2 + 360;
-                        } else if ((i - 1) > 180) {
-                            normLon = i - 2 - 360;
-                        } else {
-                            normLon = i - 2;
-                        }
-
-                        if (normLon >= 0) {
-                            label = ((Integer) normLon).toString() + "E";
-                        } else {
-                            label = ((Integer) Math.abs(normLon)).toString() + "W";
-                        }
-
-                        //set font
-                        g2.setFont(new Font("SansSerif", Font.BOLD, 16));
-                        if ((getHeight() - mapHeight) / 2 >= (borderWidth + textToBorder * 2)) {
-                            TextUtilities.drawRotatedString(label, g2, labelX, labelYTop, TextAnchor.CENTER, 0, TextAnchor.CENTER);
-                            TextUtilities.drawRotatedString(label, g2, labelX, labelYBottom, TextAnchor.CENTER, 0, TextAnchor.CENTER);
-                        }
-
-                    }
-                }
-            }
-
-            g2.setStroke(savedStroke);
-            g2.setFont(savedFont);
-
         }
+        if (((getHeight() - mapHeight) / 2 > 2 * borderWidth)) {
+            g2.setStroke(new BasicStroke(3));
+            if ((getWidth() - mapWidth) / 2 > 0) {
+                //top
+                g2.drawRect((getWidth() - mapWidth) / 2, (getHeight() - mapHeight) / 2 - borderWidth, mapWidth, borderWidth);
+                //bottom
+                g2.drawRect((getWidth() - mapWidth) / 2, (getHeight() + mapHeight) / 2, mapWidth, borderWidth);
+            } else {
+                //top
+                g2.drawRect(0, (getHeight() - mapHeight) / 2 - borderWidth, getHeight(), borderWidth);
+                //bottom
+                g2.drawRect(0, (getHeight() + mapHeight) / 2, getHeight(), borderWidth);
+            }
+        }
+
+        //calculate the boundary lat and lon for annotation
+        //calculateAnnotation(); //results are saved in latLow, latHigh, lonLeft and lonRight
+        //double[] annLatRatio = new double[latAnnotNumber];
+        double[] annLonRatio = new double[lonAnnotNumber];
+
+        int labelY, barYPos;
+        int count;
+
+        if ((getHeight() - mapHeight) > 0) //set map between latitude labels and border ratio
+        {
+            for (int i = (int) Math.round(latLow + 0.5); i <= (int) latHigh; i += 4) {
+
+                labelY = (int) (getHeight() / 2 + (tileSource.LatToY((double) i, zoom) - center.y));
+                if ((i + 2) < latHigh) {
+                    barYPos = (int) (getHeight() / 2 + (tileSource.LatToY((double) (i + 2), zoom) - center.y));
+                } else {
+                    barYPos = (int) (getHeight() / 2 + (tileSource.LatToY(latHigh, zoom) - center.y));
+                }
+
+                //draw the rail rectangle
+                //left
+                g2.fillRect((getWidth() - mapWidth) / 2 - borderWidth, barYPos,
+                        borderWidth, labelY - barYPos);
+                //right
+                g2.fillRect((getWidth() + mapWidth) / 2, barYPos,
+                        borderWidth, labelY - barYPos);
+
+                //label the latitude
+                int labelXLeft = (getWidth() - mapWidth) / 2 - borderWidth - textToBorder;
+                int labelXRight = (getWidth() + mapWidth) / 2 + borderWidth + textToBorder;
+                //int labelY = (int)((getHeight()-mapHeight)/2 +(1-annLatRatio[count-2])*mapHeight);
+                String label;
+                if (i >= 0) {
+                    label = ((Integer) (i)).toString() + "N";
+                } else {
+                    label = ((Integer) Math.abs(i)).toString() + "S";
+                }
+
+                // Saiful : always draw the legend, scrollbar is activated!
+                g2.setFont(legendFont);
+                //if ((getWidth() - mapWidth) / 2 >= (borderWidth + textToBorder * 2)) {
+                TextUtilities.drawRotatedString(label, g2, labelXLeft, labelY, TextAnchor.CENTER, 0, TextAnchor.CENTER);
+                TextUtilities.drawRotatedString(label, g2, labelXRight, labelY, TextAnchor.CENTER, 0, TextAnchor.CENTER);
+                //}
+            }
+        }
+
+        if ((getWidth() - mapWidth) > 0) {
+            count = 0;
+            int step;
+            if ((lonRight - lonLeft) > 50) {
+                step = 4;
+            } else {
+                step = 2;
+            }
+
+            for (int i = (int) Math.round(lonLeft + 0.5); i <= (int) lonRight; i += step) {
+                annLonRatio[count++] = Math.min(1.0, ((double) i - lonLeft) / (lonRight - lonLeft));
+                if (count % 2 == 0) {
+                    //draw the rail rectangle
+                    //top
+                    g2.fillRect((int) ((getWidth() - mapWidth) / 2 + annLonRatio[count - 2] * mapWidth), (getHeight() - mapHeight) / 2 - borderWidth,
+                            (int) ((annLonRatio[count - 1] - annLonRatio[count - 2]) * (double) mapWidth), borderWidth);
+                    //bottom
+                    g2.fillRect((int) ((getWidth() - mapWidth) / 2 + annLonRatio[count - 2] * mapWidth), (getHeight() + mapHeight) / 2,
+                            (int) ((annLonRatio[count - 1] - annLonRatio[count - 2]) * (double) mapWidth), borderWidth);
+
+                    //label the longitude
+                    int labelX = (int) ((getWidth() - mapWidth) / 2 + annLonRatio[count - 2] * mapWidth);
+                    int labelYTop = (int) ((getHeight() - mapHeight) / 2) - borderWidth - textToBorder;
+                    int labelYBottom = (int) ((getHeight() + mapHeight) / 2) + borderWidth + textToBorder;
+                    int normLon;
+                    String label;
+                    if ((i - 2) < -180) {
+                        normLon = i - 2 + 360;
+                    } else if ((i - 1) > 180) {
+                        normLon = i - 2 - 360;
+                    } else {
+                        normLon = i - 2;
+                    }
+
+                    if (normLon >= 0) {
+                        label = ((Integer) normLon).toString() + "E";
+                    } else {
+                        label = ((Integer) Math.abs(normLon)).toString() + "W";
+                    }
+
+                    // Saiful : always draw the legend, scrollbar is activated!
+                    g2.setFont(legendFont);
+                    //if ((getHeight() - mapHeight) / 2 >= (borderWidth + textToBorder * 2)) {
+                    TextUtilities.drawRotatedString(label, g2, labelX, labelYTop, TextAnchor.CENTER, 0, TextAnchor.CENTER);
+                    TextUtilities.drawRotatedString(label, g2, labelX, labelYBottom, TextAnchor.CENTER, 0, TextAnchor.CENTER);
+                    //}
+
+                }
+            }
+        }
+
+        g2.setStroke(savedStroke);
+        g2.setFont(savedFont);
 
         if (depthBandOrder == 5 && Thread.State.NEW == mapAnimThread.getState()) {
             mapAnimThread.start();
@@ -1358,8 +1357,6 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
         return tileController.getTileCache();
     }
 
-    
-    
     /*
      *****************************************************************************************
      * XX

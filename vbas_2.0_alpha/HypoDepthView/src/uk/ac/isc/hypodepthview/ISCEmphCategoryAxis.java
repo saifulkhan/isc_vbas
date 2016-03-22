@@ -92,10 +92,10 @@ public class ISCEmphCategoryAxis extends CategoryAxis {
                 Rectangle2D area = new Rectangle2D.Double(x0, y0, (x1 - x0),
                         (y1 - y0));
 
-                if (getTickLabelPaint(tick.getCategory()) == Color.WHITE) {
-                    g2.setPaint(Color.BLACK);
-                    g2.fill(area);
-                    g2.setPaint(Color.WHITE);
+                if (getTickLabelPaint(tick.getCategory()) == Color.RED) {
+                    //g2.setPaint(Color.BLACK);
+                    //g2.fill(area);
+                    g2.setPaint(Color.RED);
                 }
 
                 Point2D anchorPoint = RectangleAnchor.coordinates(area,

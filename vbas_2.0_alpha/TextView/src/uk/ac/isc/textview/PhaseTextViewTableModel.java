@@ -4,29 +4,69 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
-import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.Phase;
 import uk.ac.isc.seisdata.VBASLogger;
 
 /**
  * The phase table model for the phase table
- *
- * @author hui
  */
 public class PhaseTextViewTableModel extends AbstractTableModel {
 
-    private final String[] columnNames = {"Agency", "Code", "Time", "Region Name",
-        "Delta. Deg.", "ES. Az.", "Op. ID", "ISC ID", "ISC Res",
-        "Def.", "AmpMag", "Slowness", "SNR", "SE. Az.",
-        "Phase ID", "Reading ID"};
+    private final String[] columnNames = {
+        "Agency",
+        "Code",
+        "Time",
+        "Region Name",
+        "Delta. Deg.",
+        "ES. Az.",
+        "Op. ID",
+        "ISC ID",
+        "ISC Res",
+        "Def.",
+        "AmpMag",
+        "Slowness",
+        "SNR",
+        "SE. Az.",
+        "Phase ID",
+        "Reading ID"};
 
-    private final Class[] columns = new Class[]{String.class, String.class, String.class, String.class,
-        Double.class, Double.class, String.class, String.class, String.class,
-        String.class, String.class, Double.class, Double.class, Double.class,
-        Integer.class, Integer.class};
+    private final Class[] columns = new Class[]{
+        String.class,
+        String.class,
+        String.class,
+        String.class,
+        Long.class,
+        Long.class,
+        String.class,
+        String.class,
+        String.class,
+        String.class,
+        String.class,
+        Double.class, 
+        Double.class, 
+        Double.class, 
+        Integer.class,
+        Integer.class};
+
+    public static final Object[] longValues = {
+        "XXXXX",
+        "XXXXX",
+        "00:00:00",
+        "XXXXXXXXXX",
+        "360",
+        "0.0",
+        "X",
+        "X",
+        "+0.0",
+        "X",
+        "0.0",
+        new Double(0.0),
+        new Double(0.0),
+        new Double(0.0),
+        new Integer(999999999),
+        new Integer(999999999)};
 
     private ArrayList<Phase> phasesList;
 
@@ -67,10 +107,11 @@ public class PhaseTextViewTableModel extends AbstractTableModel {
         numFormat.setMaximumFractionDigits(1);
         numFormat.setMinimumFractionDigits(1);
 
+        DecimalFormat df = new DecimalFormat("#.#");
+
         switch (columnIndex) {
 
             case 0:
-                // System.out.println("phasesList.size()=" + phasesList.size() ", columnIndex=" + columnIndex + ", rowIndex=" + rowIndex + ", phasesList.get(rowIndex)=" + phasesList.get(rowIndex));
                 retObject = phasesList.get(rowIndex).getReportAgency();
                 break;
             case 1:
@@ -103,7 +144,6 @@ public class PhaseTextViewTableModel extends AbstractTableModel {
                 break;
             case 8:
                 if (phasesList.get(rowIndex).getTimeResidual() != null) {
-                    //retObject = Double.valueOf(numFormat.format(phasesList.get(rowIndex).getTimeResidual()));
                     if (phasesList.get(rowIndex).getTimeResidual() > 0) {
                         retObject = "+" + numFormat.format(phasesList.get(rowIndex).getTimeResidual());
                     } else {
@@ -134,8 +174,10 @@ public class PhaseTextViewTableModel extends AbstractTableModel {
                 }
                 break;
             case 11:
+
                 retObject = phasesList.get(rowIndex).getSlowness();
                 break;
+
             case 12:
                 retObject = phasesList.get(rowIndex).getSNRRate();
                 break;

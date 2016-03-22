@@ -1,6 +1,7 @@
 package uk.ac.isc.hypomagnitudeview;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -382,6 +383,11 @@ public class HypoMagnitudeViewPanel extends JPanel {
         return viewHeight;
     }
 
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(viewWidth * 2, viewHeight);
+    }
+    
     /*
      * If the layout is vertical.
      * Saiful: hard coded and not used.

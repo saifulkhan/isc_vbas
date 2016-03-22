@@ -1,6 +1,7 @@
 package uk.ac.isc.hypodepthview;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -45,61 +46,11 @@ public class HypoDepthViewPanel extends JPanel {
 
     //buffer image of the bar chart
     private BufferedImage depthHistImg;
+    private static Font legendFont = new Font("Verdana", Font.BOLD, 11);
 
     public HypoDepthViewPanel(ArrayList<Hypocentre> hypos) {
         VBASLogger.logDebug("Here...");
-
-        this.hyposList.addAll(hypos);
-        //sort the hypolist
-        Collections.sort(hyposList, new Comparator<Hypocentre>() {
-            @Override
-            public int compare(Hypocentre h1, Hypocentre h2) {
-                return (h1.getDepth() - h2.getDepth());
-            }
-        });
-
-        HyposToCategoryDataset(hyposList);
-
-        //defining axes
-        //CategoryAxis categoryAxis = new CategoryAxis();
-        ISCEmphCategoryAxis categoryAxis = new ISCEmphCategoryAxis();
-        categoryAxis.setTickLabelsVisible(true);
-        categoryAxis.setVisible(true);
-        categoryAxis.setTickLabelFont(new Font("Verdana", Font.BOLD, 11));
-        ValueAxis valueAxis = new NumberAxis();
-        valueAxis.setTickLabelFont(new Font("Verdana", Font.BOLD, 11));
-        valueAxis.setInverted(true);
-        valueAxis.setUpperBound(upperbound * 1.1);
-        valueAxis.setLowerBound(0.0);
-
-        //defining the bar renderer
-        DepthBarRenderer renderer = new DepthBarRenderer(hyposList);
-        //renderer.setBaseItemLabelsVisible(true);
-        renderer.setShadowVisible(false);
-        renderer.setPaint(Color.BLACK);
-        renderer.setMaximumBarWidth(0.1);
-        renderer.setBarPainter(new StandardBarPainter());
-
-        CategoryPlot plot = new CategoryPlot(dataset, categoryAxis, valueAxis, renderer);
-        //plot.setRenderer(renderer);
-        //if the list is too long, set a rotation angle
-        if (hyposList.size() > 9) {
-            categoryAxis.setCategoryLabelPositions(CategoryLabelPositions.createUpRotationLabelPositions(Math.PI / 2.0));
-        } else {
-            categoryAxis.setCategoryLabelPositions(CategoryLabelPositions.STANDARD);
-        }
-
-        plot.setDomainAxisLocation(AxisLocation.TOP_OR_LEFT);
-        plot.setBackgroundPaint(Color.WHITE);
-
-        plot.getDomainAxis().setLowerMargin(0.0);
-        plot.getDomainAxis().setUpperMargin(0.0);
-        plot.getDomainAxis().setCategoryMargin(0.4);
-
-        plot.getDomainAxis().setTickLabelPaint("ISC", Color.WHITE);
-
-        freeChart = new JFreeChart(plot);
-        freeChart.removeLegend();
+        updateData(hypos);
     }
 
     /**
@@ -107,12 +58,12 @@ public class HypoDepthViewPanel extends JPanel {
      *
      * @param hypos
      */
-    public void UpdateData(ArrayList<Hypocentre> hypos) {
+    public void updateData(ArrayList<Hypocentre> hypos) {
+     
         this.hyposList.clear();
         this.hyposList.addAll(hypos);
 
         Collections.sort(hyposList, new Comparator<Hypocentre>() {
-
             @Override
             public int compare(Hypocentre h1, Hypocentre h2) {
                 return (h1.getDepth() - h2.getDepth());
@@ -125,9 +76,9 @@ public class HypoDepthViewPanel extends JPanel {
         ISCEmphCategoryAxis categoryAxis = new ISCEmphCategoryAxis();
         categoryAxis.setTickLabelsVisible(true);
         categoryAxis.setVisible(true);
-        categoryAxis.setTickLabelFont(new Font("Verdana", Font.BOLD, 11));
+        categoryAxis.setTickLabelFont(legendFont);
         ValueAxis valueAxis = new NumberAxis();
-        valueAxis.setTickLabelFont(new Font("Verdana", Font.BOLD, 11));
+        valueAxis.setTickLabelFont(legendFont);
         valueAxis.setInverted(true);
         valueAxis.setUpperBound(upperbound * 1.1);
         valueAxis.setLowerBound(0.0);
@@ -135,7 +86,7 @@ public class HypoDepthViewPanel extends JPanel {
         DepthBarRenderer renderer = new DepthBarRenderer(hyposList);
         //renderer.setBaseItemLabelsVisible(true);
         renderer.setShadowVisible(false);
-        renderer.setPaint(Color.BLACK);
+        renderer.setPaint(Color.BLACK); 
         renderer.setMaximumBarWidth(0.1);
         renderer.setBarPainter(new StandardBarPainter());
 
@@ -149,19 +100,19 @@ public class HypoDepthViewPanel extends JPanel {
         }
 
         plot.setDomainAxisLocation(AxisLocation.TOP_OR_LEFT);
-        plot.setBackgroundPaint(Color.WHITE);
+        //plot.setBackgroundPaint(Color.WHITE);   // Issue #14 
 
         plot.getDomainAxis().setLowerMargin(0.0);
         plot.getDomainAxis().setUpperMargin(0.0);
         plot.getDomainAxis().setCategoryMargin(0.4);
 
-        plot.getDomainAxis().setTickLabelPaint("ISC", Color.WHITE);
+        plot.getDomainAxis().setTickLabelPaint("ISC", Color.RED); // Issue #14 
 
         freeChart = new JFreeChart(plot);
         freeChart.removeLegend();
-
     }
 
+    
     /**
      * Helper class to find redundancies in the List and rename them cause
      * CategoryDataset requires unique key
@@ -257,12 +208,16 @@ public class HypoDepthViewPanel extends JPanel {
         return depthHistImg;
     }
 
-    public int getWidth() {
+    public int getViewWidth() {
         return width;
     }
 
-    public int getHeight() {
+    public int getViewHeight() {
         return height;
     }
 
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(getViewWidth(), getViewHeight());
+    }
 }

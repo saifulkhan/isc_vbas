@@ -101,7 +101,7 @@ public final class HypoDepthViewTopComponent extends TopComponent implements Sei
                 break;
         }
 
-        hdp.UpdateData(hyposList.getHypocentres());
+        hdp.updateData(hyposList.getHypocentres());
         hdp.getJFreeChart().fireChartChanged();
         hdp.repaint();
         scrollPane.setViewportView(hdp);

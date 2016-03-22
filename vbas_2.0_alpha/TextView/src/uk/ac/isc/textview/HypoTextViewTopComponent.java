@@ -7,6 +7,7 @@ package uk.ac.isc.textview;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -23,6 +24,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
@@ -89,7 +92,7 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         //setName("Hypocentre Selection");
 
         VBASLogger.logDebug("Loaded...");
-        
+
         selectedSeisEvent.addChangeListener(this);
 
         table = new JTable();
@@ -182,6 +185,9 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         table.getSelectionModel().removeListSelectionListener(lsl);
         table.setModel(new HypocentreTableModel(hypocentresList.getHypocentres()));
 
+        // setup visual attributes again
+        setupTableVisualAttributes();
+
         table.clearSelection();
         setHeaderText();
         header.repaint();
@@ -204,8 +210,8 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         table.setRowSelectionAllowed(true);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setColumnSelectionAllowed(false);
-        table.setSelectionBackground(new Color(45, 137, 239));
-        table.setSelectionForeground(Color.WHITE);
+        /*table.setSelectionBackground(new Color(45, 137, 239));
+         table.setSelectionForeground(Color.WHITE);*/
         //hyposTable.setRowSelectionInterval(0, 0);
 
         table.setRowHeight(25);
@@ -214,11 +220,48 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         table.setShowVerticalLines(false);
         table.setShowHorizontalLines(false);
 
+        // Set: Left or Right aligned
         DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+        DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
-        table.getColumnModel().getColumn(6).setCellRenderer(rightRenderer);
-        table.getColumnModel().getColumn(7).setCellRenderer(rightRenderer);
+        leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
+        table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(5).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(6).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(7).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(8).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(9).setCellRenderer(centerRenderer);
+
+        // This part of the code picks good column sizes. 
+        // If all column heads are wider than the column's cells'
+        // contents, then you can just use column.sizeWidthToFit().
+        // EventsTableModel model = (EventsTableModel) table.getModel();
+        TableColumn column = null;
+        Component comp = null;
+        int headerWidth = 0;
+        int cellWidth = 0;
+
+        Object[] longValues = HypocentreTableModel.longValues;
+        TableCellRenderer headerRenderer = table.getTableHeader().getDefaultRenderer();
+
+        for (int i = 0; i < table.getModel().getColumnCount(); i++) {
+            column = table.getColumnModel().getColumn(i);
+            comp = headerRenderer.getTableCellRendererComponent(null, column.getHeaderValue(), false, false, 0, 0);
+            headerWidth = comp.getPreferredSize().width;
+
+            comp = table.getDefaultRenderer(table.getModel().getColumnClass(i))
+                    .getTableCellRendererComponent(table, longValues[i], false, false, 0, i);
+
+            cellWidth = comp.getPreferredSize().width;
+            column.setPreferredWidth(Math.max(headerWidth, cellWidth));
+        }
     }
 
     private void setHeaderText() {

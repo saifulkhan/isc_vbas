@@ -15,7 +15,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import uk.ac.isc.seisdata.EventsTableModel;
 import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.SeisEvent;
 import uk.ac.isc.seisdata.SeisEventsList;
@@ -28,7 +27,7 @@ import uk.ac.isc.seisdata.VBASLogger;
 public class SeisEventsTable extends JPanel implements ListSelectionListener {
 
     private JTable table;
-    private EventsTableModel tableModel;
+    private SiesEventsTableModel tableModel;
     private SeisEventSearchPanel eventsSearchPanel;
 
     /*
@@ -39,7 +38,7 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
 
     public SeisEventsTable() {
         table = new JTable();
-        tableModel = new EventsTableModel(eventsList.getEvents());
+        tableModel = new SiesEventsTableModel(eventsList.getEvents());
         table.setModel(tableModel);
 
         // add listener for the selection change
@@ -87,8 +86,8 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
         table.setRowSelectionAllowed(true);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setColumnSelectionAllowed(false);
-        table.setSelectionBackground(new Color(45, 137, 239));
-        table.setSelectionForeground(Color.WHITE);
+        //table.setSelectionBackground(new Color(45, 137, 239));
+        //table.setSelectionForeground(Color.WHITE);
         //table.setRowSelectionInterval(0, 0);
 
         table.setRowHeight(25);
@@ -108,15 +107,16 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
         table.getColumnModel().getColumn(0).setCellRenderer(leftRenderer);
         table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
         table.getColumnModel().getColumn(2).setCellRenderer(leftRenderer);
-        table.getColumnModel().getColumn(3).setCellRenderer(rightRenderer);
-        table.getColumnModel().getColumn(4).setCellRenderer(rightRenderer);
-        table.getColumnModel().getColumn(5).setCellRenderer(rightRenderer);
-        table.getColumnModel().getColumn(6).setCellRenderer(rightRenderer);
+        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(5).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(6).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(7).setCellRenderer(centerRenderer);
 
         // This part of the code picks good column sizes. 
         // If all column heads are wider than the column's cells'
         // contents, then you can just use column.sizeWidthToFit().
-        // EventsTableModel model = (EventsTableModel) table.getModel();
+        // SiesEventsTableModel model = (SiesEventsTableModel) table.getModel();
         TableColumn column = null;
         Component comp = null;
         int headerWidth = 0;
@@ -128,17 +128,13 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
         for (int i = 0; i < tableModel.getColumnCount(); i++) {
             column = table.getColumnModel().getColumn(i);
 
-            comp = headerRenderer.getTableCellRendererComponent(
-                    null, column.getHeaderValue(),
-                    false, false, 0, 0);
+            comp = headerRenderer.getTableCellRendererComponent(null, column.getHeaderValue(), false, false, 0, 0);
             headerWidth = comp.getPreferredSize().width;
 
             comp = table.getDefaultRenderer(tableModel.getColumnClass(i))
-                    .getTableCellRendererComponent(table,
-                            longValues[i], false, false, 0, i);
+                    .getTableCellRendererComponent(table, longValues[i], false, false, 0, i);
 
             cellWidth = comp.getPreferredSize().width;
-
             column.setPreferredWidth(Math.max(headerWidth, cellWidth));
         }
 

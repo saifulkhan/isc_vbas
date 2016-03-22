@@ -2,6 +2,7 @@ package uk.ac.isc.textview;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -21,6 +22,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -114,8 +117,8 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         scrollPane = new JScrollPane(table);
         this.setLayout(new BorderLayout());
         this.add(scrollPane, BorderLayout.CENTER);
-        phaseTableSortPanel = new PhaseTableSortPanel(table);
-        this.add(phaseTableSortPanel, BorderLayout.PAGE_START);
+        //phaseTableSortPanel = new PhaseTableSortPanel(table);  // TODO: Add default sort later.
+        //this.add(phaseTableSortPanel, BorderLayout.PAGE_START);
     }
 
     // Receive SeisEvent changes and redraw the table.
@@ -127,6 +130,7 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         VBASLogger.logDebug("#Phases= " + phasesList.getPhases().size());
         model = new PhaseTextViewTableModel(phasesList.getPhases());
         table.setModel(model);
+        setupTableVisualAttributes();
 
         table.clearSelection();
         scrollPane.setViewportView(table);
@@ -142,10 +146,10 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
 
         table.setRowSelectionAllowed(true);
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        //table.setCellSelectionEnabled(false);
         table.setColumnSelectionAllowed(false);
-        table.setSelectionBackground(new Color(45, 137, 239));
-        table.setSelectionForeground(Color.WHITE);
+        //table.setCellSelectionEnabled(false);
+        /*table.setSelectionBackground(new Color(45, 137, 239));
+         table.setSelectionForeground(Color.WHITE);*/
         //phaseTable.setRowSelectionInterval(0, 0);
 
         table.setRowHeight(25);
@@ -154,10 +158,54 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         table.setShowVerticalLines(false);
         table.setShowHorizontalLines(false);
 
+        // Set: Left or Right aligned
         DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+        DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
-        table.getColumnModel().getColumn(6).setCellRenderer(rightRenderer);
-        table.getColumnModel().getColumn(7).setCellRenderer(rightRenderer);
+        leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+        table.getColumnModel().getColumn(0).setCellRenderer(leftRenderer);
+        table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(5).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(6).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(7).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(8).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(9).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(10).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(11).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(12).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(13).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(14).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(15).setCellRenderer(centerRenderer);
+
+        // This part of the code picks good column sizes. 
+        // If all column heads are wider than the column's cells'
+        // contents, then you can just use column.sizeWidthToFit().
+        // SiesEventsTableModel model = (SiesEventsTableModel) table.getModel();
+        TableColumn column = null;
+        Component comp = null;
+        int headerWidth = 0;
+        int cellWidth = 0;
+
+        Object[] longValues = model.longValues;
+        TableCellRenderer headerRenderer = table.getTableHeader().getDefaultRenderer();
+
+        for (int i = 0; i < model.getColumnCount(); i++) {
+            //VBASLogger.logDebug("i=" + i);
+            column = table.getColumnModel().getColumn(i);
+            comp = headerRenderer.getTableCellRendererComponent( null, column.getHeaderValue(), false, false, 0, 0);
+            headerWidth = comp.getPreferredSize().width;
+
+            comp = table.getDefaultRenderer(model.getColumnClass(i))
+                    .getTableCellRendererComponent(table, longValues[i], false, false, 0, i);
+            cellWidth = comp.getPreferredSize().width;
+            column.setPreferredWidth(Math.max(headerWidth, cellWidth));
+        }
 
     }
 
@@ -210,7 +258,7 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
      *****************************************************************************************
      */
     private class MyRowSelectionListener implements ListSelectionListener {
-        
+
         // Row selection event
         @Override
         public void valueChanged(ListSelectionEvent event) {
@@ -219,31 +267,30 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
                 int[] selectedRows = table.getSelectedRows();
                 if (selectedRows.length > 0) {
                     VBASLogger.logDebug("selected rows: " + Arrays.toString(selectedRows) + ", Fired event...");
-                    
+
                     //selectedPhaseList
-                    
                     selectedPhaseList.fireSeisDataChanged();
                 }
 
                 /*
-                System.out.println("ROW SELECTION EVENT. ");
+                 System.out.println("ROW SELECTION EVENT. ");
 
-                System.out.print(String.format("Lead: %d, %d. ",
-                        table.getSelectionModel().getLeadSelectionIndex(),
-                        table.getColumnModel().getSelectionModel().
-                        getLeadSelectionIndex()));
-                System.out.print("Rows:");
+                 System.out.print(String.format("Lead: %d, %d. ",
+                 table.getSelectionModel().getLeadSelectionIndex(),
+                 table.getColumnModel().getSelectionModel().
+                 getLeadSelectionIndex()));
+                 System.out.print("Rows:");
                 
-                for (int c : table.getSelectedRows()) {
-                    System.out.println(String.format(" %d", c));
-                }
-                System.out.print(". Columns:");
-                for (int c : table.getSelectedColumns()) {
-                    System.out.print(String.format(" %d", c));
-                }
-                System.out.print(".\n\n");
+                 for (int c : table.getSelectedRows()) {
+                 System.out.println(String.format(" %d", c));
+                 }
+                 System.out.print(". Columns:");
+                 for (int c : table.getSelectedColumns()) {
+                 System.out.print(String.format(" %d", c));
+                 }
+                 System.out.print(".\n\n");
 
-                // fire event for the */
+                 // fire event for the */
             }
         }
     }

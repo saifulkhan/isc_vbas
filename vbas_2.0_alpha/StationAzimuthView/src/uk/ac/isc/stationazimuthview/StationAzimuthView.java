@@ -2,6 +2,7 @@ package uk.ac.isc.stationazimuthview;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
@@ -11,14 +12,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import org.jfree.text.TextUtilities;
 import org.openide.util.Exceptions;
 import org.openstreetmap.gui.jmapviewer.OsmMercator;
-import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.Phase;
@@ -39,7 +39,7 @@ import uk.ac.isc.seisdata.VBASLogger;
 public class StationAzimuthView extends JPanel {
 
     // saiful: combine imSize with height and width
-    private int stationAzimuthViewWidth = 650, stationAzimuthViewheight = 650;
+    private int viewWidth = 650, viewHeight = 650;
     private int imSize = 650;
 
     // A reference of the phase list
@@ -143,7 +143,6 @@ public class StationAzimuthView extends JPanel {
         SeisDataDAO.retrieveAllStations(ph.getEvid(), staList);
 
         drawDirectionalPie();
-
         drawBufferedImage();
     }
 
@@ -238,7 +237,6 @@ public class StationAzimuthView extends JPanel {
         aziSummary = SeisUtils.calculateAzSumm(phasesList.getPhases());
 
         drawDirectionalPie();
-
         drawBufferedImage();
     }
 
@@ -351,6 +349,8 @@ public class StationAzimuthView extends JPanel {
     }
 
     private void drawBufferedImage() {
+       
+      
         //draw the background Pie Chart
         Graphics2D g2 = dstImg.createGraphics();
 
@@ -370,7 +370,11 @@ public class StationAzimuthView extends JPanel {
                 double lat, lon;
                 double px, py;
 
-                double dist = Math.sqrt((double) ((i - warpedImgSize / 2) * (i - warpedImgSize / 2) + (j - warpedImgSize / 2) * (j - warpedImgSize / 2)));
+                double dist = Math.sqrt((double) ((i - warpedImgSize / 2)
+                        * (i - warpedImgSize / 2)
+                        + (j - warpedImgSize / 2)
+                        * (j - warpedImgSize / 2)));
+                
                 if (dist > warpedImgSize / 2) {
                     tmpImg1.setRGB(i, j, 0xFF000000);
                 } else {
@@ -416,6 +420,7 @@ public class StationAzimuthView extends JPanel {
                 double y = tmpImg2.getWidth() / 2 - d1 * Math.cos(azi);
                 double x = tmpImg2.getWidth() / 2 + d1 * Math.sin(azi);
                 //innerG2.drawRect((int)(x-stationIconSize/2), (int)(y-stationIconSize/2), stationIconSize, stationIconSize);
+                
                 innerG2.fillOval((int) (x - stationIconSize / 2), (int) (y - stationIconSize / 2), stationIconSize, stationIconSize);
             }
         }
@@ -442,6 +447,8 @@ public class StationAzimuthView extends JPanel {
 
         //g2.setPaint(Color.ORANGE);
         //g2.drawArc((int)(0.125*imSize), (int)(0.125*imSize), (int)(imSize*0.75), (int)(imSize*0.75), 90, -aziSummary.get(0));
+        
+        
     }
 
     //paint function of the view
@@ -449,7 +456,6 @@ public class StationAzimuthView extends JPanel {
     protected void paintComponent(Graphics g) {
 
         super.paintComponent(g);
-
         Graphics2D g2 = (Graphics2D) g;
 
         int xOffset = (getWidth() - imSize) / 2;
@@ -461,54 +467,54 @@ public class StationAzimuthView extends JPanel {
         g2.setClip(new Ellipse2D.Double(xOffset + imSize / 8, yOffset + imSize / 8, imSize * 0.75, imSize * 0.75));
         g2.drawImage(dstImg, xOffset, yOffset, imSize, imSize, null);
 
-        // TEST: 
-        int w = Math.max(dstImg.getWidth(), azImg.getWidth());
-        int h = Math.max(dstImg.getHeight(), azImg.getHeight());
-        BufferedImage combined = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-
-        // paint both images, preserving the alpha channels
-        Graphics graphics = combined.getGraphics();
-        graphics.drawImage(azImg, 0, 0, null);
-        graphics.setClip(new Ellipse2D.Double(0 + imSize / 8, 0 + imSize / 8, imSize * 0.75, imSize * 0.75));
-        graphics.drawImage(dstImg, 0, 0, null);
-
-        /*//VBASLogger.logDebug("Write BufferedImage.");
+        /*
+         //VBASLogger.logDebug("Write BufferedImage.");
          try {
-
-         ImageIO.write(combined, "png",
-         new File("/export/home/saiful/assess/temp/StationAzimuthView.png"));
+         ImageIO.write(getBufferedImage(), "png",
+         new File(Paths.get(System.getProperty("user.dir") 
+         + File.separator + "temp" 
+         + File.separator + "StationAzimuthView.png").toString()));
 
          ImageIO.write(dstImg, "png",
-         new File("/export/home/saiful/assess/temp/StationAzimuthView-1.png"));
+         new File(Paths.get(System.getProperty("user.dir") 
+         + File.separator + "temp" 
+         + File.separator + 
+         "StationAzimuthView-1.png").toString()));
          ImageIO.write(azImg, "png",
-         new File("/export/home/saiful/assess/temp/StationAzimuthView-2.png"));
+         new File(Paths.get(System.getProperty("user.dir") 
+         + File.separator + "temp" 
+         + File.separator + "StationAzimuthView-2.png").toString()));
 
          } catch (Exception e) {
-         Global.logSevere("Error creating a png.");
+         VBASLogger.logSevere("Error creating a png.");
          }*/
     }
 
     public BufferedImage getBufferedImage() {
-        BufferedImage combined = new BufferedImage(stationAzimuthViewWidth, stationAzimuthViewheight, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage combined = new BufferedImage(viewWidth, viewHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics graphics = combined.getGraphics();
         graphics.drawImage(azImg, 0, 0, null);
 
-        graphics.setClip(new Ellipse2D.Double(0 + stationAzimuthViewWidth / 8,
-                0 + stationAzimuthViewWidth / 8,
-                stationAzimuthViewWidth * 0.75,
-                stationAzimuthViewWidth * 0.75));
+        graphics.setClip(new Ellipse2D.Double(0 + viewWidth / 8,
+                0 + viewWidth / 8,
+                viewWidth * 0.75,
+                viewWidth * 0.75));
 
         graphics.drawImage(dstImg, 0, 0, null);
 
         return combined;
     }
 
-    public int getStationAzimuthViewWidth() {
-        return stationAzimuthViewWidth;
+    public int getViewWidth() {
+        return viewWidth;
     }
 
-    public int getStationAzimuthViewheight() {
-        return stationAzimuthViewheight;
+    public int getViewHeight() {
+        return viewHeight;
     }
 
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(getViewWidth(), getViewHeight());
+    }
 }

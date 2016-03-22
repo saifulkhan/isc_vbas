@@ -1,4 +1,4 @@
-package uk.ac.isc.seisdata;
+package uk.ac.isc.seiseventselection;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -7,13 +7,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.table.AbstractTableModel;
+import uk.ac.isc.seisdata.SeisEvent;
 
 /**
  * This is an extended class for saving events list showing in an table data in
  * rows are events, columns are Evid, lat, region, lon and Orig time Just need
  * to override some standard functions to make the table model working
  */
-public class EventsTableModel extends AbstractTableModel {
+public class SiesEventsTableModel extends AbstractTableModel {
 
     private final String[] columnNames = {
         "Event ID.",
@@ -36,18 +37,18 @@ public class EventsTableModel extends AbstractTableModel {
         Integer.class};
 
     public final Object[] longValues = {
-        new Integer(0),
-        new String(new char[5]),
-        new String(new char[20]),
+        "999999999",
+        "HHHH",
+        "HHHHHHHHHHH",
         "00:00:00",
-        "",
-        "",
+        "180.9S",
+        "180.9W",
         "9.9",
-        new Integer(9999)};
+        "9999"};
 
     private final ArrayList<SeisEvent> events;
 
-    public EventsTableModel(ArrayList<SeisEvent> events) {
+    public SiesEventsTableModel(ArrayList<SeisEvent> events) {
         this.events = events;
     }
 

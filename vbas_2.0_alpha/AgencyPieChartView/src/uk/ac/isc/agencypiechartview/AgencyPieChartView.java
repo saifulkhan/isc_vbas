@@ -2,6 +2,7 @@ package uk.ac.isc.agencypiechartview;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -25,8 +26,8 @@ public class AgencyPieChartView extends JPanel {
 
     private final int radius = 150;
 
-    private final int imWidth = 600;
-    private final int imHeight = 600;
+    private final int viewWidth = 600;
+    private final int viewHeight = 600;
 
     //buffer image of the piechart
     private BufferedImage pieChartImg;
@@ -43,25 +44,31 @@ public class AgencyPieChartView extends JPanel {
 
         Graphics2D g2 = (Graphics2D) g.create();
 
-        int xOffset = (getWidth() - imWidth) / 2;
-        int yOffset = (getHeight() - imHeight) / 2;
+        int xOffset = (getWidth() - viewWidth) / 2;
+        int yOffset = (getHeight() - viewHeight) / 2;
 
         drawPieChart();
 
-        g2.drawImage(pieChartImg, xOffset, yOffset, imWidth, imHeight, this);
+        g2.drawImage(pieChartImg, xOffset, yOffset, viewWidth, viewHeight, this);
         //g2.drawImage(DepthHistImg, null, 0, 0);
         g2.dispose();
 
     }
 
-    public int getAgencyPieChartViewWidth() {
-        return imWidth;
+    public int getViewWidth() {
+        return viewWidth;
     }
 
-    public int getAgencyPieChartViewHeight() {
-        return imHeight;
+    public int getViewHeight() {
+        return viewHeight;
+    }
+    
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(viewWidth, viewHeight);
     }
 
+    
     public BufferedImage getBufferedImage() {
         return pieChartImg;
     }
@@ -72,7 +79,7 @@ public class AgencyPieChartView extends JPanel {
     //else use two columns to show the names
     private void drawPieChart() {
 
-        pieChartImg = new BufferedImage(imWidth, imHeight, BufferedImage.TYPE_INT_ARGB);
+        pieChartImg = new BufferedImage(viewWidth, viewHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = pieChartImg.createGraphics();
 
         //shift on x direction, shift on y is 0

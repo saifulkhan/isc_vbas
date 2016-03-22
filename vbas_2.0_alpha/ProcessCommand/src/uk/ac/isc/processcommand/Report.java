@@ -116,7 +116,7 @@ public class Report {
 
                 case "StationAzimuthView":
                     StationAzimuthView saView = new StationAzimuthView(hypocentresList, phasesList);
-                    genetarePNG(view, saView, saView.getStationAzimuthViewWidth(), saView.getStationAzimuthViewheight());
+                    genetarePNG(view, saView, saView.getViewWidth(), saView.getViewHeight());
                     break;
 
                 case "StationMagnitudeView":
@@ -127,7 +127,7 @@ public class Report {
                 case "AgencyPieChartView":
                     AgencyPieChartView apcView = new AgencyPieChartView();
                     apcView.setData(new PieChartData(phasesList.getPhases()));
-                    genetarePNG(view, apcView, apcView.getAgencyPieChartViewWidth(), apcView.getAgencyPieChartViewHeight());
+                    genetarePNG(view, apcView, apcView.getViewWidth(), apcView.getViewHeight());
                     break;
             }
 
