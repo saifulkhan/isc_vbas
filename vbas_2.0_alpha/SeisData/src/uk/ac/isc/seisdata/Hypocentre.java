@@ -36,23 +36,23 @@ public class Hypocentre extends AbstractSeisData implements Cloneable {
     private Double smajax;
     private Double sminax;
 
+    /*private String latStr;         // N/S
+     private String lonStr;         // E/W
+     private Double latVal;         // absolute y.yy
+     private Double lonVal;         // absolute z.ZZ
+     DecimalFormat decimalFormat = new DecimalFormat(".##");
+     */
     public Hypocentre() {
         this.hypid = 0;
         magMap = new LinkedHashMap<String, Double>();
     }
 
     public Hypocentre(String agency, Date dd, double lat, double lon, int depth) {
-
         this.origTime = dd;
         this.agency = agency;
         this.lat = lat;
         this.lon = lon;
         this.depth = depth;
-        /*setOrigTime(dd);
-         setAgency(agency);
-         setLat(lat);
-         setLon(lon);
-         setDepth(depth);*/
     }
 
     public void setEvid(Integer evid) {
@@ -353,12 +353,13 @@ public class Hypocentre extends AbstractSeisData implements Cloneable {
     }
 
     public void setValues(Hypocentre h) {
-
         this.evid = h.evid;
         this.hypid = h.hypid;
         this.pHypo = h.pHypo;
+
         this.lat = h.lat;
         this.lon = h.lon;
+
         this.depth = h.depth;
         this.agency = h.agency;
         this.origTime = h.origTime;

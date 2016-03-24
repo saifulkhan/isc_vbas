@@ -12,7 +12,6 @@ import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
-import org.openide.windows.WindowManager;
 import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
@@ -34,7 +33,7 @@ import uk.ac.isc.seisdata.VBASLogger;
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "depthview", openAtStartup = false)
+@TopComponent.Registration(mode = "explorer", openAtStartup = true)
 @ActionID(category = "Window", id = "uk.ac.isc.hypodepthview.HypoDepthViewTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(
@@ -54,9 +53,7 @@ public final class HypoDepthViewTopComponent extends TopComponent implements Sei
 
     private final JScrollPane scrollPane;
 
-    // Get control window to retrieve data
-    private final TopComponent tc = WindowManager.getDefault().findTopComponent("EventsControlViewTopComponent");
-
+  
     // The panel to show depth of hypocentres
     HypoDepthViewPanel hdp = null;
 
@@ -65,9 +62,9 @@ public final class HypoDepthViewTopComponent extends TopComponent implements Sei
         setName(Bundle.CTL_HypoDepthViewTopComponent());
         setToolTipText(Bundle.HINT_HypoDepthViewTopComponent());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
-        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
-        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
-        setName("Hypocentre Depths");
+        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.FALSE);
+        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.FALSE);
+        //setName("Hypocentre Depths");
 
         VBASLogger.logDebug("Loaded...");
 

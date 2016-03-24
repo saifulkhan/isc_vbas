@@ -67,6 +67,9 @@ public class SeisEventRelocateDialog extends JDialog {
     private JRadioButton radio_free;
     private JRadioButton radio_median;
 
+    private static final DecimalFormat decimalFormat = new DecimalFormat(".##");
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     public SeisEventRelocateDialog() {
         setTitle("SeisEvent Relocate");
         setModal(true);
@@ -117,14 +120,16 @@ public class SeisEventRelocateDialog extends JDialog {
 
     public void showHypoTableRelocateDialog() {
 
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        DecimalFormat df2 = new DecimalFormat(".##");
-
         label_evid.setText(selectedHypocentre.getEvid().toString());
         label_hypid.setText(selectedHypocentre.getHypid().toString());
-        label_time.setText(df.format(selectedHypocentre.getOrigTime()));
-        label_coord.setText(df2.format(selectedHypocentre.getLat()) + "N "
-                + df2.format(selectedHypocentre.getLon()) + "W");
+        label_time.setText(dateFormat.format(selectedHypocentre.getOrigTime()));
+
+        String lat = (selectedHypocentre.getLat() < 0) ? "S" : "N";
+        String lon = (selectedHypocentre.getLon() < 0) ? "W" : "E";
+        String latVal = decimalFormat.format(Math.abs(selectedHypocentre.getLat()));
+        String lonVal = decimalFormat.format(Math.abs(selectedHypocentre.getLon()));
+        label_coord.setText(latVal + lat + " " + lonVal + lon);
+
         label_depth.setText(selectedHypocentre.getDepth().toString());
         label_prime.setText(selectedHypocentre.getIsPrime().toString());
 

@@ -26,7 +26,7 @@ import uk.ac.isc.seisdata.VBASLogger;
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "properties", openAtStartup = true)
+@TopComponent.Registration(mode = "explorer", openAtStartup = true)
 @ActionID(category = "Window", id = "uk.ac.isc.agencypiechartview.AgencyPieChartViewTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(
@@ -54,8 +54,8 @@ public final class AgencyPieChartViewTopComponent extends TopComponent implement
         setName(Bundle.CTL_AgencyPieChartViewTopComponent());
         setToolTipText(Bundle.HINT_AgencyPieChartViewTopComponent());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
-        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
-        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.FALSE);
+        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.FALSE);
         //setName("Agency Summary");
 
         VBASLogger.logDebug("Loaded... #phases: " + phasesList.getPhases().size());

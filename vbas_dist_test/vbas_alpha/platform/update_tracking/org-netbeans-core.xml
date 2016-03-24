@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?><module codename="org.netbeans.core/2">
+    <module_version install_time="1416339027423" last="true" origin="installer" specification_version="3.46.1">
+        <file crc="1234898518" name="config/ModuleAutoDeps/org-netbeans-core.xml"/>
+        <file crc="2943625018" name="config/Modules/org-netbeans-core.xml"/>
+        <file crc="3034239208" name="modules/locale/org-netbeans-core_ja.jar"/>
+        <file crc="1484035689" name="modules/locale/org-netbeans-core_pt_BR.jar"/>
+        <file crc="417571225" name="modules/locale/org-netbeans-core_ru.jar"/>
+        <file crc="582426382" name="modules/locale/org-netbeans-core_zh_CN.jar"/>
+        <file crc="2824201529" name="modules/org-netbeans-core.jar"/>
+    </module_version>
+</module>

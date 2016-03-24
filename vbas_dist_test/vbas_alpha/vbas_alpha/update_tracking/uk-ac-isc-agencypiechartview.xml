@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?><module codename="uk.ac.isc.agencypiechartview">
+    <module_version install_time="1458836755316" last="true" origin="installer" specification_version="1.0">
+        <file crc="3757082358" name="config/Modules/uk-ac-isc-agencypiechartview.xml"/>
+        <file crc="1356153506" name="modules/uk-ac-isc-agencypiechartview.jar"/>
+    </module_version>
+</module>

@@ -27,25 +27,27 @@ public class HypocentreTableModel extends AbstractTableModel {
         String.class,
         String.class,
         Integer.class,
-        Long.class,
+        Integer.class,
         String.class,
         String.class,
-        Long.class,
+        Double.class,
         Integer.class};
 
     public static final Object[] longValues = {
-        "999999999",
+        "XXXXXXXX",
         "00:00:00",
-        "180.9S",
-        "180.9W",
-        "800",
-        "1000",
-        "9.9mb",
-        "9.9MS",
-        "9.9",
-        "999999999"};
+        "XXX.XS",
+        "XXX.XW",
+        new Integer(968),
+        new Integer(1000),
+        "-X.Xmb",
+        "-X.XMS",
+        new Double(9999.9),
+        new Integer(999999999)
+    };
 
     private ArrayList<Hypocentre> hyposList;
+    private static final DecimalFormat decimalFormat = new DecimalFormat(".##");
 
     public HypocentreTableModel(ArrayList<Hypocentre> hyposList) {
         this.hyposList = hyposList;
@@ -92,16 +94,12 @@ public class HypocentreTableModel extends AbstractTableModel {
 
         Object retObject = null;
 
-        NumberFormat numFormat = DecimalFormat.getInstance();
-        numFormat.setMaximumFractionDigits(1);
-        numFormat.setMinimumFractionDigits(1);
-
         switch (columnIndex) {
             case 0: //agency
                 retObject = hyposList.get(rowIndex).getAgency();
                 break;
 
-            case 1:
+            case 1: // time
                 SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
                 if (hyposList.get(rowIndex).getOrigTime() != null) {
                     retObject = dateFormat.format(hyposList.get(rowIndex).getOrigTime()) + "." + hyposList.get(rowIndex).getMsec() / 100;
@@ -111,39 +109,28 @@ public class HypocentreTableModel extends AbstractTableModel {
                 break;
 
             case 2:  // lat
-                String latString = "";
-                if (hyposList.get(rowIndex).getLat() < 0) {
-                    latString += numFormat.format(Math.abs(hyposList.get(rowIndex).getLat()));
-                    latString += "S";
-                } else {
-                    latString += numFormat.format(hyposList.get(rowIndex).getLat());
-                    latString += "N";
-                }
-                retObject = latString;
+                retObject = (hyposList.get(rowIndex).getLat() < 0)
+                        ? decimalFormat.format(Math.abs(hyposList.get(rowIndex).getLat())) + "S"
+                        : decimalFormat.format(hyposList.get(rowIndex).getLat()) + "N";
                 break;
 
             case 3: // lon
-                String lonString = "";
-                if (hyposList.get(rowIndex).getLon() < 0) {
-                    lonString += numFormat.format(Math.abs(hyposList.get(rowIndex).getLon()));
-                    lonString += "W";
-                } else {
-                    lonString += numFormat.format(hyposList.get(rowIndex).getLon());
-                    lonString += "E";
-                }
-                retObject = lonString;
+
+                retObject = (hyposList.get(rowIndex).getLon() < 0)
+                        ? decimalFormat.format(Math.abs(hyposList.get(rowIndex).getLon())) + "W"
+                        : decimalFormat.format(hyposList.get(rowIndex).getLon()) + "E";
                 break;
 
             case 4:  // depth
                 retObject = hyposList.get(rowIndex).getDepth();
+                break;
 
             case 5: // depth err
                 if (hyposList.get(rowIndex).getErrDepth() != null) {
-                    retObject = Math.round(hyposList.get(rowIndex).getErrDepth());
+                    retObject = (int) Math.round(hyposList.get(rowIndex).getErrDepth());
                 } else {
                     retObject = null;
                 }
-
                 break;
 
             case 6: //mag 1 + type
@@ -166,11 +153,7 @@ public class HypocentreTableModel extends AbstractTableModel {
                 break;
 
             case 8:  // RMS
-                if (hyposList.get(rowIndex).getStime() != null) {
-                retObject = Math.round(hyposList.get(rowIndex).getStime());
-                } else {
-                    retObject = null;
-                }
+                retObject = Double.valueOf(decimalFormat.format(hyposList.get(rowIndex).getStime()));
                 break;
 
             case 9:  // HypID

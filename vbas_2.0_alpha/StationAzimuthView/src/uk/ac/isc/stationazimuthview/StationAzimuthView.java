@@ -452,31 +452,30 @@ public class StationAzimuthView extends JPanel {
 
         g2.drawImage(azImg, xOffset, yOffset, imSize, imSize, null);
 
-        //g2.drawImage(srcImg, 0, 0, 512, 512, null);
         g2.setClip(new Ellipse2D.Double(xOffset + imSize / 8, yOffset + imSize / 8, imSize * 0.75, imSize * 0.75));
         g2.drawImage(dstImg, xOffset, yOffset, imSize, imSize, null);
 
         /*
-         //VBASLogger.logDebug("Write BufferedImage.");
-         try {
-         ImageIO.write(getBufferedImage(), "png",
-         new File(Paths.get(System.getProperty("user.dir") 
-         + File.separator + "temp" 
-         + File.separator + "StationAzimuthView.png").toString()));
+        VBASLogger.logDebug("Write BufferedImage.");
+        try {
+            ImageIO.write(getBufferedImage(), "png",
+                    new File(Paths.get(System.getProperty("user.dir")
+                                    + File.separator + "temp"
+                                    + File.separator + "StationAzimuthView.png").toString()));
 
-         ImageIO.write(dstImg, "png",
-         new File(Paths.get(System.getProperty("user.dir") 
-         + File.separator + "temp" 
-         + File.separator + 
-         "StationAzimuthView-1.png").toString()));
-         ImageIO.write(azImg, "png",
-         new File(Paths.get(System.getProperty("user.dir") 
-         + File.separator + "temp" 
-         + File.separator + "StationAzimuthView-2.png").toString()));
+            ImageIO.write(dstImg, "png",
+                    new File(Paths.get(System.getProperty("user.dir")
+                                    + File.separator + "temp"
+                                    + File.separator
+                                    + "StationAzimuthView-1.png").toString()));
+            ImageIO.write(azImg, "png",
+                    new File(Paths.get(System.getProperty("user.dir")
+                                    + File.separator + "temp"
+                                    + File.separator + "StationAzimuthView-2.png").toString()));
 
-         } catch (Exception e) {
-         VBASLogger.logSevere("Error creating a png.");
-         }*/
+        } catch (Exception e) {
+            VBASLogger.logSevere("Error creating a png.");
+        }*/
     }
 
     public BufferedImage getBufferedImage() {

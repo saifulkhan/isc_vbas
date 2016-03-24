@@ -39,8 +39,8 @@ public class HypocentreEditDialog extends JDialog {
     private JLabel jLabel5;
     private JLabel jLabel6;
     private JLabel jLabel7;
-    private JLabel jLabel8;
-    private JLabel jLabel9;
+    private JLabel label_lat;
+    private JLabel label_lon;
     private JPanel jPanel1;
     private JPanel jPanel2;
     private JPanel jPanel3;
@@ -57,9 +57,12 @@ public class HypocentreEditDialog extends JDialog {
     private JTextField text_lon;
     private JTextField text_time;
 
-    private final Command commandEvent = Global.getCommandEvent();
-    private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
-    private final Hypocentre selectedHypocentre = Global.getSelectedHypocentre();
+    private static final Command commandEvent = Global.getCommandEvent();
+    private static final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
+    private static final Hypocentre selectedHypocentre = Global.getSelectedHypocentre();
+
+    private static final DecimalFormat decimalFormat = new DecimalFormat(".##");
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public HypocentreEditDialog() {
 
@@ -116,7 +119,8 @@ public class HypocentreEditDialog extends JDialog {
         /*
          * Latitude
          */
-        if (Double.parseDouble(text_lat.getText()) != selectedHypocentre.getLat()) {
+        if (Double.parseDouble(text_lat.getText())
+                != Double.parseDouble(decimalFormat.format(Math.abs(selectedHypocentre.getLat())))) {
             formulateCommand.addAttribute("lat", Double.parseDouble(text_lat.getText()), selectedHypocentre.getLat());
             formulateCommand.addSQLFunction("chhypo ( "
                     + selectedHypocentre.getHypid() + ", "
@@ -127,7 +131,8 @@ public class HypocentreEditDialog extends JDialog {
         /*
          * Longitude 
          */
-        if (Double.parseDouble(text_lon.getText()) != selectedHypocentre.getLon()) {
+        if (Double.parseDouble(text_lon.getText())
+                != Double.parseDouble(decimalFormat.format(Math.abs(selectedHypocentre.getLon())))) {
             formulateCommand.addAttribute("lon", Double.parseDouble(text_lon.getText()), selectedHypocentre.getLon());
             formulateCommand.addSQLFunction("chhypo ( "
                     + selectedHypocentre.getHypid() + ", "
@@ -168,22 +173,26 @@ public class HypocentreEditDialog extends JDialog {
 
     public void showHypoEditDialog() {
 
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        DecimalFormat df2 = new DecimalFormat(".##");
-
         label_evid.setText(selectedHypocentre.getEvid().toString());
         label_hypid.setText(selectedHypocentre.getHypid().toString());
-        label_time.setText(df.format(selectedHypocentre.getOrigTime()));
-        label_coord.setText(df2.format(selectedHypocentre.getLat()) + "N "
-                + df2.format(selectedHypocentre.getLon()) + "W");
+        label_time.setText(dateFormat.format(selectedHypocentre.getOrigTime()));
+
+        String lat = (selectedHypocentre.getLat() < 0) ? "S" : "N";
+        String lon = (selectedHypocentre.getLon() < 0) ? "W" : "E";
+        String latVal = decimalFormat.format(Math.abs(selectedHypocentre.getLat()));
+        String lonVal = decimalFormat.format(Math.abs(selectedHypocentre.getLon()));
+        label_coord.setText(latVal + lat + " " + lonVal + lon);
+
         label_depth.setText(selectedHypocentre.getDepth().toString());
         label_prime.setText(selectedHypocentre.getIsPrime().toString());
 
         text_depth.setText(selectedHypocentre.getDepth().toString());
-        text_lat.setText(df2.format(selectedHypocentre.getLat()));
-        text_lon.setText(df2.format(selectedHypocentre.getLon()));
-        text_time.setText(df.format(selectedHypocentre.getOrigTime()));
+        text_lat.setText(latVal);
+        label_lat.setText(lat);
+        text_lon.setText(lonVal);
+        label_lon.setText(lon);
 
+        text_time.setText(dateFormat.format(selectedHypocentre.getOrigTime()));
         textArea_reason.setText(null);
 
         setVisible(true);
@@ -212,8 +221,8 @@ public class HypocentreEditDialog extends JDialog {
         jLabel2 = new JLabel();
         text_lat = new JTextField();
         text_lon = new JTextField();
-        jLabel8 = new JLabel();
-        jLabel9 = new JLabel();
+        label_lat = new JLabel();
+        label_lon = new JLabel();
         text_time = new JTextField();
         jPanel3 = new JPanel();
         jScrollPane1 = new JScrollPane();
@@ -319,13 +328,12 @@ public class HypocentreEditDialog extends JDialog {
         //text_depth.setFormatterFactory(new text.DefaultFormatterFactory(new text.NumberFormatter()));
         text_depth.setToolTipText("");
         jLabel2.setText("COORD:");
-        jLabel8.setText("N");
-        jLabel9.setText("W");
+        label_lat.setText("");
+        label_lon.setText("");
 
         GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-                jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+        jPanel1Layout.setHorizontalGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -340,18 +348,17 @@ public class HypocentreEditDialog extends JDialog {
                                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(text_lat, GroupLayout.PREFERRED_SIZE, 86, GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jLabel8)
+                                        .addComponent(label_lat)
                                         .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                                         .addComponent(text_lon, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel9))
+                                        .addComponent(label_lon))
                                 .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addComponent(text_time, GroupLayout.PREFERRED_SIZE, 181, GroupLayout.PREFERRED_SIZE)
                                         .addGap(0, 0, Short.MAX_VALUE)))
                         .addContainerGap())
         );
-        jPanel1Layout.setVerticalGroup(
-                jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+        jPanel1Layout.setVerticalGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
@@ -360,8 +367,8 @@ public class HypocentreEditDialog extends JDialog {
                                 .addComponent(jLabel2)
                                 .addComponent(text_lat, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                                 .addComponent(text_lon, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel8)
-                                .addComponent(jLabel9))
+                                .addComponent(label_lat)
+                                .addComponent(label_lon))
                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                 .addComponent(jLabel14)

@@ -83,7 +83,7 @@ class HypocentreTablePopupMenu implements ActionListener {
         }
 
         if ("Deprecate".equals(e.getActionCommand())) {
-            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand() + "\nTo be added in future version.");
+            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand() + "\nNot designed in this version.");
         }
 
         if ("Hypocentre Edit..".equals(e.getActionCommand())) {
@@ -92,11 +92,11 @@ class HypocentreTablePopupMenu implements ActionListener {
         }
 
         if ("Create..".equals(e.getActionCommand())) {
-            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand() + "\nTo be added in future version.");
+            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand() + "\nNot designed in this version.");
         }
 
         if ("Move..".equals(e.getActionCommand())) {
-            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand() + "\nTo be added in future version.");
+            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand() + "\nNot designed in this version.");
         }
 
     }

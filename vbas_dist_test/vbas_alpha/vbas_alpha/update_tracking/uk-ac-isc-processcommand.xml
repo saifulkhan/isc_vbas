@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?><module codename="uk.ac.isc.processcommand">
+    <module_version install_time="1458836767975" last="true" origin="installer" specification_version="1.0">
+        <file crc="3850775830" name="config/Modules/uk-ac-isc-processcommand.xml"/>
+        <file crc="375094085" name="modules/uk-ac-isc-processcommand.jar"/>
+    </module_version>
+</module>

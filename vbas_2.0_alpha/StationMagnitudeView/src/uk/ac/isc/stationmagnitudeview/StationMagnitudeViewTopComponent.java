@@ -22,12 +22,14 @@ import uk.ac.isc.seisdata.VBASLogger;
         dtd = "-//uk.ac.isc.stationmagnitudeview//StationMagnitudeView//EN",
         autostore = false
 )
+
+
 @TopComponent.Description(
         preferredID = "StationMagnitudeViewTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "magnitudeview", openAtStartup = true)
+@TopComponent.Registration(mode = "explorer", openAtStartup = true)
 @ActionID(category = "Window", id = "uk.ac.isc.stationmagnitudeview.StationMagnitudeViewTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(
@@ -55,8 +57,8 @@ public final class StationMagnitudeViewTopComponent extends TopComponent impleme
         setName(Bundle.CTL_StationMagnitudeViewTopComponent());
         setToolTipText(Bundle.HINT_StationMagnitudeViewTopComponent());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
-        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
-        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.FALSE);
+        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.FALSE);
         //setName("Station Magnitudes");
 
         VBASLogger.logDebug("Loaded..."

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<module codename="org.netbeans.api.search">
+    <module_version install_time="1416338801889" last="false" origin="installer" specification_version="1.17.1">
+        <file crc="3710953649" name="config/Modules/org-netbeans-api-search.xml"/>
+        <file crc="3253646988" name="modules/locale/org-netbeans-api-search_ja.jar"/>
+        <file crc="365044574" name="modules/locale/org-netbeans-api-search_pt_BR.jar"/>
+        <file crc="4015123204" name="modules/locale/org-netbeans-api-search_ru.jar"/>
+        <file crc="2457954483" name="modules/locale/org-netbeans-api-search_zh_CN.jar"/>
+        <file crc="2574614700" name="modules/org-netbeans-api-search.jar"/>
+    </module_version>
+    <module_version install_time="1443783063996" last="true" origin="NetBeans Distribution" specification_version="1.17.2">
+        <file crc="3710953649" name="config/Modules/org-netbeans-api-search.xml"/>
+        <file crc="3293222968" name="modules/locale/org-netbeans-api-search_ja.jar"/>
+        <file crc="3317031819" name="modules/locale/org-netbeans-api-search_pt_BR.jar"/>
+        <file crc="3171120684" name="modules/locale/org-netbeans-api-search_ru.jar"/>
+        <file crc="3748790875" name="modules/locale/org-netbeans-api-search_zh_CN.jar"/>
+        <file crc="2546130875" name="modules/org-netbeans-api-search.jar"/>
+    </module_version>
+</module>

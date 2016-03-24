@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?><module codename="uk.ac.isc.stationmagnitudeview">
+    <module_version install_time="1458836767599" last="true" origin="installer" specification_version="1.0">
+        <file crc="3968158483" name="config/Modules/uk-ac-isc-stationmagnitudeview.xml"/>
+        <file crc="544178897" name="modules/uk-ac-isc-stationmagnitudeview.jar"/>
+    </module_version>
+</module>

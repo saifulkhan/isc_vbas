@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?><module codename="isc.ac.uk.jmappviewerwrapper">
+    <module_version install_time="1458836754019" last="true" origin="installer" specification_version="1.0">
+        <file crc="4031222225" name="config/Modules/isc-ac-uk-jmappviewerwrapper.xml"/>
+        <file crc="1613502591" name="modules/ext/jmapviewer.jar"/>
+        <file crc="988287106" name="modules/isc-ac-uk-jmappviewerwrapper.jar"/>
+    </module_version>
+</module>

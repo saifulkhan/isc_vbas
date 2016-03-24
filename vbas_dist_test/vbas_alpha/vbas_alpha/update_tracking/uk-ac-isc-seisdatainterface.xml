@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?><module codename="uk.ac.isc.seisdatainterface">
+    <module_version install_time="1458836754629" last="true" origin="installer" specification_version="1.0">
+        <file crc="3573656659" name="config/Modules/uk-ac-isc-seisdatainterface.xml"/>
+        <file crc="3176341229" name="modules/ext/postgresql-9.2-1002.jdbc4.jar"/>
+        <file crc="3495789742" name="modules/uk-ac-isc-seisdatainterface.jar"/>
+    </module_version>
+</module>

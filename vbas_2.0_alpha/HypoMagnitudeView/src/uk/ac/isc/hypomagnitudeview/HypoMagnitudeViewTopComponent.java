@@ -26,7 +26,7 @@ import uk.ac.isc.seisdata.VBASLogger;
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_ALWAYS
 )
-@TopComponent.Registration(mode = "magnitudeview", openAtStartup = true)
+@TopComponent.Registration(mode = "explorer", openAtStartup = true)
 @ActionID(category = "Window", id = "uk.ac.isc.hypomagnitudeview.HypoMagnitudeViewTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(
@@ -52,8 +52,8 @@ public final class HypoMagnitudeViewTopComponent extends TopComponent implements
         setName(Bundle.CTL_HypoMagnitudeViewTopComponent());
         setToolTipText(Bundle.HINT_HypoMagnitudeViewTopComponent());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
-        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
-        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.FALSE);
+        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.FALSE);
         //setName("Hypocentre Magnitudes");
 
         VBASLogger.logDebug("Loaded...");

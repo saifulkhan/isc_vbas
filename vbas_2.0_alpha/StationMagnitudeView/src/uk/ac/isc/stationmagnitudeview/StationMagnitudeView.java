@@ -668,14 +668,14 @@ public class StationMagnitudeView extends JPanel {
          xLabel = xLabel + xGap + mapSize;
          TextUtilities.drawAlignedString(labelText, g2, xLabel, yLabel, org.jfree.ui.TextAnchor.CENTER);
          */
-        // TEST:
+        /*// TEST:
         try {
             ImageIO.write(histMsBufferedImage, "png",
                     new File(Paths.get(System.getProperty("user.dir") + File.separator + "temp" + File.separator + "StationMagnitudeView.png").toString()
                     ));
         } catch (Exception e) {
             VBASLogger.logSevere("Error creating a png.");
-        }
+        }*/
     }
 
     public BufferedImage getBufferedImage() {

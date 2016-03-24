@@ -122,6 +122,7 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
 
         model = new CommandTableModel(commandList.getCommandList());
         table.setModel(model);
+        setupTableVisualAttributes();
 
         table.clearSelection();
         scrollPane.setViewportView(table);

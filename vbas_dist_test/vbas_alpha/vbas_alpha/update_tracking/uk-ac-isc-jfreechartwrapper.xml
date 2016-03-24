@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><module codename="uk.ac.isc.jfreechartwrapper">
+    <module_version install_time="1458836754333" last="true" origin="installer" specification_version="1.0">
+        <file crc="2545468606" name="config/Modules/uk-ac-isc-jfreechartwrapper.xml"/>
+        <file crc="2893489971" name="modules/ext/hamcrest-core-1.3.jar"/>
+        <file crc="4135575409" name="modules/ext/jcommon-1.0.23.jar"/>
+        <file crc="3829200134" name="modules/ext/jfreechart-1.0.19-experimental.jar"/>
+        <file crc="2005585359" name="modules/ext/jfreechart-1.0.19-swt.jar"/>
+        <file crc="3721340431" name="modules/ext/jfreechart-1.0.19.jar"/>
+        <file crc="1149250552" name="modules/ext/jfreesvg-2.0.jar"/>
+        <file crc="1461140712" name="modules/ext/orsoncharts-1.4-eval-nofx.jar"/>
+        <file crc="3729637203" name="modules/ext/orsonpdf-1.6-eval.jar"/>
+        <file crc="1002069919" name="modules/ext/servlet.jar"/>
+        <file crc="1996069775" name="modules/ext/swtgraphics2d.jar"/>
+        <file crc="1392580264" name="modules/uk-ac-isc-jfreechartwrapper.jar"/>
+    </module_version>
+</module>

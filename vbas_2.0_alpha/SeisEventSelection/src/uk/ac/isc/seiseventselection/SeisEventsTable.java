@@ -140,6 +140,8 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
 
     }
 
+    
+    // IMPORTANT: 
     // NOTE: For future reference: How Block table is loaded?
     
     

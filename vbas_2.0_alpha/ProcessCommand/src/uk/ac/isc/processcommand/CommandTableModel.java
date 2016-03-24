@@ -89,7 +89,8 @@ public class CommandTableModel extends AbstractTableModel {
     @Override
     public Class getColumnClass(int c) {
         //System.out.println(Global.debugAt() + "c= " + c + ", getValueAt(0, c)=" + getValueAt(0, c));
-        return getValueAt(0, c).getClass();
+        //return getValueAt(0, c).getClass();
+        return columns[c];
     }
 
     // cell is editable.

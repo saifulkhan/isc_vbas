@@ -66,8 +66,8 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
         setName(Bundle.CTL_PhaseViewTopComponent());
         setToolTipText(Bundle.HINT_PhaseViewTopComponent());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
-        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
-        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.FALSE);
+        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.FALSE);
         //setName("Phase TT Curves");
 
         VBASLogger.logDebug("Loaded...");

@@ -17,6 +17,7 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -267,7 +268,8 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
         }
 
         public void onButtonCommitActionPerformed(ActionEvent e) {
-
+            JOptionPane.showMessageDialog(null, "Commit is not activated yet. It will be enabled after alpha/beta testing!.", 
+                    "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
 
