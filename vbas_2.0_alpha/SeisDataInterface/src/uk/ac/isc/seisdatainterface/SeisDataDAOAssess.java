@@ -44,16 +44,16 @@ public final class SeisDataDAOAssess {
         assessUser = env.get("ASSESS_USER");
         assessPassword = env.get("ASSESS_PW");
         pgUser = env.get("PGUSER");
-        assessDir = Paths.get(env.get("ASSESSDIR")); 
-        VBASLogger.logDebug("url=" + url + ", user=" + assessUser 
-                + ", password=" + assessPassword + ", assessDir=" + assessDir );
+        assessDir = Paths.get(env.get("ASSESSDIR"));
+        VBASLogger.logDebug("url=" + url + ", user=" + assessUser
+                + ", password=" + assessPassword + ", assessDir=" + assessDir);
     }
 
     private SeisDataDAOAssess() {
         //
     }
 
-    public static Path getAssessDir() {        
+    public static Path getAssessDir() {
         return assessDir;
     }
 
@@ -158,7 +158,8 @@ public final class SeisDataDAOAssess {
             con = DriverManager.getConnection(url, assessUser, assessPassword);
             st = con.createStatement();
 
-            String query = "SELECT h.author, h.day, h.lat, h.lon, h.depth, h.prime, h.hypid, x.sdepth, h.epifix, x.stime, x.strike, x.smajax, x.sminax,h.nass, h.ndef, h.nsta, h.ndefsta, h.msec "
+            String query
+                    = "SELECT h.author, h.day, h.lat, h.lon, h.depth, h.prime, h.hypid, x.sdepth, h.epifix, x.stime, x.strike, x.smajax, x.sminax,h.nass, h.ndef, h.nsta, h.ndefsta, h.msec, x.sdobs"
                     + " FROM hypocenter h LEFT OUTER JOIN hypoc_err x ON x.hypid = h.hypid"
                     + " WHERE h.deprecated is NULL AND h.hypid = h.pref_hypid AND h.isc_evid = "
                     + evid
@@ -213,7 +214,10 @@ public final class SeisDataDAOAssess {
                 tmp.setNumStations(rs.getInt(16));
                 tmp.setNumDefStations(rs.getInt(17));
                 tmp.setMsec(rs.getInt(18));
-
+                if (rs.getObject(19) != null) {
+                    tmp.setSdobs(rs.getDouble(19));
+                }
+                
                 HypoList.add(tmp);
 
             }

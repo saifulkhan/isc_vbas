@@ -1,4 +1,4 @@
- package uk.ac.isc.seisdatainterface;
+package uk.ac.isc.seisdatainterface;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -69,8 +69,7 @@ public class SeisDataDAO {
          user = "saiful";
          password = "saiful";
          }*/
-        
-        VBASLogger.logDebug("url=" + url + ", user=" + user 
+        VBASLogger.logDebug("url=" + url + ", user=" + user
                 + ", password=" + password + ", systemUserName=" + systemUserName);
     }
 
@@ -917,7 +916,8 @@ public class SeisDataDAO {
             con = DriverManager.getConnection(url, user, password);
             st = con.createStatement();
 
-            String query = "SELECT h.author, h.day, h.lat, h.lon, h.depth, h.prime, h.hypid, x.sdepth, h.epifix, x.stime, x.strike, x.smajax, x.sminax,h.nass, h.ndef, h.nsta, h.ndefsta, h.msec "
+            String query
+                    = "SELECT h.author, h.day, h.lat, h.lon, h.depth, h.prime, h.hypid, x.sdepth, h.epifix, x.stime, x.strike, x.smajax, x.sminax,h.nass, h.ndef, h.nsta, h.ndefsta, h.msec, x.sdobs"
                     + " FROM hypocenter h LEFT OUTER JOIN hypoc_err x ON x.hypid = h.hypid"
                     + " WHERE h.deprecated is NULL AND h.hypid = h.pref_hypid AND h.isc_evid = "
                     + evid
@@ -972,6 +972,9 @@ public class SeisDataDAO {
                 tmp.setNumStations(rs.getInt(16));
                 tmp.setNumDefStations(rs.getInt(17));
                 tmp.setMsec(rs.getInt(18));
+                if (rs.getObject(19) != null) {
+                    tmp.setSdobs(rs.getDouble(19));
+                }
 
                 HypoList.add(tmp);
 
@@ -1019,7 +1022,8 @@ public class SeisDataDAO {
             con = DriverManager.getConnection(url, user, password);
             st = con.createStatement();
 
-            String query = "SELECT h.author, h.day, h.lat, h.lon, h.depth, h.prime, h.hypid, x.sdepth, h.epifix, x.stime, x.strike, x.smajax, x.sminax,h.nass, h.ndef, h.nsta, h.ndefsta, h.msec "
+            String query
+                    = "SELECT h.author, h.day, h.lat, h.lon, h.depth, h.prime, h.hypid, x.sdepth, h.epifix, x.stime, x.strike, x.smajax, x.sminax,h.nass, h.ndef, h.nsta, h.ndefsta, h.msec, , x.sdobs"
                     + " FROM hypocenter h LEFT OUTER JOIN hypoc_err x ON x.hypid = h.hypid"
                     + " WHERE h.deprecated is NULL AND h.hypid = h.pref_hypid AND h.hypid = "
                     + hypid
@@ -1071,6 +1075,9 @@ public class SeisDataDAO {
                 tmp.setNumStations(rs.getInt(16));
                 tmp.setNumDefStations(rs.getInt(17));
                 tmp.setMsec(rs.getInt(18));
+                if (rs.getObject(19) != null) {
+                    tmp.setSdobs(rs.getDouble(19));
+                }
 
             }
 

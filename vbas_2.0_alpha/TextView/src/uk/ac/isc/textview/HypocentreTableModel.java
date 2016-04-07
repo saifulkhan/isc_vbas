@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 import uk.ac.isc.seisdata.Hypocentre;
+import uk.ac.isc.seisdata.VBASLogger;
 
 public class HypocentreTableModel extends AbstractTableModel {
 
@@ -153,7 +154,12 @@ public class HypocentreTableModel extends AbstractTableModel {
                 break;
 
             case 8:  // RMS
-                retObject = Double.valueOf(decimalFormat.format(hyposList.get(rowIndex).getStime()));
+                //VBASLogger.logDebug("sdobs=" + hyposList.get(rowIndex).getSdobs());
+                if (hyposList.get(rowIndex).getSdobs() != null) {
+                    retObject = Double.valueOf(decimalFormat.format(hyposList.get(rowIndex).getSdobs()));
+                } else {
+                    retObject = null;
+                }
                 break;
 
             case 9:  // HypID

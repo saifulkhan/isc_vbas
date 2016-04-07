@@ -40,17 +40,20 @@ class PhaseTablePopupManager implements ActionListener {
 
         phaseEditDataList.clear();
 
-        //Issue #8 : Single Phase Edit
-        if (selectedRows.length == 1) {
-            int phaseId = (Integer) table.getValueAt(selectedRows[0], 14);
-            String type = (String) table.getValueAt(selectedRows[0], 6);
-            phaseEditDataList.add(new PhaseEditData(phaseId, type, true, false, null, false, "", null));
-        } else {
-            for (int i : selectedRows) {
-                int phaseId = (Integer) table.getValueAt(i, 14);
-                String type = (String) table.getValueAt(i, 6);
-                phaseEditDataList.add(new PhaseEditData(phaseId, type, false, false, null, false, "", null));
-            }
+        /*
+         //Issue #8 : Single Phase Edit
+         // disabled it, as it caused new bug
+         if (selectedRows.length == 1) {
+         int phaseId = (Integer) table.getValueAt(selectedRows[0], 14);
+         String type = (String) table.getValueAt(selectedRows[0], 6);
+         phaseEditDataList.add(new PhaseEditData(phaseId, type, true, false, null, false, "", null));
+         } else {
+         */
+
+        for (int i : selectedRows) {
+            int phaseId = (Integer) table.getValueAt(i, 14);
+            String type = (String) table.getValueAt(i, 6);
+            phaseEditDataList.add(new PhaseEditData(phaseId, type, false, false, null, false, "", null));
         }
 
         if ("Phase Edit..".equals(e.getActionCommand())) {

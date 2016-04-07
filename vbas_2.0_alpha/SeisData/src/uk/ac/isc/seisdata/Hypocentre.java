@@ -32,6 +32,7 @@ public class Hypocentre extends AbstractSeisData implements Cloneable {
     private LinkedHashMap<String, Double> magMap;   // all the magnitudes reported 
     private Boolean isSelected = false;             // add one boolean value for indicating if it is selected for interaction
     private Double stime;                           // here are some data from hypoc_err table for the reliablility of the hypocentre
+    private Double sdobs;     // should be used for RMS, Issue#39
     private Double strike;
     private Double smajax;
     private Double sminax;
@@ -232,6 +233,14 @@ public class Hypocentre extends AbstractSeisData implements Cloneable {
         this.stime = strime;
     }
 
+     public Double getSdobs() {
+        return sdobs;
+    }
+
+    public void setSdobs(Double sdobs) {
+        this.sdobs = sdobs;
+    }
+    
     public Double getStrike() {
         return this.strike;
     }
