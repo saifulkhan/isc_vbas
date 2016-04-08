@@ -95,17 +95,24 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
                         overviewPanel.loadSeisData(hypo.getLat(), hypo.getLon(), overviewPanel.getRangeDelta());
                     }
                 }
+
+                overviewPanel.repaint();
+                scrollPane.setViewportView(overviewPanel);
+
+                controlPanel.resetToDefault();
+                controlPanel.repaint();
+
                 break;
 
             case "uk.ac.isc.seisdata.Hypocentre":
                 //Hypocentre hypocentre = (Hypocentre) event.getData();
                 VBASLogger.logDebug("Hypocentre= " + selectedHypocentre.getHypid());
+                overviewPanel.repaint();
+                scrollPane.setViewportView(overviewPanel);
+
                 break;
         }
 
-        controlPanel.resetToDefault();
-        controlPanel.repaint();
-        scrollPane.setViewportView(overviewPanel);
     }
 
     /**

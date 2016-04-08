@@ -3,6 +3,7 @@ package uk.ac.isc.hypooverview;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JSlider;
+import uk.ac.isc.seisdata.VBASLogger;
 
 /**
  *
@@ -13,9 +14,8 @@ import javax.swing.JSlider;
 public class OverviewControlPanel3 extends javax.swing.JPanel {
 
     private final HypoOverviewPanel2 hop;
-
     private final JCheckBox[] checkBoxRef = new JCheckBox[8];
-
+            
     /**
      * Creates new form OverviewControlPanel3
      */
@@ -23,14 +23,7 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
         initComponents();
 
         this.hop = hop;
-
-        jRadioButton1.setSelected(true);
-
-        setAllBandsSelected();
-
-        jRadioButton8.setSelected(true);
-        jRadioButton11.setSelected(true);
-
+        
         //get the refs point to the static boxes
         checkBoxRef[0] = jCheckBox1;
         checkBoxRef[1] = jCheckBox2;
@@ -41,22 +34,22 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
         checkBoxRef[6] = jCheckBox7;
         checkBoxRef[7] = jCheckBox8;
 
-        jLabel5.setIcon(new ImageIcon(hop.getMiniMap()));
-    }
-
-    public void resetOrderHypoOption() {
-        jRadioButton1.setSelected(true);
-        jRadioButton8.setSelected(true);
+        resetToDefault();
     }
 
     public void resetToDefault() {
-        jRadioButton1.setSelected(true);
-        jRadioButton8.setSelected(true);
-        setAllBandsSelected();
-        jSlider2.setValue(7 - hop.getCurrentBand());
+        VBASLogger.logDebug("...");
 
+        radioButton_CB.setSelected(true);
+        radioButton_Static.setSelected(true);
+        setAllBandsSelected();
         hop.setDepthBandOrder(4);
-        jLabel5.setIcon(new ImageIcon(hop.getMiniMap()));
+        slider_bandSelection.setValue(7 - hop.getCurrentBand());
+
+        /*ImageIcon map = new ImageIcon(hop.getMiniMap());
+        jLabel_miniMap.setIcon(map);
+        jLabel_miniMap.revalidate();
+        jLabel_miniMap.repaint();*/
     }
 
     /**
@@ -76,14 +69,14 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
         jRadioButton3 = new javax.swing.JRadioButton();
         jRadioButton5 = new javax.swing.JRadioButton();
         jRadioButton4 = new javax.swing.JRadioButton();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton6 = new javax.swing.JRadioButton();
+        radioButton_CB = new javax.swing.JRadioButton();
+        radioButton_singleSelection = new javax.swing.JRadioButton();
         jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jCheckBox3 = new javax.swing.JCheckBox();
         jCheckBox6 = new javax.swing.JCheckBox();
         jLabel2 = new javax.swing.JLabel();
-        jSlider2 = new javax.swing.JSlider();
+        slider_bandSelection = new javax.swing.JSlider();
         jCheckBox1 = new javax.swing.JCheckBox();
         jCheckBox5 = new javax.swing.JCheckBox();
         jCheckBox4 = new javax.swing.JCheckBox();
@@ -92,16 +85,16 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
         jCheckBox7 = new javax.swing.JCheckBox();
         jPanel3 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        jRadioButton8 = new javax.swing.JRadioButton();
+        radioButton_Static = new javax.swing.JRadioButton();
         jRadioButton7 = new javax.swing.JRadioButton();
         jRadioButton9 = new javax.swing.JRadioButton();
         jPanel4 = new javax.swing.JPanel();
-        jRadioButton11 = new javax.swing.JRadioButton();
+        radioButton_Middle = new javax.swing.JRadioButton();
         jRadioButton12 = new javax.swing.JRadioButton();
         jRadioButton10 = new javax.swing.JRadioButton();
         jLabel4 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
+        jLabel_miniMap = new javax.swing.JLabel();
 
         buttonGroup1.add(jRadioButton2);
         org.openide.awt.Mnemonics.setLocalizedText(jRadioButton2, org.openide.util.NbBundle.getMessage(OverviewControlPanel3.class, "OverviewControlPanel3.jRadioButton2.text")); // NOI18N
@@ -135,20 +128,20 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
             }
         });
 
-        buttonGroup1.add(jRadioButton1);
-        jRadioButton1.setSelected(true);
-        org.openide.awt.Mnemonics.setLocalizedText(jRadioButton1, org.openide.util.NbBundle.getMessage(OverviewControlPanel3.class, "OverviewControlPanel3.jRadioButton1.text")); // NOI18N
-        jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
+        buttonGroup1.add(radioButton_CB);
+        radioButton_CB.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(radioButton_CB, org.openide.util.NbBundle.getMessage(OverviewControlPanel3.class, "OverviewControlPanel3.radioButton_CB.text")); // NOI18N
+        radioButton_CB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton1ActionPerformed(evt);
+                radioButton_CBActionPerformed(evt);
             }
         });
 
-        buttonGroup1.add(jRadioButton6);
-        org.openide.awt.Mnemonics.setLocalizedText(jRadioButton6, org.openide.util.NbBundle.getMessage(OverviewControlPanel3.class, "OverviewControlPanel3.jRadioButton6.text")); // NOI18N
-        jRadioButton6.addActionListener(new java.awt.event.ActionListener() {
+        buttonGroup1.add(radioButton_singleSelection);
+        org.openide.awt.Mnemonics.setLocalizedText(radioButton_singleSelection, org.openide.util.NbBundle.getMessage(OverviewControlPanel3.class, "OverviewControlPanel3.radioButton_singleSelection.text")); // NOI18N
+        radioButton_singleSelection.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton6ActionPerformed(evt);
+                radioButton_singleSelectionActionPerformed(evt);
             }
         });
 
@@ -162,11 +155,11 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jRadioButton2)
-                    .addComponent(jRadioButton1)
+                    .addComponent(radioButton_CB)
                     .addComponent(jRadioButton3)
                     .addComponent(jRadioButton4)
                     .addComponent(jRadioButton5)
-                    .addComponent(jRadioButton6)
+                    .addComponent(radioButton_singleSelection)
                     .addComponent(jLabel1))
                 .addContainerGap())
         );
@@ -176,7 +169,7 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addGap(18, 18, 18)
-                .addComponent(jRadioButton1)
+                .addComponent(radioButton_CB)
                 .addGap(18, 18, 18)
                 .addComponent(jRadioButton2)
                 .addGap(18, 18, 18)
@@ -186,7 +179,7 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addComponent(jRadioButton5)
                 .addGap(18, 18, 18)
-                .addComponent(jRadioButton6)
+                .addComponent(radioButton_singleSelection)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -210,12 +203,12 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(OverviewControlPanel3.class, "OverviewControlPanel3.jLabel2.text")); // NOI18N
 
-        jSlider2.setMaximum(7);
-        jSlider2.setOrientation(javax.swing.JSlider.VERTICAL);
-        jSlider2.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        jSlider2.addChangeListener(new javax.swing.event.ChangeListener() {
+        slider_bandSelection.setMaximum(7);
+        slider_bandSelection.setOrientation(javax.swing.JSlider.VERTICAL);
+        slider_bandSelection.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        slider_bandSelection.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                jSlider2StateChanged(evt);
+                slider_bandSelectionStateChanged(evt);
             }
         });
 
@@ -281,7 +274,7 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jSlider2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(slider_bandSelection, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jCheckBox1)
@@ -320,17 +313,17 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
                         .addComponent(jCheckBox7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jCheckBox8))
-                    .addComponent(jSlider2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(slider_bandSelection, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(OverviewControlPanel3.class, "OverviewControlPanel3.jLabel3.text")); // NOI18N
 
-        buttonGroup2.add(jRadioButton8);
-        jRadioButton8.setSelected(true);
-        org.openide.awt.Mnemonics.setLocalizedText(jRadioButton8, org.openide.util.NbBundle.getMessage(OverviewControlPanel3.class, "OverviewControlPanel3.jRadioButton8.text")); // NOI18N
-        jRadioButton8.addActionListener(new java.awt.event.ActionListener() {
+        buttonGroup2.add(radioButton_Static);
+        radioButton_Static.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(radioButton_Static, org.openide.util.NbBundle.getMessage(OverviewControlPanel3.class, "OverviewControlPanel3.radioButton_Static.text")); // NOI18N
+        radioButton_Static.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton8ActionPerformed(evt);
+                radioButton_StaticActionPerformed(evt);
             }
         });
 
@@ -359,7 +352,7 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
                     .addComponent(jRadioButton7)
-                    .addComponent(jRadioButton8)
+                    .addComponent(radioButton_Static)
                     .addComponent(jRadioButton9))
                 .addContainerGap())
         );
@@ -371,18 +364,18 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addComponent(jRadioButton7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jRadioButton8)
+                .addComponent(radioButton_Static)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jRadioButton9)
                 .addContainerGap())
         );
 
-        buttonGroup3.add(jRadioButton11);
-        jRadioButton11.setSelected(true);
-        org.openide.awt.Mnemonics.setLocalizedText(jRadioButton11, org.openide.util.NbBundle.getMessage(OverviewControlPanel3.class, "OverviewControlPanel3.jRadioButton11.text")); // NOI18N
-        jRadioButton11.addActionListener(new java.awt.event.ActionListener() {
+        buttonGroup3.add(radioButton_Middle);
+        radioButton_Middle.setSelected(true);
+        org.openide.awt.Mnemonics.setLocalizedText(radioButton_Middle, org.openide.util.NbBundle.getMessage(OverviewControlPanel3.class, "OverviewControlPanel3.radioButton_Middle.text")); // NOI18N
+        radioButton_Middle.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton11ActionPerformed(evt);
+                radioButton_MiddleActionPerformed(evt);
             }
         });
 
@@ -413,7 +406,7 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4)
                     .addComponent(jRadioButton10)
-                    .addComponent(jRadioButton11)
+                    .addComponent(radioButton_Middle)
                     .addComponent(jRadioButton12))
                 .addContainerGap())
         );
@@ -425,23 +418,23 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addComponent(jRadioButton10)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jRadioButton11)
+                .addComponent(radioButton_Middle)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jRadioButton12)
                 .addContainerGap())
         );
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel5, org.openide.util.NbBundle.getMessage(OverviewControlPanel3.class, "OverviewControlPanel3.jLabel5.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel_miniMap, org.openide.util.NbBundle.getMessage(OverviewControlPanel3.class, "OverviewControlPanel3.jLabel_miniMap.text")); // NOI18N
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
+            .addComponent(jLabel_miniMap, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+            .addComponent(jLabel_miniMap, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -480,21 +473,21 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
+    private void radioButton_CBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButton_CBActionPerformed
         // neighbour bands first
 
-        jRadioButton1.setSelected(true);
+        radioButton_CB.setSelected(true);
         setAllBandsSelected();
         hop.setDepthBandOrder(4);
-        jSlider2.setValue(7 - hop.getCurrentBand());
-    }//GEN-LAST:event_jRadioButton1ActionPerformed
+        slider_bandSelection.setValue(7 - hop.getCurrentBand());
+    }//GEN-LAST:event_radioButton_CBActionPerformed
 
     private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
         // deep first
         jRadioButton2.setSelected(true);
         setAllBandsSelected();
         hop.setDepthBandOrder(1);
-        jSlider2.setValue(7 - hop.getCurrentBand());
+        slider_bandSelection.setValue(7 - hop.getCurrentBand());
     }//GEN-LAST:event_jRadioButton2ActionPerformed
 
     private void jRadioButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton3ActionPerformed
@@ -502,7 +495,7 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
         jRadioButton3.setSelected(true);
         setAllBandsSelected();
         hop.setDepthBandOrder(2);
-        jSlider2.setValue(7 - hop.getCurrentBand());
+        slider_bandSelection.setValue(7 - hop.getCurrentBand());
     }//GEN-LAST:event_jRadioButton3ActionPerformed
 
     private void jRadioButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton4ActionPerformed
@@ -510,7 +503,7 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
         jRadioButton4.setSelected(true);
         setAllBandsSelected();
         hop.setDepthBandOrder(3);
-        jSlider2.setValue(7 - hop.getCurrentBand());
+        slider_bandSelection.setValue(7 - hop.getCurrentBand());
     }//GEN-LAST:event_jRadioButton4ActionPerformed
 
     private void jRadioButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton5ActionPerformed
@@ -519,18 +512,18 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
         setAllBandsSelected();
         hop.setDepthBandOrder(5);
 
-        jSlider2.setValue(7 - hop.getCurrentBand());
+        slider_bandSelection.setValue(7 - hop.getCurrentBand());
         //set hypo anim to non
-        jRadioButton8.setSelected(true);
+        radioButton_Static.setSelected(true);
         hop.setHypoVisOptions(2);
     }//GEN-LAST:event_jRadioButton5ActionPerformed
 
-    private void jRadioButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton6ActionPerformed
+    private void radioButton_singleSelectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButton_singleSelectionActionPerformed
         // TODO add your handling code here:
         //jSlider2.setValue(7-hop.getCurrentBand());
-        jRadioButton6.setSelected(true);
+        radioButton_singleSelection.setSelected(true);
 
-        int fps = (int) jSlider2.getValue();
+        int fps = (int) slider_bandSelection.getValue();
         boolean[] visible = new boolean[8];
         for (int i = 0; i < 8; i++) {
             if (i == fps) {
@@ -545,9 +538,9 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
         hop.setMultiDepthBandVisible(visible);
 
         hop.setDepthBandOrder(6);
-    }//GEN-LAST:event_jRadioButton6ActionPerformed
+    }//GEN-LAST:event_radioButton_singleSelectionActionPerformed
 
-    private void jSlider2StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider2StateChanged
+    private void slider_bandSelectionStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_slider_bandSelectionStateChanged
         // single selection and disable other bands
         JSlider source = (JSlider) evt.getSource();
         if (!source.getValueIsAdjusting()) {
@@ -566,8 +559,8 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
             hop.setMultiDepthBandVisible(visible);
         }
 
-        jRadioButton6.setSelected(true);
-    }//GEN-LAST:event_jSlider2StateChanged
+        radioButton_singleSelection.setSelected(true);
+    }//GEN-LAST:event_slider_bandSelectionStateChanged
 
     private void setAllBandsSelected() {
         jCheckBox1.setSelected(true);
@@ -586,10 +579,10 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
         hop.setPixelSize(6);
     }//GEN-LAST:event_jRadioButton10ActionPerformed
 
-    private void jRadioButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton11ActionPerformed
+    private void radioButton_MiddleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButton_MiddleActionPerformed
         // TODO add your handling code here:
         hop.setPixelSize(10);
-    }//GEN-LAST:event_jRadioButton11ActionPerformed
+    }//GEN-LAST:event_radioButton_MiddleActionPerformed
 
     private void jRadioButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton12ActionPerformed
         // TODO add your handling code here:
@@ -602,15 +595,15 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
         hop.setHypoVisOptions(1);
     }//GEN-LAST:event_jRadioButton7ActionPerformed
 
-    private void jRadioButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton8ActionPerformed
+    private void radioButton_StaticActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButton_StaticActionPerformed
         // TODO add your handling code here:
         hop.setHypoVisOptions(2);
-    }//GEN-LAST:event_jRadioButton8ActionPerformed
+    }//GEN-LAST:event_radioButton_StaticActionPerformed
 
     private void jRadioButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton9ActionPerformed
         // TODO add your handling code here:
 
-        jRadioButton1.setSelected(true);
+        radioButton_CB.setSelected(true);
         hop.setDepthBandOrder(4);
 
         hop.setHypoVisOptions(3);
@@ -688,6 +681,11 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jCheckBox8ActionPerformed
 
+    public void resetOrderHypoOption() {
+        radioButton_CB.setSelected(true);
+        radioButton_Static.setSelected(true);
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroup2;
@@ -704,25 +702,25 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel_miniMap;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JRadioButton jRadioButton10;
-    private javax.swing.JRadioButton jRadioButton11;
     private javax.swing.JRadioButton jRadioButton12;
     private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JRadioButton jRadioButton3;
     private javax.swing.JRadioButton jRadioButton4;
     private javax.swing.JRadioButton jRadioButton5;
-    private javax.swing.JRadioButton jRadioButton6;
     private javax.swing.JRadioButton jRadioButton7;
-    private javax.swing.JRadioButton jRadioButton8;
     private javax.swing.JRadioButton jRadioButton9;
-    private javax.swing.JSlider jSlider2;
+    private javax.swing.JRadioButton radioButton_CB;
+    private javax.swing.JRadioButton radioButton_Middle;
+    private javax.swing.JRadioButton radioButton_Static;
+    private javax.swing.JRadioButton radioButton_singleSelection;
+    private javax.swing.JSlider slider_bandSelection;
     // End of variables declaration//GEN-END:variables
 
 }

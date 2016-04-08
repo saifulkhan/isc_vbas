@@ -687,7 +687,7 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
              miniYOffset = Math.max(0,getHeight()-miniHeight);
              }*/
             drawMiniMap();
-            //g2.drawImage(miniMap,miniXOffset, miniYOffset, miniWidth, miniHeight, this);
+            g2.drawImage(miniMap,miniXOffset, miniYOffset, miniWidth, miniHeight, this);
         }
 
         /*
