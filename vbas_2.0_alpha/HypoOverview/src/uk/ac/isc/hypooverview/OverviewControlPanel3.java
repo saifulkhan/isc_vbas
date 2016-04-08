@@ -44,7 +44,7 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
         radioButton_Static.setSelected(true);
         setAllBandsSelected();
         hop.setDepthBandOrder(4);
-        slider_bandSelection.setValue(7 - hop.getCurrentBand());
+        //slider_bandSelection.setValue(7 - hop.getCurrentBand()); // Solves the Issue #35
 
         /*ImageIcon map = new ImageIcon(hop.getMiniMap());
         jLabel_miniMap.setIcon(map);
