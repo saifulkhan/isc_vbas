@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><module codename="uk.ac.isc.hypooverview">
-    <module_version install_time="1458836754895" last="true" origin="installer" specification_version="1.0">
-        <file crc="3918353428" name="config/Modules/uk-ac-isc-hypooverview.xml"/>
-        <file crc="2483267322" name="modules/uk-ac-isc-hypooverview.jar"/>
-    </module_version>
-</module>

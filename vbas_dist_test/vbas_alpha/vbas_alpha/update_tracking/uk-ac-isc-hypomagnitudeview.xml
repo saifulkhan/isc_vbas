@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><module codename="uk.ac.isc.hypomagnitudeview">
-    <module_version install_time="1458836754760" last="true" origin="installer" specification_version="1.0">
-        <file crc="837810975" name="config/Modules/uk-ac-isc-hypomagnitudeview.xml"/>
-        <file crc="2428912599" name="modules/uk-ac-isc-hypomagnitudeview.jar"/>
-    </module_version>
-</module>

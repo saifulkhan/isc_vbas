@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><module codename="uk.ac.isc.hypodepthview">
-    <module_version install_time="1458836755061" last="true" origin="installer" specification_version="1.0">
-        <file crc="1661372815" name="config/Modules/uk-ac-isc-hypodepthview.xml"/>
-        <file crc="3485632521" name="modules/uk-ac-isc-hypodepthview.jar"/>
-    </module_version>
-</module>

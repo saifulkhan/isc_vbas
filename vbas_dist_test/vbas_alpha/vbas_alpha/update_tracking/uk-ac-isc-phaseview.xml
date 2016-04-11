@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><module codename="uk.ac.isc.phaseview">
-    <module_version install_time="1458836755187" last="true" origin="installer" specification_version="1.0">
-        <file crc="331976924" name="config/Modules/uk-ac-isc-phaseview.xml"/>
-        <file crc="72242528" name="modules/uk-ac-isc-phaseview.jar"/>
-    </module_version>
-</module>

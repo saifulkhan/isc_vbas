@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><module codename="uk.ac.isc.commonswrapper">
-    <module_version install_time="1458836754118" last="true" origin="installer" specification_version="1.0">
-        <file crc="654555424" name="config/Modules/uk-ac-isc-commonswrapper.xml"/>
-        <file crc="2207930553" name="modules/ext/commons-lang3-3.3.2.jar"/>
-        <file crc="4264061571" name="modules/uk-ac-isc-commonswrapper.jar"/>
-    </module_version>
-</module>

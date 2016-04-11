@@ -58,7 +58,7 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
     private final int imageHeight = 1000;
     //buffer images of the view
     private BufferedImage phasesImage = null;
-    private final BufferedImage phaseImageWithRect = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
+    private BufferedImage phaseImageWithRect = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
 
     //for filtering the data with phase types
     private final boolean[] typesVisible = {true, true, true, true, true};
@@ -155,7 +155,6 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
             VBASLogger.logDebug("Null 'inStream', resource: "
                     + getClass().getClassLoader().getResource("resources" + File.separator + "ttimes.pl").toString());
         }
-        
 
         setPreferredSize(new Dimension(500, 1000));
         phaseSeries = new DuplicateUnorderTimeSeries("");
@@ -238,6 +237,8 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
     //once the data changes, call this function
     public void updateData() {
 
+   
+       
         // get the prime hypocentre from the new hypocentres list
         for (int i = 0; i < hList.getHypocentres().size(); i++) {
             if (hList.getHypocentres().get(i).getIsPrime()) {
@@ -453,6 +454,7 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
         timeAxis.setLowerMargin(0.02);  // reduce the default margins
         timeAxis.setUpperMargin(0.02);
         timeAxis.setDateFormatOverride(new SimpleDateFormat("HH:mm:ss"));
+        
         NumberAxis valueAxis = new NumberAxis("");
         valueAxis.setRange(0.0, Math.min(180, maxDist + 1));
         //XYDotRenderer xyDotRend = new XYDotRenderer();
@@ -510,8 +512,6 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
         return phaseImageWithRect;
     }
 
-    
-    
     @Override
     public void mouseClicked(MouseEvent e) {
 

@@ -74,7 +74,7 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
 
         selectedSeisEvent.addChangeListener(this);
         selectedPhaseList.addChangeListener(this);
-        
+
         /* 
          * Create 2 phase views. 
          */
@@ -97,7 +97,7 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
     public void SeisDataChanged(SeisDataChangeEvent event) {
         String eventName = event.getData().getClass().getName();
         //VBASLogger.logDebug("Event received from: " + eventName);
-        
+
         switch (eventName) {
             case "uk.ac.isc.seisdata.SeisEvent":
                 //SeisEvent seisEvent = (SeisEvent) event.getData();
@@ -114,7 +114,6 @@ public final class PhaseViewTopComponent extends TopComponent implements SeisDat
                 // TODO: do not redraw everything!
                 //Hypocentre hypocentre = (Hypocentre) event.getData();
                 //VBASLogger.logDebug("Hypocentre= " + selectedHypocentre.getHypid());
-                
                 break;
         }
 

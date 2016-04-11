@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><module codename="uk.ac.isc.seiseventselection">
-    <module_version install_time="1458836755436" last="true" origin="installer" specification_version="1.0">
-        <file crc="1000876493" name="config/Modules/uk-ac-isc-seiseventselection.xml"/>
-        <file crc="3348658761" name="modules/uk-ac-isc-seiseventselection.jar"/>
-    </module_version>
-</module>

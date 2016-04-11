@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import javax.swing.JPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
@@ -17,14 +18,13 @@ import uk.ac.isc.seisdata.Phase;
 import uk.ac.isc.seisdata.PhasesList;
 import uk.ac.isc.seisdata.SeisDataChangeEvent;
 import uk.ac.isc.seisdata.SeisDataChangeListener;
- 
+import uk.ac.isc.seisdata.VBASLogger;
 
 /**
  * PhaseDetailView is the right panel for showing the zoom-in version of the
  * phase view
  *
  */
-
 public class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListener {
 
     private final int imageWidth = 500;
@@ -38,7 +38,6 @@ public class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListen
     private double residualCutoffLevel = 0.0;
 
     private DuplicateUnorderTimeSeries detailPhaseSeries;
-
     private final DuplicateUnorderTimeSeriesCollection detailDataset = new DuplicateUnorderTimeSeriesCollection();
 
     private JFreeChart freechart = null;
@@ -46,11 +45,8 @@ public class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListen
     private BufferedImage phasesImage = null;
 
     private double zoomMinTime;
-
     private double zoomMaxTime;
-
     private double zoomMinDist;
-
     private double zoomMaxDist;
 
     //curve data
@@ -76,13 +72,8 @@ public class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListen
         detailDataset.addSeries(detailPhaseSeries);
 
         detailPList.addChangeListener(this);
-        double[] range = phaseTVPanel.getRange();
 
-        zoomMinTime = range[0];
-        zoomMaxTime = range[1];
-        zoomMinDist = range[2];
-        zoomMaxDist = range[3];
-
+        setRange(phaseTVPanel.getRange());
         createTravelImage();
     }
 
@@ -100,12 +91,22 @@ public class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListen
     }
 
     public void updateData() {
+        
+       // Issue #43: Crashes when event 607202578 is selected
+       // When there are no phase in the selcted SiesEvent just draw an empty image. 
+       if(detailPList.getPhases().isEmpty()) {
+            phasesImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
+            repaint();
+            return;
+       }
+       
         setRange(phaseTVPanel.getRange());
 
         //this.detailPList = pList;
         detailDataset.removeAllSeries();
         detailPhaseSeries = new DuplicateUnorderTimeSeries("");
 
+        VBASLogger.logDebug("range=" + Arrays.toString(phaseTVPanel.getRange()) + ", #detailPList: " + detailPList.getPhases().size());
         //put phases into the dataseries
         if (detailPList != null) {
             for (Phase p : detailPList.getPhases()) {
@@ -128,6 +129,8 @@ public class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListen
                     }
                 }
             }
+            //VBASLogger.logDebug("#detailPhaseSeries: " + detailPhaseSeries.);
+
             detailDataset.addSeries(detailPhaseSeries);
         }
         createTravelImage();
@@ -186,6 +189,7 @@ public class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListen
          }*/
 
         detailDataset.addSeries(detailPhaseSeries);
+        VBASLogger.logDebug("detailPhaseSeries=" + detailPhaseSeries);
 
         createTravelImage();
         repaint();
@@ -205,19 +209,22 @@ public class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListen
     private void createTravelImage() {
         //define first axis
         DateAxis timeAxis = new DateAxis("");
+        VBASLogger.logDebug("zoomMinTime=" + zoomMinTime + ", zoomMaxTime=" + zoomMaxTime);
+       
+        timeAxis.setRange((double) (zoomMinTime - 2), (double) (zoomMaxTime + 2));
         timeAxis.setLowerMargin(0.02);  // reduce the default margins
         timeAxis.setUpperMargin(0.02);
         timeAxis.setDateFormatOverride(new SimpleDateFormat("HH:mm:ss"));
 
-        timeAxis.setRange((double) (zoomMinTime - 2), (double) (zoomMaxTime + 2));
-
         NumberAxis valueAxis = new NumberAxis("");
-        valueAxis.setRange(Math.max(0, zoomMinDist - 1), Math.min(180, zoomMaxDist + 1));
 
+        
+        VBASLogger.logDebug("zoomMinDist=" + zoomMinDist + ", zoomMaxDist=" + zoomMaxDist);
+        valueAxis.setRange(Math.max(0, zoomMinDist - 1), Math.min(180, zoomMaxDist + 1));
         XYDotRenderer xyDotRend = new DetailGlyphRenderer(detailPList.getPhases());//new XYDotRenderer();
+
         //xyDotRend.setDotWidth(6);
         //xyDotRend.setDotHeight(6);
-
         PhasesWithCurvePlot plot = new PhasesWithCurvePlot(detailDataset, timeAxis, valueAxis, xyDotRend, ttdData);
         //XYPlot plot = new XYPlot(detailDataset, timeAxis, valueAxis, xyDotRend);
         plot.setOrientation(PlotOrientation.HORIZONTAL);
@@ -236,6 +243,8 @@ public class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListen
     //paint the detail view on the right side
     @Override
     public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
         Graphics2D g2 = (Graphics2D) g;
 
         int xOffset = Math.max((getWidth() - imageWidth) / 2, 0);
