@@ -6,9 +6,8 @@ import java.util.Objects;
 /**
  * Data model to keep the phases, we leave the clone to later stage as we don't
  * need it now
- *
- * @author hui
  */
+
 public class Phase extends AbstractSeisData {
 
     //phase id
@@ -51,10 +50,9 @@ public class Phase extends AbstractSeisData {
 
     //phase arrival time
     private Date arrivalTime;
-
     //millisecond of arrival time
     private Integer msec;
-
+ 
     //time residual caculated based on ttd
     private Double timeResidual;
 
@@ -216,6 +214,8 @@ public class Phase extends AbstractSeisData {
     }
 
     public Date getArrivalTime() {
+        ///SimpleDateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        //VBASLogger.logDebug(df1.format(arrivalTime));
         return this.arrivalTime;
     }
 
@@ -226,7 +226,7 @@ public class Phase extends AbstractSeisData {
     public void setMsec(Integer msec) {
         this.msec = msec;
     }
-
+    
     public void setTimeResidual(Double residual) {
         this.timeResidual = residual;
     }
@@ -335,9 +335,10 @@ public class Phase extends AbstractSeisData {
 
     @Override
     public String toString() {
-        String ret = "Type: " + this.iscPhaseType + " Agency: " + this.reportAgency + " Station: "
-                + this.reportStation + " Dist: " + this.distance;
-        return ret;
+        return "Type: " + this.iscPhaseType 
+                + " Agency: " + this.reportAgency 
+                + " Station: " + this.reportStation 
+                + " Dist: " + this.distance;
     }
 
 }

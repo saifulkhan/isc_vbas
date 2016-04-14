@@ -334,13 +334,13 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
 
             /*
              * ***************************************************************************
-             * Report: run relocator, generate html etc.. If susccess write the
+             * Report: runLocator relocator, generate html etc.. If susccess write the
              * report info in the AssessedCommand table
              * ****************************************************************************
              */
             Path assessDir = Paths.get(eventLogDir + File.separator + newAssessId);
 
-            Boolean ret = Locator.run(assessDir, formulateCommand.getSQLFunctionArray(), formulateCommand.getLocatorArgStr());
+            Boolean ret = Locator.runLocator(assessDir, formulateCommand.getSQLFunctionArray(), formulateCommand.getLocatorArgStr());
 
             if (ret == true) {
                 File htmlReport = new File(assessDir + File.separator + newAssessId + ".html");

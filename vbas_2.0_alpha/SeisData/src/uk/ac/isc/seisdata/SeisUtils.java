@@ -3,6 +3,8 @@ package uk.ac.isc.seisdata;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Utilities to calculate distance, angels, magnitude groups, depth bands,
@@ -380,19 +382,25 @@ public final class SeisUtils {
      * @param phasesList
      * @return
      */
-    public static ArrayList<Integer> calculateAzSumm(ArrayList<Phase> phasesList) {
+    public static ArrayList<Double> calculateAzSumm(ArrayList<Phase> phasesList, Boolean isISC) {
 
-        ArrayList<Integer> retArray = new ArrayList<Integer>();
-
-        ArrayList<Double> azimuths = new ArrayList<Double>();
-
+        ArrayList<Double> retArray = new ArrayList<Double>();
+        Set<Double> azimuths1 = new LinkedHashSet<Double>();        // To avoid adding duplicates
+        // Issue : 41
         for (Phase p : phasesList) {
             Double tmp = p.getAzimuth();
-            azimuths.add(tmp);
+            if (p.getDefining() == false && isISC == true) {
+                VBASLogger.logDebug("not-added");
+            } else {
+                azimuths1.add(tmp);
+                VBASLogger.logDebug("add");
+            }
         }
+        
+        ArrayList<Double> azimuths = new ArrayList<Double>(azimuths1); // Write to a list and sort.
         Collections.sort(azimuths);
-
-        Integer fst_azi = 0, sec_azi = 0, miss_cut = 0, startgap1 = 0, startgap2 = 0;
+        
+        double fst_azi = 0, sec_azi = 0, miss_cut = 0, startgap1 = 0, startgap2 = 0;
         double azi1 = 0.0, azi2 = 0.0;
         if (azimuths.size() < 3) {
             fst_azi = -1;
@@ -401,40 +409,40 @@ public final class SeisUtils {
             for (int i = 0; i < azimuths.size(); i++) {
                 if (i == azimuths.size() - 1) {
                     azi1 = azimuths.get(0) - (azimuths.get(i) - 360.0);
-                    if ((int) azi1 > fst_azi) {
-                        fst_azi = (int) azi1;
+                    if ( azi1 > fst_azi) {
+                        fst_azi =azi1;
                         startgap1 = azimuths.get(i).intValue();
                     }
 
                     azi2 = azimuths.get(1) - (azimuths.get(i) - 360.0);
-                    if ((int) azi2 > sec_azi) {
-                        sec_azi = (int) azi2;
+                    if ( azi2 > sec_azi) {
+                        sec_azi =azi2;
                         startgap2 = azimuths.get(i).intValue();
                         miss_cut = 0;
                     }
                 } else if (i == azimuths.size() - 2) {
                     azi1 = azimuths.get(i + 1) - azimuths.get(i);
-                    if ((int) azi1 > fst_azi) {
-                        fst_azi = (int) azi1;
+                    if ( azi1 > fst_azi) {
+                        fst_azi =azi1;
                         startgap1 = azimuths.get(i).intValue();
                     }
 
                     azi2 = azimuths.get(0) - (azimuths.get(i) - 360.0);
-                    if ((int) azi2 > sec_azi) {
-                        sec_azi = (int) azi2;
+                    if ( azi2 > sec_azi) {
+                        sec_azi =  azi2;
                         startgap2 = azimuths.get(i).intValue();
                         miss_cut = (azimuths.size() - 1);
                     }
                 } else {
                     azi1 = azimuths.get(i + 1) - azimuths.get(i);
-                    if ((int) azi1 > fst_azi) {
-                        fst_azi = (int) azi1;
+                    if ( azi1 > fst_azi) {
+                        fst_azi =  azi1;
                         startgap1 = azimuths.get(i).intValue();
                     }
 
                     azi2 = azimuths.get(i + 2) - azimuths.get(i);
-                    if ((int) azi2 > sec_azi) {
-                        sec_azi = (int) azi2;
+                    if ( azi2 > sec_azi) {
+                        sec_azi =  azi2;
                         startgap2 = azimuths.get(i).intValue();
                         miss_cut = i + 1;
                     }

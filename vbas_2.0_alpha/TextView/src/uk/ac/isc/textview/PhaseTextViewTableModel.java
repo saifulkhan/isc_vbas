@@ -140,7 +140,7 @@ public class PhaseTextViewTableModel extends AbstractTableModel {
                 retObject = phasesList.get(rowIndex).getOrigPhaseType();
                 break;
             case 7:
-                retObject = phasesList.get(rowIndex).getOrigPhaseType();
+                retObject = phasesList.get(rowIndex).getIscPhaseType();
                 break;
             case 8:
                 if (phasesList.get(rowIndex).getTimeResidual() != null) {

@@ -178,8 +178,10 @@ public class TravelViewRenderer extends XYDotRenderer {
                 g2.fillPolygon(p);
             } else if (!reportPhaseType.equals(iscPhaseType) && !defining) { // hollow triangle
                 //g2.setPaint(Color.red); g2.setStroke(dashed);
-                int[] trix = {transHor, transHor - 4, transHor + 4};
-                int[] triy = {transVer - 4, transVer + 4, transVer + 4};
+                //int[] trix = {transHor, transHor - 4, transHor + 4};
+                //int[] triy = {transVer - 4, transVer + 4, transVer + 4};
+                int[] trix = {transHor + 4, transHor, transHor + 8};
+                int[] triy = {transVer, transVer + 8, transVer + 8};
                 Polygon p = new Polygon(trix, triy, 3);
                 g2.drawPolygon(p);
             }

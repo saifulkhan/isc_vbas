@@ -1386,7 +1386,7 @@ public class SeisDataDAO {
         Connection con = null;
         Statement st = null;
         ResultSet rs = null;
-
+        String query = null;
         PhasesList.clear();
 
         try {
@@ -1394,7 +1394,7 @@ public class SeisDataDAO {
             con = DriverManager.getConnection(url, user, password);
             st = con.createStatement();
 
-            String query = "SELECT r.reporter, p.sta, p.day, a.delta, a.esaz, a.phase, a.timeres, p.phid, p.phase, a.timedef, p.rdid, s.staname, p.msec, p.slow, p.azim, i.snr, a.phase_fixed "
+            query = "SELECT r.reporter, p.sta, p.day, a.delta, a.esaz, a.phase, a.timeres, p.phid, p.phase, a.timedef, p.rdid, s.staname, p.msec, p.slow, p.azim, i.snr, a.phase_fixed "
                     + "FROM event e, association a, report r, site s, phase p LEFT OUTER JOIN phase_info i "
                     + "ON p.phid = i.phid "
                     + "WHERE e.prime_hyp = a.hypid AND p.reporter = r.repid "
@@ -1403,8 +1403,10 @@ public class SeisDataDAO {
 
             rs = st.executeQuery(query);
 
-            while (rs.next()) {
+            VBASLogger.logDebug(query);
 
+            while (rs.next()) {
+                //VBASLogger.logDebug((++i) + " ");
                 Phase tmp = new Phase();
 
                 tmp.setReportAgency(rs.getString(1));
@@ -1448,23 +1450,37 @@ public class SeisDataDAO {
                 }
 
                 Date dd = null;
-                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                try {
-                    dd = df.parse(rs.getString(3));
-                } catch (ParseException e) {
-                    return false;
-                } catch (NullPointerException ne) {
-                    //System.out.println(rs.getString(3));
+                //SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                SimpleDateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+                if (rs.getObject(3) != null && rs.getObject(13) != null) {
+                    try {
+                        //dd = df.parse(rs.getString(3));
+                        dd = df1.parse(rs.getString(3) + "." + rs.getInt(13));
+                    } catch (ParseException e) {
+                        String message = "Failed parsing: " + rs.getObject(3) + rs.getObject(13)
+                                + "\nSee the error log file for more information. ";
+                        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+                        VBASLogger.logSevere(message);
+                        return false;
+                    } catch (NullPointerException ne) {
+                        JOptionPane.showMessageDialog(null, "NullPointerException", "Error", JOptionPane.ERROR_MESSAGE);
+                        VBASLogger.logSevere("NullPointerException");
+                    }
+                    tmp.setArrivalTime(dd);
                 }
-                tmp.setArrivalTime(dd);
 
                 PhasesList.add(tmp);
-
             }
 
             rs.close();
 
         } catch (SQLException ex) {
+            String message = ex.toString() + "\n\n"
+                    + "Failed query= " + query
+                    + "\nSee the error log file for more information. ";
+            JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+            VBASLogger.logSevere(message);
             return false;
         } finally {
             try {
@@ -1555,15 +1571,24 @@ public class SeisDataDAO {
                 }
 
                 Date dd = null;
-                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                try {
-                    dd = df.parse(rs.getString(3));
-                } catch (ParseException e) {
+                //SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                SimpleDateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-                } catch (NullPointerException ne) {
-                    //System.out.println(rs.getString(3));
+                if (rs.getObject(3) != null && rs.getObject(13) != null) {
+                    try {
+                        //dd = df.parse(rs.getString(3));
+                        dd = df1.parse(rs.getString(3) + "." + rs.getInt(13));
+                    } catch (ParseException e) {
+                        String message = "Failed parsing: " + rs.getObject(3) + rs.getObject(13)
+                                + "\nSee the error log file for more information. ";
+                        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+                        VBASLogger.logSevere(message);
+                    } catch (NullPointerException ne) {
+                        JOptionPane.showMessageDialog(null, "NullPointerException", "Error", JOptionPane.ERROR_MESSAGE);
+                        VBASLogger.logSevere("NullPointerException");
+                    }
+                    tmp.setArrivalTime(dd);
                 }
-                tmp.setArrivalTime(dd);
 
             }
 

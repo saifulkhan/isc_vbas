@@ -378,15 +378,25 @@ public final class SeisDataDAOAssess {
                 }
 
                 Date dd = null;
-                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                try {
-                    dd = df.parse(rs.getString(3));
-                } catch (ParseException e) {
-                    return false;
-                } catch (NullPointerException ne) {
-                    //System.out.println(rs.getString(3));
+                //SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                SimpleDateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+                if (rs.getObject(3) != null && rs.getObject(13) != null) {
+                    try {
+                        //dd = df.parse(rs.getString(3));
+                        dd = df1.parse(rs.getString(3) + "." + rs.getInt(13));
+                    } catch (ParseException e) {
+                        String message = "Failed parsing: " + rs.getObject(3) + rs.getObject(13)
+                                + "\nSee the error log file for more information. ";
+                        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+                        VBASLogger.logSevere(message);
+                        return false;
+                    } catch (NullPointerException ne) {
+                        JOptionPane.showMessageDialog(null, "NullPointerException", "Error", JOptionPane.ERROR_MESSAGE);
+                        VBASLogger.logSevere("NullPointerException");
+                    }
+                    tmp.setArrivalTime(dd);
                 }
-                tmp.setArrivalTime(dd);
 
                 PhasesList.add(tmp);
 

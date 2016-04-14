@@ -8,9 +8,8 @@ import org.jfree.data.time.TimeSeriesDataItem;
 /**
  * As the orignial timeseries does not allow duplicated data and we do have many
  * duplicates, this class is to extend that class for allowing duplicates
- *
- * @author hui
  */
+
 public class DuplicateUnorderTimeSeries extends TimeSeries {
 
     //bad encapsulation in the base class so I have to  redefine the boundary

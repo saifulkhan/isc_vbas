@@ -12,7 +12,7 @@ import uk.ac.isc.seisdata.VBASLogger;
  
 public class Locator {
  
-    public static Boolean run(Path assessDir, ArrayList<String> functionArray, String locatorArgStr) {
+    public static Boolean runLocator(Path assessDir, ArrayList<String> functionArray, String locatorArgStr) {
 
         String iscLocOut = assessDir + File.separator + "iscloc.out";
 

@@ -4,8 +4,11 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
+import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.Second;
 import org.openide.util.Exceptions;
 import uk.ac.isc.seisdata.VBASLogger;
@@ -32,9 +35,7 @@ public class LoadTTDData {
 
         //execute the perl script and read the data into ttdList
         try {
-
             Process proc = Runtime.getRuntime().exec(perlCommand);
-
             BufferedInputStream in = new BufferedInputStream(proc.getInputStream());
             Scanner bscanner = new Scanner(in);
 
@@ -42,7 +43,6 @@ public class LoadTTDData {
                 String temp = bscanner.nextLine();
                 TTDTriplet tempTriplet = new TTDTriplet(temp);
                 ttdList.add(tempTriplet);
-                //System.out.println(tempTriplet);
                 //if(!pnameList.contains(tempTriplet.getPhaseType()))
                 //{
                 //    pnameList.add(tempTriplet.getPhaseType());
@@ -61,22 +61,39 @@ public class LoadTTDData {
                     "Warning", JOptionPane.WARNING_MESSAGE);
         }
 
+        // debug: sort and print
+        //Collections.sort(ttdList); // Sort by date
+        /*Collections.sort(ttdList, new Comparator<TTDTriplet>() {
+            public int compare(TTDTriplet o1, TTDTriplet o2) {
+                if (o1.getDelta() == null || o2.getDelta() == null) {
+                    return 0;
+                }
+                return o1.getDelta().compareTo(o2.getDelta());
+            }
+        });
+        */
+        for (TTDTriplet t : ttdList) {
+            System.out.println(t);
+        }
+         
+
+
         //iterate the ttdlist and put them into different seriers based on their phase types
         //return time series collections
         DuplicateUnorderTimeSeries dts = null;
         for (int i = 0; i < ttdList.size(); i++) {
             if (i == 0) {
                 dts = new DuplicateUnorderTimeSeries(ttdList.get(0).getPhaseType());
-                dts.add(new Second(ttdList.get(0).getArrivalTime()), ttdList.get(0).getDelta());
+                dts.add(new Millisecond(ttdList.get(0).getArrivalTime()), ttdList.get(0).getDelta());
             } else if (i == ttdList.size() - 1) {
                 ttdData.addSeries(dts);
             } else {
                 if (ttdList.get(i).getPhaseType().equals(ttdList.get(i - 1).getPhaseType())) {
-                    dts.add(new Second(ttdList.get(i).getArrivalTime()), ttdList.get(i).getDelta());
+                    dts.add(new Millisecond(ttdList.get(i).getArrivalTime()), ttdList.get(i).getDelta());
                 } else {
                     ttdData.addSeries(dts);
                     dts = new DuplicateUnorderTimeSeries(ttdList.get(i).getPhaseType());
-                    dts.add(new Second(ttdList.get(i).getArrivalTime()), ttdList.get(i).getDelta());
+                    dts.add(new Millisecond(ttdList.get(i).getArrivalTime()), ttdList.get(i).getDelta());
                 }
             }
         }

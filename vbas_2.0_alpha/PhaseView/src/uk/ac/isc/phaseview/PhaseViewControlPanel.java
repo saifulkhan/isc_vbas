@@ -16,35 +16,35 @@ import javax.swing.event.ChangeListener;
  */
 class PhaseViewControlPanel extends JPanel {
 
-    private JSlider residualFilter = new JSlider(0, 10, 0);
-    private final JCheckBox crustalCheckBox = new JCheckBox("Crustal Phases");
-    private final JCheckBox mantleCheckBox = new JCheckBox("Mantle Phases");
-    private final JCheckBox coreCheckBox = new JCheckBox("Core Phases");
-    private final JCheckBox depthCheckBox = new JCheckBox("Depth Phases");
-    private final JCheckBox othersCheckBox = new JCheckBox("Other Phases");
+    private JSlider slider_residualFilter = new JSlider(0, 10, 0);
+    private final JCheckBox checkBox_crustal = new JCheckBox("Crustal Phases");
+    private final JCheckBox checkBox_mantle = new JCheckBox("Mantle Phases");
+    private final JCheckBox checkBox_core = new JCheckBox("Core Phases");
+    private final JCheckBox checkBox_depth = new JCheckBox("Depth Phases");
+    private final JCheckBox checkBox_others = new JCheckBox("Other Phases");
 
     public PhaseViewControlPanel(final PhaseTravelViewPanel ptvp, final PhaseDetailViewPanel pdvp) {
 
-        residualFilter.setMajorTickSpacing(2);
-        residualFilter.setMinorTickSpacing(1);
-        residualFilter.setPaintTicks(true);
-        residualFilter.setPaintLabels(true);
+        slider_residualFilter.setMajorTickSpacing(2);
+        slider_residualFilter.setMinorTickSpacing(1);
+        slider_residualFilter.setPaintTicks(true);
+        slider_residualFilter.setPaintLabels(true);
 
-        crustalCheckBox.setSelected(true);
-        mantleCheckBox.setSelected(true);
-        coreCheckBox.setSelected(true);
-        depthCheckBox.setSelected(true);
-        othersCheckBox.setSelected(true);
+        checkBox_crustal.setSelected(true);
+        checkBox_mantle.setSelected(true);
+        checkBox_core.setSelected(true);
+        checkBox_depth.setSelected(true);
+        checkBox_others.setSelected(true);
 
         this.setLayout(new FlowLayout());
-        this.add(residualFilter);
-        this.add(crustalCheckBox);
-        this.add(mantleCheckBox);
-        this.add(coreCheckBox);
-        this.add(depthCheckBox);
-        this.add(othersCheckBox);
+        this.add(slider_residualFilter);
+        this.add(checkBox_crustal);
+        this.add(checkBox_mantle);
+        this.add(checkBox_core);
+        this.add(checkBox_depth);
+        this.add(checkBox_others);
 
-        residualFilter.addChangeListener(new ChangeListener() {
+        slider_residualFilter.addChangeListener(new ChangeListener() {
 
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -61,11 +61,11 @@ class PhaseViewControlPanel extends JPanel {
 
         });
 
-        crustalCheckBox.addActionListener(new ActionListener() {
+        checkBox_crustal.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (crustalCheckBox.isSelected()) {
+                if (checkBox_crustal.isSelected()) {
                     ptvp.setPhaseTypeVisible(0, true);
                 } else {
                     ptvp.setPhaseTypeVisible(0, false);
@@ -76,11 +76,11 @@ class PhaseViewControlPanel extends JPanel {
             }
         });
 
-        mantleCheckBox.addActionListener(new ActionListener() {
+        checkBox_mantle.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (mantleCheckBox.isSelected()) {
+                if (checkBox_mantle.isSelected()) {
                     ptvp.setPhaseTypeVisible(1, true);
                 } else {
                     ptvp.setPhaseTypeVisible(1, false);
@@ -92,11 +92,11 @@ class PhaseViewControlPanel extends JPanel {
             }
         });
 
-        coreCheckBox.addActionListener(new ActionListener() {
+        checkBox_core.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (coreCheckBox.isSelected()) {
+                if (checkBox_core.isSelected()) {
                     ptvp.setPhaseTypeVisible(2, true);
                 } else {
                     ptvp.setPhaseTypeVisible(2, false);
@@ -107,11 +107,11 @@ class PhaseViewControlPanel extends JPanel {
             }
         });
 
-        depthCheckBox.addActionListener(new ActionListener() {
+        checkBox_depth.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (depthCheckBox.isSelected()) {
+                if (checkBox_depth.isSelected()) {
                     ptvp.setPhaseTypeVisible(3, true);
                 } else {
                     ptvp.setPhaseTypeVisible(3, false);
@@ -122,11 +122,11 @@ class PhaseViewControlPanel extends JPanel {
             }
         });
 
-        othersCheckBox.addActionListener(new ActionListener() {
+        checkBox_others.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (othersCheckBox.isSelected()) {
+                if (checkBox_others.isSelected()) {
                     ptvp.setPhaseTypeVisible(4, true);
                 } else {
                     ptvp.setPhaseTypeVisible(4, false);
@@ -139,12 +139,11 @@ class PhaseViewControlPanel extends JPanel {
     }
 
     public void reset() {
-        residualFilter.setValue(0);
-
-        crustalCheckBox.setSelected(true);
-        mantleCheckBox.setSelected(true);
-        coreCheckBox.setSelected(true);
-        depthCheckBox.setSelected(true);
-        othersCheckBox.setSelected(true);
+        slider_residualFilter.setValue(0);
+        checkBox_crustal.setSelected(true);
+        checkBox_mantle.setSelected(true);
+        checkBox_core.setSelected(true);
+        checkBox_depth.setSelected(true);
+        checkBox_others.setSelected(true);
     }
 }

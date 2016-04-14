@@ -9,13 +9,12 @@ import java.util.Date;
  *
  * @author hui
  */
-public class TTDTriplet {
+public class TTDTriplet implements Comparable<TTDTriplet> {
 
     private String phaseType;
-
     private Double delta;
-
     private Date arrivalTime;
+    private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     public TTDTriplet(String s) {
         //parse the string s
@@ -26,7 +25,6 @@ public class TTDTriplet {
 
         this.delta = Double.parseDouble(tokens[1]);
 
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         try {
             arrivalTime = df.parse(tokens[2]);
         } catch (ParseException e) {
@@ -62,7 +60,14 @@ public class TTDTriplet {
 
     @Override
     public String toString() {
-        return "phaseType: " + getPhaseType() + " Delta: " + getDelta() + " ArrivalTime: " + getArrivalTime();
+        return "Delta: " + getDelta()
+                + " ArrivalTime: " + df.format(getArrivalTime())
+                + " phaseType: " + getPhaseType();
+    }
+
+    @Override
+    public int compareTo(TTDTriplet obj) {
+        return getArrivalTime().compareTo(obj.getArrivalTime());
     }
 
 }

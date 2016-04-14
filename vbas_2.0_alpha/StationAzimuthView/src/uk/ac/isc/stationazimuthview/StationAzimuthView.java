@@ -33,9 +33,8 @@ import uk.ac.isc.seisdata.VBASLogger;
  * distributions on quantised directions. In addition, two curves shows the
  * first and second azimuthal gap of the event. Big gap from the collected
  * stations indicates large uncertainty of the estimation.
- *
- * @author hui
  */
+
 public class StationAzimuthView extends JPanel {
 
     // saiful: combine imSize with height and width
@@ -51,6 +50,7 @@ public class StationAzimuthView extends JPanel {
 
     //referenc of prime hypocentre, it is used to centralise the map because the location of the prime hypocentre is asked to be the central of the map
     private Hypocentre ph = null;
+    private Boolean isISC = false;
     //the parameter to define how many bins of directions
     private int binNumber = 12;
 
@@ -85,15 +85,12 @@ public class StationAzimuthView extends JPanel {
     private boolean textVisible = true;
 
     //an array to save the first azimuth coverage,second azimuth and degree they cover
-    private ArrayList<Integer> aziSummary;
+    private ArrayList<Double> aziSummary;
 
     //Color definitions for different elements
     private static final Color innerColor = new Color(69, 131, 91);
-
     private static final Color outerColor = new Color(0, 200, 0);
-
     private static final Color primaryGapColor = new Color(255, 1, 243);
-
     private static final Color secondaryGapColor = new Color(255, 186, 85);
 
     /**
@@ -131,13 +128,18 @@ public class StationAzimuthView extends JPanel {
         }
 
         //get prime hypocentre
+        
         for (Hypocentre hypo : hyposList.getHypocentres()) {
             if (hypo.getIsPrime()) {
                 ph = hypo;
+            } 
+            if (hypo.getAgency().equals("ISC")) {
+                isISC = true;
             }
         }
 
-        aziSummary = SeisUtils.calculateAzSumm(phasesList.getPhases());
+        
+        aziSummary = SeisUtils.calculateAzSumm(phasesList.getPhases(), isISC);
         //load station list based on evid from prime hypocentre
         staList = new ArrayList<Station>();
         SeisDataDAO.retrieveAllStations(ph.getEvid(), staList);
@@ -145,6 +147,52 @@ public class StationAzimuthView extends JPanel {
         drawDirectionalPie();
         drawBufferedImage();
     }
+    
+    
+    //when the view need be reploted 
+    void updateData() {
+
+        farthestDegree = 0;
+
+        //update the numberDirectionPhases first
+        for (int i = 0; i < binNumber; i++) {
+            numberDirectionPhases[i] = 0;
+            numberDirectionPhasesInMap[i] = 0;
+        }
+
+        for (Phase p : phasesList.getPhases()) {
+            int binIdx = (int) (p.getAzimuth() / (360.0 / (double) binNumber));
+            numberDirectionPhases[binIdx]++;
+
+            if (p.getDistance() <= this.mapDegree) {
+                numberDirectionPhasesInMap[binIdx]++;
+            }
+
+            if ((int) Math.ceil(p.getDistance()) > farthestDegree) {
+                farthestDegree = (int) Math.ceil(p.getDistance());
+            }
+        }
+
+        //update stations
+        //get prime hypocentre
+        isISC = false;
+        for (Hypocentre hypo : hyposList.getHypocentres()) {
+            if (hypo.getIsPrime()) {
+                ph = hypo;
+            }
+             if (hypo.getAgency().equals("ISC")) {
+                isISC = true;
+            }
+        }
+        SeisDataDAO.retrieveAllStations(ph.getEvid(), staList);
+
+        aziSummary = SeisUtils.calculateAzSumm(phasesList.getPhases(), isISC);
+
+        drawDirectionalPie();
+        drawBufferedImage();
+    }
+    
+    
 
     /**
      * setter of direction binNumber
@@ -201,44 +249,7 @@ public class StationAzimuthView extends JPanel {
         repaint();
     }
 
-    //when the view need be reploted 
-    void updateData() {
-
-        farthestDegree = 0;
-
-        //update the numberDirectionPhases first
-        for (int i = 0; i < binNumber; i++) {
-            numberDirectionPhases[i] = 0;
-            numberDirectionPhasesInMap[i] = 0;
-        }
-
-        for (Phase p : phasesList.getPhases()) {
-            int binIdx = (int) (p.getAzimuth() / (360.0 / (double) binNumber));
-            numberDirectionPhases[binIdx]++;
-
-            if (p.getDistance() <= this.mapDegree) {
-                numberDirectionPhasesInMap[binIdx]++;
-            }
-
-            if ((int) Math.ceil(p.getDistance()) > farthestDegree) {
-                farthestDegree = (int) Math.ceil(p.getDistance());
-            }
-        }
-
-        //update stations
-        //get prime hypocentre
-        for (Hypocentre hypo : hyposList.getHypocentres()) {
-            if (hypo.getIsPrime()) {
-                ph = hypo;
-            }
-        }
-        SeisDataDAO.retrieveAllStations(ph.getEvid(), staList);
-
-        aziSummary = SeisUtils.calculateAzSumm(phasesList.getPhases());
-
-        drawDirectionalPie();
-        drawBufferedImage();
-    }
+    
 
     /**
      * @param non Load the base map
@@ -341,11 +352,17 @@ public class StationAzimuthView extends JPanel {
         //draw first azimuth angle
         g2.setPaint(primaryGapColor);
         g2.setStroke(new BasicStroke(4));
-        g2.drawArc(0, 0, imSize, imSize, 90 - aziSummary.get(2), aziSummary.get(0) - 360);
+        
+        double startAngle = aziSummary.get(2);
+        double arcAngle = aziSummary.get(0);
+        g2.drawArc(0, 0, imSize, imSize, 90 - (int) startAngle, (int) arcAngle - 360);
         //draw Second Azimuth Angle
         g2.setPaint(secondaryGapColor);
         g2.setStroke(new BasicStroke(4));
-        g2.drawArc(4, 4, imSize - 8, imSize - 8, 90 - aziSummary.get(3), aziSummary.get(1) - 360);
+        
+        startAngle = aziSummary.get(3);
+        arcAngle =  aziSummary.get(1);
+        g2.drawArc(4, 4, imSize - 8, imSize - 8, 90 - (int) startAngle, (int) arcAngle - 360);
     }
 
     private void drawBufferedImage() {
