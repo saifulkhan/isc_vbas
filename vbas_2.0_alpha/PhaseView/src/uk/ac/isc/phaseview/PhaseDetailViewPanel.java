@@ -181,16 +181,7 @@ public class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListen
         detailPhaseTimeSeries.setMaxX(maxTime);
         detailPhaseTimeSeries.setMinY(minDist);
         detailPhaseTimeSeries.setMaxY(maxDist);
-        /*
-         double firstTopTime = minTime + (maxTime - minTime) / pageNumber;
-         Double firstTopDistance = minDist + (maxDist) / (double) pageNumber;
-         for(Phase p:pList.getPhases())
-         {
-         if(p.getArrivalTime()!=null && (double)p.getArrivalTime().getTime()<firstTopTime && p.getDistance()<firstTopDistance)
-         {
-         detailedPList.getPhases().add(p);
-         }
-         }*/
+ 
 
         detailPhaseTimeSeriesCollection.addSeries(detailPhaseTimeSeries);
         VBASLogger.logDebug("detailPhaseSeries=" + detailPhaseTimeSeries);

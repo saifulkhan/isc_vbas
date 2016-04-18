@@ -204,7 +204,7 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
         maxTime = phaseTimeSeries.getMaxX();
         maxDist = phaseTimeSeries.getMaxY();
 
-        VBASLogger.logDebug("#phaseTimeSeries:" + phaseTimeSeries.getItemCount() + " minTime=" + minTime + " maxTime=" + maxTime + " maxDist=" + maxDist);
+        //VBASLogger.logDebug("#phaseTimeSeries:" + phaseTimeSeries.getItemCount() + " minTime=" + minTime + " maxTime=" + maxTime + " maxDist=" + maxDist);
 
         createTravelImage();
 
@@ -310,10 +310,14 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
 
         // draw the zoom rect if it was there
         // get the rectangle based on the freechart, reverse the min and max
-        double yMax = freechart.getXYPlot().getDomainAxis().valueToJava2D(zoomMinTime, info.getPlotInfo().getDataArea(), freechart.getXYPlot().getDomainAxisEdge());
-        double yMin = freechart.getXYPlot().getDomainAxis().valueToJava2D(zoomMaxTime, info.getPlotInfo().getDataArea(), freechart.getXYPlot().getDomainAxisEdge());
-        double xMin = freechart.getXYPlot().getRangeAxis().valueToJava2D(zoomMinDist, info.getPlotInfo().getDataArea(), freechart.getXYPlot().getRangeAxisEdge());
-        double xMax = freechart.getXYPlot().getRangeAxis().valueToJava2D(zoomMaxDist, info.getPlotInfo().getDataArea(), freechart.getXYPlot().getRangeAxisEdge());
+        double yMax = freechart.getXYPlot().getDomainAxis().valueToJava2D(zoomMinTime, 
+                info.getPlotInfo().getDataArea(), freechart.getXYPlot().getDomainAxisEdge());
+        double yMin = freechart.getXYPlot().getDomainAxis().valueToJava2D(zoomMaxTime, 
+                info.getPlotInfo().getDataArea(), freechart.getXYPlot().getDomainAxisEdge());
+        double xMin = freechart.getXYPlot().getRangeAxis().valueToJava2D(zoomMinDist, 
+                info.getPlotInfo().getDataArea(), freechart.getXYPlot().getRangeAxisEdge());
+        double xMax = freechart.getXYPlot().getRangeAxis().valueToJava2D(zoomMaxDist, 
+                info.getPlotInfo().getDataArea(), freechart.getXYPlot().getRangeAxisEdge());
 
         //define the rectangle and draw it in the buffer
         Graphics2D g2 = (Graphics2D) phaseImageWithRect.getGraphics();

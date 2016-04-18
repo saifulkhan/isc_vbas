@@ -6,10 +6,12 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisLocation;
@@ -335,7 +337,7 @@ public class HypoMagnitudeViewPanel extends JPanel {
             magDeltaImg = freeChartDelta.createBufferedImage(600, 150);
             int xOffset = (getWidth() - 600) / 2;
             int yOffset = (getHeight() - 450) / 2;
-            
+
             g2.drawImage(magDeltaImg, xOffset, yOffset, 600, 150, this);
             g2.drawImage(hypoMagImg, xOffset, yOffset + 150, 600, 300, this);
 
@@ -364,7 +366,7 @@ public class HypoMagnitudeViewPanel extends JPanel {
     }
 
     public BufferedImage getBufferedImage() {
-        BufferedImage combined = new BufferedImage(getViewWidth(),
+        BufferedImage combined = new BufferedImage(getViewWidth() * 2,
                 getViewHeight(), BufferedImage.TYPE_INT_ARGB);
 
         // paint both images, preserving the alpha channels
@@ -372,6 +374,11 @@ public class HypoMagnitudeViewPanel extends JPanel {
         graphics.drawImage(hypoMagImg, 0, 0, null);
         graphics.drawImage(magDeltaImg, viewWidth, 0, null);
 
+        try {
+            ImageIO.write(combined, "png",
+                    new File("/export/home/saiful/assess/temp/HypocentreMagnitudeview.png"));
+        } catch (Exception e) {
+        }
         return combined;
     }
 
@@ -387,7 +394,7 @@ public class HypoMagnitudeViewPanel extends JPanel {
     public Dimension getPreferredSize() {
         return new Dimension(viewWidth * 2, viewHeight);
     }
-    
+
     /*
      * If the layout is vertical.
      * Saiful: hard coded and not used.

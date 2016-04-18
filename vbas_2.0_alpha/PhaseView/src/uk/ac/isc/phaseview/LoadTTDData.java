@@ -72,9 +72,12 @@ public class LoadTTDData {
             }
         });
         */
+        
+        /*
+        // Debug print
         for (TTDTriplet t : ttdList) {
-            System.out.println(t);
-        }
+            VBASLogger.logDebug(t);
+        }*/
          
 
 

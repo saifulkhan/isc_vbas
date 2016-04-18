@@ -2783,7 +2783,7 @@ public class SeisDataDAO {
             Integer evid,
             String commandType,
             ArrayList<Integer> commandIds,
-            Path eventLogDir,
+            String serverUrl,
             String systemCommandStr /*systemCommand executed*/
     ) {
 
@@ -2825,7 +2825,7 @@ public class SeisDataDAO {
                 newAssessId = rs.getInt("nextval");
             }
 
-            File report = new File(eventLogDir + File.separator + newAssessId + File.separator + newAssessId + ".html");
+            String htmlUrl = serverUrl + "/" + newAssessId + "/" + newAssessId + ".html";
 
             query = "INSERT INTO edit_commands ( "
                     + "id, "
@@ -2843,7 +2843,7 @@ public class SeisDataDAO {
                     + block_allocation_id + ", "
                     + "NOW(), '"
                     + commandType + "', '"
-                    + report + "', '"
+                    + htmlUrl + "', '"
                     + systemCommandStr + "');";
 
             VBASLogger.logDebug("query= " + query);

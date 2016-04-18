@@ -390,10 +390,10 @@ public final class SeisUtils {
         for (Phase p : phasesList) {
             Double tmp = p.getAzimuth();
             if (p.getDefining() == false && isISC == true) {
-                VBASLogger.logDebug("not-added");
+                //VBASLogger.logDebug("not-added");
             } else {
                 azimuths1.add(tmp);
-                VBASLogger.logDebug("add");
+                //VBASLogger.logDebug("add");
             }
         }
         

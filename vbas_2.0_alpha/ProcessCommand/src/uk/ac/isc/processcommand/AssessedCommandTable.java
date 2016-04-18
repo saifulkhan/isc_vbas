@@ -13,7 +13,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -122,7 +126,7 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setColumnSelectionAllowed(false);
         /*table.setSelectionBackground(new Color(45, 137, 239));
-        table.setSelectionForeground(Color.WHITE);*/
+         table.setSelectionForeground(Color.WHITE);*/
         //commandTable.setRowSelectionInterval(0, 0);
 
         table.setRowSelectionAllowed(false);
@@ -171,7 +175,6 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
         }
     }
 
-    
     /*
      *****************************************************************************************
      * The cells in the "Report" column are clickable button.
@@ -217,13 +220,20 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
                 Object value = table.getValueAt(row, column);
                 if (value instanceof JButton) {
 
-                    File htmlFile = new File(Global.getAssessedCommandList().getAssessedCommandList().get(row).getReport());
+                    String url = Global.getAssessedCommandList().getAssessedCommandList().get(row).getReport();
                     try {
-                        Desktop.getDesktop().browse(htmlFile.toURI());
+                        Desktop.getDesktop().browse(new URI(url));
+                    } catch (URISyntaxException ex) {
+                        Exceptions.printStackTrace(ex);
+                        JOptionPane.showMessageDialog(null, "Unable to open: " + url, 
+                                "Warning", JOptionPane.WARNING_MESSAGE);
                     } catch (IOException ex) {
                         Exceptions.printStackTrace(ex);
+                        JOptionPane.showMessageDialog(null, "Unable to open: " + url, 
+                                "Warning", JOptionPane.WARNING_MESSAGE);
                     }
-                    VBASLogger.logDebug("Clicked.." + "row= " + row + ", column= " + column + ", report: " + htmlFile);
+
+                    VBASLogger.logDebug("Clicked.." + "row= " + row + ", column= " + column + ", report: " + url);
                 }
             }
         }
@@ -268,7 +278,7 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
         }
 
         public void onButtonCommitActionPerformed(ActionEvent e) {
-            JOptionPane.showMessageDialog(null, "Commit is not activated yet. It will be enabled after alpha/beta testing!.", 
+            JOptionPane.showMessageDialog(null, "Commit is not activated yet. It will be enabled after alpha/beta testing!.",
                     "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }

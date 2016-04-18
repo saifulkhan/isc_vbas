@@ -8,10 +8,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import uk.ac.isc.seisdata.VBASLogger;
- 
- 
+
 public class Locator {
- 
+
     public static Boolean runLocator(Path assessDir, ArrayList<String> functionArray, String locatorArgStr) {
 
         String iscLocOut = assessDir + File.separator + "iscloc.out";
@@ -21,6 +20,9 @@ public class Locator {
         VBASLogger.logDebug("locatorCommandStr= " + locatorArgStr);
         VBASLogger.logDebug("iscLocOut= " + iscLocOut);
 
+        /*
+         * Run SQL functions
+         */
         Boolean ret = SeisDataDAOAssess.processAssessData(Global.getSelectedSeisEvent().getEvid(), functionArray);
         if (ret == false) {
             return false;
@@ -71,6 +73,5 @@ public class Locator {
         }
 
         return true;
-
     }
 }
