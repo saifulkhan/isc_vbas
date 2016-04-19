@@ -63,7 +63,7 @@ public class Global {
         // add data into evets list : retrieve the events from the database
         SeisDataDAO.retrieveAllEvents(seisEventsList.getEvents());
         SeisDataDAO.retrieveEventsMagnitude(seisEventsList.getEvents());
-        SeisDataDAO.retrieveAllPhaseNumber(seisEventsList.getEvents());
+        SeisDataDAO.retrieveAllPhaseNumber(seisEventsList.getEvents());                         
         SeisDataDAO.retrieveAllRegionName(seisEventsList.getEvents());
 
         selectedSeisEvent.setValues(seisEventsList.getEvents().get(0));

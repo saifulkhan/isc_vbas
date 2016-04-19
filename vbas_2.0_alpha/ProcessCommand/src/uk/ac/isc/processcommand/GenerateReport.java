@@ -95,7 +95,11 @@ public class GenerateReport {
                 }
 
                 htmlFile = new File(assessDir + File.separator + assessID + ".html");
-                htmlFile.setReadable(true, true);
+                htmlFile.setReadable(true, false);
+                htmlFile.setWritable(true, false);
+                htmlFile.getParentFile().setWritable(true,false);
+                
+                
                 VBASLogger.logDebug("Assess (html) report = " + htmlFile.toPath());
 
                 Files.copy(inSream, htmlFile.toPath(), StandardCopyOption.REPLACE_EXISTING);

@@ -58,11 +58,10 @@ public class PhaseEditDialog extends JDialog {
         setResizable(false);
         initComponents();
         table_edit.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table_edit.setSelectionBackground(new Color(45, 137, 239));
-        table_edit.setSelectionForeground(Color.WHITE);
+        /*table_edit.setSelectionBackground(new Color(45, 137, 239));
+         table_edit.setSelectionForeground(Color.WHITE);*/
     }
 
-    
     public void showPhaseEditDialog(ArrayList<PhaseEditData> list) {
 
         textField_phaseType.setText("");

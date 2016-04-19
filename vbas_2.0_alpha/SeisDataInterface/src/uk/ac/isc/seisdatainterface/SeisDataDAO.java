@@ -756,10 +756,26 @@ public class SeisDataDAO {
             con = DriverManager.getConnection(url, user, password);
             st = con.createStatement();
 
-            String query = "SELECT COUNT(*), e.evid"
-                    + " FROM  association a, event e"
-                    + " WHERE a.hypid = e.prime_hyp"
-                    + " AND a.author='ISC' group by e.evid;";
+            String query = "SELECT h.nass, e.evid\n"
+                    + "     FROM hypocenter h, event e\n"
+                    + "    WHERE h.author = 'ISC'\n"
+                    + "      AND h.isc_evid = e.evid\n"
+                    + "      AND h.hypid = e.prime_hyp\n"
+                    + "      AND h.deprecated IS NULL\n"
+                    + "      AND e.banished IS NULL\n"
+                    + "      AND e.ready IS NOT NULL\n"
+                    + "    UNION\n"
+                    + "   SELECT COUNT(*), e.evid\n"
+                    + "     FROM hypocenter h, event e, association a\n"
+                    + "    WHERE h.author != 'ISC'\n"
+                    + "      AND h.isc_evid = e.evid\n"
+                    + "      AND h.hypid = e.prime_hyp\n"
+                    + "      AND h.deprecated IS NULL\n"
+                    + "      AND e.banished IS NULL\n"
+                    + "      AND e.ready IS NOT NULL\n"
+                    + "      AND h.hypid = a.hypid\n"
+                    + "      AND a.author = 'ISC'\n"
+                    + "GROUP BY e.evid;";
 
             rs = st.executeQuery(query);
 
@@ -791,7 +807,6 @@ public class SeisDataDAO {
                 return false;
             }
         }
-
         return true;
     }
 

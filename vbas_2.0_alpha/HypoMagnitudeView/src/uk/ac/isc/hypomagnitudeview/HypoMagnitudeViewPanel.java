@@ -374,11 +374,12 @@ public class HypoMagnitudeViewPanel extends JPanel {
         graphics.drawImage(hypoMagImg, 0, 0, null);
         graphics.drawImage(magDeltaImg, viewWidth, 0, null);
 
-        try {
+        // Debug
+        /*try {
             ImageIO.write(combined, "png",
                     new File("/export/home/saiful/assess/temp/HypocentreMagnitudeview.png"));
         } catch (Exception e) {
-        }
+        }*/
         return combined;
     }
 

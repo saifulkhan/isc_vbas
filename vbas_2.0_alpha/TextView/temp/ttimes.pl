@@ -92,9 +92,9 @@ foreach my $phase ( @phases ) {
 
     next if ( ! defined $phases{$phase} );
 
-    my $int = 1;
+    my $int = 0.2;
 
-    for ( my $delta = 0.05; $delta < $maxdelta; $delta += $int ) {
+    for ( my $delta = 0.05; $delta < $maxdelta + 10; $delta += $int ) {
 
         my ($ttime, $dtdd, $dtdh, $bpdel) = table_tt($tt{$phase}, $delta, $depth, 1, 1);
 
