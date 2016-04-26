@@ -46,7 +46,7 @@ public final class StationAzimuthViewTopComponent extends TopComponent implement
     private final JScrollPane scrollPane;
 
     // control panel of the view
-    private final StationAzimuthControlPanel sacp;
+    private final StationAzimuthControlPanel stationAzimuthControlPanel;
     // the main view 
     private final StationAzimuthView saView;
 
@@ -68,12 +68,12 @@ public final class StationAzimuthViewTopComponent extends TopComponent implement
         selectedSeisEvent.addChangeListener(this);
 
         saView = new StationAzimuthView(hyposList, phasesList);
-        sacp = new StationAzimuthControlPanel(saView);
+        stationAzimuthControlPanel = new StationAzimuthControlPanel(saView);
 
         scrollPane = new JScrollPane(saView);
         this.setLayout(new BorderLayout());
         this.add(scrollPane, BorderLayout.CENTER);
-        this.add(sacp, BorderLayout.NORTH);
+        this.add(stationAzimuthControlPanel, BorderLayout.NORTH);
     }
 
     //repaint the view when data changes
@@ -88,6 +88,7 @@ public final class StationAzimuthViewTopComponent extends TopComponent implement
                 VBASLogger.logDebug("SeisEvent= " + selectedSeisEvent.getEvid());
                 saView.updateData();
                 scrollPane.setViewportView(saView);
+                stationAzimuthControlPanel.setDefault();
                 break;
         }
 

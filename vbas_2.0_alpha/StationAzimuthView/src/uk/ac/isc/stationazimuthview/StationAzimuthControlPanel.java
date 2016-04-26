@@ -20,19 +20,18 @@ public class StationAzimuthControlPanel extends JPanel {
     private final ButtonGroup bg = new ButtonGroup();
 
     private final JRadioButton scaleBt1 = new JRadioButton("180 Deg.");
-
     private final JRadioButton scaleBt2 = new JRadioButton("110 Deg.");
-
     private final JRadioButton scaleBt3 = new JRadioButton("30 Deg.");
-
     private final JRadioButton scaleBt4 = new JRadioButton("Fit Station");
-
     private final JCheckBox textCheckbox = new JCheckBox("Show Text");
 
-    //private StationAzimuthView sav;
+    private final StationAzimuthView stationAzimuthView;
+
+    //private StationAzimuthView stationAzimuthView;
     //bad practice, will move to ioc later
-    StationAzimuthControlPanel(final StationAzimuthView sav) {
-        //sav = savs;
+    StationAzimuthControlPanel(StationAzimuthView _stationAzimuthView) {
+        this.stationAzimuthView = _stationAzimuthView;
+
         this.setLayout(new FlowLayout());
 
         scaleBt1.setSelected(true);
@@ -53,7 +52,7 @@ public class StationAzimuthControlPanel extends JPanel {
         scaleBt1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sav.setMapDegree(180);
+                stationAzimuthView.setMapDegree(180);
             }
 
         });
@@ -61,7 +60,7 @@ public class StationAzimuthControlPanel extends JPanel {
         scaleBt2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sav.setMapDegree(110);
+                stationAzimuthView.setMapDegree(110);
             }
 
         });
@@ -69,7 +68,7 @@ public class StationAzimuthControlPanel extends JPanel {
         scaleBt3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sav.setMapDegree(30);
+                stationAzimuthView.setMapDegree(30);
             }
 
         });
@@ -77,10 +76,10 @@ public class StationAzimuthControlPanel extends JPanel {
         scaleBt4.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //if(sav.getFarthestDegree()>30)
-                sav.setMapDegree(sav.getFarthestDegree());
+                //if(stationAzimuthView.getFarthestDegree()>30)
+                stationAzimuthView.setMapDegree(stationAzimuthView.getFarthestDegree());
                 //else
-                //    sav.setMapDegree(30);
+                //    stationAzimuthView.setMapDegree(30);
             }
 
         });
@@ -89,10 +88,15 @@ public class StationAzimuthControlPanel extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                sav.setTextVisible(textCheckbox.isSelected());
+                stationAzimuthView.setTextVisible(textCheckbox.isSelected());
             }
 
         });
+    }
+
+    public void setDefault() {
+        scaleBt1.setSelected(true);
+        stationAzimuthView.setMapDegree(180);
     }
 
 }

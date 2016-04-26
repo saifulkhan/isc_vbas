@@ -38,7 +38,7 @@
                 position: fixed;
                 top: 0;
                 background: lightgray;
-                
+
             }
             #cssmenu > ul > li {
                 float: left;
@@ -124,17 +124,17 @@
                 border-bottom:none;
             }
 
-           /* gap after navigationbar and empty box*/
+            /* gap after navigationbar and empty box*/
             .gap {
                 height:20px;
                 padding:10px;
             }
-            
+
             /* image border*/
             img{
                 border: 2px solid #47c9af;
             }
-           
+
             /* space after nvigation bar, "Command" was overlapped*/
             body {
                 padding-top: 100px;
@@ -196,6 +196,36 @@
             <section id="command">
                 <div class="gap"> </div>
                 <div class="title"> Command  </div>
+
+                <script>
+
+                    d3.json("command.json", function (error, data) {
+                        //alert(error);
+                        console.log("data=", data);
+                        console.log("string=", JSON.stringify(data, null, 2));
+
+                        var seisEvent = data.id;
+                        var locatorArg = data.locatorArgStr;
+                        var sqlFunction = "";
+
+                        for (var i = 0; i < data.sqlFunctionArray.length; i++) {
+                            var obj = data.sqlFunctionArray[i];
+                            sqlFunction += obj.name + "; ";
+                        }
+
+                        var container = d3.select("#command")
+                                .append("text")
+                                .html("<br/>"
+                                        + "SeisEvent No: " + seisEvent + "<br/>"
+                                        + "Locator Argument: " + locatorArg + "<br/>"
+                                        + "SQL Functions: " + sqlFunction)
+                                .style("font-size", 12+"px")
+                                .style("font-family", "sans-serif");
+
+                    });
+                    
+                </script>
+
             </section>
 
             <section id="hypocentre_table">

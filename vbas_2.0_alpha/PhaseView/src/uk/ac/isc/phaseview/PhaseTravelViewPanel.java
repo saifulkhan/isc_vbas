@@ -56,6 +56,11 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
 
     private final int imageWidth = 500;
     private final int imageHeight = 1000;
+    // Gap between the container panel and the actual graph view.
+    private int xOffset = 0;  
+    private int yOffset = 0;
+    
+    // Axis draw once
     private DateAxis timeAxis = null;
     private NumberAxis valueAxis = null;
     private XYDotRenderer renderer = null;
@@ -84,13 +89,10 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
     // The zoom rectangle (selected by the user with the mouse).
     private Rectangle2D zoomRectangle = null;
     private boolean zoomRect = false;
-    private double zoomMinTime;
-    private double zoomMaxTime;
-    private double zoomMinDist;
-    private double zoomMaxDist;
-    private int xOffset;
-    private int yOffset;
-
+    private double zoomMinTime, zoomMaxTime, zoomMinDist, zoomMaxDist;
+    private double zoomRextX, zoomRextY, zoomRextW, zoomRextH;
+    Rectangle2D zoomRectDim;
+            
     private final PhasesList pList;
     private final HypocentresList hList;
     private Hypocentre prime;
@@ -329,17 +331,17 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
 
         double yMin, yMax, xMin, xMax;
 
-        if (zoomRect == true) {
+        /*if (zoomRect == true) {
             yMin = zoomRectangle.getY();
             yMax = yMin + zoomRectangle.getHeight();
             xMin = zoomRectangle.getX();
             xMax = xMin + zoomRectangle.getWidth();
-        } else {
+        } else {*/
             yMin = zoomRectangle.getY() - yOffset;
             yMax = yMin + zoomRectangle.getHeight();
             xMin = zoomRectangle.getX() - xOffset;
             xMax = xMin + zoomRectangle.getWidth();
-        }
+        //}
 
         //use zoomRectangle to get the min-max Time and min-max distance
         zoomMinTime = freechart.getXYPlot().getDomainAxis().java2DToValue(yMax, info.getPlotInfo().getDataArea(), freechart.getXYPlot().getDomainAxisEdge());
@@ -347,7 +349,7 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
         zoomMinDist = freechart.getXYPlot().getRangeAxis().java2DToValue(xMin, info.getPlotInfo().getDataArea(), freechart.getXYPlot().getRangeAxisEdge());
         zoomMaxDist = freechart.getXYPlot().getRangeAxis().java2DToValue(xMax, info.getPlotInfo().getDataArea(), freechart.getXYPlot().getRangeAxisEdge());
 
-          // Debug
+        // Debug
         Date minTimeTemp = new Date();
         minTimeTemp.setTime((long) zoomMinTime);
         Date maxTimeTemp = new Date();
@@ -404,7 +406,10 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
 
     @Override
     public void paintComponent(Graphics g) {
+        super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
+
+        //VBASLogger.logDebug("getWidth()=" + getWidth() + ", imageWidth=" + imageWidth + ", getHeight()=" + getHeight() + ", imageHeight=" + imageHeight);
 
         xOffset = Math.max((getWidth() - imageWidth) / 2, 0);
         yOffset = Math.max((getHeight() - imageHeight) / 2, 0);
@@ -452,29 +457,33 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
     public void mouseDragged(MouseEvent e) {
         VBASLogger.logDebug("Zoom: mouseDragged");
 
-        //exception with no handler
-        if (this.zoomPoint == null) {
-            return;
-        }
+        /*
+         // TODO: Saiful: commented as I'm not sure if this is needed!
+        
+         //exception with no handler
+         if (this.zoomPoint == null) {
+         return;
+         }
 
-        //Graphics2D g2 = (Graphics2D) phasesImage.getGraphics();
-        Rectangle2D scaledDataArea = getScreenDataArea();
-        // selected rectangle shouldn't extend outside the data area...
-        double xmax = Math.min(e.getX(), scaledDataArea.getMaxX());
-        double ymax = Math.min(e.getY(), scaledDataArea.getMaxY());
-        this.zoomRectangle = new Rectangle2D.Double(
-                this.zoomPoint.getX(), this.zoomPoint.getY(),
-                xmax - this.zoomPoint.getX(), ymax - this.zoomPoint.getY());
+         //Graphics2D g2 = (Graphics2D) phasesImage.getGraphics();
+         Rectangle2D scaledDataArea = getScreenDataArea();
+         // selected rectangle shouldn't extend outside the data area...
+         double xmax = Math.min(e.getX(), scaledDataArea.getMaxX());
+         double ymax = Math.min(e.getY(), scaledDataArea.getMaxY());
+         this.zoomRectangle = new Rectangle2D.Double(
+         this.zoomPoint.getX(), this.zoomPoint.getY(),
+         xmax - this.zoomPoint.getX(), ymax - this.zoomPoint.getY());
 
-        Graphics2D g2 = (Graphics2D) phaseImageWithRect.getGraphics();
-        drawZoomRectangleManually(g2, false);
-        repaint();
-        g2.dispose();
+         Graphics2D g2 = (Graphics2D) phaseImageWithRect.getGraphics();
+         drawZoomRectangleManually(g2, false);
+         repaint();
+         g2.dispose();*/
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
         VBASLogger.logDebug("Zoom: mouseReleased");
+
         //exception with no handler
         if (this.zoomPoint == null) {
             return;
@@ -485,7 +494,7 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
         // selected rectangle shouldn't extend outside the data area...
         double xmax = Math.min(e.getX(), scaledDataArea.getMaxX());
         double ymax = Math.min(e.getY(), scaledDataArea.getMaxY());
-
+        
         if ((xmax - this.zoomPoint.getX()) > 0 && (ymax - this.zoomPoint.getY()) > 0) {
             this.zoomRectangle = new Rectangle2D.Double(this.zoomPoint.getX(),
                     this.zoomPoint.getY(),
@@ -497,7 +506,7 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
 
         Graphics2D g2 = (Graphics2D) phaseImageWithRect.getGraphics();
         g2.drawImage(phasesImage, 0, 0, null);
-        drawZoomRectangleManually(g2, false);
+        drawZoomRectangle(g2, false);
         repaint();
         g2.dispose();
         updateDetailPList();
@@ -516,6 +525,17 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
         double y = dataArea.getY() + insets.top + yOffset;
         double w = dataArea.getWidth();
         double h = dataArea.getHeight();
+
+        VBASLogger.logDebug("dataArea.getX()=" + dataArea.getX()
+                + ", insets.left=" + insets.left
+                + ", xOffset=" + xOffset
+                + ", dataArea.getY()=" + dataArea.getY()
+                + ", insets.top=" + insets.top
+                + ", yOffset=" + yOffset
+                + ", w=" + w
+                + ", h=" + h);
+        
+
         return new Rectangle2D.Double(x, y, w, h);
     }
 
@@ -543,7 +563,7 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
      * @param g2 the graphics device.
      * @param xor use XOR for drawing?
      */
-    private void drawZoomRectangleManually(Graphics2D g2, boolean xor) {
+    /*private void drawZoomRectangleManually(Graphics2D g2, boolean xor) {
         if (this.zoomRectangle != null) {
             if (xor) {
                 // Set XOR mode to draw the zoom rectangle
@@ -553,7 +573,10 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
             g2.setPaint(Color.BLACK);
             g2.setStroke(new BasicStroke(2));
 
-            g2.drawRect(((int) zoomRectangle.getX() - (int) xOffset), ((int) zoomRectangle.getY() - (int) yOffset), (int) zoomRectangle.getWidth(), (int) zoomRectangle.getHeight());
+            g2.drawRect(((int) zoomRectangle.getX() - (int) xOffset), 
+                    ((int) zoomRectangle.getY() - (int) yOffset), 
+                    (int) zoomRectangle.getWidth(), 
+                    (int) zoomRectangle.getHeight());
 
             if (xor) {
                 // Reset to the default 'overwrite' mode
@@ -561,7 +584,7 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
             }
         }
         zoomRect = true;
-    }
+    }*/
 
     /**
      * Draws zoom rectangle (if present). The drawing is performed in XOR mode,
@@ -574,7 +597,13 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
     private void drawZoomRectangle(Graphics2D g2, boolean xor) {
 
         if (this.zoomRectangle != null) {
-
+            
+            VBASLogger.logDebug("zoomRectangle = [" 
+                    + (int) zoomRectangle.getX() + ", " 
+                    + (int) zoomRectangle.getY() + ", " 
+                    + (int) zoomRectangle.getWidth() + ", "  
+                    + (int) zoomRectangle.getHeight() + "]");
+            
             if (xor) {
                 // Set XOR mode to draw the zoom rectangle
                 g2.setXORMode(Color.gray);
@@ -583,8 +612,15 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
             g2.setPaint(Color.BLACK);
 
             g2.setStroke(new BasicStroke(2));
-            g2.drawRect(((int) zoomRectangle.getX()), ((int) zoomRectangle.getY()),
-                    (int) zoomRectangle.getWidth(), (int) zoomRectangle.getHeight());
+            
+            /*g2.drawRect((int) zoomRectangle.getX(), 
+                    (int) zoomRectangle.getY(), 
+                    (int) zoomRectangle.getWidth(), 
+                    (int) zoomRectangle.getHeight());*/
+            g2.drawRect(((int) zoomRectangle.getX() - (int) xOffset), 
+                    ((int) zoomRectangle.getY() - (int) yOffset), 
+                    (int) zoomRectangle.getWidth(), 
+                    (int) zoomRectangle.getHeight());
 
             if (xor) {
                 // Reset to the default 'overwrite' mode

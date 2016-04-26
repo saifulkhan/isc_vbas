@@ -97,9 +97,8 @@ public class GenerateReport {
                 htmlFile = new File(assessDir + File.separator + assessID + ".html");
                 htmlFile.setReadable(true, false);
                 htmlFile.setWritable(true, false);
-                htmlFile.getParentFile().setWritable(true,false);
-                
-                
+                htmlFile.getParentFile().setWritable(true, false);
+
                 VBASLogger.logDebug("Assess (html) report = " + htmlFile.toPath());
 
                 Files.copy(inSream, htmlFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -113,6 +112,40 @@ public class GenerateReport {
         }
 
         return htmlFile;
+    }
+
+    
+    public void writeCommands(String cmd) {
+        File cmdJson = new File(assessDir + File.separator + "command.json");
+        VBASLogger.logDebug("command: " + cmd);
+
+        FileWriter fileWritter = null;
+        BufferedWriter bufferedWriter = null;
+
+        try {
+            // if the file doesnt exists, then create it
+            if (!cmdJson.exists()) {
+                cmdJson.createNewFile();
+            }
+
+            fileWritter = new FileWriter(cmdJson, false);
+            bufferedWriter = new BufferedWriter(fileWritter);
+            bufferedWriter.write(cmd);
+
+        } catch (IOException e) {
+            VBASLogger.logSevere("Error writing to json file.");
+            e.printStackTrace();
+        } finally {
+            try {
+                if (bufferedWriter != null) {
+                    bufferedWriter.close();
+                }
+            } catch (IOException e) {
+                VBASLogger.logSevere("Error releasing resources.");
+                e.printStackTrace();
+            }
+        }
+
     }
 
     public void createTables() {
@@ -183,7 +216,7 @@ public class GenerateReport {
             VBASLogger.logDebug("Complete...");
 
         } catch (IOException e) {
-            VBASLogger.logSevere("Error writing to html file.");
+            VBASLogger.logSevere("Error writing to csv file.");
             e.printStackTrace();
         } finally {
             try {
@@ -277,7 +310,7 @@ public class GenerateReport {
         switch (view) {
             case "hypocentre_siesmicity":
                 HypoOverviewPanel2 hop = (HypoOverviewPanel2) panel;
-                bi = hop.getBaseMap();
+                bi = hop.getBufferedImage();
                 break;
 
             case "phase_travel_time":

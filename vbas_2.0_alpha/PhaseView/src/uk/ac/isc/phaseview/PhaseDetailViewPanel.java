@@ -194,7 +194,6 @@ public class PhaseDetailViewPanel extends JPanel implements SeisDataChangeListen
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-
         Graphics2D g2 = (Graphics2D) g;
 
         int xOffset = Math.max((getWidth() - imageWidth) / 2, 0);

@@ -180,8 +180,30 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
         SeisDataDAO.retrieveHistEvents(seisList, latHigh, latLow, lonLeft, lonRight);
     }
 
-    public BufferedImage getBaseMap() {
-        return baseMap;
+    public BufferedImage getBufferedImage() {
+
+        //return baseMap;
+        BufferedImage combined = new BufferedImage(getMapWidth(), getMapHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics graphics = combined.getGraphics();
+        graphics.drawImage(baseMap, 0, 0, null);
+
+        int miniXOffset = 0, miniYOffset = 0;
+        // minimap on the right side
+        if (getWidth() > mapWidth) {
+            miniXOffset = Math.max(0, (getWidth() + mapWidth) / 2 - miniWidth);
+        } else {
+            miniXOffset = Math.max(0, getWidth() - miniWidth);
+        }
+
+        // minimap at the top
+        if (getHeight() > mapHeight) {
+            miniYOffset = (getHeight() - mapHeight) / 2;
+        } else {
+            miniYOffset = 0;
+        }
+        graphics.drawImage(miniMap, miniXOffset, miniYOffset, miniWidth, miniHeight, this);
+
+        return combined;
     }
 
     public int getMapWidth() {
@@ -663,32 +685,33 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
         // draw mini map
         int miniXOffset = 0, miniYOffset = 0;
         //if(showMiniMap == true)
-        {
-            //minimap on the right side
-            if (getWidth() > mapWidth) {
-                miniXOffset = Math.max(0, (getWidth() + mapWidth) / 2 - miniWidth);
-            } else {
-                miniXOffset = Math.max(0, getWidth() - miniWidth);
-            }
-
-            //minimap at the top
-            if (getHeight() > mapHeight) {
-                miniYOffset = (getHeight() - mapHeight) / 2;
-            } else {
-                miniYOffset = 0;
-            }
-            //minimap at the bottom
-            /*if(getHeight()>panelHeight)
-             {
-             miniYOffset = Math.max(0,(int)(getHeight()+panelHeight)/2 - miniHeight);
-             }
-             else
-             {
-             miniYOffset = Math.max(0,getHeight()-miniHeight);
-             }*/
-            drawMiniMap();
-            g2.drawImage(miniMap,miniXOffset, miniYOffset, miniWidth, miniHeight, this);
+        //{
+        // minimap on the right side
+        if (getWidth() > mapWidth) {
+            miniXOffset = Math.max(0, (getWidth() + mapWidth) / 2 - miniWidth);
+        } else {
+            miniXOffset = Math.max(0, getWidth() - miniWidth);
         }
+
+        // minimap at the top
+        if (getHeight() > mapHeight) {
+            miniYOffset = (getHeight() - mapHeight) / 2;
+        } else {
+            miniYOffset = 0;
+        }
+
+        // minimap at the bottom
+        /*if(getHeight()>panelHeight)
+         {
+         miniYOffset = Math.max(0,(int)(getHeight()+panelHeight)/2 - miniHeight);
+         }
+         else
+         {
+         miniYOffset = Math.max(0,getHeight()-miniHeight);
+         }*/
+        drawMiniMap();
+        g2.drawImage(miniMap, miniXOffset, miniYOffset, miniWidth, miniHeight, this);
+        //}
 
         /*
          * Saiful:

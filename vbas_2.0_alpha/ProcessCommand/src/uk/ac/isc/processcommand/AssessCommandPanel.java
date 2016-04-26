@@ -12,11 +12,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -123,8 +120,8 @@ public class AssessCommandPanel extends JPanel {
             VBASLogger.logDebug("commandProvenance= " + formulateCommand.getCmdProvenance().toString());
             VBASLogger.logDebug("systemCommand= " + formulateCommand.getSystemCommand().toString());
 
-            String url = "http://nemesis.isc.ac.uk/assess" + "/" 
-                    + year + "/" 
+            String url = "http://nemesis.isc.ac.uk/assess" + "/"
+                    + year + "/"
                     + (month < 10 ? ("0" + String.valueOf(month)) : String.valueOf(month)) + "/"
                     + Global.getSelectedSeisEvent().getEvid();
 
@@ -172,6 +169,7 @@ public class AssessCommandPanel extends JPanel {
             File htmlFile = generateReport.createHTML(assessDir, newAssessId);
             generateReport.createTables();
             generateReport.createViews();
+            generateReport.writeCommands(formulateCommand.getSystemCommand().toString());
 
             String url = "http://nemesis.isc.ac.uk/assess"
                     + "/" + year
