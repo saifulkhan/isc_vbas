@@ -208,22 +208,24 @@
                         var locatorArg = data.locatorArgStr;
                         var sqlFunction = "";
 
-                        for (var i = 0; i < data.sqlFunctionArray.length; i++) {
-                            var obj = data.sqlFunctionArray[i];
-                            sqlFunction += obj.name + "; ";
+                        if (data.sqlFunctionArray != null) {
+                            for (var i = 0; i < data.sqlFunctionArray.length; i++) {
+                                var obj = data.sqlFunctionArray[i];
+                                sqlFunction += obj.name + "; ";
+                            }
                         }
-
+                        
                         var container = d3.select("#command")
                                 .append("text")
                                 .html("<br/>"
                                         + "SeisEvent No: " + seisEvent + "<br/>"
                                         + "Locator Argument: " + locatorArg + "<br/>"
                                         + "SQL Functions: " + sqlFunction)
-                                .style("font-size", 12+"px")
+                                .style("font-size", 12 + "px")
                                 .style("font-family", "sans-serif");
 
                     });
-                    
+
                 </script>
 
             </section>

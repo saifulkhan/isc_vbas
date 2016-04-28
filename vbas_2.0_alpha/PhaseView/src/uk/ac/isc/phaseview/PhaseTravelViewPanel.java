@@ -207,6 +207,9 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
 
         phaseTimeSeriesCollection.addSeries(phaseTimeSeries);
 
+        VBASLogger.logDebug(String.valueOf(prime.getOrigTime()));
+        VBASLogger.logDebug(String.valueOf(phaseTimeSeries.getMinX()));
+        
         minTime = Math.min(prime.getOrigTime().getTime(), phaseTimeSeries.getMinX());
         maxTime = phaseTimeSeries.getMaxX();
         maxDist = phaseTimeSeries.getMaxY();

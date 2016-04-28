@@ -2871,6 +2871,15 @@ public class SeisDataDAO {
                 VBASLogger.logDebug("query= " + query);
                 st.executeUpdate(query);
             }
+            
+            for (int commandId : commandIds) {
+            query = "INSERT INTO command_group (id,edit_commands_id,evid) VALUES ( "
+                    + newAssessId + ", "
+                    + commandId + ", "
+                    + evid + ")";
+            VBASLogger.logDebug("query= " + query);
+            st.executeUpdate(query);
+        }
 
             rs.close();
 
@@ -2913,6 +2922,7 @@ public class SeisDataDAO {
         Connection con = null;
         Statement st = null;
         ResultSet rs = null;
+        String query = "";
 
         assessedCommandList.clear();
 
@@ -2920,18 +2930,21 @@ public class SeisDataDAO {
             con = DriverManager.getConnection(url, user, password);
             st = con.createStatement();
 
-            String query = "SELECT ba.pass, a.name, ec.id AS assessid, ec.command AS command, eca.id AS cmdids\n"
-                    + " FROM analyst a, edit_commands ec, block_allocation ba, command_group cg, edit_commands eca\n"
-                    + " WHERE ec.evid = " + evid
-                    + " AND ec.type = 'assess'\n"
-                    + " AND ba.id = ec.block_allocation_id\n"
-                    + " AND ba.analyst_id = a.id\n"
-                    + " AND cg.id = ec.id\n"
-                    + " AND cg.edit_commands_id = eca.id\n"
+            query = "SELECT ba.pass, a.name, ec.id AS assessid, ec.command AS command, eca.id AS cmdids\n" 
+                    + " FROM analyst a, edit_commands ec, block_allocation ba, command_group cg, edit_commands eca\n" 
+                    + " WHERE ec.evid = " + evid 
+                    + " AND ec.type = 'assess'\n" 
+                    + " AND ba.id = ec.block_allocation_id\n" 
+                    + " AND ba.analyst_id = a.id\n" 
+                    + " AND cg.evid = eca.evid\n" 
+                    + " AND cg.id = ec.id\n" 
+                    + " AND cg.edit_commands_id = eca.id\n" 
                     + " ORDER BY ec.adddate;";
 
             rs = st.executeQuery(query);
-            VBASLogger.logDebug("query= " + query + "\nrs= " + rs);
+            
+            VBASLogger.logDebug("query= " + query);
+            VBASLogger.logDebug("rs= " + rs);
 
             Hashtable<Integer, AssessedCommand> hashtable = new Hashtable<Integer, AssessedCommand>();;
 
@@ -2967,7 +2980,8 @@ public class SeisDataDAO {
             String message = ex.toString() + "\n\n"
                     + VBASLogger.debugAt()
                     + "\nFailed to load Command history list from database."
-                    + "\nSee the error log file for more information. ";
+                    + "\nSee the error log file for more information. "
+                    + "\nQuery: " + query;
 
             JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
             logger.log(Level.SEVERE, message);

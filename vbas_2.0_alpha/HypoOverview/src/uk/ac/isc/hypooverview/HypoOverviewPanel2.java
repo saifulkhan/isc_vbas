@@ -187,6 +187,7 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
         Graphics graphics = combined.getGraphics();
         graphics.drawImage(baseMap, 0, 0, null);
 
+        // draw mini map
         int miniXOffset = 0, miniYOffset = 0;
         // minimap on the right side
         if (getWidth() > mapWidth) {
@@ -194,7 +195,6 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
         } else {
             miniXOffset = Math.max(0, getWidth() - miniWidth);
         }
-
         // minimap at the top
         if (getHeight() > mapHeight) {
             miniYOffset = (getHeight() - mapHeight) / 2;

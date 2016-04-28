@@ -166,7 +166,9 @@ public final class SeisDataDAOAssess {
                     + " ORDER BY h.prime DESC, h.author";
 
             rs = st.executeQuery(query);
-
+            
+            VBASLogger.logDebug("Executing query:" + query);
+            
             while (rs.next()) {
 
                 Hypocentre tmp = new Hypocentre();
@@ -182,6 +184,12 @@ public final class SeisDataDAOAssess {
                     return false;
                 }
                 tmp.setOrigTime(dd);
+                
+                if(dd == null) {
+                     String message =  "origTime = null. \nReport to the system admin.";
+                        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+                        VBASLogger.logSevere(message);
+                }
 
                 tmp.setLat(rs.getDouble(3));
                 tmp.setLon(rs.getDouble(4));
