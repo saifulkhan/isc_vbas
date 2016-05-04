@@ -54,18 +54,19 @@ class HypocentreTablePopupMenu implements ActionListener {
         if ("Set Prime".equals(e.getActionCommand())) {
 
             String commandType = "setprime";
-            FormulateCommand composeCommand = new FormulateCommand(commandType, "hypocentre", selectedHypocentre.getHypid());
-            composeCommand.addAttribute("primehypocentre", table.getValueAt(selectedRow, 0), null);
-            composeCommand.addSQLFunction("rf ( " + selectedHypocentre.getHypid() + ", " + selectedSeisEvent.getEvid() + " )");
-            composeCommand.addLocatorArg("fix_hypo=" + table.getValueAt(selectedRow, 0));
+            FormulateCommand formulateCommand 
+                    = new FormulateCommand(commandType, "hypocentre", selectedHypocentre.getHypid(), selectedHypocentre.getAgency());
+            formulateCommand.addAttribute("primehypocentre", table.getValueAt(selectedRow, 0), null);
+            formulateCommand.addSQLFunction("rf ( " + selectedHypocentre.getHypid() + ", " + selectedSeisEvent.getEvid() + " )");
+            formulateCommand.addLocatorArg("fix_hypo=" + table.getValueAt(selectedRow, 0));
 
-            if (composeCommand.isValidCommand()) {
+            if (formulateCommand.isValidSystemCommand()) {
 
-                VBASLogger.logDebug("\ncommandLog= " + composeCommand.getCmdProvenance().toString()
-                        + "\nsystemCommand= " + composeCommand.getSystemCommand().toString());
+                VBASLogger.logDebug("\ncommandLog= " + formulateCommand.getCmdProvenance().toString()
+                        + "\nsystemCommand= " + formulateCommand.getSystemCommand().toString());
 
                 boolean ret = SeisDataDAO.updateCommandTable(Global.getSelectedSeisEvent().getEvid(), commandType,
-                        composeCommand.getCmdProvenance().toString(), composeCommand.getSystemCommand().toString());
+                        formulateCommand.getCmdProvenance().toString(), formulateCommand.getSystemCommand().toString());
 
                 if (ret) {
                     VBASLogger.logDebug(" Fired: " + commandType);

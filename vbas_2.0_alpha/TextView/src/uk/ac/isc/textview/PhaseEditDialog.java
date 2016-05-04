@@ -154,7 +154,8 @@ public class PhaseEditDialog extends JDialog {
 
         for (int i = 0; i < nRow; i++) {
 
-            FormulateCommand formulateCommand = new FormulateCommand(commandType, "phase", (Integer) model.getValueAt(i, 0));
+            FormulateCommand formulateCommand = 
+                    new FormulateCommand(commandType, "phase", (Integer) model.getValueAt(i, 0), ""); // agency is not used here.
 
             /*
              * Type (phase type)
@@ -252,6 +253,7 @@ public class PhaseEditDialog extends JDialog {
                         functionStr = "putphase ( " + (Integer) model.getValueAt(i, 0) + ", "
                                 + Global.getSelectedSeisEvent().getEvid() + ", "
                                 + (Integer) model.getValueAt(i, 7) + " )";
+                        VBASLogger.logDebug(functionStr);
                         formulateCommand.addSQLFunction(functionStr);
                         break;
 
@@ -268,7 +270,7 @@ public class PhaseEditDialog extends JDialog {
 
             }
 
-            if (formulateCommand.isValidCommand()) {
+            if (formulateCommand.isValidSystemCommand()) {
                 jCommandLogArray.add(formulateCommand.getCmdProvenance());
                 jSystemCommandArray.add(formulateCommand.getSystemCommand());
             }

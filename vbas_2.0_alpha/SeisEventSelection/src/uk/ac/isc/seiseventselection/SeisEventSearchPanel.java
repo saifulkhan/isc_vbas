@@ -160,11 +160,11 @@ public class SeisEventSearchPanel extends JPanel {
         int seisEventId = (Integer) table.getValueAt(row, 0);
 
         String commandType = "seiseventbanish";
-        FormulateCommand formulateCommand = new FormulateCommand(commandType, "seisevent", seisEventId);
+        FormulateCommand formulateCommand = new FormulateCommand(commandType, "seisevent", seisEventId, "");
 
         formulateCommand.addSQLFunction("banish ( " + seisEventId + " )");
 
-        if (formulateCommand.isValidCommand()) {
+        if (formulateCommand.isValidSystemCommand()) {
 
             VBASLogger.logDebug("\ncommandLog= " + formulateCommand.getCmdProvenance().toString()
                     + "\nsystemCommand= " + formulateCommand.getSystemCommand());

@@ -12,9 +12,9 @@ public class CommandTableModel extends AbstractTableModel {
     private final String[] columnNames = {
         "Command ID",
         "Analyst",
+        "Type",
         "Command",
-        "Status",
-        "Type"
+        "Status"
     };
 
     private final Class[] columns = new Class[]{
@@ -28,9 +28,9 @@ public class CommandTableModel extends AbstractTableModel {
     public final Object[] longValues = {
         new Integer(999999999),
         "XXXXXXXXXX",
+        "XXXXXXXXXX",
         new String(new char[75]),
-        "XXXXXX",
-        "XXXXXXXXXX"
+        "XXXXXX"
     };
 
     private final ArrayList<Command> commandList;
@@ -68,17 +68,19 @@ public class CommandTableModel extends AbstractTableModel {
                 retObject = commandList.get(rowIndex).getAnalyst();
                 break;
             case 2:
-                retObject = FormulateCommand.getRedableCommandStr(
-                        commandList.get(rowIndex).getCommandStr());
-                break;
-            case 3:
-                retObject = commandList.get(rowIndex).getStatus();
-                break;
-            case 4:
                 retObject = commandList.get(rowIndex).getType();
                 break;
+
+            case 3:
+                retObject = FormulateCommand.getAnalystReadableCommand(
+                        commandList.get(rowIndex).getCommandProvenance());
+                break;
+
+            case 4:
+                retObject = commandList.get(rowIndex).getStatus();
+                break;
             /*default:
-             String message 
+             String message
              = VBASLogger.debugAt() + "\nSee the error log file for more information. ";
              JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);*/
         }

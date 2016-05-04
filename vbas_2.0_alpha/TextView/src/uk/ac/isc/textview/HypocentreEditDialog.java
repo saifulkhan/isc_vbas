@@ -76,7 +76,8 @@ public class HypocentreEditDialog extends JDialog {
     private void button_okActionPerformed(ActionEvent evt) {
 
         String commandType = "hypocentreedit";
-        FormulateCommand formulateCommand = new FormulateCommand(commandType, "hypocentre", selectedHypocentre.getHypid());
+        FormulateCommand formulateCommand = 
+                new FormulateCommand(commandType, "hypocentre", selectedHypocentre.getHypid(), selectedHypocentre.getAgency());
 
         /*
          * Depth 
@@ -109,7 +110,9 @@ public class HypocentreEditDialog extends JDialog {
             return;
         }
         if (newTime.compareTo(selectedHypocentre.getOrigTime()) != 0) {  // same newDate time
-            formulateCommand.addAttribute("time", newTime.toString(), selectedHypocentre.getOrigTime().toString());
+            
+            VBASLogger.logDebug("newvalue:"  + text_time.getText() + ", oldValue:" + dateFormat.format(selectedHypocentre.getOrigTime()));
+            formulateCommand.addAttribute("time", text_time.getText(), dateFormat.format(selectedHypocentre.getOrigTime()));
             formulateCommand.addSQLFunction("chhypo ( "
                     + selectedHypocentre.getHypid() + ", "
                     + "''time'', "
@@ -140,7 +143,7 @@ public class HypocentreEditDialog extends JDialog {
                     + "''" + Double.parseDouble(text_lon.getText()) + "'' )");
         }
 
-        if (formulateCommand.isValidCommand()) {
+        if (formulateCommand.isValidSystemCommand()) {
 
             /*
              * Add the reason text, only when a valid command is formulated.

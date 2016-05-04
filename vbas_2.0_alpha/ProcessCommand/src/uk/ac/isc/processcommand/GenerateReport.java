@@ -95,14 +95,15 @@ public class GenerateReport {
                 }
 
                 htmlFile = new File(assessDir + File.separator + assessID + ".html");
-                htmlFile.setReadable(true, false);
-                htmlFile.setWritable(true, false);
-                htmlFile.getParentFile().setWritable(true, false);
-
                 VBASLogger.logDebug("Assess (html) report = " + htmlFile.toPath());
-
                 Files.copy(inSream, htmlFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 inSream.close();
+
+                if (htmlFile.exists()) {
+                    htmlFile.setReadable(true, false);
+                    htmlFile.setWritable(true, false);
+                }
+
             } catch (IOException e) {
                 // TODO
             }
@@ -114,10 +115,42 @@ public class GenerateReport {
         return htmlFile;
     }
 
-    
-    public void writeCommands(String cmd) {
-        File cmdJson = new File(assessDir + File.separator + "command.json");
-        VBASLogger.logDebug("command: " + cmd);
+    public void writeAnalystReadableCommand(String cmd) {
+
+        File file = new File(assessDir + File.separator + "analystRedableCommand.txt");
+
+        FileWriter fileWritter = null;
+        BufferedWriter bufferedWriter = null;
+
+        try {
+            // if the file doesnt exists, then create it
+            if (!file.exists()) {
+                file.createNewFile();
+                file.setReadable(true, false);
+                file.setWritable(true, false);
+            }
+
+            fileWritter = new FileWriter(file, false);
+            bufferedWriter = new BufferedWriter(fileWritter);
+            bufferedWriter.write(cmd);
+
+        } catch (IOException e) {
+            VBASLogger.logSevere("Error writing to json file.");
+            e.printStackTrace();
+        } finally {
+            try {
+                if (bufferedWriter != null) {
+                    bufferedWriter.close();
+                }
+            } catch (IOException e) {
+                VBASLogger.logSevere("Error releasing resources.");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void writeSystemCommand(String cmd) {
+        File cmdJson = new File(assessDir + File.separator + "systemCommand.json");
 
         FileWriter fileWritter = null;
         BufferedWriter bufferedWriter = null;
@@ -126,6 +159,8 @@ public class GenerateReport {
             // if the file doesnt exists, then create it
             if (!cmdJson.exists()) {
                 cmdJson.createNewFile();
+                cmdJson.setReadable(true, false);
+                cmdJson.setWritable(true, false);
             }
 
             fileWritter = new FileWriter(cmdJson, false);
@@ -162,9 +197,13 @@ public class GenerateReport {
             // if the file doesnt exists, then create it
             if (!hypocentresCSV.exists()) {
                 hypocentresCSV.createNewFile();
+                hypocentresCSV.setReadable(true, false);
+                hypocentresCSV.setWritable(true, false);
             }
             if (!phasesCSV.exists()) {
                 phasesCSV.createNewFile();
+                phasesCSV.setReadable(true, false);
+                phasesCSV.setWritable(true, false);
             }
 
             for (String table : tables) {
@@ -345,8 +384,11 @@ public class GenerateReport {
         }
 
         try {
-
             ImageIO.write(bi, "png", outputFile);
+            if (outputFile.exists()) {
+                outputFile.setReadable(true, false);
+                outputFile.setWritable(true, false);
+            }
         } catch (Exception e) {
             VBASLogger.logSevere("Error creating a png file: " + outputFile.toString());
             e.printStackTrace();

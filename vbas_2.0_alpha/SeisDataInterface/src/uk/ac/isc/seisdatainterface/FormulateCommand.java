@@ -7,7 +7,7 @@ import java.util.Arrays;
 import com.orsoncharts.util.json.parser.JSONParser;
 import java.util.ArrayList;
 import org.openide.util.Exceptions;
- 
+
 /**
  * **********************************************************************************************************
  * TODO: Move out of SeisData module.
@@ -30,9 +30,10 @@ public class FormulateCommand {
 
     private final String commandType;
     private final String dataType;
-    private final int id;     // id of the dataType
+    private final int id;           // id of the dataType
+    private final String agency;    // Agency used in setprome, hypocentreedit, seiseventrelocate
 
-    public FormulateCommand(String commandType, String dataType, int id) {
+    public FormulateCommand(String commandType, String dataType, int id, String agency) {
 
         if (!Arrays.asList(COMMAND_TYPES).contains(commandType)) {
             VBASLogger.logSevere("commandType=" + commandType + ", Supported:" + Arrays.toString(COMMAND_TYPES));
@@ -45,13 +46,15 @@ public class FormulateCommand {
         this.commandType = commandType;
         this.dataType = dataType;
         this.id = id;
+        this.agency = agency;
     }
 
     /*
+     **************************************************************************************
      * Related to System Command
+     **************************************************************************************
      */
     private JSONArray sqlFunctionArray = new JSONArray();
-    String locatorArgStr = "";
 
     public void addSQLFunction(String functionName) {
         //Global.logDebug(functionName);
@@ -59,6 +62,8 @@ public class FormulateCommand {
         attrObj.put("name", functionName);
         sqlFunctionArray.add(attrObj);
     }
+
+    String locatorArgStr = "";
 
     public void addLocatorArg(String arg) {
         locatorArgStr += arg + " ";
@@ -81,12 +86,14 @@ public class FormulateCommand {
         return obj;
     }
 
-    public Boolean isValidCommand() {
+    public Boolean isValidSystemCommand() {
         return !(sqlFunctionArray.size() <= 0 && locatorArgStr.equals(""));
     }
 
-    // Extract all the SQL functions from the System Command
-    public void addSystemCommand(String cmd) {
+    // Used by assess - merge multiple system commands
+    // Extract the SQL functions and Locator arguments 
+    // Merge with the existing system command
+    public void mergeSystemCommand(String cmd) {
 
         JSONParser parser = new JSONParser();
         Object obj = null;
@@ -97,7 +104,7 @@ public class FormulateCommand {
             VBASLogger.logSevere("cmd=" + cmd + " is not a valid json format.");
         }
 
-        if (isArray(cmd)) { // array of System Command
+        if (isJSONArray(cmd)) { // array of System Command
             JSONArray arr = (JSONArray) obj;
             for (Object o : arr) {
                 JSONObject jObj = (JSONObject) o;
@@ -108,7 +115,7 @@ public class FormulateCommand {
                 addLocatorArg(jObj.get("locatorArgStr").toString());
             }
 
-        } else if (isObject(cmd)) {
+        } else if (isJSONObject(cmd)) {
             JSONObject jObj = (JSONObject) obj;
             JSONArray array = (JSONArray) jObj.get("sqlFunctionArray");
             if (array != null) {
@@ -136,18 +143,20 @@ public class FormulateCommand {
 
     public String getLocatorArgStr() {
         // 
-        
         return locatorArgStr;
     }
 
     /*
+     **************************************************************************************
      * Related to Command Provenance
+     **************************************************************************************
      */
     private JSONArray attrArray = new JSONArray();
 
     public void addAttribute(String attributeName, Object newValue, Object oldValue) {
         if (!Arrays.asList(ATTRIBUTES).contains(attributeName)) {
-            VBASLogger.logSevere("attributeName=" + attributeName + ", Supported:" + Arrays.toString(ATTRIBUTES));
+            VBASLogger.logSevere("attributeName=" + attributeName
+                    + ", Supported:" + Arrays.toString(ATTRIBUTES));
         }
 
         JSONObject attrObj = new JSONObject();
@@ -167,6 +176,7 @@ public class FormulateCommand {
         obj.put("commandType", commandType);
         obj.put("dataType", dataType);
         obj.put("id", id);
+        obj.put("agency", agency);
 
         if (attrArray.size() > 0) {
             obj.put("attributeArray", attrArray);
@@ -175,6 +185,84 @@ public class FormulateCommand {
         }
 
         return obj;
+    }
+
+    // Analyst redable 
+    public static String getAnalystReadableCommand(String cmd) {
+
+        VBASLogger.logDebug("JSON Format: " + cmd);
+
+        JSONParser parser = new JSONParser();
+        Object obj = null;
+        try {
+            obj = parser.parse(cmd);
+        } catch (com.orsoncharts.util.json.parser.ParseException ex) {
+            VBASLogger.logSevere("Not a valid JSON string: " + cmd);
+        }
+
+        String str = "";
+
+        if (isJSONArray(cmd)) { // array of System Command
+            JSONArray commands = (JSONArray) obj;
+            for (Object o : commands) {
+                JSONObject command = (JSONObject) o;
+
+                // TODO: repeated code
+                String commandType = command.get("commandType").toString();
+                str += commandType + " ";
+
+                if (commandType.equals("setprime") || commandType.equals("hypocentreedit") || commandType.equals("seiseventrelocate")) {
+                    str += command.get("agency").toString() + " ";
+                } else {
+                    str += command.get("id").toString() + " ";
+                }
+
+                if (!commandType.equals("setprime") && !commandType.equals("seiseventbanish")) {
+                    JSONArray attributes = (JSONArray) command.get("attributeArray");
+                    if (attributes != null) {
+                        for (Object o1 : attributes) {
+                            JSONObject attribute = (JSONObject) o1;
+                            if (!attribute.get("name").toString().equals("reason")) {
+                                str += (attribute.get("newValue") == null ? " " : attribute.get("name").toString()
+                                        + "=" + attribute.get("newValue").toString()) + " ";
+                            }
+                        }
+                    }
+                }
+            }
+
+        } else if (isJSONObject(cmd)) {
+            JSONObject command = (JSONObject) obj;
+
+            // TODO: repeated code
+            String commandType = command.get("commandType").toString();
+            str += commandType + " ";
+
+            if (commandType.equals("setprime")
+                    || commandType.equals("hypocentreedit")
+                    || commandType.equals("seiseventrelocate")) {
+                str += command.get("agency").toString() + " ";
+            } else {
+                str += command.get("id").toString() + " ";
+            }
+
+            if (!commandType.equals("setprime") && !commandType.equals("seiseventbanish")) {
+                JSONArray attributes = (JSONArray) command.get("attributeArray");
+                if (attributes != null) {
+                    for (Object o1 : attributes) {
+                        JSONObject attribute = (JSONObject) o1;
+                        if (!attribute.get("name").toString().equals("reason")) {
+                            str += (attribute.get("newValue") == null ? " " : attribute.get("name").toString()
+                                    + "=" + attribute.get("newValue").toString()) + " ";
+                        }
+                    }
+                }
+            }
+
+        }
+
+        VBASLogger.logDebug("Readable format: " + str);
+        return str;
     }
 
     // Reformat the input command (Command Provenance format) for user.
@@ -192,7 +280,7 @@ public class FormulateCommand {
 
         String str = "";
 
-        if (isArray(cmd)) { // array of System Command
+        if (isJSONArray(cmd)) { // array of System Command
             JSONArray commands = (JSONArray) obj;
             for (Object o : commands) {
                 JSONObject command = (JSONObject) o;
@@ -211,7 +299,7 @@ public class FormulateCommand {
                 }
             }
 
-        } else if (isObject(cmd)) {
+        } else if (isJSONObject(cmd)) {
             JSONObject command = (JSONObject) obj;
             str += command.get("dataType").toString() + "#" + command.get("id").toString() + ": ";
 
@@ -234,9 +322,11 @@ public class FormulateCommand {
     }
 
     /*
-     * other functions, chekc if a string is a object {} or array of objects [{}, {}]
+     **************************************************************************************
+     * other functions, chekc if a string is a valid JSON object {} or JSON array of objects [{}, {}]
+     **************************************************************************************
      */
-    private static Boolean isObject(String str) {
+    private static Boolean isJSONObject(String str) {
         try {
             JSONParser parser = new JSONParser();
             Object json = parser.parse(str);
@@ -250,7 +340,7 @@ public class FormulateCommand {
         return false;
     }
 
-    private static Boolean isArray(String str) {
+    private static Boolean isJSONArray(String str) {
         try {
             JSONParser parser = new JSONParser();
             Object json = parser.parse(str);

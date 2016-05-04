@@ -91,18 +91,24 @@ public class AssessCommandPanel extends JPanel {
 
         ArrayList<Integer> commandIds = new ArrayList<Integer>();
         String commandType = "assess";
-        FormulateCommand formulateCommand = new FormulateCommand(commandType, "seisevent", Global.getSelectedSeisEvent().getEvid());
+        FormulateCommand formulateCommand
+                = new FormulateCommand(commandType, "seisevent", Global.getSelectedSeisEvent().getEvid(), "");
 
+        String analystRedableCommand = "";
+        int i = 0;
         for (int row : selectedRows) {
             commandIds.add((Integer) table.getValueAt(row, 0));
 
-            String systemCommandStr = commandList.getCommandList().get(row).getSystemCommandStr();
-
+            String systemCommandStr = commandList.getCommandList().get(row).getSystemCommand();
             // add/append the command to the formulated asses command
-            VBASLogger.logDebug("Append the cmd: " + systemCommandStr);
-            formulateCommand.addSystemCommand(systemCommandStr);
+            VBASLogger.logDebug("Append the systemCommand: " + systemCommandStr);
+            formulateCommand.mergeSystemCommand(systemCommandStr);
 
+            analystRedableCommand  += "[" + (++i) + "] " + FormulateCommand.getAnalystReadableCommand(
+                    commandList.getCommandList().get(row).getCommandProvenance());
+            VBASLogger.logDebug("Append the analystRedableCommand: " + analystRedableCommand);
         }
+        formulateCommand.addAttribute("analystRedableCommand", analystRedableCommand, null);
 
         // the
         Date date = Global.getSelectedSeisEvent().getPrimeHypo().getOrigTime();
@@ -115,7 +121,7 @@ public class AssessCommandPanel extends JPanel {
          * Now write the assessed details
          */
         int newAssessId = 0;
-        if (formulateCommand.isValidCommand()) {
+        if (formulateCommand.isValidSystemCommand()) {
 
             VBASLogger.logDebug("commandProvenance= " + formulateCommand.getCmdProvenance().toString());
             VBASLogger.logDebug("systemCommand= " + formulateCommand.getSystemCommand().toString());
@@ -140,6 +146,7 @@ public class AssessCommandPanel extends JPanel {
             button_assess.setEnabled(true);
             return;
         }
+
 
         /*
          * ***************************************************************************
@@ -169,7 +176,9 @@ public class AssessCommandPanel extends JPanel {
             File htmlFile = generateReport.createHTML(assessDir, newAssessId);
             generateReport.createTables();
             generateReport.createViews();
-            generateReport.writeCommands(formulateCommand.getSystemCommand().toString());
+            generateReport.writeSystemCommand(formulateCommand.getSystemCommand().toString());
+            generateReport.writeAnalystReadableCommand(analystRedableCommand);
+            
 
             String url = "http://nemesis.isc.ac.uk/assess"
                     + "/" + year

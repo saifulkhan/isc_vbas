@@ -197,9 +197,8 @@
                 <div class="gap"> </div>
                 <div class="title"> Command  </div>
 
-                <script>
-
-                    d3.json("command.json", function (error, data) {
+                 <script>
+                    d3.json("systemCommand.json", function (error, data) {
                         //alert(error);
                         console.log("data=", data);
                         console.log("string=", JSON.stringify(data, null, 2));
@@ -214,7 +213,7 @@
                                 sqlFunction += obj.name + "; ";
                             }
                         }
-                        
+
                         var container = d3.select("#command")
                                 .append("text")
                                 .html("<br/>"
@@ -226,6 +225,26 @@
 
                     });
 
+
+                    function readTextFile(file) {
+                        var rawFile = new XMLHttpRequest();
+                        rawFile.open("GET", file, false);
+                        rawFile.onreadystatechange = function () {
+                            if (rawFile.readyState === 4) {
+                                if (rawFile.status === 200 || rawFile.status == 0) {
+                                    var allText = rawFile.responseText;
+                                    //alert(allText);
+                                    var container = d3.select("#command")
+                                .append("text")
+                                .html("<br/>  <br/>  <br/> " + allText)                                        
+                                .style("font-size", 12 + "px")
+                                .style("font-family", "sans-serif");
+                                }
+                            }
+                        }
+                        rawFile.send(null);
+                    }
+                    readTextFile("analystRedableCommand.txt");
                 </script>
 
             </section>

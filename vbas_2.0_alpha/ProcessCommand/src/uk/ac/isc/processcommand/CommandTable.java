@@ -153,7 +153,7 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
         table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
         table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
         table.getColumnModel().getColumn(2).setCellRenderer(leftRenderer);
-        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
+        table.getColumnModel().getColumn(3).setCellRenderer(leftRenderer);
         table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
 
         // This part of the code picks good column sizes. 

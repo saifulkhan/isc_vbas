@@ -153,7 +153,8 @@ public class SeisEventRelocateDialog extends JDialog {
         }
 
         String commandType = "seiseventrelocate";
-        FormulateCommand composeCommand = new FormulateCommand(commandType, "seisevent", selectedSeisEvent.getEvid());
+        FormulateCommand formulateCommand 
+                = new FormulateCommand(commandType, "seisevent", selectedSeisEvent.getEvid(), selectedHypocentre.getAgency());
 
         /*
          * Depth : fix & free
@@ -169,11 +170,11 @@ public class SeisEventRelocateDialog extends JDialog {
             }
 
             if (radio_fix.isSelected()) {
-                composeCommand.addAttribute("fix_depth", depth, selectedHypocentre.getDepth());
-                composeCommand.addLocatorArg("fix_depth=" + depth);
+                formulateCommand.addAttribute("fix_depth", depth, selectedHypocentre.getDepth());
+                formulateCommand.addLocatorArg("fix_depth=" + depth);
             } else if (radio_free.isSelected()) {
-                composeCommand.addAttribute("free_depth", depth, selectedHypocentre.getDepth());
-                composeCommand.addLocatorArg("free_depth=" + depth);
+                formulateCommand.addAttribute("free_depth", depth, selectedHypocentre.getDepth());
+                formulateCommand.addLocatorArg("free_depth=" + depth);
             }
 
         }
@@ -182,33 +183,33 @@ public class SeisEventRelocateDialog extends JDialog {
          * Depth : default & median
          */
         if (radio_default.isSelected()) {
-            composeCommand.addAttribute("fix_depth_default", null, null);
-            composeCommand.addLocatorArg("fix_depth_default");
+            formulateCommand.addAttribute("fix_depth_default", null, null);
+            formulateCommand.addLocatorArg("fix_depth_default");
         }
 
         if (radio_median.isSelected()) {
-            composeCommand.addAttribute("fix_depth_median", null, null);
-            composeCommand.addLocatorArg("fix_depth_median");
+            formulateCommand.addAttribute("fix_depth_median", null, null);
+            formulateCommand.addLocatorArg("fix_depth_median");
         }
 
         if ((radio_fix.isSelected() || radio_free.isSelected()) && checkbox_gridSearch.isSelected()) {
-            composeCommand.addAttribute("do_gridsearch", (checkbox_gridSearch.isEnabled() ? 1 : 0), null);
-            composeCommand.addLocatorArg("do_gridsearch=" + (checkbox_gridSearch.isEnabled() ? 1 : 0));
+            formulateCommand.addAttribute("do_gridsearch", (checkbox_gridSearch.isEnabled() ? 1 : 0), null);
+            formulateCommand.addLocatorArg("do_gridsearch=" + (checkbox_gridSearch.isEnabled() ? 1 : 0));
         }
 
-        if (composeCommand.isValidCommand()) {
+        if (formulateCommand.isValidSystemCommand()) {
             /*
              * Comment (not mandatory) text description. Include it only if a valif command is formulated.
              */
             if (!text_comment.getText().equals("")) {
-                composeCommand.addAttribute("comment", text_comment.getText(), null);
+                formulateCommand.addAttribute("comment", text_comment.getText(), null);
             }
 
-            VBASLogger.logDebug("\ncommandLog= " + composeCommand.getCmdProvenance().toString()
-                    + "\nsystemCommand= " + composeCommand.getSystemCommand().toString());
+            VBASLogger.logDebug("\ncommandLog= " + formulateCommand.getCmdProvenance().toString()
+                    + "\nsystemCommand= " + formulateCommand.getSystemCommand().toString());
 
             boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), commandType,
-                    composeCommand.getCmdProvenance().toString(), composeCommand.getSystemCommand().toString());
+                    formulateCommand.getCmdProvenance().toString(), formulateCommand.getSystemCommand().toString());
 
             if (ret) {
                 VBASLogger.logDebug(" Fired: " + commandType);

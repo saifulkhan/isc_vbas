@@ -6,8 +6,8 @@ public class Command extends AbstractSeisData {
 
     // written by VBAS
     private Integer evid;       // event id
-    private String commandLogStr;  // the formulated command in JSON
-    private String systemCommandStr;   // the function (s) in JSON
+    private String commandProvenance;  // the formulated command in JSON
+    private String systemCommand;   // the function (s) in JSON
 
     // Processed by & read from the database
     private Integer id;     // command id    
@@ -22,8 +22,8 @@ public class Command extends AbstractSeisData {
     }
 
     public Command(Integer evid,
-            String command,
-            String systemCommandStr,
+            String commandProvenance,
+            String systemCommand,
             Integer id,
             String analyst,
             String pass,
@@ -32,8 +32,8 @@ public class Command extends AbstractSeisData {
             String type) {
 
         this.evid = evid;
-        this.commandLogStr = command;
-        this.systemCommandStr = systemCommandStr;
+        this.commandProvenance = commandProvenance;
+        this.systemCommand = systemCommand;
         this.id = id;
         this.analyst = analyst;
         this.pass = pass;
@@ -66,13 +66,13 @@ public class Command extends AbstractSeisData {
         this.analyst = analyst;
     }
 
-    public String getCommandStr() {
-        return commandLogStr;
+    public String getCommandProvenance() {
+        return commandProvenance;
     }
 
  
-    public void setCommandStr(String command) {
-        this.commandLogStr = command;
+    public void setCommandProvenance(String command) {
+        this.commandProvenance = command;
     }
 
     public String getPass() {
@@ -107,12 +107,12 @@ public class Command extends AbstractSeisData {
         this.type = type;
     }
 
-    public String getSystemCommandStr() {
-        return systemCommandStr;
+    public String getSystemCommand() {
+        return systemCommand;
     }
 
-    public void setSystemCommandStr(String systemCommandStr) {
-        this.systemCommandStr = systemCommandStr;
+    public void setSystemCommand(String systemCommand) {
+        this.systemCommand = systemCommand;
     }
 
 }
