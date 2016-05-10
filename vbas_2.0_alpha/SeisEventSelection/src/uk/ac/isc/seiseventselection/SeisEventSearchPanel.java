@@ -14,6 +14,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JViewport;
 import uk.ac.isc.seisdata.Command;
+import uk.ac.isc.seisdata.SeisEvent;
 import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.VBASLogger;
 import uk.ac.isc.seisdatainterface.FormulateCommand;
@@ -36,6 +37,7 @@ public class SeisEventSearchPanel extends JPanel {
     private final JButton button_done;
 
     private final Command commandEvent = Global.getCommandEvent();
+    private static SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
 
     // reference of the control view
     private final JTable table;
@@ -188,7 +190,9 @@ public class SeisEventSearchPanel extends JPanel {
     }
 
     public void onButtonDoneActionPerformed(ActionEvent e) {
-        JOptionPane.showMessageDialog(null, "Sorry, this feature will be implemented in future release.",
-                "Warning", JOptionPane.WARNING_MESSAGE);
+        //selectedSeisEvent.se
+        SeisDataDAO.updateSeiesEventDone(selectedSeisEvent.getEvid());
+        
+        
     }
 }

@@ -28,6 +28,7 @@ import javax.swing.JTable;
 import org.openide.util.Exceptions;
 import uk.ac.isc.seisdata.AssessedCommand;
 import uk.ac.isc.seisdata.CommandList;
+import uk.ac.isc.seisdata.SeisEvent;
 import uk.ac.isc.seisdata.VBASLogger;
 import uk.ac.isc.seisdatainterface.FormulateCommand;
 import uk.ac.isc.seisdatainterface.Global;
@@ -43,13 +44,18 @@ import uk.ac.isc.seisdatainterface.SeisDataDAOAssess;
 public class AssessCommandPanel extends JPanel {
 
     private final JLabel label_total;
+    private final JLabel label_totalValue;
     private final JButton button_assess;
+    private final JButton button_manualCommand;
+    private final ManualCommand manualCommand = new ManualCommand();
+    
     private final JTable table;             // reference of the table
     private final GenerateReport generateReport = new GenerateReport();
 
+    private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
     private final CommandList commandList = Global.getCommandList();
     private final AssessedCommand assessedCommandEvent = Global.getAssessedComamndEvent(); // send event to AssessedCommand table
-
+    
     public AssessCommandPanel(final JTable commandTable) {
         this.table = commandTable;
 
@@ -59,10 +65,14 @@ public class AssessCommandPanel extends JPanel {
         /*button_assess.setBackground(new Color(45, 137, 239));
          button_assess.setForeground(new Color(255, 255, 255));*/
         button_assess.setFont(font);
-
-        label_total = new JLabel("");
+        button_manualCommand = new JButton("Manual Command");
+        button_manualCommand.setFont(font);
+      
+        label_total = new JLabel(""); // No. of comamnds selected for assess: 
         label_total.setFont(font);
-
+        label_totalValue = new JLabel("");
+        label_totalValue.setFont(font);
+        
         button_assess.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -70,9 +80,19 @@ public class AssessCommandPanel extends JPanel {
             }
         });
 
+        button_manualCommand.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                onButtonManualComamndActionPerformed(ae);
+            }
+
+        });
+
         this.setLayout(new FlowLayout());
+        this.add(button_manualCommand);
         this.add(button_assess);
         this.add(label_total);
+        this.add(label_totalValue);
     }
 
     public void onButtonAssessActionPerformed(ActionEvent e) {
@@ -104,7 +124,7 @@ public class AssessCommandPanel extends JPanel {
             VBASLogger.logDebug("Append the systemCommand: " + systemCommandStr);
             formulateCommand.mergeSystemCommand(systemCommandStr);
 
-            analystRedableCommand  += "[" + (++i) + "] " + FormulateCommand.getAnalystReadableCommand(
+            analystRedableCommand += "[" + (++i) + "] " + FormulateCommand.getAnalystReadableCommand(
                     commandList.getCommandList().get(row).getCommandProvenance());
             VBASLogger.logDebug("Append the analystRedableCommand: " + analystRedableCommand);
         }
@@ -178,7 +198,6 @@ public class AssessCommandPanel extends JPanel {
             generateReport.createViews();
             generateReport.writeSystemCommand(formulateCommand.getSystemCommand().toString());
             generateReport.writeAnalystReadableCommand(analystRedableCommand);
-            
 
             String url = "http://nemesis.isc.ac.uk/assess"
                     + "/" + year
@@ -213,5 +232,10 @@ public class AssessCommandPanel extends JPanel {
         }
 
         button_assess.setEnabled(true);
+    }
+
+    private void onButtonManualComamndActionPerformed(ActionEvent ae) {
+        manualCommand.setLocationRelativeTo(button_manualCommand);
+        manualCommand.showManualCommandDialog(selectedSeisEvent.getEvid());
     }
 }

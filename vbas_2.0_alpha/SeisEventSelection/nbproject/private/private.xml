@@ -6,6 +6,10 @@
             <file>file:/export/home/hui/NetBeansProjects/vbas0.1.0/EventsControlView/src/uk/ac/isc/eventscontrolview/EventsControlPanel.java</file>
             <file>file:/export/home/hui/NetBeansProjects/vbas0.1.0/EventsControlView/src/uk/ac/isc/eventscontrolview/EventsControlViewTopComponent.java</file>
         </group>
-        <group/>
+        <group>
+            <file>file:/home/saiful/DATA-ISC/vbas/vbas_2.0_alpha/SeisEventSelection/src/uk/ac/isc/seiseventselection/SiesEventsTableModel.java</file>
+            <file>file:/home/saiful/DATA-ISC/vbas/vbas_2.0_alpha/SeisEventSelection/src/uk/ac/isc/seiseventselection/SeisEventSearchPanel.java</file>
+            <file>file:/home/saiful/DATA-ISC/vbas/vbas_2.0_alpha/SeisEventSelection/src/uk/ac/isc/seiseventselection/SeisEventsTable.java</file>
+        </group>
     </open-files>
 </project-private>

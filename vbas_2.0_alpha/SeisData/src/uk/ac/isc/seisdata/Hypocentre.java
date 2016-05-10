@@ -36,6 +36,9 @@ public class Hypocentre extends AbstractSeisData implements Cloneable {
     private Double strike;
     private Double smajax;
     private Double sminax;
+    
+    private String eType;
+    private String depthFix;
 
     /*private String latStr;         // N/S
      private String lonStr;         // E/W
@@ -265,6 +268,22 @@ public class Hypocentre extends AbstractSeisData implements Cloneable {
         this.sminax = sminax;
     }
 
+    public String geteType() {
+        return eType;
+    }
+
+    public void seteType(String eType) {
+        this.eType = eType;
+    }
+
+    public String getDepthFix() {
+        return depthFix;
+    }
+
+    public void setDepthFix(String depthFix) {
+        this.depthFix = depthFix;
+    }
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
@@ -351,7 +370,13 @@ public class Hypocentre extends AbstractSeisData implements Cloneable {
         if (this.pHypo != null) {
             clone.setPrime(this.pHypo);
         }
-
+        if(this.eType != null) {
+            clone.seteType(this.eType);
+        }
+        if(this.depthFix != null) {
+            clone.setDepthFix(this.depthFix);
+        }
+        
         clone.magMap = new LinkedHashMap<String, Double>();
         for (Map.Entry<String, Double> entry : this.magMap.entrySet()) {
             clone.magMap.put(entry.getKey(), entry.getValue());
@@ -386,7 +411,8 @@ public class Hypocentre extends AbstractSeisData implements Cloneable {
         this.strike = h.strike;
         this.smajax = h.smajax;
         this.sminax = h.sminax;
-
+        this.eType = h.eType;
+        this.depthFix = h.depthFix;
     }
 
 }

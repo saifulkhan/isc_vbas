@@ -100,6 +100,7 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
         DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
         DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+
         rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
         leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -137,14 +138,14 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
             cellWidth = comp.getPreferredSize().width;
             column.setPreferredWidth(Math.max(headerWidth, cellWidth));
         }
-
+        
+ 
     }
 
-    
-    // IMPORTANT: 
+
+
+    // FOR FUTURE REFERENCE    
     // NOTE: For future reference: How Block table is loaded?
-    
-    
     /*public void loadSeisEventsList() {
      VBASLogger.logDebug("Load SeisEvents list.");
      // fill in the events number

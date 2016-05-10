@@ -202,122 +202,95 @@ public class FormulateCommand {
 
         String str = "";
 
-        if (isJSONArray(cmd)) { // array of System Command
+        if (isJSONArray(cmd)) { // array of commands
             JSONArray commands = (JSONArray) obj;
             for (Object o : commands) {
                 JSONObject command = (JSONObject) o;
-
-                // TODO: repeated code
-                String commandType = command.get("commandType").toString();
-                str += commandType + " ";
-
-                if (commandType.equals("setprime") || commandType.equals("hypocentreedit") || commandType.equals("seiseventrelocate")) {
-                    str += command.get("agency").toString() + " ";
-                } else {
-                    str += command.get("id").toString() + " ";
-                }
-
-                if (!commandType.equals("setprime") && !commandType.equals("seiseventbanish")) {
-                    JSONArray attributes = (JSONArray) command.get("attributeArray");
-                    if (attributes != null) {
-                        for (Object o1 : attributes) {
-                            JSONObject attribute = (JSONObject) o1;
-                            if (!attribute.get("name").toString().equals("reason")) {
-                                str += (attribute.get("newValue") == null ? " " : attribute.get("name").toString()
-                                        + "=" + attribute.get("newValue").toString()) + " ";
-                            }
-                        }
-                    }
-                }
+                str += translate(command) + "; ";
             }
 
         } else if (isJSONObject(cmd)) {
             JSONObject command = (JSONObject) obj;
-
-            // TODO: repeated code
-            String commandType = command.get("commandType").toString();
-            str += commandType + " ";
-
-            if (commandType.equals("setprime")
-                    || commandType.equals("hypocentreedit")
-                    || commandType.equals("seiseventrelocate")) {
-                str += command.get("agency").toString() + " ";
-            } else {
-                str += command.get("id").toString() + " ";
-            }
-
-            if (!commandType.equals("setprime") && !commandType.equals("seiseventbanish")) {
-                JSONArray attributes = (JSONArray) command.get("attributeArray");
-                if (attributes != null) {
-                    for (Object o1 : attributes) {
-                        JSONObject attribute = (JSONObject) o1;
-                        if (!attribute.get("name").toString().equals("reason")) {
-                            str += (attribute.get("newValue") == null ? " " : attribute.get("name").toString()
-                                    + "=" + attribute.get("newValue").toString()) + " ";
-                        }
-                    }
-                }
-            }
-
+            str = translate(command);
         }
 
         VBASLogger.logDebug("Readable format: " + str);
         return str;
     }
 
-    // Reformat the input command (Command Provenance format) for user.
-    public static String getRedableCommandStr(String cmd) {
+    private static String translate(JSONObject command) {
 
-        VBASLogger.logDebug("json: " + cmd);
-
-        JSONParser parser = new JSONParser();
-        Object obj = null;
-        try {
-            obj = parser.parse(cmd);
-        } catch (com.orsoncharts.util.json.parser.ParseException ex) {
-            VBASLogger.logSevere("cmd=" + cmd + " is not a valid json format.");
-        }
-
+        String commandType = command.get("commandType").toString();
         String str = "";
 
-        if (isJSONArray(cmd)) { // array of System Command
-            JSONArray commands = (JSONArray) obj;
-            for (Object o : commands) {
-                JSONObject command = (JSONObject) o;
-                str += command.get("dataType").toString() + "#" + command.get("id").toString() + ": ";
+        switch (commandType) {
+            case "setprime":
+                str += "Setprime" + " ";
+                str += command.get("agency").toString() + " ";
+                break;
 
-                // TODO: repeated code
-                JSONArray attributes = (JSONArray) command.get("attributeArray");
-                if (attributes != null) {
-                    for (Object o1 : attributes) {
-                        JSONObject attribute = (JSONObject) o1;
-                        str += attribute.get("name").toString() + ":"
-                                + (attribute.get("oldValue") == null ? "" : (attribute.get("oldValue").toString() + "->"))
-                                + (attribute.get("newValue") == null ? "" : attribute.get("newValue").toString())
-                                + " ";
-                    }
-                }
-            }
+            case "seiseventbanish":
+                str += commandType + " ";
+                str += command.get("id").toString() + " ";
+                break;
 
-        } else if (isJSONObject(cmd)) {
-            JSONObject command = (JSONObject) obj;
-            str += command.get("dataType").toString() + "#" + command.get("id").toString() + ": ";
+            case "hypocentreedit":
+                str += "Change" + " ";
+                str += command.get("agency").toString() + " ";
+                str += translateAttributes(command);
+                break;
 
-            // TODO: repeated code
-            JSONArray attributes = (JSONArray) command.get("attributeArray");
-            if (attributes != null) {
-                for (Object o1 : attributes) {
-                    JSONObject attribute = (JSONObject) o1;
-                    str += attribute.get("name").toString() + ":"
-                            + (attribute.get("oldValue") == null ? "" : (attribute.get("oldValue").toString() + "->"))
-                            + (attribute.get("newValue") == null ? "" : attribute.get("newValue").toString())
-                            + " ";
-                }
-            }
+            case "phaseedit":
+                str += "Change" + " ";
+                str += command.get("id").toString() + " ";
+
+                str += translateAttributes(command);
+                break;
+
+            case "seiseventrelocate":
+                str += "Relocate" + " ";
+                str += command.get("agency").toString() + " ";
+                str += translateAttributes(command);
+                break;
+
+            case "merge":
+                str += "Merge" + " ";
+                str += translateAttributes(command);
+                break;
+            default:
+                str += commandType + " ";
+                str += command.get("id").toString() + " ";
+                break;
 
         }
+        return str;
+    }
 
-        VBASLogger.logDebug("readable format: " + str);
+    private static String translateAttributes(JSONObject command) {
+
+        String commandType = command.get("commandType").toString();
+        String str = "";
+
+        JSONArray attributes = (JSONArray) command.get("attributeArray");
+        if (attributes != null) {
+            for (Object o1 : attributes) {
+                JSONObject attribute = (JSONObject) o1;
+
+                switch (commandType) {
+                    case "merge":
+                        str += attribute.get("newValue") + " " + attribute.get("oldValue");
+                        break;
+                        
+                    default:
+                        if (!attribute.get("name").toString().equals("reason")) {
+                            str += (attribute.get("newValue") == null ? " " : attribute.get("name").toString()
+                                    + "=" + attribute.get("newValue").toString()) + ", ";
+                        }
+                        break;
+                }
+
+            }
+        }
         return str;
     }
 
@@ -354,4 +327,62 @@ public class FormulateCommand {
         return false;
     }
 
+    /*
+    
+     // Reformat the input command (Command Provenance format) for user.
+     public static String getRedableCommandStr(String cmd) {
+
+     VBASLogger.logDebug("json: " + cmd);
+
+     JSONParser parser = new JSONParser();
+     Object obj = null;
+     try {
+     obj = parser.parse(cmd);
+     } catch (com.orsoncharts.util.json.parser.ParseException ex) {
+     VBASLogger.logSevere("cmd=" + cmd + " is not a valid json format.");
+     }
+
+     String str = "";
+
+     if (isJSONArray(cmd)) { // array of System Command
+     JSONArray commands = (JSONArray) obj;
+     for (Object o : commands) {
+     JSONObject command = (JSONObject) o;
+     str += command.get("dataType").toString() + "#" + command.get("id").toString() + ": ";
+
+     // TODO: repeated code
+     JSONArray attributes = (JSONArray) command.get("attributeArray");
+     if (attributes != null) {
+     for (Object o1 : attributes) {
+     JSONObject attribute = (JSONObject) o1;
+     str += attribute.get("name").toString() + ":"
+     + (attribute.get("oldValue") == null ? "" : (attribute.get("oldValue").toString() + "->"))
+     + (attribute.get("newValue") == null ? "" : attribute.get("newValue").toString())
+     + " ";
+     }
+     }
+     }
+
+     } else if (isJSONObject(cmd)) {
+     JSONObject command = (JSONObject) obj;
+     str += command.get("dataType").toString() + "#" + command.get("id").toString() + ": ";
+
+     // TODO: repeated code
+     JSONArray attributes = (JSONArray) command.get("attributeArray");
+     if (attributes != null) {
+     for (Object o1 : attributes) {
+     JSONObject attribute = (JSONObject) o1;
+     str += attribute.get("name").toString() + ":"
+     + (attribute.get("oldValue") == null ? "" : (attribute.get("oldValue").toString() + "->"))
+     + (attribute.get("newValue") == null ? "" : attribute.get("newValue").toString())
+     + " ";
+     }
+     }
+
+     }
+
+     VBASLogger.logDebug("readable format: " + str);
+     return str;
+     }
+     */
 }

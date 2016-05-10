@@ -17,13 +17,15 @@ public class SeisEvent extends AbstractSeisData {
     private Integer grn;            //these two ref, please ask James
     private Integer srn;
     private Integer defaultDepth;   //default Depth of the event
+    private String eType;
 
     public SeisEvent() {
         this.evid = 0;
     }
 
-    public SeisEvent(Integer evid) {
+    public SeisEvent(Integer evid, String eType) {
         this.evid = evid;
+        this.eType = eType;
         this.phaseNumber = 0;
     }
 
@@ -36,6 +38,7 @@ public class SeisEvent extends AbstractSeisData {
         this.grn = another.defaultDepth;
         this.srn = another.defaultDepth;
         this.defaultDepth = another.defaultDepth;
+        this.eType = another.eType;
     }
 
     public void setEvid(Integer evid) {
@@ -103,5 +106,13 @@ public class SeisEvent extends AbstractSeisData {
 
     public void setDefaultDepth(Integer defaultDepth) {
         this.defaultDepth = defaultDepth;
+    }
+
+    public String geteType() {
+        return eType;
+    }
+
+    public void seteType(String eType) {
+        this.eType = eType;
     }
 }

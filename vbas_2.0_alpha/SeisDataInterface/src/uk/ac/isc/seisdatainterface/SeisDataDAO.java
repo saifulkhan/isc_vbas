@@ -92,7 +92,7 @@ public class SeisDataDAO {
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        String query = "SELECT e.evid, h.author, h.day, h.lat, h.lon, h.depth"
+        String query = "SELECT e.evid, h.author, h.day, h.lat, h.lon, h.depth, e.etype"
                 + " FROM event e, hypocenter h"
                 + " WHERE e.prime_hyp = h.hypid"
                 + " AND h.isc_evid = e.evid AND e.banished IS NULL AND e.ready IS NOT NULL"
@@ -106,7 +106,7 @@ public class SeisDataDAO {
 
             while (rs.next()) {
 
-                SeisEvent tmp = new SeisEvent(rs.getInt(1));
+                SeisEvent tmp = new SeisEvent(rs.getInt(1), rs.getString(7));
                 Date dd = null;
 
                 try {
@@ -164,7 +164,7 @@ public class SeisDataDAO {
         String dfrom = df.format(from);
         String dto = df.format(to);
 
-        String query = "SELECT e.evid, h.author, h.day, h.lat, h.lon, h.depth"
+        String query = "SELECT e.evid, h.author, h.day, h.lat, h.lon, h.depth, e.etype"
                 + " FROM event e, hypocenter h"
                 + " WHERE e.prime_hyp = h.hypid AND h.day BETWEEN '" + dfrom
                 + "' AND '" + dto
@@ -179,7 +179,7 @@ public class SeisDataDAO {
 
             while (rs.next()) {
 
-                SeisEvent tmp = new SeisEvent(rs.getInt(1));
+                SeisEvent tmp = new SeisEvent(rs.getInt(1), rs.getString(7));
                 Date dd = null;
 
                 try {
@@ -241,7 +241,7 @@ public class SeisDataDAO {
             while (iter.hasNext()) {
                 String evid = iter.next();
 
-                String query = "SELECT e.evid, h.author, h.day, h.lat, h.lon, h.depth"
+                String query = "SELECT e.evid, h.author, h.day, h.lat, h.lon, h.depth, e.etype"
                         + " FROM event e, hypocenter h"
                         + " WHERE e.prime_hyp = h.hypid AND e.evid = " + evid
                         + " AND h.isc_evid = e.evid AND e.banished IS NULL AND e.ready IS NOT NULL"
@@ -252,7 +252,7 @@ public class SeisDataDAO {
 
                 while (rs.next()) {
 
-                    SeisEvent tmp = new SeisEvent(rs.getInt(1));
+                    SeisEvent tmp = new SeisEvent(rs.getInt(1), rs.getString(7));
                     Date dd = null;
 
                     try {
@@ -932,7 +932,8 @@ public class SeisDataDAO {
             st = con.createStatement();
 
             String query
-                    = "SELECT h.author, h.day, h.lat, h.lon, h.depth, h.prime, h.hypid, x.sdepth, h.epifix, x.stime, x.strike, x.smajax, x.sminax,h.nass, h.ndef, h.nsta, h.ndefsta, h.msec, x.sdobs"
+                    = "SELECT h.author, h.day, h.lat, h.lon, h.depth, h.prime, h.hypid, x.sdepth, h.epifix, x.stime, "
+                    + "x.strike, x.smajax, x.sminax, h.nass, h.ndef, h.nsta, h.ndefsta, h.msec, x.sdobs, h.etype, h.depfix"
                     + " FROM hypocenter h LEFT OUTER JOIN hypoc_err x ON x.hypid = h.hypid"
                     + " WHERE h.deprecated is NULL AND h.hypid = h.pref_hypid AND h.isc_evid = "
                     + evid
@@ -990,7 +991,15 @@ public class SeisDataDAO {
                 if (rs.getObject(19) != null) {
                     tmp.setSdobs(rs.getDouble(19));
                 }
-
+                
+                if(rs.getObject(20) != null) {
+                    tmp.seteType(rs.getString(20));
+                }
+                
+                if(rs.getObject(21) != null) {
+                    tmp.setDepthFix(rs.getString(21));
+                }
+                
                 HypoList.add(tmp);
 
             }
@@ -3003,6 +3012,68 @@ public class SeisDataDAO {
                 return false;
             }
         }
+        return true;
+    }
+
+    /*
+     * Update the database when an event is done.
+     */
+    public static Boolean updateSeiesEventDone(Integer evid) {
+
+        Connection con = null;
+        Statement st = null;
+        ResultSet rs = null;
+        String query = null;
+
+        try {
+            con = DriverManager.getConnection(url, user, password);
+            st = con.createStatement();
+
+            query = "UPDATE event_allocation"
+                    + "  SET finish = NOW()"
+                    + "  WHERE evid = " + evid
+                    + "  AND block_allocation_id = ("
+                    + "  SELECT ba.id"
+                    + "  FROM analyst a, event_allocation ea,"
+                    + "  block_allocation ba "
+                    + "  WHERE ea.evid = " + evid
+                    + "  AND ba.id = ea.block_allocation_id "
+                    + "  AND ba.analyst_id = a.id"
+                    + "  AND a.username = '" + System.getProperty("user.name") + "'"
+                    + "  ORDER BY ba.start DESC"
+                    + "  LIMIT 1 )";
+
+            VBASLogger.logDebug("query= " + query);
+            rs = st.executeQuery(query);
+            rs.close();
+
+        } catch (SQLException ex) {
+            String message = ex.toString() + "\n\n"
+                    + VBASLogger.debugAt()
+                    + "Query= " + ex.getSQLState()
+                    + "\nFailed to run."
+                    + "\nSee the error log file for more information. ";
+
+            JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+            logger.log(Level.SEVERE, message);
+            return false;
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (st != null) {
+                    st.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+
+            } catch (SQLException ex) {
+                return false;
+            }
+        }
+
         return true;
     }
 
