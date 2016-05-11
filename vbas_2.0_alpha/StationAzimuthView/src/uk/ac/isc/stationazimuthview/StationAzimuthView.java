@@ -93,17 +93,21 @@ public class StationAzimuthView extends JPanel {
     private static final Color primaryGapColor = new Color(255, 1, 243);
     private static final Color secondaryGapColor = new Color(255, 186, 85);
 
+    private final Boolean isAssess;
+    
     /**
      * constructor need hypolist and phaselist
      *
      * @param hyposList
      * @param phasesList
+     * @param isAssess
      */
-    public StationAzimuthView(HypocentresList hyposList, PhasesList phasesList) {
+    public StationAzimuthView(HypocentresList hyposList, PhasesList phasesList, Boolean isAssess) {
         VBASLogger.logDebug("Here...");
 
         this.phasesList = phasesList;
         this.hyposList = hyposList;
+        this.isAssess = isAssess;
 
         //loading high resolution image for drawing the warping map we use 1 to load 512X512 as the src image
         loadSrcImage();
@@ -142,7 +146,8 @@ public class StationAzimuthView extends JPanel {
         aziSummary = SeisUtils.calculateAzSumm(phasesList.getPhases(), isISC);
         //load station list based on evid from prime hypocentre
         staList = new ArrayList<Station>();
-        SeisDataDAO.retrieveAllStations(ph.getEvid(), staList);
+        
+        SeisDataDAO.retrieveAllStations(ph.getEvid(), staList, isAssess);
 
         drawDirectionalPie();
         drawBufferedImage();
@@ -184,7 +189,7 @@ public class StationAzimuthView extends JPanel {
                 isISC = true;
             }
         }
-        SeisDataDAO.retrieveAllStations(ph.getEvid(), staList);
+        SeisDataDAO.retrieveAllStations(ph.getEvid(), staList, isAssess);
 
         aziSummary = SeisUtils.calculateAzSumm(phasesList.getPhases(), isISC);
 

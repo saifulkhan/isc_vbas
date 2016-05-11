@@ -4,6 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Date;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -15,6 +18,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import uk.ac.isc.seisdata.SeisDataChangeEvent;
+import uk.ac.isc.seisdata.SeisDataChangeListener;
 import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.SeisEvent;
 import uk.ac.isc.seisdata.SeisEventsList;
@@ -24,7 +29,7 @@ import uk.ac.isc.seisdata.VBASLogger;
  * It holds all the "phases", "hypocentres", and "events" data and passes
  * reference to other views.
  */
-public class SeisEventsTable extends JPanel implements ListSelectionListener {
+public class SeisEventsTable extends JPanel implements SeisDataChangeListener {
 
     private JTable table;
     private SiesEventsTableModel tableModel;
@@ -33,17 +38,35 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
     /*
      * All seisevents will be loaded first.
      */
-    private static final SeisEventsList eventsList = Global.getSeisEventsList();
+    private static final SeisEventsList seisEventsList = Global.getSeisEventsList();
     private static SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
 
     public SeisEventsTable() {
         table = new JTable();
-        tableModel = new SiesEventsTableModel(eventsList.getEvents());
+        tableModel = new SiesEventsTableModel(seisEventsList.getEvents());
         table.setModel(tableModel);
 
+        // Not used this listener
         // add listener for the selection change
-        table.getSelectionModel().addListSelectionListener(this);
+        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent lse) {
+                // disable the double calls
+                if (!lse.getValueIsAdjusting()) {
+                    //onValueChanged(lse);
+                }
+            }
+        });
+
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent evt) {
+                onMouseClicked(evt);
+            }
+        });
+
         setupTableVisualAttributes();
+        table.getSelectionModel().setSelectionInterval(0, 0); // highlight first row which is shown by other views.
 
         // Action buttons, search panel
         // layout all together
@@ -51,6 +74,8 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
         this.setLayout(new BorderLayout());
         this.add(eventsSearchPanel, BorderLayout.PAGE_START);
         this.add(new JScrollPane(table), BorderLayout.CENTER);
+
+        seisEventsList.addChangeListener(this);
     }
 
 
@@ -58,17 +83,33 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
      * Table's new row or new event is selected 
      * Trigger the change of all the regestered listeners (observers)
      */
-    @Override
-    public void valueChanged(ListSelectionEvent e) {
-        VBASLogger.logDebug("New SeisEvent is selected.");
-        // disable the double calls
-        if (!e.getValueIsAdjusting()) {
-            int selectedRowNum = table.getSelectedRow();
-            // get selected evid.
-            int selectedEvid = (Integer) table.getValueAt(selectedRowNum, 0);
+    /*
+    public void onValueChanged(ListSelectionEvent e) {
+        int selectedRowNum = table.getSelectedRow();             // get selected evid.
+        VBASLogger.logDebug("New SeisEvent is selected. selectedRowNum=" + selectedRowNum);
 
+        if (selectedRowNum > 0) {
+            int selectedEvid = (Integer) table.getValueAt(selectedRowNum, 0);
             // another SeisEvent is selected
-            selectedSeisEvent.setValues(eventsList.getEvents().get(selectedRowNum));
+            selectedSeisEvent.setValues(seisEventsList.getEvents().get(selectedRowNum));
+            Global.loadSelectedSeisEventData();
+
+            VBASLogger.logDebug("SiesEvent= " + selectedEvid + ". Fire SiesEvent selected event.");
+            selectedSeisEvent.fireSeisDataChanged();
+        }
+    }
+    */
+    
+    public void onMouseClicked(MouseEvent e) {
+        int selectedRow = table.getSelectedRow();
+        int selectedCol = table.getSelectedColumn();
+
+        VBASLogger.logDebug("New SeisEvent is selected. selectedRow=" + selectedRow);
+
+        if (selectedRow > 0) {
+            int selectedEvid = (Integer) table.getValueAt(selectedRow, 0);
+            // another SeisEvent is selected
+            selectedSeisEvent.setValues(seisEventsList.getEvents().get(selectedRow));
             Global.loadSelectedSeisEventData();
 
             VBASLogger.logDebug("SiesEvent= " + selectedEvid + ". Fire SiesEvent selected event.");
@@ -114,6 +155,8 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
         table.getColumnModel().getColumn(6).setCellRenderer(centerRenderer);
         table.getColumnModel().getColumn(7).setCellRenderer(centerRenderer);
 
+        table.getColumnModel().getColumn(0).setCellRenderer(new SeisEventTableCellRender());
+
         // This part of the code picks good column sizes. 
         // If all column heads are wider than the column's cells'
         // contents, then you can just use column.sizeWidthToFit().
@@ -138,11 +181,59 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
             cellWidth = comp.getPreferredSize().width;
             column.setPreferredWidth(Math.max(headerWidth, cellWidth));
         }
-        
- 
+
     }
 
+    // When the SeisEventList changes - Done command
+    @Override
+    public void SeisDataChanged(SeisDataChangeEvent event) {
 
+        VBASLogger.logDebug("Event received from " + event.getData().getClass().getName());
+
+        int rowWasSelected = table.getSelectedRow();
+
+        VBASLogger.logDebug("rowWasSelected=" + rowWasSelected);
+
+        tableModel = new SiesEventsTableModel(seisEventsList.getEvents());
+        table.setModel(tableModel);
+
+        setupTableVisualAttributes();
+        table.getSelectionModel().setSelectionInterval(0, rowWasSelected); // highlight the row that was selected!
+
+    }
+
+    /*
+     **********************************************************************************
+     * Code to render table cell
+     * 
+     ***********************************************************************************
+     */
+    class SeisEventTableCellRender extends DefaultTableCellRenderer {
+
+        public Component getTableCellRendererComponent(JTable table,
+                Object value,
+                boolean isSelected,
+                boolean hasFocus,
+                int row,
+                int column) {
+
+            Component cellComponent
+                    = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+            Date finishDate = seisEventsList.getEvents().get(row).getFinishDate();
+                if (finishDate != null) {
+                VBASLogger.logDebug("#seisEventsList=" + seisEventsList.getEvents().size()
+                        + ", row=" + row
+                        + ", finishDate=" + (finishDate == null ? "null" : finishDate.toString())
+                        + ", evid=" + seisEventsList.getEvents().get(row).getEvid());
+                cellComponent.setForeground(Color.LIGHT_GRAY);
+            } else {
+                    cellComponent.setForeground(Color.BLACK);
+                }
+
+            return cellComponent;
+        }
+    }
 
     // FOR FUTURE REFERENCE    
     // NOTE: For future reference: How Block table is loaded?
@@ -153,12 +244,12 @@ public class SeisEventsTable extends JPanel implements ListSelectionListener {
      SeisDataDAO.retrieveBlockReviewedEventNumber(blockTableModel.getTaskBlocks());
 
      // add data into evets list : retrieve the events from the database
-     SeisDataDAO.retrieveAllEvents(eventsList.getEvents());
-     SeisDataDAO.retrieveEventsMagnitude(eventsList.getEvents());
-     SeisDataDAO.retrieveAllPhaseNumber(eventsList.getEvents());
-     SeisDataDAO.retrieveAllRegionName(eventsList.getEvents());
+     SeisDataDAO.retrieveAllEvents(seisEventsList.getEvents());
+     SeisDataDAO.retrieveEventsMagnitude(seisEventsList.getEvents());
+     SeisDataDAO.retrieveAllPhaseNumber(seisEventsList.getEvents());
+     SeisDataDAO.retrieveAllRegionName(seisEventsList.getEvents());
 
-     selectedSeisEvent.setValues(eventsList.getEvents().get(0));
+     selectedSeisEvent.setValues(seisEventsList.getEvents().get(0));
      loadSelectedSeisEventData();
      }*/
 //    public void loadSelectedSeisEventData() {

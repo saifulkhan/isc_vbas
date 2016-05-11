@@ -67,7 +67,7 @@ public final class StationAzimuthViewTopComponent extends TopComponent implement
 
         selectedSeisEvent.addChangeListener(this);
 
-        saView = new StationAzimuthView(hyposList, phasesList);
+        saView = new StationAzimuthView(hyposList, phasesList, false);
         stationAzimuthControlPanel = new StationAzimuthControlPanel(saView);
 
         scrollPane = new JScrollPane(saView);

@@ -305,12 +305,12 @@ public class GenerateReport {
                     break;
 
                 case "station_geometry":
-                    StationAzimuthView saView = new StationAzimuthView(hypocentresList, phasesList);
+                    StationAzimuthView saView = new StationAzimuthView(hypocentresList, phasesList, true);
                     genetarePNG(view, saView, saView.getViewWidth(), saView.getViewHeight());
                     break;
 
                 case "station_magnitudes":
-                    StationMagnitudeView smView = new StationMagnitudeView(hypocentresList);
+                    StationMagnitudeView smView = new StationMagnitudeView(hypocentresList, true);
                     genetarePNG(view, smView, smView.getViewWidth(), smView.getViewHeight());
                     break;
 

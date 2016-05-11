@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Date;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -15,6 +16,7 @@ import javax.swing.JTextField;
 import javax.swing.JViewport;
 import uk.ac.isc.seisdata.Command;
 import uk.ac.isc.seisdata.SeisEvent;
+import uk.ac.isc.seisdata.SeisEventsList;
 import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdata.VBASLogger;
 import uk.ac.isc.seisdatainterface.FormulateCommand;
@@ -37,6 +39,7 @@ public class SeisEventSearchPanel extends JPanel {
     private final JButton button_done;
 
     private final Command commandEvent = Global.getCommandEvent();
+    private static final SeisEventsList seisEventsList = Global.getSeisEventsList();
     private static SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
 
     // reference of the control view
@@ -155,7 +158,7 @@ public class SeisEventSearchPanel extends JPanel {
         int row = table.getSelectedRow();
         if (row < 0) {
             JOptionPane.showMessageDialog(null, "Select an event to banish.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+                    "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -190,9 +193,22 @@ public class SeisEventSearchPanel extends JPanel {
     }
 
     public void onButtonDoneActionPerformed(ActionEvent e) {
-        //selectedSeisEvent.se
-        SeisDataDAO.updateSeiesEventDone(selectedSeisEvent.getEvid());
         
+        // TODO: tpdate database.
+        // SeisDataDAO.updateSeiesEventDone(selectedSeisEvent.getEvid());
+        
+        int row = table.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(null, "Done: select an event.", 
+                    "Warning", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        seisEventsList.getEvents().get(row).setFinishDate(new Date());
+        
+        VBASLogger.logDebug("Selected SeisEvents: " + seisEventsList.getEvents().get(row).getEvid() 
+                + ", " + selectedSeisEvent.getEvid());
+        
+        seisEventsList.fireSeisDataChanged();
         
     }
 }

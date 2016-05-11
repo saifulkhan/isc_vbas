@@ -23,7 +23,6 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.statistics.HistogramDataset;
-import org.jfree.text.TextUtilities;
 import org.openide.util.Exceptions;
 import org.openstreetmap.gui.jmapviewer.OsmMercator;
 import uk.ac.isc.seisdata.Hypocentre;
@@ -95,9 +94,13 @@ public class StationMagnitudeView extends JPanel {
 
     static Font chartNameFont = new Font("Verdana", Font.BOLD, 12);
 
-    public StationMagnitudeView(HypocentresList hyposList) {
+    private final Boolean isAssess;
+    
+    public StationMagnitudeView(HypocentresList hyposList, Boolean isAssess) {
 
         this.hyposList = hyposList;
+        this.isAssess = isAssess;
+                
         for (int i = 0; i < hyposList.getHypocentres().size(); i++) {
             if (hyposList.getHypocentres().get(i).getIsPrime()) {
                 ph = hyposList.getHypocentres().get(i);
@@ -106,7 +109,7 @@ public class StationMagnitudeView extends JPanel {
 
         //fill the data
         allStaMag = new ArrayList<Station>();
-        SeisDataDAO.retrieveStationMags(ph.getHypid(), allStaMag);
+        SeisDataDAO.retrieveStationMags(ph.getHypid(), allStaMag, isAssess);
 
         //this.ph = ph;
         if (ph.getMagnitude().get("mb") != null) {
@@ -220,7 +223,7 @@ public class StationMagnitudeView extends JPanel {
 
         //fill the data
         allStaMag.clear();
-        SeisDataDAO.retrieveStationMags(ph.getHypid(), allStaMag);
+        SeisDataDAO.retrieveStationMags(ph.getHypid(), allStaMag, isAssess);
 
         //this.ph = ph;
         if (ph.getMagnitude().get("mb") != null) {

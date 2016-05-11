@@ -49,11 +49,15 @@ public class SeisDataDAO {
     protected static String user;
     protected static String password;
     protected static String systemUserName;
+    protected static String pgUser;
+
+    // Assess schema 
+    protected static String assessUser;
+    protected static String assessPassword;
+    private static Path assessDir = null;
 
     static {
-        //String osName = System.getProperty("os.name");
-        VBASLogger.logDebug(System.getProperty("os.name"));
-        //if (osName.equals("Linux")) {
+
         Map<String, String> env = System.getenv();
         url = "jdbc:postgresql://"
                 + env.get("PGHOSTADDR") + ":"
@@ -63,14 +67,21 @@ public class SeisDataDAO {
         password = env.get("PGPASSWORD");
         systemUserName = env.get("USER");
 
+        assessUser = env.get("ASSESS_USER");
+        assessPassword = env.get("ASSESS_PW");
+
         /*} else {
          // Saiful: Windows 10 laptop
          url = "jdbc:postgresql://127.0.0.1:5432/isc";
          user = "saiful";
          password = "saiful";
          }*/
-        VBASLogger.logDebug("url=" + url + ", user=" + user
-                + ", password=" + password + ", systemUserName=" + systemUserName);
+        VBASLogger.logDebug("url=" + url
+                + ", user=" + user
+                + ", password=" + password
+                + ", systemUserName=" + systemUserName
+                + ", assessUser=" + assessUser
+                + ", assessPassword=" + assessPassword);
     }
 
     public SeisDataDAO() {
@@ -991,15 +1002,15 @@ public class SeisDataDAO {
                 if (rs.getObject(19) != null) {
                     tmp.setSdobs(rs.getDouble(19));
                 }
-                
-                if(rs.getObject(20) != null) {
+
+                if (rs.getObject(20) != null) {
                     tmp.seteType(rs.getString(20));
                 }
-                
-                if(rs.getObject(21) != null) {
+
+                if (rs.getObject(21) != null) {
                     tmp.setDepthFix(rs.getString(21));
                 }
-                
+
                 HypoList.add(tmp);
 
             }
@@ -1815,9 +1826,10 @@ public class SeisDataDAO {
      *
      * @param evid
      * @param allStations
+     * @param isAssess
      * @return
      */
-    public static boolean retrieveAllStations(Integer evid, ArrayList<Station> allStations) {
+    public static boolean retrieveAllStations(Integer evid, ArrayList<Station> allStations, Boolean isAssess) {
         Connection con = null;
         Statement st = null;
         ResultSet rs = null;
@@ -1830,7 +1842,13 @@ public class SeisDataDAO {
                 + "AND a.author = 'ISC' AND a.phid = p.phid AND p.reporter = r.repid AND p.sta = s.sta AND s.net IS NULL";
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+
+            if (isAssess) {
+                con = DriverManager.getConnection(url, assessUser, assessPassword);
+            } else {
+                con = DriverManager.getConnection(url, user, password);
+            }
+
             st = con.createStatement();
             rs = st.executeQuery(query);
 
@@ -1865,9 +1883,10 @@ public class SeisDataDAO {
      *
      * @param hypid
      * @param allStations
+     * @param isAssess
      * @return
      */
-    public static boolean retrieveStationMags(Integer hypid, ArrayList<Station> allStations) {
+    public static boolean retrieveStationMags(Integer hypid, ArrayList<Station> allStations, Boolean isAssess) {
         Connection con = null;
         Statement st = null;
         ResultSet rs = null;
@@ -1885,7 +1904,11 @@ public class SeisDataDAO {
                 + " AND s.net IS NULL ORDER BY m.magtype";
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            if (isAssess) {
+                con = DriverManager.getConnection(url, assessUser, assessPassword);
+            } else {
+                con = DriverManager.getConnection(url, user, password);
+            }
             st = con.createStatement();
             rs = st.executeQuery(query);
 
@@ -3039,7 +3062,7 @@ public class SeisDataDAO {
                     + "  WHERE ea.evid = " + evid
                     + "  AND ba.id = ea.block_allocation_id "
                     + "  AND ba.analyst_id = a.id"
-                    + "  AND a.username = '" + System.getProperty("user.name") + "'"
+                    + "  AND a.username = '" + systemUserName + "'"
                     + "  ORDER BY ba.start DESC"
                     + "  LIMIT 1 )";
 

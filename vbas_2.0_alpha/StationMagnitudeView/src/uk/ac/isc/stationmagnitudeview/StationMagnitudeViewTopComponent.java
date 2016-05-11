@@ -72,7 +72,7 @@ public final class StationMagnitudeViewTopComponent extends TopComponent impleme
          primeHypocentre = hyposList.getHypocentres().get(i);
          }
          }*/
-        smView = new StationMagnitudeView(hyposList);
+        smView = new StationMagnitudeView(hyposList, false);
 
         scrollPane = new JScrollPane(smView);
         this.setLayout(new BorderLayout());

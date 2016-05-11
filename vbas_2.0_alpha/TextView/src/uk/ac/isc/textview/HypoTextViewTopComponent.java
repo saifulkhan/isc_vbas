@@ -147,9 +147,6 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
 
     private void onMouseClicked(MouseEvent e) {
 
-        Point p = e.getPoint();
-        final int row = table.rowAtPoint(p);
-        final int col = table.columnAtPoint(p);
         int selectedRow = table.getSelectedRow();
         int selectedCol = table.getSelectedColumn();
 
@@ -163,6 +160,9 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
             VBASLogger.logDebug("selectedRow=" + selectedRow
                     + ", selectedCol=" + selectedCol);
 
+            Point p = e.getPoint();
+            final int row = table.rowAtPoint(p);
+            final int col = table.columnAtPoint(p);
             if (SwingUtilities.isRightMouseButton(e)) {
                 Rectangle r = table.getCellRect(row, col, false);
                 htPopupManager.getPopupMenu().show(table, r.x, r.y + r.height);
@@ -269,10 +269,10 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
                 + selectedSeisEvent.getPrimeHypo().getOrigTime());
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        headerString = selectedSeisEvent.getLocation()
-                + "  "
-                + dateFormat.format(selectedSeisEvent.getPrimeHypo().getOrigTime())
-                + "\n "
+        headerString = selectedSeisEvent.getEvid() + "\n"
+                + selectedSeisEvent.getLocation() + ",  "
+                + dateFormat.format(selectedSeisEvent.getPrimeHypo().getOrigTime()) + ",  "
+                + selectedSeisEvent.geteType() + "\n"
                 + "Default Grid Depth: ";
 
         if (SeisDataDAO.retrieveDefaultGridDepth(selectedSeisEvent.getPrimeHypo().getHypid()) != null) {
@@ -280,8 +280,7 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         } else {
             headerString += "N/A";
         }
-
-        //header = new JTextPane();
+        
         header.setText(headerString);
         header.setEditable(false);
         header.setFont(new Font("Sans-Serif", Font.BOLD, 14));

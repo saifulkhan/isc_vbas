@@ -1,10 +1,10 @@
 package uk.ac.isc.seisdata;
 
+import java.util.Date;
+
 /**
  * this is a real earthquake event, it is different with changeEvent which
  * triggers listener as observer model
- *
- * @author hui
  *
  */
 public class SeisEvent extends AbstractSeisData {
@@ -18,6 +18,10 @@ public class SeisEvent extends AbstractSeisData {
     private Integer srn;
     private Integer defaultDepth;   //default Depth of the event
     private String eType;
+
+    //'Done' will set this to 'now' date.
+    //If not null, i.e., the event is done and highlight as gray.  
+    private Date finishDate;
 
     public SeisEvent() {
         this.evid = 0;
@@ -115,4 +119,13 @@ public class SeisEvent extends AbstractSeisData {
     public void seteType(String eType) {
         this.eType = eType;
     }
+
+    public Date getFinishDate() {
+        return finishDate;
+    }
+
+    public void setFinishDate(Date finishDate) {
+        this.finishDate = finishDate;
+    }
+
 }
