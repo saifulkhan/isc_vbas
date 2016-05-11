@@ -195,7 +195,7 @@ public class SeisEventSearchPanel extends JPanel {
     public void onButtonDoneActionPerformed(ActionEvent e) {
         
         // TODO: tpdate database.
-        // SeisDataDAO.updateSeiesEventDone(selectedSeisEvent.getEvid());
+        //SeisDataDAO.updateSeiesEventDone(selectedSeisEvent.getEvid());
         
         int row = table.getSelectedRow();
         if (row < 0) {

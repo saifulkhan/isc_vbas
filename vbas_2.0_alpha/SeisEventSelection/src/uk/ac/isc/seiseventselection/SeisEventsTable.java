@@ -106,7 +106,7 @@ public class SeisEventsTable extends JPanel implements SeisDataChangeListener {
 
         VBASLogger.logDebug("New SeisEvent is selected. selectedRow=" + selectedRow);
 
-        if (selectedRow > 0) {
+        if (selectedRow >= 0) {
             int selectedEvid = (Integer) table.getValueAt(selectedRow, 0);
             // another SeisEvent is selected
             selectedSeisEvent.setValues(seisEventsList.getEvents().get(selectedRow));
