@@ -9,8 +9,6 @@ public interface SeisData {
     public static char TYPE_B = 'B';
 
     public void addChangeListener(SeisDataChangeListener listener);
-
     public void removeChangeListener(SeisDataChangeListener listener);
-
     public void fireSeisDataChanged();
 }
