@@ -1,5 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
+ * To change this license textPaneSummary, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -8,12 +8,25 @@ package uk.ac.isc.textview;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
+import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextPane;
@@ -26,12 +39,16 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 import uk.ac.isc.seisdatainterface.Global;
@@ -70,8 +87,8 @@ import uk.ac.isc.seisdata.VBASLogger;
 })
 public final class HypoTextViewTopComponent extends TopComponent implements SeisDataChangeListener {
 
-    private static JTextPane header = new JTextPane();  // the Pane to show the headerString
-    private String headerString;
+    private JScrollPane summaryScrollPane;
+    private String nearbyEventsURL;
 
     private JTable table = null;
     private JScrollPane scrollPane = null;
@@ -118,14 +135,15 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         table.getSelectionModel().addListSelectionListener(lsl);
 
         setupTableVisualAttributes();
-        setHeaderText();
+
+        summaryScrollPane = new JScrollPane(getSummaryTextPane());
 
         // add the popup-menu
         htPopupManager = new HypocentreTablePopupMenu(table);
 
         scrollPane = new JScrollPane(table);
         this.setLayout(new BorderLayout());
-        this.add(header, BorderLayout.NORTH);
+        this.add(summaryScrollPane, BorderLayout.EAST);
         this.add(scrollPane, BorderLayout.CENTER);
 
     }
@@ -189,8 +207,9 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         setupTableVisualAttributes();
 
         table.clearSelection();
-        setHeaderText();
-        header.repaint();
+
+        summaryScrollPane.setViewportView(getSummaryTextPane());
+        summaryScrollPane.repaint();
 
         scrollPane.setViewportView(table);
         scrollPane.repaint();
@@ -264,30 +283,127 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         }
     }
 
-    private void setHeaderText() {
-        VBASLogger.logDebug(selectedSeisEvent.getEvid() + ", "
-                + selectedSeisEvent.getPrimeHypo().getOrigTime());
+    private JTextPane getSummaryTextPane() {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        headerString = selectedSeisEvent.getEvid() + "\n"
-                + selectedSeisEvent.getLocation() + ",  "
-                + dateFormat.format(selectedSeisEvent.getPrimeHypo().getOrigTime()) + ",  "
-                + selectedSeisEvent.geteType() + "\n"
-                + "Default Grid Depth: ";
 
-        if (SeisDataDAO.retrieveDefaultGridDepth(selectedSeisEvent.getPrimeHypo().getHypid()) != null) {
-            headerString += SeisDataDAO.retrieveDefaultGridDepth(selectedSeisEvent.getPrimeHypo().getHypid()).toString();
-        } else {
-            headerString += "N/A";
+        String summary = selectedSeisEvent.getEvid() + "\n"
+                + selectedSeisEvent.getLocation() + ", "
+                + dateFormat.format(selectedSeisEvent.getPrimeHypo().getOrigTime()) + ", "
+                + selectedSeisEvent.geteType() + "\n"
+                + "Grid Depth: " + selectedSeisEvent.getDefaultDepthGrid() + "\n";
+
+        nearbyEventsURL = "http://192.168.37.88/cgi-bin/web-db-v4?event_id="
+                + selectedSeisEvent.getEvid()
+                + "&out_format=IMS1.0&request=COMPREHENSIVE&table_owner="
+                + SeisDataDAO.getPgUser();
+
+        String locatorMsg = " " + "\n";
+
+        String warnings = "";
+
+        JTextPane textPane = new JTextPane();
+        StyledDocument doc = textPane.getStyledDocument();
+        addStylesToDocument(doc);
+
+        try {
+
+            doc.insertString(doc.getLength(), "Summary\n", doc.getStyle("large-bold-centred"));
+            doc.insertString(doc.getLength(), summary, doc.getStyle("large"));
+
+            doc.insertString(doc.getLength(), "\nNearby Events\n", doc.getStyle("large-bold-centred"));
+            doc.insertString(doc.getLength(), " ", doc.getStyle("button"));
+
+            doc.insertString(doc.getLength(), "\n\nLocator Message\n", doc.getStyle("large-bold-centred"));
+            doc.insertString(doc.getLength(), "to be added...", doc.getStyle("regular"));
+
+            doc.insertString(doc.getLength(), "\n\nWarnings\n", doc.getStyle("large-bold-centred"));
+            doc.insertString(doc.getLength(), "to be added...", doc.getStyle("regular"));
+
+        } catch (BadLocationException ble) {
+            Exceptions.printStackTrace(ble);
+            JOptionPane.showMessageDialog(null, "Exception: please ignore or report.",
+                    "Warning", JOptionPane.WARNING_MESSAGE);
         }
-        
-        header.setText(headerString);
-        header.setEditable(false);
-        header.setFont(new Font("Sans-Serif", Font.BOLD, 14));
-        StyledDocument doc = header.getStyledDocument();
-        SimpleAttributeSet center = new SimpleAttributeSet();
-        StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-        doc.setParagraphAttributes(0, doc.getLength(), center, false);
+
+        return textPane;
+    }
+
+    /*
+     * Text formating
+     * Hint: https://docs.oracle.com/javase/tutorial/uiswing/components/editorpane.html
+     */
+    protected void addStylesToDocument(StyledDocument doc) {
+        //Initialize some styles.
+        Style def = StyleContext.getDefaultStyleContext().
+                getStyle(StyleContext.DEFAULT_STYLE);
+
+        Style regular = doc.addStyle("regular", def);
+        StyleConstants.setFontFamily(def, "SansSerif");
+
+        Style s = doc.addStyle("italic", regular);
+        StyleConstants.setItalic(s, true);
+
+        s = doc.addStyle("bold", regular);
+        StyleConstants.setBold(s, true);
+
+        s = doc.addStyle("small", regular);
+        StyleConstants.setFontSize(s, 10);
+
+        s = doc.addStyle("large", regular);
+        StyleConstants.setFontSize(s, 14);
+
+        s = doc.addStyle("large-bold-centred", regular);
+        StyleConstants.setFontSize(s, 14);
+        StyleConstants.setBold(s, true);
+        StyleConstants.setAlignment(s, StyleConstants.ALIGN_CENTER);
+
+        // TODO: hyperlink is not working
+        s = doc.addStyle("large-hyperlink", regular);
+        StyleConstants.setFontSize(s, 14);
+        StyleConstants.setBold(s, true);
+        StyleConstants.setForeground(s, Color.BLUE);
+        StyleConstants.setUnderline(s, true);
+        //s.addAttribute("X", new URLLinkAction("XX"));
+
+        // add some icon or picture
+        s = doc.addStyle("icon", regular);
+        StyleConstants.setAlignment(s, StyleConstants.ALIGN_CENTER);
+        URL url = getClass().getClassLoader().getResource("resources/html.png");
+        ImageIcon icon = new ImageIcon(url);
+        if (icon != null) {
+            StyleConstants.setIcon(s, icon);
+        }
+
+        // button with icon
+        s = doc.addStyle("button", regular);
+        StyleConstants.setAlignment(s, StyleConstants.ALIGN_CENTER);
+        JButton button = new JButton();
+        if (icon != null) {
+            button.setIcon(icon);
+        } else {
+            button.setText("Open");
+        }
+        button.setCursor(Cursor.getDefaultCursor());
+        button.setMargin(new Insets(0, 0, 0, 0));
+        button.setActionCommand("Open");
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Desktop.getDesktop().browse(new URI(nearbyEventsURL));
+                } catch (URISyntaxException ex) {
+                    Exceptions.printStackTrace(ex);
+                    JOptionPane.showMessageDialog(null, "Unable to open: " + nearbyEventsURL,
+                            "Warning", JOptionPane.WARNING_MESSAGE);
+                } catch (IOException ex) {
+                    Exceptions.printStackTrace(ex);
+                    JOptionPane.showMessageDialog(null, "Unable to open: " + nearbyEventsURL,
+                            "Warning", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+        StyleConstants.setComponent(s, button);
     }
 
     /**

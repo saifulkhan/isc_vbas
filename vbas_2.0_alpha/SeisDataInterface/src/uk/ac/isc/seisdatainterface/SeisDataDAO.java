@@ -44,13 +44,12 @@ public class SeisDataDAO {
 
     protected static final Logger logger = Logger.getLogger(SeisDataDAO.class.getName());
 
-    // Loading user name, password and scheme from system environment
+    // Loading pgUser name, password and scheme from system environment
     protected static String url;
-    protected static String user;
-    protected static String password;
-    protected static String systemUserName;
     protected static String pgUser;
-
+    protected static String password;
+    protected static String sysUser;
+ 
     // Assess schema 
     protected static String assessUser;
     protected static String assessPassword;
@@ -63,9 +62,9 @@ public class SeisDataDAO {
                 + env.get("PGHOSTADDR") + ":"
                 + env.get("PGPORT") + "/"
                 + env.get("PGDATABASE");
-        user = env.get("PGUSER");
+        pgUser = env.get("PGUSER");
         password = env.get("PGPASSWORD");
-        systemUserName = env.get("USER");
+        sysUser = env.get("USER");
 
         assessUser = env.get("ASSESS_USER");
         assessPassword = env.get("ASSESS_PW");
@@ -73,13 +72,13 @@ public class SeisDataDAO {
         /*} else {
          // Saiful: Windows 10 laptop
          url = "jdbc:postgresql://127.0.0.1:5432/isc";
-         user = "saiful";
+         pgUser = "saiful";
          password = "saiful";
          }*/
         VBASLogger.logDebug("url=" + url
-                + ", user=" + user
+                + ", user=" + pgUser
                 + ", password=" + password
-                + ", systemUserName=" + systemUserName
+                + ", sysUser=" + sysUser
                 + ", assessUser=" + assessUser
                 + ", assessPassword=" + assessPassword);
     }
@@ -87,8 +86,14 @@ public class SeisDataDAO {
     public SeisDataDAO() {
     }
 
+    
+    public static String getPgUser() {
+        return pgUser;
+    }
+
+    
     /**
-     * retrieve all the events in a user's schema
+     * retrieve all the events in a pgUser's schema
      *
      * @param seisEvents for saving the events list
      * @return success flag
@@ -100,26 +105,30 @@ public class SeisDataDAO {
         Connection con = null;
         Statement st = null;
         ResultSet rs = null;
+        String query = null;
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        String query = "SELECT e.evid, h.author, h.day, h.lat, h.lon, h.depth, e.etype"
+        query = "SELECT e.evid, h.author, h.day, h.lat, h.lon, h.depth, e.etype, get_default_depth_grid(h.lat,h.lon)"
                 + " FROM event e, hypocenter h"
                 + " WHERE e.prime_hyp = h.hypid"
                 + " AND h.isc_evid = e.evid AND e.banished IS NULL AND e.ready IS NOT NULL"
                 + " AND h.deprecated is NULL AND h.hypid = h.pref_hypid"
                 + " ORDER BY h.day ASC;";
+        
+                VBASLogger.logDebug("Executing Query: " + query);   
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
             rs = st.executeQuery(query);
 
             while (rs.next()) {
 
-                SeisEvent tmp = new SeisEvent(rs.getInt(1), rs.getString(7));
+                SeisEvent tmp = new SeisEvent(rs.getInt(1), rs.getString(7), rs.getDouble(8));
+                //VBASLogger.logDebug("Executed Query.");   
+                
                 Date dd = null;
-
                 try {
                     dd = df.parse(rs.getString(3));
                 } catch (ParseException e) {
@@ -132,6 +141,16 @@ public class SeisDataDAO {
             }
 
         } catch (SQLException ex) {
+            String message = ex.toString() + "\n\n"
+                    + VBASLogger.debugAt()
+                    + "Query= " + query
+                    + "\nFailed to run."
+                    + "\nSee the error log file for more information. ";
+            JOptionPane.showMessageDialog(null,
+                    message,
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            logger.log(Level.SEVERE, message);
             return false;
         } finally {
             try {
@@ -146,7 +165,16 @@ public class SeisDataDAO {
                 }
 
             } catch (SQLException ex) {
-
+                String message = ex.toString() + "\n\n"
+                        + VBASLogger.debugAt()
+                        + "Query= " + query
+                        + "\nFailed to run."
+                        + "\nSee the error log file for more information. ";
+                JOptionPane.showMessageDialog(null,
+                        message,
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                logger.log(Level.SEVERE, message);
                 return false;
             }
         }
@@ -175,7 +203,7 @@ public class SeisDataDAO {
         String dfrom = df.format(from);
         String dto = df.format(to);
 
-        String query = "SELECT e.evid, h.author, h.day, h.lat, h.lon, h.depth, e.etype"
+        String query = "SELECT e.evid, h.author, h.day, h.lat, h.lon, h.depth, e.etype, get_default_depth_grid(h.lat,h.lon)"
                 + " FROM event e, hypocenter h"
                 + " WHERE e.prime_hyp = h.hypid AND h.day BETWEEN '" + dfrom
                 + "' AND '" + dto
@@ -184,13 +212,13 @@ public class SeisDataDAO {
                 + " ORDER BY h.day ASC;";
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
             rs = st.executeQuery(query);
 
             while (rs.next()) {
 
-                SeisEvent tmp = new SeisEvent(rs.getInt(1), rs.getString(7));
+                SeisEvent tmp = new SeisEvent(rs.getInt(1), rs.getString(7), rs.getDouble(8));
                 Date dd = null;
 
                 try {
@@ -246,13 +274,13 @@ public class SeisDataDAO {
         Iterator<String> iter = evids.iterator();
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
 
             while (iter.hasNext()) {
                 String evid = iter.next();
 
-                String query = "SELECT e.evid, h.author, h.day, h.lat, h.lon, h.depth, e.etype"
+                String query = "SELECT e.evid, h.author, h.day, h.lat, h.lon, h.depth, e.etype, get_default_depth_grid(h.lat,h.lon)"
                         + " FROM event e, hypocenter h"
                         + " WHERE e.prime_hyp = h.hypid AND e.evid = " + evid
                         + " AND h.isc_evid = e.evid AND e.banished IS NULL AND e.ready IS NOT NULL"
@@ -263,7 +291,7 @@ public class SeisDataDAO {
 
                 while (rs.next()) {
 
-                    SeisEvent tmp = new SeisEvent(rs.getInt(1), rs.getString(7));
+                    SeisEvent tmp = new SeisEvent(rs.getInt(1), rs.getString(7), rs.getDouble(8));
                     Date dd = null;
 
                     try {
@@ -318,7 +346,7 @@ public class SeisDataDAO {
         ResultSet rs = null;
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
 
 //                String query = "SELECT e.evid, n.magtype, n.magnitude"
@@ -401,7 +429,7 @@ public class SeisDataDAO {
         
      try {
             
-     con = DriverManager.getConnection(url, user, password);
+     con = DriverManager.getConnection(url, pgUser, password);
      st = con.createStatement();
                 
      String query = "SELECT n.magtype, n.magnitude, e.evid"
@@ -462,7 +490,7 @@ public class SeisDataDAO {
         ResultSet rs = null;
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
 
             for (SeisEvent ev : evList) {
@@ -517,7 +545,7 @@ public class SeisDataDAO {
         ResultSet rs = null;
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
 
             String query = "SELECT r.gr_short, r.gr_number, r.sr_number, e.evid "
@@ -576,7 +604,7 @@ public class SeisDataDAO {
         DecimalFormat df = new DecimalFormat("#.##");
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
 
             String query = "SELECT agency, likedist, likemag, liketime"
@@ -630,7 +658,7 @@ public class SeisDataDAO {
         ResultSet rs = null;
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
 
             for (SeisEvent ev : evList) {
@@ -676,14 +704,21 @@ public class SeisDataDAO {
      *
      * @return
      */
-    static Integer getNextNewEvid() {
+    static public Integer getNextNewEvid(Boolean isAssess) {
         Connection con = null;
         Statement st = null;
         ResultSet rs = null;
 
         Integer retEvid = null;
         try {
-            con = DriverManager.getConnection(url, user, password);
+
+            if (isAssess) {
+                con = DriverManager.getConnection(url, assessUser, assessPassword);
+            } else {
+                con = DriverManager.getConnection(url, pgUser, password);
+            }
+
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
             String query = "SELECT NEXTVAL('isc.evid');";
             rs = st.executeQuery(query);
@@ -720,16 +755,26 @@ public class SeisDataDAO {
         ResultSet rs = null;
 
         Integer retRdid = null;
+        String query = "SELECT NEXTVAL('isc.rdid');";
+
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
-            String query = "SELECT NEXTVAL('isc.rdid');";
             rs = st.executeQuery(query);
             while (rs.next()) {
                 retRdid = rs.getInt(1);
             }
         } catch (SQLException ex) {
-            //return null;
+
+            String message = ex.toString() + "\n\n"
+                    + VBASLogger.debugAt()
+                    + "\nQuery : " + query
+                    + "\nFailed to get new siesevent id."
+                    + "\nSee the error log file for more information. ";
+
+            JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+            logger.log(Level.SEVERE, message);
+
         } finally {
             try {
                 if (rs != null) {
@@ -764,7 +809,7 @@ public class SeisDataDAO {
         ResultSet rs = null;
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
 
             String query = "SELECT h.nass, e.evid\n"
@@ -822,108 +867,6 @@ public class SeisDataDAO {
     }
 
     /**
-     * retrieve all the hypocentres into the event
-     *
-     * @param evid
-     * @param HypoList
-     * @return
-     */
-    /*public static boolean retrieveHypos(ArrayList<String> evids, ArrayList<Hypocentre> HypoList) {
-     Connection con = null;
-     Statement st = null;
-     ResultSet rs = null;
-        
-     HypoList.clear();
-     Iterator<String> iter = evids.iterator();
-
-     try {
-     con = DriverManager.getConnection(url, user, password);
-     st = con.createStatement();
-            
-     while(iter.hasNext())
-     {
-     String evid = iter.next();
-                
-     String query = "SELECT h.author, h.day, h.lat, h.lon, h.depth, h.prime, h.hypid, x.sdepth, h.epifix, x.stime, x.strike, x.smajax, x.sminax,h.nass, h.ndef, h.nsta, h.ndefsta "
-     + " FROM hypocenter h, hypoc_err x "
-     + " WHERE h.deprecated is NULL AND h.hypid = h.pref_hypid AND x.hypid = h.hypid AND h.isc_evid = " 
-     + evid 
-     + " ORDER BY h.prime DESC, h.author";
-
-     rs = st.executeQuery(query);
-
-     while (rs.next()) {
-                
-     Hypocentre tmp = new Hypocentre();
-                    
-     tmp.setEvid(evid);
-     tmp.setAgency(rs.getString(1));
-                
-     Date dd = null;
-     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-     try {
-     dd = df.parse(rs.getString(2));
-     } catch (ParseException e)
-     {
-     return false;
-     }
-     tmp.setOrigTime(dd);
-                
-     tmp.setLat(rs.getDouble(3));
-     tmp.setLon(rs.getDouble(4));
-     tmp.setDepth(rs.getInt(5));
-     tmp.setHypid(rs.getString(7));
-                    
-     if (rs.getString(6) != null)
-     {
-     tmp.setIsPrime(true);
-     }
-                 
-     tmp.setErrDepth(rs.getDouble(8));
-                    
-     if (rs.getString(9) != null)
-     {
-     tmp.setIsFixed(true);
-     }
-                    
-     tmp.setStime(rs.getDouble(10));
-     tmp.setStrike(rs.getDouble(11));
-     tmp.setSmajax(rs.getDouble(12));
-     tmp.setSminax(rs.getDouble(13));
-                    
-     tmp.setNumPhases(rs.getInt(14));
-     tmp.setNumDefPhases(rs.getInt(15));
-     tmp.setNumStations(rs.getInt(16));
-     tmp.setNumDefStations(rs.getInt(17));
-                    
-     HypoList.add(tmp);
-
-     }
-     rs.close();
-     }
-
-     } catch (SQLException ex) {
-     return false;
-     } finally {
-     try {
-     if (rs != null) {
-     rs.close();
-     }
-     if (st != null) {
-     st.close();
-     }
-     if (con != null) {
-     con.close();
-     }
-
-     } catch (SQLException ex) {
-     return false;
-     }
-     }
-     return true;
-        
-     }*/
-    /**
      * Get all the hypocentres
      *
      * @param evid
@@ -939,7 +882,7 @@ public class SeisDataDAO {
         HypoList.clear();
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
 
             String query
@@ -1054,7 +997,7 @@ public class SeisDataDAO {
         Hypocentre tmp = new Hypocentre();
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
 
             String query
@@ -1151,7 +1094,7 @@ public class SeisDataDAO {
         ResultSet rs = null;
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
 
             String query = "SELECT lat, lon, get_default_depth_grid(lat,lon) "
@@ -1197,7 +1140,7 @@ public class SeisDataDAO {
 
         Iterator<Hypocentre> iter = HypoList.iterator();
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
 
             while (iter.hasNext()) {
@@ -1277,7 +1220,7 @@ public class SeisDataDAO {
         }
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
             rs = st.executeQuery(query);
 
@@ -1308,109 +1251,6 @@ public class SeisDataDAO {
         return true;
     }
 
-    /*public static boolean retrieveAllPhases(ArrayList<String> evids, ArrayList<Phase> PhaseList)
-     {
-     Connection con = null;
-     Statement st = null;
-     ResultSet rs = null;
-        
-     PhaseList.clear();
-     Iterator<String> iter = evids.iterator();
-
-     try {
-     con = DriverManager.getConnection(url, user, password);
-     st = con.createStatement();
-            
-     while(iter.hasNext())
-     {
-     String evid = iter.next();
-                
-     //String query = "SELECT DISTINCT r.reporter, p.sta, p.day, a.delta, a.esaz, a.phase, a.timeres, p.phid, p.phase, a.timedef, "
-     //+ "t.amp, t.per, g.magnitude "
-     //+ "FROM event e, association a, phase p, report r, amplitude t, ampmag g "
-     //+ "WHERE e.prime_hyp = a.hypid AND p.reporter = r.repid "
-     //+ "AND t.phid = p.phid AND t.ampid = p.ampid AND g.ampid = t.ampid "
-     //+ "AND a.phid = p.phid  AND a.author = 'ISC' AND e.evid = " + evid 
-     //+ " ORDER BY a.delta ASC;";
-                
-     String query = "SELECT DISTINCT r.reporter, p.sta, p.day, a.delta, a.esaz, a.phase, a.timeres, p.phid, p.phase, a.timedef, p.rdid, s.staname "
-     + "FROM event e, association a, phase p, report r, site s "
-     + "WHERE e.prime_hyp = a.hypid AND p.reporter = r.repid "
-     + "AND a.phid = p.phid  AND a.author = 'ISC' AND p.sta = s.sta AND e.evid = " + evid 
-     + " ORDER BY a.delta ASC;";
-                
-     rs = st.executeQuery(query);
-
-     while (rs.next()) {
-                
-     //PrimeHypocentre primetmp = null;
-     Phase tmp = new Phase();
-                    
-     tmp.setReportAgency(rs.getString(1));
-     tmp.setReportStation(rs.getString(2));
-     tmp.setDistance(rs.getDouble(4));
-     tmp.setAzimuth(rs.getDouble(5));
-     tmp.setIscPhaseType(rs.getString(6));//.setOrigPhaseType(rs.getString(5));
-     tmp.setTimeResidual(rs.getDouble(7));
-     tmp.setPhid(rs.getString(8));
-     tmp.setOrigPhaseType(rs.getString(9));
-                    
-     if(rs.getString(10) == null)
-     {
-     tmp.setDefining(false);
-     }
-     else
-     {
-     tmp.setDefining(true);
-     }
-                    
-     tmp.setRdid(rs.getString(11));
-     tmp.setStationFullName(rs.getString(12));
-     //tmp.setAmplitude(rs.getDouble(11));
-     //tmp.setPeriod(rs.getDouble(12));
-     //tmp.setAmpMag(rs.getDouble(13));
-                    
-     Date dd = null;
-     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-     try {
-     dd = df.parse(rs.getString(3));
-     } catch (ParseException e)
-     {
-
-     }
-     catch (NullPointerException ne)
-     {
-     //System.out.println(rs.getString(3));
-     }
-                                        
-     tmp.setArrivalTime(dd);
-                    
-     PhaseList.add(tmp);
-
-     }
-     rs.close();
-     }
-
-     } catch (SQLException ex) {
-
-     } finally {
-     try {
-     if (rs != null) {
-     rs.close();
-     }
-     if (st != null) {
-     st.close();
-     }
-     if (con != null) {
-     con.close();
-     }
-
-     } catch (SQLException ex) {
-     }
-     }
-     return true;
-    
-     }*/
     /**
      *
      * @param evid all phases associated to the event id
@@ -1426,7 +1266,7 @@ public class SeisDataDAO {
 
         try {
 
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
 
             query = "SELECT r.reporter, p.sta, p.day, a.delta, a.esaz, a.phase, a.timeres, p.phid, p.phase, a.timedef, p.rdid, s.staname, p.msec, p.slow, p.azim, i.snr, a.phase_fixed "
@@ -1551,7 +1391,7 @@ public class SeisDataDAO {
         Phase tmp = new Phase();
         try {
 
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
 
             String query = "SELECT r.reporter, p.sta, p.day, a.delta, a.esaz, a.phase, a.timeres, p.phid, p.phase, a.timedef, p.rdid, s.staname, p.msec, p.slow, p.azim, i.snr, a.phase_fixed "
@@ -1649,65 +1489,6 @@ public class SeisDataDAO {
         return tmp;
     }
 
-    /*
-     public static boolean retrieveAllPhasesAmpMag(ArrayList<Phase> PhaseList)
-     {
-     Connection con = null;
-     Statement st = null;
-     ResultSet rs = null;
-                
-     try {
-     con = DriverManager.getConnection(url, user, password);
-     st = con.createStatement();
-            
-     for(int i = 0; i<PhaseList.size(); i++)
-     {
-     Integer phid = PhaseList.get(i).getPhid();
-                                                
-     String query = "SELECT p.amp, p.per, s.magnitude, s.ampdef "
-     + "FROM ampmag s, amplitude p "
-     + "WHERE s.author = 'ISC' AND p.ampid = s.ampid "
-     + "AND p.phid = " + phid;
-                
-     rs = st.executeQuery(query);
-
-     while (rs.next()) {
-     PhaseList.get(i).setAmplitude(rs.getDouble(1));
-     PhaseList.get(i).setPeriod(rs.getDouble(2));
-     PhaseList.get(i).setAmpMag(rs.getDouble(3));
-                    
-     if(rs.getInt(4)==1)
-     {
-     PhaseList.get(i).setAmpmagDefining(true);
-     }
-     else if(rs.getInt(4)==0)
-     {
-     PhaseList.get(i).setAmpmagDefining(false);
-     }
-     }
-     rs.close();
-     }
-
-     } catch (SQLException ex) {
-
-     } finally {
-     try {
-     if (rs != null) {
-     rs.close();
-     }
-     if (st != null) {
-     st.close();
-     }
-     if (con != null) {
-     con.close();
-     }
-
-     } catch (SQLException ex) {
-     }
-     }
-     return true;
-    
-     }*/
     /**
      * Retrieve all the phase ampmag and save them back to each phase in the
      * list
@@ -1728,7 +1509,7 @@ public class SeisDataDAO {
         }
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
 
             String query = "SELECT p.amp, p.per, s.magnitude, s.ampdef, p.phid "
@@ -1793,7 +1574,7 @@ public class SeisDataDAO {
                 + "AND s.sta = g.sta AND g.net IS NULL AND g.grn_ll = r.gr_number;";
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
             rs = st.executeQuery(query);
 
@@ -1846,7 +1627,7 @@ public class SeisDataDAO {
             if (isAssess) {
                 con = DriverManager.getConnection(url, assessUser, assessPassword);
             } else {
-                con = DriverManager.getConnection(url, user, password);
+                con = DriverManager.getConnection(url, pgUser, password);
             }
 
             st = con.createStatement();
@@ -1907,7 +1688,7 @@ public class SeisDataDAO {
             if (isAssess) {
                 con = DriverManager.getConnection(url, assessUser, assessPassword);
             } else {
-                con = DriverManager.getConnection(url, user, password);
+                con = DriverManager.getConnection(url, pgUser, password);
             }
             st = con.createStatement();
             rs = st.executeQuery(query);
@@ -1961,7 +1742,7 @@ public class SeisDataDAO {
         Boolean sFlag = null;
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             cs = con.prepareCall("{? = call RF(?,?)}");
 
             cs.registerOutParameter(1, Types.INTEGER);
@@ -1999,7 +1780,7 @@ public class SeisDataDAO {
         Boolean sFlag = null;
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             cs = con.prepareCall("{? = call CHHypo(?,?,?)}");
             cs.registerOutParameter(1, Types.INTEGER);
 
@@ -2030,7 +1811,7 @@ public class SeisDataDAO {
         Boolean sFlag = null;
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             cs = con.prepareCall("{? = call PutHypo(?,?,?)}");
             cs.registerOutParameter(1, Types.INTEGER);
 
@@ -2062,7 +1843,7 @@ public class SeisDataDAO {
         Boolean sFlag = null;
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             cs = con.prepareCall("{? = call deletehypo(?)}");
 
             cs.registerOutParameter(1, Types.INTEGER);
@@ -2092,7 +1873,7 @@ public class SeisDataDAO {
         Boolean sFlag = null;
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             cs = con.prepareCall("{? = call undeletehypo(?)}");
 
             cs.registerOutParameter(1, Types.INTEGER);
@@ -2122,7 +1903,7 @@ public class SeisDataDAO {
         Boolean sFlag = null;
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             cs = con.prepareCall("{? = call banish(?)}");
 
             cs.registerOutParameter(1, Types.INTEGER);
@@ -2152,7 +1933,7 @@ public class SeisDataDAO {
         Boolean sFlag = null;
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             cs = con.prepareCall("{? = call unbanish(?)}");
 
             cs.registerOutParameter(1, Types.INTEGER);
@@ -2188,7 +1969,7 @@ public class SeisDataDAO {
         Boolean sFlag = null;
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             cs = con.prepareCall("{? = call create_event(?,?)}");
             cs.registerOutParameter(1, Types.INTEGER);
 
@@ -2223,7 +2004,7 @@ public class SeisDataDAO {
         Boolean sFlag = null;
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             cs = con.prepareCall("{? = call merge(?,?)}");
             cs.registerOutParameter(1, Types.INTEGER);
 
@@ -2253,7 +2034,7 @@ public class SeisDataDAO {
         Boolean sFlag = null;
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             cs = con.prepareCall("{? = call CHPhase(?,?,?)}");
             cs.registerOutParameter(1, Types.INTEGER);
 
@@ -2284,7 +2065,7 @@ public class SeisDataDAO {
         Boolean sFlag = null;
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             cs = con.prepareCall("{? = call putphase(?,?,?,?)}");
             cs.registerOutParameter(1, Types.INTEGER);
 
@@ -2321,7 +2102,7 @@ public class SeisDataDAO {
         Boolean sFlag = null;
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             cs = con.prepareCall("{? = call deletephase(?)}");
 
             cs.registerOutParameter(1, Types.INTEGER);
@@ -2352,7 +2133,7 @@ public class SeisDataDAO {
         Boolean sFlag = null;
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             cs = con.prepareCall("{? = call takephase(?)}");
 
             cs.registerOutParameter(1, Types.INTEGER);
@@ -2394,7 +2175,7 @@ public class SeisDataDAO {
                 + " GROUP BY ba.block_id;";
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
             rs = st.executeQuery(query);
 
@@ -2469,7 +2250,7 @@ public class SeisDataDAO {
                 + " GROUP BY ba.block_id;";
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
             rs = st.executeQuery(query);
 
@@ -2538,7 +2319,7 @@ public class SeisDataDAO {
                 + " ORDER BY b.id;";
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
             rs = st.executeQuery(query);
 
@@ -2665,7 +2446,7 @@ public class SeisDataDAO {
         ResultSet rs = null;
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
 
             int block_allocation_id = 0;
@@ -2675,7 +2456,7 @@ public class SeisDataDAO {
                     + " WHERE ea.evid = " + evid
                     + " AND ba.id = ea.block_allocation_id"
                     + " AND ba.analyst_id = a.id"
-                    + " AND a.username = '" + systemUserName + "' "
+                    + " AND a.username = '" + sysUser + "' "
                     + " ORDER BY ba.start DESC"
                     + " LIMIT 1;";
 
@@ -2762,7 +2543,7 @@ public class SeisDataDAO {
         commandList.clear();
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
 
             String query = "SELECT ec.id, ec.command, ec.functions, a.name, ba.pass, ec.adddate, ec.type, ec.status"
@@ -2841,7 +2622,7 @@ public class SeisDataDAO {
         ResultSet rs = null;
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
 
             int block_allocation_id = 0;
@@ -2851,7 +2632,7 @@ public class SeisDataDAO {
                     + " WHERE ea.evid = " + evid
                     + " AND ba.id = ea.block_allocation_id"
                     + " AND ba.analyst_id = a.id"
-                    + " AND a.username = '" + systemUserName + "'"
+                    + " AND a.username = '" + sysUser + "'"
                     + " ORDER BY ba.start DESC"
                     + " LIMIT 1;";
 
@@ -2959,7 +2740,7 @@ public class SeisDataDAO {
         assessedCommandList.clear();
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
 
             query = "SELECT ba.pass, a.name, ec.id AS assessid, ec.command AS command, eca.id AS cmdids\n"
@@ -3049,7 +2830,7 @@ public class SeisDataDAO {
         String query = null;
 
         try {
-            con = DriverManager.getConnection(url, user, password);
+            con = DriverManager.getConnection(url, pgUser, password);
             st = con.createStatement();
 
             query = "UPDATE event_allocation"
@@ -3062,7 +2843,7 @@ public class SeisDataDAO {
                     + "  WHERE ea.evid = " + evid
                     + "  AND ba.id = ea.block_allocation_id "
                     + "  AND ba.analyst_id = a.id"
-                    + "  AND a.username = '" + systemUserName + "'"
+                    + "  AND a.username = '" + sysUser + "'"
                     + "  ORDER BY ba.start DESC"
                     + "  LIMIT 1 )";
 

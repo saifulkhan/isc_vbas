@@ -16,7 +16,8 @@ import org.openide.util.Exceptions;
 public class FormulateCommand {
 
     private static final String[] COMMAND_TYPES
-            = {"phaseedit", "hypocentreedit", "seiseventrelocate", "setprime", "seiseventbanish", "assess"};
+            = {"phaseedit", "hypocentreedit", "seiseventrelocate", "setprime", "seiseventbanish", "assess", 
+                "movehypocentre", "deletehypocentre", "createevent"};
 
     private static final String[] DATA_TYPES
             = {"seisevent", "hypocentre", "phase"};
@@ -226,6 +227,21 @@ public class FormulateCommand {
         switch (commandType) {
             case "setprime":
                 str += "Setprime" + " ";
+                str += command.get("agency").toString() + " ";
+                break;
+            
+            case "movehypocentre":
+                str += "MoveHypocentre" + " ";
+                str += command.get("agency").toString() + " ";
+                break;
+            
+            case "deletehypocentre":
+                str += "DeleteHypocentre" + " ";
+                str += command.get("agency").toString() + " ";
+                break;
+                
+            case "createevent":
+                str += "CreateEvent" + " ";
                 str += command.get("agency").toString() + " ";
                 break;
 

@@ -8,7 +8,6 @@ import uk.ac.isc.seisdata.Command;
 import uk.ac.isc.seisdata.CommandList;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
-import uk.ac.isc.seisdata.Phase;
 import uk.ac.isc.seisdata.PhasesList;
 import uk.ac.isc.seisdata.SeisEvent;
 import uk.ac.isc.seisdata.SeisEventsList;
@@ -60,6 +59,7 @@ public class Global {
         // fill in the events number
         SeisDataDAO.retrieveBlockEventNumber(blockTableModel.getTaskBlocks());
         SeisDataDAO.retrieveBlockReviewedEventNumber(blockTableModel.getTaskBlocks());
+        
         // add data into evets list : retrieve the events from the database
         SeisDataDAO.retrieveAllEvents(seisEventsList.getEvents());
         SeisDataDAO.retrieveEventsMagnitude(seisEventsList.getEvents());

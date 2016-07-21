@@ -19,30 +19,34 @@ public class SeisEvent extends AbstractSeisData {
     private Integer defaultDepth;   //default Depth of the event
     private String eType;
 
-    //'Done' will set this to 'now' date.
-    //If not null, i.e., the event is done and highlight as gray.  
+    //'Done' will set this to 'now' date. If not null, i.e., the event is done and highlight as gray.  
     private Date finishDate;
-
+    private Double defaultDepthGrid = null;
+    
     public SeisEvent() {
         this.evid = 0;
     }
 
-    public SeisEvent(Integer evid, String eType) {
+    public SeisEvent(Integer evid, String eType, Double defaultDepthGrid) {
         this.evid = evid;
         this.eType = eType;
+        this.defaultDepthGrid = defaultDepthGrid;
         this.phaseNumber = 0;
+    
+        //VBASLogger.logDebug(this.evid + ", " + this.defaultDepthGrid);    
     }
 
-    public void setValues(SeisEvent another) {
-        this.evid = another.evid;
-        this.primeHypo = another.primeHypo;
-        this.phaseNumber = another.defaultDepth;
-        this.magnitude = another.magnitude;
-        this.location = another.location;
-        this.grn = another.defaultDepth;
-        this.srn = another.defaultDepth;
-        this.defaultDepth = another.defaultDepth;
-        this.eType = another.eType;
+    public void setValues(SeisEvent e) {
+        this.evid = e.evid;
+        this.primeHypo = e.primeHypo;
+        this.phaseNumber = e.defaultDepth;
+        this.magnitude = e.magnitude;
+        this.location = e.location;
+        this.grn = e.defaultDepth;
+        this.srn = e.defaultDepth;
+        this.defaultDepth = e.defaultDepth;
+        this.eType = e.eType;
+        this.defaultDepthGrid = e.defaultDepthGrid;
     }
 
     public void setEvid(Integer evid) {
@@ -128,4 +132,9 @@ public class SeisEvent extends AbstractSeisData {
         this.finishDate = finishDate;
     }
 
+    public Double getDefaultDepthGrid() {
+        return defaultDepthGrid;
+    }
+    
+    
 }

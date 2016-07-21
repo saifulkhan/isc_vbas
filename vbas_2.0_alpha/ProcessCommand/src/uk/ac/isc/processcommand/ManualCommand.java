@@ -31,7 +31,7 @@ public class ManualCommand extends javax.swing.JDialog {
 
     private void groupRadioButton() {
         ButtonGroup group = new ButtonGroup();
-        group.add(this.radioButton_create);
+        //group.add(this.radioButton_create);
         group.add(this.radioButton_merge);
     }
 
@@ -62,29 +62,31 @@ public class ManualCommand extends javax.swing.JDialog {
             formulateCommand.addAttribute("siesevent", dest, src);
             formulateCommand.addSQLFunction("merge (" + src + ", " + dest + " )");
 
-        } else if (radioButton_create.isSelected()) {
+        } /*else if (radioButton_create.isSelected()) {
             JOptionPane.showMessageDialog(null, "Create: will be enabled in the next release.",
                     "Warning",
                     JOptionPane.ERROR_MESSAGE);
             return;
-        }
+        }*/
 
-        if (formulateCommand.isValidSystemCommand()) {
+        if (formulateCommand != null) {
+            if (formulateCommand.isValidSystemCommand()) {
 
-            VBASLogger.logDebug("\ncommandLog= " + formulateCommand.getCmdProvenance().toString()
-                    + "\nsystemCommand= " + formulateCommand.getSystemCommand().toString());
+                VBASLogger.logDebug("\ncommandLog= " + formulateCommand.getCmdProvenance().toString()
+                        + "\nsystemCommand= " + formulateCommand.getSystemCommand().toString());
 
-            boolean ret = SeisDataDAO.updateCommandTable(Global.getSelectedSeisEvent().getEvid(), commandType,
-                    formulateCommand.getCmdProvenance().toString(), formulateCommand.getSystemCommand().toString());
+                boolean ret = SeisDataDAO.updateCommandTable(Global.getSelectedSeisEvent().getEvid(), commandType,
+                        formulateCommand.getCmdProvenance().toString(), formulateCommand.getSystemCommand().toString());
 
-            if (ret) {
-                VBASLogger.logDebug(" Fired: " + commandType);
-                commandEvent.fireSeisDataChanged();
-            } else {
-                JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
+                if (ret) {
+                    VBASLogger.logDebug(" Fired: " + commandType);
+                    commandEvent.fireSeisDataChanged();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         }
-        
+
         this.dispose();
     }
 
@@ -101,10 +103,9 @@ public class ManualCommand extends javax.swing.JDialog {
         radioButton_merge = new javax.swing.JRadioButton();
         text_mergeDest = new javax.swing.JTextField();
         text_mergeSrc = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
-        panel_create = new javax.swing.JPanel();
-        radioButton_create = new javax.swing.JRadioButton();
-        text_create = new javax.swing.JTextField();
         button_Cancel = new javax.swing.JButton();
         button_OK = new javax.swing.JButton();
 
@@ -125,6 +126,10 @@ public class ManualCommand extends javax.swing.JDialog {
             }
         });
 
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(ManualCommand.class, "ManualCommand.jLabel1.text")); // NOI18N
+
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(ManualCommand.class, "ManualCommand.jLabel2.text")); // NOI18N
+
         javax.swing.GroupLayout panel_mergeLayout = new javax.swing.GroupLayout(panel_merge);
         panel_merge.setLayout(panel_mergeLayout);
         panel_mergeLayout.setHorizontalGroup(
@@ -132,54 +137,30 @@ public class ManualCommand extends javax.swing.JDialog {
             .addGroup(panel_mergeLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(radioButton_merge)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(text_mergeDest, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(text_mergeSrc, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panel_mergeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(text_mergeSrc, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
+                .addGroup(panel_mergeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(jLabel2)
+                    .addComponent(text_mergeDest, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(31, 31, 31))
         );
         panel_mergeLayout.setVerticalGroup(
             panel_mergeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panel_mergeLayout.createSequentialGroup()
-                .addGap(11, 11, 11)
-                .addGroup(panel_mergeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(radioButton_merge)
-                    .addComponent(text_mergeDest, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(text_mergeSrc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(22, Short.MAX_VALUE))
-        );
-
-        panel_create.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        org.openide.awt.Mnemonics.setLocalizedText(radioButton_create, org.openide.util.NbBundle.getMessage(ManualCommand.class, "ManualCommand.radioButton_create.text")); // NOI18N
-        radioButton_create.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                radioButton_createActionPerformed(evt);
-            }
-        });
-
-        text_create.setText(org.openide.util.NbBundle.getMessage(ManualCommand.class, "ManualCommand.text_create.text")); // NOI18N
-        text_create.setToolTipText(org.openide.util.NbBundle.getMessage(ManualCommand.class, "ManualCommand.text_create.toolTipText")); // NOI18N
-
-        javax.swing.GroupLayout panel_createLayout = new javax.swing.GroupLayout(panel_create);
-        panel_create.setLayout(panel_createLayout);
-        panel_createLayout.setHorizontalGroup(
-            panel_createLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panel_createLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_mergeLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(radioButton_create)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(text_create, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        panel_createLayout.setVerticalGroup(
-            panel_createLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panel_createLayout.createSequentialGroup()
-                .addGap(11, 11, 11)
-                .addGroup(panel_createLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(radioButton_create)
-                    .addComponent(text_create, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(panel_mergeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panel_mergeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panel_mergeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(radioButton_merge)
+                        .addComponent(text_mergeSrc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(text_mergeDest, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         org.openide.awt.Mnemonics.setLocalizedText(button_Cancel, org.openide.util.NbBundle.getMessage(ManualCommand.class, "ManualCommand.button_Cancel.text")); // NOI18N
@@ -200,9 +181,8 @@ public class ManualCommand extends javax.swing.JDialog {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panel_create, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(243, Short.MAX_VALUE)
                 .addComponent(button_Cancel, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(button_OK, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -211,12 +191,10 @@ public class ManualCommand extends javax.swing.JDialog {
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(panel_create, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(button_Cancel)
-                    .addComponent(button_OK))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(button_OK)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -224,10 +202,13 @@ public class ManualCommand extends javax.swing.JDialog {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(14, 14, 14)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panel_merge, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(14, 14, 14)
+                        .addComponent(panel_merge, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -237,7 +218,7 @@ public class ManualCommand extends javax.swing.JDialog {
                 .addComponent(panel_merge, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGap(0, 0, 0))
         );
 
         pack();
@@ -246,10 +227,6 @@ public class ManualCommand extends javax.swing.JDialog {
     private void text_mergeSrcActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_text_mergeSrcActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_text_mergeSrcActionPerformed
-
-    private void radioButton_createActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButton_createActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_radioButton_createActionPerformed
 
     private void button_OKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_OKActionPerformed
         oKActionPerformed();
@@ -263,12 +240,11 @@ public class ManualCommand extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton button_Cancel;
     private javax.swing.JButton button_OK;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel panel_create;
     private javax.swing.JPanel panel_merge;
-    private javax.swing.JRadioButton radioButton_create;
     private javax.swing.JRadioButton radioButton_merge;
-    private javax.swing.JTextField text_create;
     private javax.swing.JTextField text_mergeDest;
     private javax.swing.JTextField text_mergeSrc;
     // End of variables declaration//GEN-END:variables

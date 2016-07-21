@@ -159,7 +159,8 @@ public class HypocentreEditDialog extends JDialog {
                     + "\nsystemCommand= " + formulateCommand.getSystemCommand().toString());
 
             boolean ret = SeisDataDAO.updateCommandTable(selectedSeisEvent.getEvid(), commandType,
-                    formulateCommand.getCmdProvenance().toString(), formulateCommand.getSystemCommand().toString());
+                    formulateCommand.getCmdProvenance().toString(), 
+                    formulateCommand.getSystemCommand().toString());
             if (ret) {
                 VBASLogger.logDebug(" Fired: " + commandType);
                 commandEvent.fireSeisDataChanged();

@@ -51,11 +51,18 @@ class HypocentreTablePopupMenu implements ActionListener {
         int selectedRow = table.getSelectedRow();
         int selectedColumn = table.getSelectedColumn();
 
+        if ("Hypocentre Edit..".equals(e.getActionCommand())) {
+            editHypocentreDialog.setLocationRelativeTo(table);
+            editHypocentreDialog.showHypoEditDialog();
+        }
+
         if ("Set Prime".equals(e.getActionCommand())) {
 
             String commandType = "setprime";
-            FormulateCommand formulateCommand 
-                    = new FormulateCommand(commandType, "hypocentre", selectedHypocentre.getHypid(), selectedHypocentre.getAgency());
+            FormulateCommand formulateCommand = new FormulateCommand(commandType,
+                    "hypocentre", selectedHypocentre.getHypid(),
+                    selectedHypocentre.getAgency());
+
             formulateCommand.addAttribute("primehypocentre", table.getValueAt(selectedRow, 0), null);
             formulateCommand.addSQLFunction("rf ( " + selectedHypocentre.getHypid() + ", " + selectedSeisEvent.getEvid() + " )");
             formulateCommand.addLocatorArg("fix_hypo=" + table.getValueAt(selectedRow, 0));
@@ -83,21 +90,124 @@ class HypocentreTablePopupMenu implements ActionListener {
             relocateEventDialog.showHypoTableRelocateDialog();
         }
 
-        if ("Deprecate".equals(e.getActionCommand())) {
-            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand() + "\nNot designed in this version.");
+        if ("Create Event".equals(e.getActionCommand())) {
+
+            String commandType = "createevent";
+            FormulateCommand formulateCommand = new FormulateCommand(commandType,
+                    "hypocentre", selectedHypocentre.getHypid(),
+                    selectedHypocentre.getAgency());
+
+            //formulateCommand.addAttribute("primehypocentre", table.getValueAt(selectedRow, 0), null);
+            int newEvent = SeisDataDAO.getNextNewEvid(false);
+
+            formulateCommand.addSQLFunction("create_event ( " + selectedHypocentre.getHypid() + ", " + newEvent + " )");
+            //formulateCommand.addLocatorArg("fix_hypo=" + table.getValueAt(selectedRow, 0));
+
+            if (formulateCommand.isValidSystemCommand()) {
+
+                VBASLogger.logDebug("\ncommandLog= " + formulateCommand.getCmdProvenance().toString()
+                        + "\nsystemCommand= " + formulateCommand.getSystemCommand().toString());
+
+                boolean ret = SeisDataDAO.updateCommandTable(Global.getSelectedSeisEvent().getEvid(), commandType,
+                        formulateCommand.getCmdProvenance().toString(), formulateCommand.getSystemCommand().toString());
+
+                if (ret) {
+                    VBASLogger.logDebug(" Fired: " + commandType);
+                    commandEvent.fireSeisDataChanged();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+
         }
 
-        if ("Hypocentre Edit..".equals(e.getActionCommand())) {
-            editHypocentreDialog.setLocationRelativeTo(table);
-            editHypocentreDialog.showHypoEditDialog();
+        if ("Move Hypocentre..".equals(e.getActionCommand())) {
+
+            String commandType = "movehypocentre";
+            FormulateCommand formulateCommand = new FormulateCommand(commandType,
+                    "hypocentre", selectedHypocentre.getHypid(),
+                    selectedHypocentre.getAgency());
+
+            String evidToStr = JOptionPane.showInputDialog(table, "Enter an Evid.: ");
+
+            if (evidToStr == null) {
+                return;
+            }
+
+            int evidTo = 0;
+            try {
+                evidTo = Integer.parseInt(evidToStr);
+            } catch (NumberFormatException e1) {
+                JOptionPane.showMessageDialog(table, "Enter an integer value.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            } catch (NullPointerException e2) {
+                JOptionPane.showMessageDialog(table, "Enter an integer value.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            //formulateCommand.addAttribute("primehypocentre", table.getValueAt(selectedRow, 0), null);
+            formulateCommand.addSQLFunction("move_hypo ( " + selectedHypocentre.getHypid() + ", " + evidTo + ")");
+            //formulateCommand.addLocatorArg("fix_hypo=" + table.getValueAt(selectedRow, 0));
+
+            if (formulateCommand.isValidSystemCommand()) {
+
+                VBASLogger.logDebug("\ncommandLog= " + formulateCommand.getCmdProvenance().toString()
+                        + "\nsystemCommand= " + formulateCommand.getSystemCommand().toString());
+
+                boolean ret = SeisDataDAO.updateCommandTable(Global.getSelectedSeisEvent().getEvid(),
+                        commandType,
+                        formulateCommand.getCmdProvenance().toString(),
+                        formulateCommand.getSystemCommand().toString());
+
+                if (ret) {
+                    VBASLogger.logDebug(" Fired: " + commandType);
+                    commandEvent.fireSeisDataChanged();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+
         }
 
-        if ("Create..".equals(e.getActionCommand())) {
-            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand() + "\nNot designed in this version.");
-        }
+        if ("Delete Hypocentre".equals(e.getActionCommand())) {
 
-        if ("Move..".equals(e.getActionCommand())) {
-            JOptionPane.showMessageDialog(null, "Selected Item: " + e.getActionCommand() + "\nNot designed in this version.");
+            if (table.getRowCount() == 1) {
+                int reply = JOptionPane.showConfirmDialog(table,
+                        "Deleting this hypocentre will banish the event. \n Are you sure?",
+                        "Delete?",
+                        JOptionPane.YES_NO_OPTION);
+                if(reply == JOptionPane.NO_OPTION) {
+                    return;
+                }
+            }
+
+            String commandType = "deletehypocentre";
+            FormulateCommand formulateCommand = new FormulateCommand(commandType,
+                    "hypocentre", selectedHypocentre.getHypid(),
+                    selectedHypocentre.getAgency());
+
+            //formulateCommand.addAttribute("primehypocentre", table.getValueAt(selectedRow, 0), null);
+            formulateCommand.addSQLFunction("delete_hypo ( " + selectedHypocentre.getHypid() + " )");
+            //formulateCommand.addLocatorArg("fix_hypo=" + table.getValueAt(selectedRow, 0));
+
+            if (formulateCommand.isValidSystemCommand()) {
+
+                VBASLogger.logDebug("\ncommandLog= " + formulateCommand.getCmdProvenance().toString()
+                        + "\nsystemCommand= " + formulateCommand.getSystemCommand().toString());
+
+                boolean ret = SeisDataDAO.updateCommandTable(Global.getSelectedSeisEvent().getEvid(),
+                        commandType,
+                        formulateCommand.getCmdProvenance().toString(),
+                        formulateCommand.getSystemCommand().toString());
+
+                if (ret) {
+                    VBASLogger.logDebug(" Fired: " + commandType);
+                    commandEvent.fireSeisDataChanged();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+
         }
 
     }
@@ -105,39 +215,42 @@ class HypocentreTablePopupMenu implements ActionListener {
     private void setPopupMenuVisualAttributes() {
         popupMenu = new JPopupMenu();
 
+        JMenuItem menuItem_edit = new JMenuItem("Hypocentre Edit..");
+        menuItem_edit.setFont(new Font("Sans-serif", Font.PLAIN, 14));
+        popupMenu.add(menuItem_edit);
+        popupMenu.addSeparator();
+        menuItem_edit.addActionListener(this);
+
         JMenuItem menuItem_setprime = new JMenuItem("Set Prime");
         /*menuItem_setprime.setBackground(new Color(218, 83, 44));
          menuItem_setprime.setForeground(Color.WHITE);*/
         menuItem_setprime.setFont(new Font("Sans-serif", Font.PLAIN, 14));
-        JMenuItem menuItem_relocate = new JMenuItem("SeisEvent Relocate..");
-        menuItem_relocate.setFont(new Font("Sans-serif", Font.PLAIN, 14));
-        JMenuItem menuItem_depricate = new JMenuItem("Deprecate");
-        menuItem_depricate.setFont(new Font("Sans-serif", Font.PLAIN, 14));
-        JMenuItem menuItem_edit = new JMenuItem("Hypocentre Edit..");
-        menuItem_edit.setFont(new Font("Sans-serif", Font.PLAIN, 14));
-        JMenuItem menuItem_create = new JMenuItem("Create..");
-        menuItem_create.setFont(new Font("Sans-serif", Font.PLAIN, 14));
-        JMenuItem menuItem_move = new JMenuItem("Move..");
-        menuItem_move.setFont(new Font("Sans-serif", Font.PLAIN, 14));
-
         popupMenu.add(menuItem_setprime);
         popupMenu.addSeparator();
-        popupMenu.add(menuItem_edit);
-        popupMenu.addSeparator();
+        menuItem_setprime.addActionListener(this);
+
+        JMenuItem menuItem_relocate = new JMenuItem("SeisEvent Relocate..");
+        menuItem_relocate.setFont(new Font("Sans-serif", Font.PLAIN, 14));
         popupMenu.add(menuItem_relocate);
         popupMenu.addSeparator();
-        popupMenu.add(menuItem_depricate);
-        popupMenu.addSeparator();
+        menuItem_relocate.addActionListener(this);
+
+        JMenuItem menuItem_create = new JMenuItem("Create Event");
+        menuItem_create.setFont(new Font("Sans-serif", Font.PLAIN, 14));
         popupMenu.add(menuItem_create);
         popupMenu.addSeparator();
-        popupMenu.add(menuItem_move);
-
-        menuItem_setprime.addActionListener(this);
-        menuItem_relocate.addActionListener(this);
-        menuItem_depricate.addActionListener(this);
-        menuItem_edit.addActionListener(this);
         menuItem_create.addActionListener(this);
+
+        JMenuItem menuItem_move = new JMenuItem("Move Hypocentre..");
+        menuItem_move.setFont(new Font("Sans-serif", Font.PLAIN, 14));
+        popupMenu.add(menuItem_move);
+        popupMenu.addSeparator();
         menuItem_move.addActionListener(this);
+
+        JMenuItem menuItem_delete = new JMenuItem("Delete Hypocentre");
+        menuItem_delete.setFont(new Font("Sans-serif", Font.PLAIN, 14));
+        popupMenu.add(menuItem_delete);
+        menuItem_delete.addActionListener(this);
     }
 
 }

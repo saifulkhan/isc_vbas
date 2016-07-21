@@ -190,7 +190,8 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
                 prime = hList.getHypocentres().get(i);
             }
         }
-
+        
+    
         // get travel time curve data
         ttdData = LoadTTDData.loadTTDData(Global.getSelectedSeisEvent().getEvid(), ttimesScript);
 
