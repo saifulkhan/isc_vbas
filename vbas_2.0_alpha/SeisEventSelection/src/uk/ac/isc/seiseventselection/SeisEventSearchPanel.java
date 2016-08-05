@@ -37,21 +37,22 @@ public class SeisEventSearchPanel extends JPanel {
     private final JButton button_banish;
     private final JButton button_unbanish;
     private final JButton button_done;
+    private final JButton button_allocate;
 
     private final Command commandEvent = Global.getCommandEvent();
     private static final SeisEventsList seisEventsList = Global.getSeisEventsList();
     private static SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
 
     // reference of the control view
+    private final SeisEventsTable seisEventsTable;
     private final JTable table;
 
-    private boolean searchFlag = false;
-
-    public SeisEventSearchPanel(final JTable eventsTable) {
-        this.table = eventsTable;
+    public SeisEventSearchPanel(final SeisEventsTable seisEventsTable) {
+        this.seisEventsTable = seisEventsTable;
+        this.table = seisEventsTable.getSeisEventTable();
 
         Font font = new Font("Sans-serif", Font.PLAIN, 14);
-        label_input = new JLabel("Event Number: ");
+        label_input = new JLabel("Event #");
         text_search = new JTextField("", 10);
         button_search = new JButton("Search");
         /*button_search.setBackground(new Color(45, 137, 239));
@@ -102,10 +103,20 @@ public class SeisEventSearchPanel extends JPanel {
             }
         });
 
+        button_allocate = new JButton("Allocate");
+        button_allocate.setFont(font);
+        button_allocate.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                onButtonAllocateActionPerformed(e);
+            }
+        });
+
         this.setLayout(new FlowLayout());
         this.add(label_input);
         this.add(text_search);
         this.add(button_search);
+        this.add(button_allocate);
         this.add(button_banish);
         this.add(button_unbanish);
         this.add(button_done);
@@ -124,27 +135,11 @@ public class SeisEventSearchPanel extends JPanel {
                     JOptionPane.WARNING_MESSAGE);
         }
 
+        Boolean found = false;
         if (evid != null) {
-            searchFlag = false;
-
-            for (int row = 0; row < table.getRowCount(); row++) {
-                Integer searchedEv = (Integer) table.getValueAt(row, 0);
-                if (evid.equals(searchedEv)) {
-                    table.getSelectionModel().setSelectionInterval(row, row);
-
-                    //scroll to the selection
-                    JViewport viewport = (JViewport) table.getParent();
-                    Rectangle rect = table.getCellRect(table.getSelectedRow(), 0, true);
-                    Rectangle r2 = viewport.getVisibleRect();
-                    table.scrollRectToVisible(new Rectangle(rect.x, rect.y, (int) r2.getWidth(),
-                            (int) r2.getHeight()));
-                    searchFlag = true;
-                    break;
-                }
-            }
+            found = seisEventsTable.searchSeiesEvent(evid);
         }
-
-        if (evid != null && searchFlag == false) {
+        if (evid != null && found == false) {
             JOptionPane.showMessageDialog(null,
                     "Cannot find the input Evid, Please check the input!",
                     "Search Warning",
@@ -153,12 +148,15 @@ public class SeisEventSearchPanel extends JPanel {
     }
 
     private void onButtonBanishActionPerformed(ActionEvent ae) {
+        VBASLogger.logDebug("Clicked Banish...");
 
-        System.out.print(VBASLogger.debugAt());
         int row = table.getSelectedRow();
         if (row < 0) {
             JOptionPane.showMessageDialog(null, "Select an event to banish.",
                     "Warning", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (seisEventsList.getEvents().get(row).getIsBanish() == true) {
             return;
         }
 
@@ -166,8 +164,8 @@ public class SeisEventSearchPanel extends JPanel {
 
         String commandType = "seiseventbanish";
         FormulateCommand formulateCommand = new FormulateCommand(commandType, "seisevent", seisEventId, "");
-
-        formulateCommand.addSQLFunction("banish ( " + seisEventId + " )");
+        String sqlFunction = "banish ( " + seisEventId + " )";
+        formulateCommand.addSQLFunction(sqlFunction);
 
         if (formulateCommand.isValidSystemCommand()) {
 
@@ -185,30 +183,97 @@ public class SeisEventSearchPanel extends JPanel {
             }
         }
 
+        SeisDataDAO.processBanishUnbanishAction(sqlFunction);
+
+        seisEventsList.getEvents().get(row).setIsBanish(true);
+        VBASLogger.logDebug("Firing an event...");
+        seisEventsList.fireSeisDataChanged();
     }
 
     private void onButtonUnbanishActionPerformed(ActionEvent ae) {
-        JOptionPane.showMessageDialog(null, "Sorry, this feature will be implemented in future release.",
-                "Warning", JOptionPane.WARNING_MESSAGE);
-    }
+        VBASLogger.logDebug("Clicked Unbanish...");
 
-    public void onButtonDoneActionPerformed(ActionEvent e) {
-        
-        // TODO: tpdate database.
-        //SeisDataDAO.updateSeiesEventDone(selectedSeisEvent.getEvid());
-        
         int row = table.getSelectedRow();
         if (row < 0) {
-            JOptionPane.showMessageDialog(null, "Done: select an event.", 
+            JOptionPane.showMessageDialog(null, "Select an event to unbanish.",
                     "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        seisEventsList.getEvents().get(row).setFinishDate(new Date());
-        
-        VBASLogger.logDebug("Selected SeisEvents: " + seisEventsList.getEvents().get(row).getEvid() 
-                + ", " + selectedSeisEvent.getEvid());
-        
+        if (seisEventsList.getEvents().get(row).getIsBanish() == false) {
+            return;
+        }
+
+        int seisEventId = (Integer) table.getValueAt(row, 0);
+
+        String commandType = "seiseventunbanish";
+        FormulateCommand formulateCommand = new FormulateCommand(commandType, "seisevent", seisEventId, "");
+        String sqlFunction = "RESTORE ( " + seisEventId + " )";
+        formulateCommand.addSQLFunction(sqlFunction);
+
+        if (formulateCommand.isValidSystemCommand()) {
+
+            VBASLogger.logDebug("\ncommandLog= " + formulateCommand.getCmdProvenance().toString()
+                    + "\nsystemCommand= " + formulateCommand.getSystemCommand());
+
+            boolean ret = SeisDataDAO.updateCommandTable(Global.getSelectedSeisEvent().getEvid(), commandType,
+                    formulateCommand.getCmdProvenance().toString(), formulateCommand.getSystemCommand().toString());
+
+            if (ret) {
+                VBASLogger.logDebug(" Fired: " + commandType);
+                commandEvent.fireSeisDataChanged();
+            } else {
+                JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+        SeisDataDAO.processBanishUnbanishAction(sqlFunction);
+
+        seisEventsList.getEvents().get(row).setIsBanish(false);
+        VBASLogger.logDebug("Firing an event...");
         seisEventsList.fireSeisDataChanged();
-        
     }
+
+    public void onButtonDoneActionPerformed(ActionEvent e) {
+        VBASLogger.logDebug("Clicked Done...");
+
+        int row = table.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(null, "Done: select an event.",
+                    "Warning", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (seisEventsList.getEvents().get(row).getFinishDate() != null) {
+            return;
+        }
+
+        /*VBASLogger.logDebug("Selected SeisEvents (compare): "
+         + seisEventsList.getEvents().get(row).getEvid()
+         + ", " + selectedSeisEvent.getEvid());*/
+        SeisDataDAO.processDoneAction(selectedSeisEvent.getEvid());
+
+        seisEventsList.getEvents().get(row).setFinishDate(new Date());
+        VBASLogger.logDebug("Firing an event...");
+        seisEventsList.fireSeisDataChanged();
+    }
+
+    private void onButtonAllocateActionPerformed(ActionEvent e) {
+        VBASLogger.logDebug("Clicked Allocate...");
+
+        String evidString = text_search.getText().trim();
+        Integer evid = null;
+        try {
+            evid = Integer.valueOf(evidString);
+        } catch (NumberFormatException nfe) {
+            JOptionPane.showMessageDialog(null,
+                    "The input Evid should be an integer value",
+                    "Search Error",
+                    JOptionPane.WARNING_MESSAGE);
+        }
+
+        // TODO: call SQL functiuon
+        /* Load new SeiesEvent data */
+        VBASLogger.logDebug("Firing an event...");
+        seisEventsList.fireSeisDataChanged();
+    }
+
 }

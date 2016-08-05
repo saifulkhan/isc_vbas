@@ -1,10 +1,8 @@
 package uk.ac.isc.processcommand;
 
 import java.util.ArrayList;
-import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
 import uk.ac.isc.seisdata.Command;
-import uk.ac.isc.seisdata.VBASLogger;
 import uk.ac.isc.seisdatainterface.FormulateCommand;
 
 public class CommandTableModel extends AbstractTableModel {

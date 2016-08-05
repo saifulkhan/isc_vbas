@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.util.Map;
 import javax.swing.JPanel;
 import org.jfree.text.TextUtilities;
+import uk.ac.isc.seisdata.PhasesList;
 
 /**
  * The Piechart to show the percentage of phases reported by each agency
@@ -18,41 +19,41 @@ import org.jfree.text.TextUtilities;
 public class AgencyPieChartView extends JPanel {
 
     //sorted data 
-    PieChartData piedata;
-
+    PieChartData piedata = null;
+ 
     private final int centrex = 300;
-
     private final int centrey = 300;
-
     private final int radius = 150;
-
     private final int viewWidth = 600;
     private final int viewHeight = 600;
 
-    //buffer image of the piechart
+    // buffer image of the piechart
     private BufferedImage pieChartImg;
 
-    public void setData(PieChartData piedata) {
-        this.piedata = piedata;
+    public void setData(PhasesList phasesList) {
+        if(phasesList.getPhases().isEmpty()) {
+            piedata = null;
+            return;
+        }
+        this.piedata = new PieChartData(phasesList.getPhases());
     }
 
     //painting function
     @Override
     protected void paintComponent(Graphics g) {
-
         super.paintComponent(g);
-
         Graphics2D g2 = (Graphics2D) g.create();
-
+        
         int xOffset = (getWidth() - viewWidth) / 2;
         int yOffset = (getHeight() - viewHeight) / 2;
 
+        if(piedata == null) {
+            return;
+        }
+        
         drawPieChart();
-
         g2.drawImage(pieChartImg, xOffset, yOffset, viewWidth, viewHeight, this);
-        //g2.drawImage(DepthHistImg, null, 0, 0);
         g2.dispose();
-
     }
 
     public int getViewWidth() {

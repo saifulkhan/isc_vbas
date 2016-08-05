@@ -28,14 +28,14 @@ import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.HypocentresList;
 import uk.ac.isc.seisdata.PhasesList;
 import uk.ac.isc.seisdata.SeisEvent;
-import org.openstreetmap.gui.jmapviewer.interfaces.TileLoaderListener; // Note: Required to avoid compilation error.
+// NOTE: Required to avoid compilation error.
+import org.openstreetmap.gui.jmapviewer.interfaces.TileLoaderListener;
 import uk.ac.isc.agencypiechartview.AgencyPieChartView;
-import uk.ac.isc.agencypiechartview.PieChartData;
 import uk.ac.isc.hypomagnitudeview.HypoMagnitudeViewPanel;
-import uk.ac.isc.phaseview.PhaseDetailViewPanel;
+import uk.ac.isc.hypooverview.OverviewControlPanel3;
 import uk.ac.isc.phaseview.PhaseTravelViewPanel;
 import uk.ac.isc.seisdatainterface.Global;
-import uk.ac.isc.seisdatainterface.SeisDataDAOAssess;
+import uk.ac.isc.seisdatainterface.SeisDataDAO;
 import uk.ac.isc.stationazimuthview.StationAzimuthView;
 import uk.ac.isc.stationmagnitudeview.StationMagnitudeView;
 import uk.ac.isc.textview.HypocentreTableModel;
@@ -58,22 +58,77 @@ public class GenerateReport {
         "station_magnitudes",
         "agency_summary"};
 
-    private File htmlFile;
-    private Path assessDir;
-    private int assessID;
-    private final JDialog popupDialog;
+    private final Path assessDir;
+    private final int assessID;
+    private final String cmd1, cmd2;
+    private final Boolean isAssess;
 
-    public GenerateReport() {
+    private final JDialog popupDialog;
+    private File htmlFile;
+
+    public GenerateReport(Path assessDir, int assessID, String cmd1, String cmd2, Boolean isAssess) {
+
+        VBASLogger.logDebug("assessDir: " + assessDir + ", assessID:" + assessID);
+        this.assessDir = assessDir;
+        this.assessID = assessID;
+        this.cmd1 = cmd1;
+        this.cmd2 = cmd2;
+        this.isAssess = isAssess;
+                
         popupDialog = new JDialog();
         popupDialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         popupDialog.setModal(true);
         popupDialog.setLayout(new BorderLayout());
+
+        this.readData();
+        this.createHTML();
+        this.createTables();
+        this.createViews();
+
     }
 
-    public File createHTML(Path assessDir, int assessID) {
-        VBASLogger.logDebug("assessDir: " + assessDir + ", assessID:" + assessID);
-        this.assessDir = assessDir;
-        this.assessID = assessID;
+    private void readData() {
+
+        System.out.println(VBASLogger.debugAt() + "Load list of Hypocentre and Phase for SeisEvent: "
+                + selectedSeisEvent.getEvid());
+
+        
+        /*Hypocentre*/
+        
+        SeisDataDAO.retrieveHypos(selectedSeisEvent.getEvid(), hypocentresList.getHypocentres(), isAssess);
+        SeisDataDAO.retrieveHyposMagnitude(hypocentresList.getHypocentres(), isAssess);
+        // as I remove all the hypos when clicking an event to retrieve the hypos,
+        // so need reset prime hypo every time
+        // TODO: Saiful, What is this?
+        for (Hypocentre hypo : hypocentresList.getHypocentres()) {
+            if (hypo.getIsPrime() == true) {
+                selectedSeisEvent.setPrimeHypo(hypo);
+            }
+        }
+
+        
+        /* Phase */
+        SeisDataDAO.retrieveAllPhases(selectedSeisEvent.getEvid(), phasesList.getPhases(), isAssess);
+        SeisDataDAO.retrieveAllPhasesAmpMag(selectedSeisEvent.getEvid(), phasesList.getPhases(), isAssess);
+        SeisDataDAO.retrieveAllStationsWithRegions(stations, isAssess);
+        // load the correspondent map into the stataions
+        // put the region name into the pahseList
+        for (int i = 0; i < phasesList.getPhases().size(); i++) {
+            phasesList.getPhases()
+                    .get(i)
+                    .setRegionName(stations
+                            .get(phasesList
+                                    .getPhases()
+                                    .get(i)
+                                    .getReportStation()));
+        }
+
+        VBASLogger.logDebug("SeisEvent=" + selectedSeisEvent.getEvid()
+                + ", #Hypocentres:" + hypocentresList.getHypocentres().size()
+                + ", #Phases:" + phasesList.getPhases().size());
+    }
+
+    private File createHTML() {
 
         // Read the html file- a resourse file inside jar.
         if (getClass().getClassLoader().getResource("resources" + File.separator + "index.html") == null) {
@@ -81,7 +136,10 @@ public class GenerateReport {
                     + getClass().getClassLoader().getResource("resources" + File.separator + "index.html"));
         }
 
-        InputStream inSream = getClass().getClassLoader().getResourceAsStream("resources" + File.separator + "index.html");
+        InputStream inSream = getClass().getClassLoader().getResourceAsStream("resources"
+                + File.separator
+                + "index.html");
+
         if (inSream != null) {
             // Create a directory in the current directory and copy the content of the html schema in the resource folder.
             try {
@@ -115,75 +173,7 @@ public class GenerateReport {
         return htmlFile;
     }
 
-    public void writeAnalystReadableCommand(String cmd) {
-
-        File file = new File(assessDir + File.separator + "analystRedableCommand.txt");
-
-        FileWriter fileWritter = null;
-        BufferedWriter bufferedWriter = null;
-
-        try {
-            // if the file doesnt exists, then create it
-            if (!file.exists()) {
-                file.createNewFile();
-                file.setReadable(true, false);
-                file.setWritable(true, false);
-            }
-
-            fileWritter = new FileWriter(file, false);
-            bufferedWriter = new BufferedWriter(fileWritter);
-            bufferedWriter.write(cmd);
-
-        } catch (IOException e) {
-            VBASLogger.logSevere("Error writing to json file.");
-            e.printStackTrace();
-        } finally {
-            try {
-                if (bufferedWriter != null) {
-                    bufferedWriter.close();
-                }
-            } catch (IOException e) {
-                VBASLogger.logSevere("Error releasing resources.");
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void writeSystemCommand(String cmd) {
-        File cmdJson = new File(assessDir + File.separator + "systemCommand.json");
-
-        FileWriter fileWritter = null;
-        BufferedWriter bufferedWriter = null;
-
-        try {
-            // if the file doesnt exists, then create it
-            if (!cmdJson.exists()) {
-                cmdJson.createNewFile();
-                cmdJson.setReadable(true, false);
-                cmdJson.setWritable(true, false);
-            }
-
-            fileWritter = new FileWriter(cmdJson, false);
-            bufferedWriter = new BufferedWriter(fileWritter);
-            bufferedWriter.write(cmd);
-
-        } catch (IOException e) {
-            VBASLogger.logSevere("Error writing to json file.");
-            e.printStackTrace();
-        } finally {
-            try {
-                if (bufferedWriter != null) {
-                    bufferedWriter.close();
-                }
-            } catch (IOException e) {
-                VBASLogger.logSevere("Error releasing resources.");
-                e.printStackTrace();
-            }
-        }
-
-    }
-
-    public void createTables() {
+    private void createTables() {
 
         File hypocentresCSV = new File(assessDir + File.separator + "hypocentres.csv");
         File phasesCSV = new File(assessDir + File.separator + "phases.csv");
@@ -221,11 +211,11 @@ public class GenerateReport {
                 AbstractTableModel model = null;
                 switch (table) {
                     case "hypocentre_table":
-
                         fileWritter = new FileWriter(hypocentresCSV, false);
                         bufferedWriter = new BufferedWriter(fileWritter);
                         model = new HypocentreTableModel(hypocentresList.getHypocentres());
                         break;
+
                     case "phase_table":
                         fileWritter = new FileWriter(phasesCSV, false);
                         bufferedWriter = new BufferedWriter(fileWritter);
@@ -244,7 +234,9 @@ public class GenerateReport {
                 for (int r = 0; r < model.getRowCount(); ++r) {
                     bufferedWriter.newLine();
                     for (int c = 0; c < model.getColumnCount(); ++c) {
-                        bufferedWriter.write(model.getValueAt(r, c) == null ? "" : model.getValueAt(r, c).toString());
+                        bufferedWriter.write(model.getValueAt(r, c) == null
+                                ? "" : model.getValueAt(r, c).toString());
+
                         if (c != model.getColumnCount() - 1) {
                             bufferedWriter.write(",");
                         }
@@ -269,7 +261,7 @@ public class GenerateReport {
         }
     }
 
-    public void createViews() {
+    private void createViews() {
 
         VBASLogger.logDebug("Assessed Data: "
                 + "#Hypocentres=" + hypocentresList.getHypocentres().size()
@@ -284,19 +276,20 @@ public class GenerateReport {
             switch (view) {
                 case "hypocentre_siesmicity":
                     HypoOverviewPanel2 hop = new HypoOverviewPanel2(hypocentresList);
-                    genetarePNG(view, hop, hop.getWidth(), hop.getHeight());
+                    OverviewControlPanel3 controlPanel = new OverviewControlPanel3(hop);
+                    genetarePNG(view, hop, hop.getMapWidth(), hop.getMapHeight());
                     break;
 
                 case "phase_travel_time":
                     PhaseTravelViewPanel phaseTVPanel = new PhaseTravelViewPanel(phasesList, hypocentresList);
-                    genetarePNG("phase_travel_time", phaseTVPanel, phaseTVPanel.getWidth(), phaseTVPanel.getHeight());
+                    genetarePNG("phase_travel_time", phaseTVPanel, phaseTVPanel.getImageWidth(), phaseTVPanel.getImageHeight());
                     //PhaseDetailViewPanel phaseDVPanel = new PhaseDetailViewPanel(phaseTVPanel);
                     //genetarePNG("PhaseDetailView", phaseDVPanel, phaseDVPanel.getWidth(), phaseDVPanel.getHeight());
                     break;
 
                 case "hypocentre_depths":
                     HypoDepthViewPanel hdv = new HypoDepthViewPanel(hypocentresList.getHypocentres());
-                    genetarePNG(view, hdv, hdv.getWidth(), hdv.getHeight());
+                    genetarePNG(view, hdv, hdv.getViewWidth(), hdv.getViewHeight());
                     break;
 
                 case "hypocentre_magnitudes":
@@ -316,7 +309,7 @@ public class GenerateReport {
 
                 case "agency_summary":
                     AgencyPieChartView apcView = new AgencyPieChartView();
-                    apcView.setData(new PieChartData(phasesList.getPhases()));
+                    apcView.setData(phasesList);
                     genetarePNG(view, apcView, apcView.getViewWidth(), apcView.getViewHeight());
                     break;
             }
@@ -327,6 +320,7 @@ public class GenerateReport {
     }
 
     private void genetarePNG(final String view, final JPanel panel, final int width, final int height) {
+
         popupDialog.setPreferredSize(new Dimension(width + 40, height + 40));
         popupDialog.add(panel, BorderLayout.CENTER);
         popupDialog.pack();
@@ -396,49 +390,66 @@ public class GenerateReport {
 
     }
 
-    public void readAssessedData() {
+    private void logCommands() {
 
-        System.out.println(VBASLogger.debugAt() + "Load list of Hypocentre and Phase for SeisEvent: "
-                + selectedSeisEvent.getEvid());
+        File file = new File(assessDir + File.separator + "analystRedableCommand.txt");
 
-        /*
-         * Hypocentre
-         */
-        SeisDataDAOAssess.retrieveHypos(selectedSeisEvent.getEvid(),
-                hypocentresList.getHypocentres());
-        SeisDataDAOAssess.retrieveHyposMagnitude(hypocentresList.getHypocentres());
-        // as I remove all the hypos when clicking an event to retrieve the hypos,
-        // so need reset prime hypo every time
-        // TODO: Saiful, What is this?
-        for (Hypocentre hypo : hypocentresList.getHypocentres()) {
-            if (hypo.getIsPrime() == true) {
-                selectedSeisEvent.setPrimeHypo(hypo);
+        FileWriter fileWritter = null;
+        BufferedWriter bufferedWriter = null;
+
+        try {
+            // if the file doesnt exists, then create it
+            if (!file.exists()) {
+                file.createNewFile();
+                file.setReadable(true, false);
+                file.setWritable(true, false);
+            }
+
+            fileWritter = new FileWriter(file, false);
+            bufferedWriter = new BufferedWriter(fileWritter);
+            bufferedWriter.write(cmd1);
+
+        } catch (IOException e) {
+            VBASLogger.logSevere("Error writing to json file.");
+            e.printStackTrace();
+        } finally {
+            try {
+                if (bufferedWriter != null) {
+                    bufferedWriter.close();
+                }
+            } catch (IOException e) {
+                VBASLogger.logSevere("Error releasing resources.");
+                e.printStackTrace();
             }
         }
 
-        /*
-         * Phase
-         */
-        SeisDataDAOAssess.retrieveAllPhases(selectedSeisEvent.getEvid(), phasesList.getPhases());
-        SeisDataDAOAssess.retrieveAllPhasesAmpMag(selectedSeisEvent.getEvid(),
-                phasesList.getPhases());
-        SeisDataDAOAssess.retrieveAllStationsWithRegions(stations);
-        // load the correspondent map into the stataions
-        // put the region name into the pahseList
-        for (int i = 0; i < phasesList.getPhases().size(); i++) {
-            phasesList.getPhases()
-                    .get(i)
-                    .setRegionName(stations
-                            .get(phasesList
-                                    .getPhases()
-                                    .get(i)
-                                    .getReportStation()));
+        File cmdJson = new File(assessDir + File.separator + "systemCommand.json");
+
+        try {
+            // if the file doesnt exists, then create it
+            if (!cmdJson.exists()) {
+                cmdJson.createNewFile();
+                cmdJson.setReadable(true, false);
+                cmdJson.setWritable(true, false);
+            }
+
+            fileWritter = new FileWriter(cmdJson, false);
+            bufferedWriter = new BufferedWriter(fileWritter);
+            bufferedWriter.write(cmd2);
+
+        } catch (IOException e) {
+            VBASLogger.logSevere("Error writing to json file.");
+            e.printStackTrace();
+        } finally {
+            try {
+                if (bufferedWriter != null) {
+                    bufferedWriter.close();
+                }
+            } catch (IOException e) {
+                VBASLogger.logSevere("Error releasing resources.");
+                e.printStackTrace();
+            }
         }
 
-        VBASLogger.logDebug("SeisEvent=" + selectedSeisEvent.getEvid()
-                + ", #Hypocentres:" + hypocentresList.getHypocentres().size()
-                + ", #Phases:" + phasesList.getPhases().size());
-
     }
-
 }

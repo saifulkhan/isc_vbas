@@ -9,7 +9,7 @@ import java.util.Date;
  */
 public class SeisEvent extends AbstractSeisData {
 
-    private Integer evid;           //event id
+    private Integer evid = null;           //event id
     private Hypocentre primeHypo;   //reference of prime hypocentre
     private Integer phaseNumber;    //phse number associated with this event
     private Double magnitude;       //a reference magnitude    
@@ -19,34 +19,51 @@ public class SeisEvent extends AbstractSeisData {
     private Integer defaultDepth;   //default Depth of the event
     private String eType;
 
-    //'Done' will set this to 'now' date. If not null, i.e., the event is done and highlight as gray.  
-    private Date finishDate;
     private Double defaultDepthGrid = null;
-    
+    private String locatorMessage = null;
+    private String nearbyEvents = null;
+    /*'Done' will set this to 'now' date. 
+    If not null, i.e., the event is done and highlight as gray.*/
+    private Date finishDate;
+    private Boolean isBanish = null;
+
     public SeisEvent() {
-        this.evid = 0;
     }
 
-    public SeisEvent(Integer evid, String eType, Double defaultDepthGrid) {
+    public SeisEvent(Integer evid, 
+            String eType, 
+            Double defaultDepthGrid, 
+            String locatorMessage,
+            String nearbyEvents,
+            Boolean isBanish,
+            Date finishDate) {
         this.evid = evid;
         this.eType = eType;
         this.defaultDepthGrid = defaultDepthGrid;
+        this.locatorMessage = locatorMessage;
+        this.nearbyEvents = nearbyEvents;
+        this.finishDate = finishDate;
+        this.isBanish = isBanish;
+        
         this.phaseNumber = 0;
-    
-        //VBASLogger.logDebug(this.evid + ", " + this.defaultDepthGrid);    
+        //VBASLogger.logDebug(this.evid + ", " + this.defaultDepthGrid + ", " + this.locatorMessage);
     }
 
     public void setValues(SeisEvent e) {
         this.evid = e.evid;
         this.primeHypo = e.primeHypo;
-        this.phaseNumber = e.defaultDepth;
+        this.phaseNumber = e.phaseNumber;
         this.magnitude = e.magnitude;
         this.location = e.location;
-        this.grn = e.defaultDepth;
-        this.srn = e.defaultDepth;
+        this.grn = e.grn;
+        this.srn = e.srn;
         this.defaultDepth = e.defaultDepth;
         this.eType = e.eType;
         this.defaultDepthGrid = e.defaultDepthGrid;
+        this.locatorMessage = e.locatorMessage;
+        this.nearbyEvents = e.nearbyEvents;
+        this.finishDate = e.finishDate;
+        this.isBanish = e.isBanish;
     }
 
     public void setEvid(Integer evid) {
@@ -124,6 +141,18 @@ public class SeisEvent extends AbstractSeisData {
         this.eType = eType;
     }
 
+    public Double getDefaultDepthGrid() {
+        return defaultDepthGrid;
+    }
+
+    public String getLocatorMessage() {
+        return locatorMessage;
+    }
+
+    public String getNearbyEvents() {
+        return nearbyEvents;
+    }
+
     public Date getFinishDate() {
         return finishDate;
     }
@@ -131,10 +160,13 @@ public class SeisEvent extends AbstractSeisData {
     public void setFinishDate(Date finishDate) {
         this.finishDate = finishDate;
     }
-
-    public Double getDefaultDepthGrid() {
-        return defaultDepthGrid;
-    }
     
+    public Boolean getIsBanish() {
+        return isBanish;
+    }
+
+    public void setIsBanish(Boolean isBanish) {
+        this.isBanish = isBanish;
+    }
     
 }

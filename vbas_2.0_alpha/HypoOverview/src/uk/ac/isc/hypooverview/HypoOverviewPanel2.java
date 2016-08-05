@@ -10,6 +10,7 @@ import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Stroke;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import static java.lang.Thread.sleep;
 import java.net.URL;
@@ -52,6 +53,7 @@ import uk.ac.isc.seisdatainterface.SeisDataDAO;
 public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListener {
 
     public static final Paint[] seisNewPaints = ColorUtils.createSeismicityPaintArray3();
+    //public static final Paint[] seisNewPaints = ColorUtils.createSeismicityPaintArray3Translucent();
 
     //base map size
     private final int mapWidth = 800;
@@ -129,7 +131,7 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
         JobDispatcher.setMaxWorkers(2);
         this.setLayout(null);
 
-        tileSource = new OfflineOsmTileSource("file:/export/home/hui/perl", 0, 7);      // TODO: 
+        tileSource = new OfflineOsmTileSource("file:/export/home/hui/perl", 0, 7);      // TODO:
         tileController = new TileController(tileSource, new MemoryTileCache(), this);
         tileController.setTileSource(tileSource);
 
@@ -864,16 +866,16 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
             hypoAnimThread.start();
         }
 
-        /*// TEST: 
-         //VBASLogger.logDebug("Write BufferedImage.");
-         try {
+        // TEST:
+        //VBASLogger.logDebug("Write BufferedImage.");
+        /*try {
          ImageIO.write(baseMap, "png",
-         new File("/export/home/saiful/assess/temp/HypocentreOverview.png"));
-         //ImageIO.write(dotImg, "png", new File("/export/home/saiful/assess/dotImg.png"));
-         //ImageIO.write(rawMiniMap, "png", new File("/export/home/saiful/assess/rawMiniMap.png"));
-         //ImageIO.write(miniMap, "png", new File("/export/home/saiful/assess/miniMap.png"));
+         new File("/export/home/saiful/temp/paint/HypocentreOverview.png"));
+         ImageIO.write(dotImg, "png", new File("/export/home/saiful/temp/paint/dotImg.png"));
+         ImageIO.write(rawMiniMap, "png", new File("/export/home/saiful/temp/paint/rawMiniMap.png"));
+         ImageIO.write(miniMap, "png", new File("/export/home/saiful/temp/paint/miniMap.png"));
          } catch (Exception e) {
-         Global.logSevere("Error creating a png.");
+         VBASLogger.logSevere("Error creating a png.");
          }*/
     }
 
@@ -986,24 +988,9 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
             }
         }
 
-        /**
-         * will load the database when draw the seis map
-         */
-        //if(showSeismicity)
-        //{
-        //    int leftX, rightX, topY, bottomY;
-        //    if(center.x-mapWidth/2<0)
-        //    {
-        //    }
-        //double latN =
-        //double latS = cenLat - rangeDelta;
-        //double lonW = tileSource.XToLon(center.x-, x);
-        //double lonE = SeisUtils.LonFromAziDelta(cenLat, cenLon, 90, rangeDelta);
-        /**
-         * get the seismicity data based on the visible range from zoom level
-         */
-        //SeisDataDAO.retrieveHistEvents(seisList, latN, latS, lonW, lonE);
-        //}
+ 
+        /* */
+
         Paint savedPaint = g2.getPaint();
         int xpos, ypos;
         if (depthBandOrder == 1) //shallow first
@@ -1012,25 +999,11 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
             for (HistoricEvent he : seisList) {
                 //set depth band
                 int depthBand;
-                //if(forceFit)
-                {
-                    depthBand = SeisUtils.getNewDepthBand(he.getDepth());
-                }
-                //else
-                //{
-                //    depthBand = SeisUtils.getOldDepthBand(he.getDepth());
-                // }
+
+                depthBand = SeisUtils.getNewDepthBand(he.getDepth());
 
                 if (depthBandVisible[depthBand] == true) {
-                    //if(forceFit)
-                    {
-                        g2.setPaint(seisNewPaints[depthBand]);
-
-                    }
-                    //else
-                    //{
-                    //     g2.setPaint(seisPaints[depthBand]);
-                    // }
+                    g2.setPaint(seisNewPaints[depthBand]);
 
                     xpos = tileSource.LonToX(he.getLon(), this.zoom) - center.x + w2;
                     if (xpos > mapSize) {
@@ -1048,31 +1021,20 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
             }
 
             g2.setPaint(savedPaint);
-        } else if (depthBandOrder == 2) //deep first
-        {
+
+        } else if (depthBandOrder == 2) { //deep first
+
             for (int i = seisList.size() - 1; i >= 0; i--) {
                 HistoricEvent he = seisList.get(i);
 
                 //set depth band
                 int depthBand;
-                //if(forceFit)
-                {
-                    depthBand = SeisUtils.getNewDepthBand(he.getDepth());
-                }
-                //else
-                //{
-                //    depthBand = SeisUtils.getOldDepthBand(he.getDepth());
-                //}
+
+                depthBand = SeisUtils.getNewDepthBand(he.getDepth());
 
                 if (depthBandVisible[depthBand] == true) {
-                    //if(forceFit)
-                    {
-                        g2.setPaint(seisNewPaints[depthBand]);
-                    }
-                    //else
-                    //{
-                    //    g2.setPaint(seisPaints[depthBand]);
-                    //}
+
+                    g2.setPaint(seisNewPaints[depthBand]);
 
                     xpos = tileSource.LonToX(he.getLon(), this.zoom) - center.x + w2;
                     if (xpos > mapSize) {
@@ -1323,6 +1285,8 @@ public final class HypoOverviewPanel2 extends JPanel implements TileLoaderListen
         g2.setStroke(new BasicStroke(1));
     }
 
+    
+    
     private void drawMiniMap() {
 
         Graphics2D g2 = miniMap.createGraphics();

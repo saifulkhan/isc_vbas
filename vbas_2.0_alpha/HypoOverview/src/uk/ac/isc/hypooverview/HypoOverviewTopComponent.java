@@ -69,9 +69,9 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
         selectedHypocentre.addChangeListener(this);
 
         overviewPanel = new HypoOverviewPanel2(hypoList);
-        scrollPane = new JScrollPane(overviewPanel);
         controlPanel = new OverviewControlPanel3(overviewPanel);
-
+        
+        scrollPane = new JScrollPane(overviewPanel);
         this.setLayout(new BorderLayout());
         this.add(controlPanel, BorderLayout.NORTH);
         this.add(scrollPane, BorderLayout.CENTER);

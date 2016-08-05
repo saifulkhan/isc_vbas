@@ -50,6 +50,8 @@ public class Global {
 
     
     public static void loadSeisEventsList() {
+  
+        
         VBASLogger.logDebug("Loading all SeisEvents.");
         BlockTableModel blockTableModel = new BlockTableModel();
 
@@ -66,22 +68,26 @@ public class Global {
         SeisDataDAO.retrieveAllPhaseNumber(seisEventsList.getEvents());                         
         SeisDataDAO.retrieveAllRegionName(seisEventsList.getEvents());
 
-        selectedSeisEvent.setValues(seisEventsList.getEvents().get(0));
-
-        // also load the Hypocentres, Phases, Commands, AssessedComamnds for the selected/first SeiesEvent.
-        loadSelectedSeisEventData();
-    }
+        // first time when VBAS loads:
+        // a. select the first event
+        // b. load the hypocentre, phase, command, assessedcommand data for that event
+        if(selectedSeisEvent.getEvid() == null) {
+            VBASLogger.logDebug("Selected SeisEvent:" + "null"); 
+            selectedSeisEvent.setValues(seisEventsList.getEvents().get(0));
+            loadSelectedSeisEventData();
+        }
+     }
 
     public static void loadSelectedSeisEventData() {
+            
         VBASLogger.logDebug("Load list of Hypocentre, Phase, Commmands, and AssessedCommands for SeisEvent: "
                 + selectedSeisEvent.getEvid());
 
         /*
          * Hypocentre
          */
-        SeisDataDAO.retrieveHypos(selectedSeisEvent.getEvid(),
-                hypocentresList.getHypocentres());
-        SeisDataDAO.retrieveHyposMagnitude(hypocentresList.getHypocentres());
+        SeisDataDAO.retrieveHypos(selectedSeisEvent.getEvid(), hypocentresList.getHypocentres(), false);
+        SeisDataDAO.retrieveHyposMagnitude(hypocentresList.getHypocentres(), false);
         // as I remove all the hypos when clicking an event to retrieve the hypos, 
         // so need reset prime hypo every time
         // TODO: Saiful, What is this?
@@ -95,10 +101,10 @@ public class Global {
          * Phase
          */
         TreeMap<String, String> stations = new TreeMap<String, String>();
-        SeisDataDAO.retrieveAllPhases(selectedSeisEvent.getEvid(), phasesList.getPhases());
+        SeisDataDAO.retrieveAllPhases(selectedSeisEvent.getEvid(), phasesList.getPhases(), false);
         SeisDataDAO.retrieveAllPhasesAmpMag(selectedSeisEvent.getEvid(),
-                phasesList.getPhases());
-        SeisDataDAO.retrieveAllStationsWithRegions(stations);
+                phasesList.getPhases(), false);
+        SeisDataDAO.retrieveAllStationsWithRegions(stations, false);
         // load the correspondent map into the stataions
         // put the region name into the pahseList
         for (int i = 0; i < phasesList.getPhases().size(); i++) {
@@ -126,12 +132,13 @@ public class Global {
                 + ", #Phases:" + phasesList.getPhases().size()
                 + ", #Commands:" + commandList.getCommandList().size()
                 + ", #AssessedCommands:" + assessedCommandList.getAssessedCommandList().size());
-
+        
+        
     }
 
     public static SeisEvent getSelectedSeisEvent() {
         // if the SeisEvents are not loaded yet.
-        if (selectedSeisEvent.getEvid() == 0) {
+        if (selectedSeisEvent.getEvid() == null) {
             loadSeisEventsList();
         }
         return selectedSeisEvent;
@@ -139,7 +146,7 @@ public class Global {
 
     public static SeisEventsList getSeisEventsList() {
         // if the SeisEvents are not loaded yet.
-        if (selectedSeisEvent.getEvid() == 0) {
+        if (selectedSeisEvent.getEvid() == null) {
             loadSeisEventsList();
         }
         return seisEventsList;
@@ -147,7 +154,7 @@ public class Global {
 
     public static PhasesList getPhasesList() {
         // if the SeisEvents are not loaded yet.
-        if (selectedSeisEvent.getEvid() == 0) {
+        if (selectedSeisEvent.getEvid() == null) {
             loadSeisEventsList();
         }
         return phasesList;
@@ -155,7 +162,7 @@ public class Global {
 
     public static HypocentresList getHypocentresList() {
         // if the SeisEvents are not loaded yet.
-        if (selectedSeisEvent.getEvid() == 0) {
+        if (selectedSeisEvent.getEvid() == null) {
             loadSeisEventsList();
         }
         return hypocentresList;
@@ -163,7 +170,7 @@ public class Global {
 
     public static AssessedCommandList getAssessedCommandList() {
         // if the SeisEvents are not loaded yet.
-        if (selectedSeisEvent.getEvid() == 0) {
+        if (selectedSeisEvent.getEvid() == null) {
             loadSeisEventsList();
         }
         return assessedCommandList;
@@ -171,7 +178,7 @@ public class Global {
 
     public static CommandList getCommandList() {
         // if the SeisEvents are not loaded yet.
-        if (selectedSeisEvent.getEvid() == 0) {
+        if (selectedSeisEvent.getEvid() == null) {
             loadSeisEventsList();
         }
         return commandList;

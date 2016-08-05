@@ -10,13 +10,15 @@ import uk.ac.isc.seisdata.VBASLogger;
 public class AssessedCommandTableModel extends AbstractTableModel {
 
     private final String[] columnNames = {
-        "Assess ID",
+        "ID",
         "Selected Commands",
+        "Type",
         "Analyst",
         "Report"
     };
 
     private final Class[] columns = new Class[]{
+        String.class,
         String.class,
         String.class,
         String.class,
@@ -26,7 +28,8 @@ public class AssessedCommandTableModel extends AbstractTableModel {
     public final Object[] longValues = {
         new Integer(999999999),
         new String(new char[30]),
-        "XXXXXXXXXXX",
+        new String(new char[30]),
+        new String(new char[30]),
         new JButton()
     };
     
@@ -66,18 +69,13 @@ public class AssessedCommandTableModel extends AbstractTableModel {
                 retObject = assessedCommandList.get(rowIndex).getIds();
                 break;
             case 2:
+                retObject = assessedCommandList.get(rowIndex).getType();
+                break;    
+            case 3:
                 retObject = assessedCommandList.get(rowIndex).getAnalyst();
                 break;
-            case 3:
-                final JButton button = new JButton();/*
-                 button.addActionListener(new ActionListener() {
-                 @Override
-                 public void actionPerformed(ActionEvent ae) {
-                 VBASLogger.logDebug("Clicked.." + "row= " + rowIndex + ", column= " + columnIndex + ", report:"
-                 + assessedCommandList.get(rowIndex).getReport());
-                 }
-                 });*/
-
+            case 4:
+                final JButton button = new JButton(); 
                 retObject = button;
                 break;
 

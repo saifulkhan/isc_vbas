@@ -18,7 +18,6 @@ public class PieChartData {
 
     //agency with its percetage of phases
     private TreeMap<String, Double> agencyMap;
-
     //get all the reported agency for each phase
     private ArrayList<String> agenciesList = new ArrayList<String>();
 

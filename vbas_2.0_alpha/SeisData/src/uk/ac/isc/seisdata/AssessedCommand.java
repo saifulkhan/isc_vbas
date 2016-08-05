@@ -3,12 +3,13 @@ package uk.ac.isc.seisdata;
 public class AssessedCommand extends AbstractSeisData {
 
     private final Integer id; // assess id
-
     private final Integer evid;   // event id
+
     // populate from the database
     private String ids;     // command id(s)
     private final String analyst; // analyst name
     private final String report;    // the report to the pdf file (assessed report)
+    private String type = null;
 
     public AssessedCommand() {
         this.id = 0;
@@ -18,12 +19,19 @@ public class AssessedCommand extends AbstractSeisData {
         this.report = "";
     }
 
-    public AssessedCommand(Integer id, Integer evid, String ids, String analyst, String report) {
+    public AssessedCommand(Integer id, 
+            Integer evid, 
+            String ids, 
+            String analyst, 
+            String report,
+            String type) {
+        
         this.id = id;
         this.evid = evid;
         this.ids = ids;
         this.analyst = analyst;
         this.report = report;
+        this.type = type;
     }
 
     public Integer getId() {
@@ -48,6 +56,10 @@ public class AssessedCommand extends AbstractSeisData {
 
     public String getReport() {
         return report;
+    }
+     
+    public String getType() {
+        return type;
     }
 
 }

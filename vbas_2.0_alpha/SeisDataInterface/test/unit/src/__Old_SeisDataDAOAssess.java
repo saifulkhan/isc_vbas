@@ -1,4 +1,4 @@
-package uk.ac.isc.seisdatainterface;
+
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,14 +18,13 @@ import java.util.TreeMap;
 import javax.swing.JOptionPane;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.Phase;
-import uk.ac.isc.seisdata.Station;
 import uk.ac.isc.seisdata.VBASLogger;
 
 /**
  * This is the database access object which provides functions to read and write
  * ISC database
  */
-public final class SeisDataDAOAssess {
+public final class __Old_SeisDataDAOAssess {
 
     protected static String url;
     protected static String assessUser;
@@ -46,98 +45,18 @@ public final class SeisDataDAOAssess {
         assessPassword = env.get("ASSESS_PW");
         pgUser = env.get("PGUSER");
         assessDir = Paths.get(env.get("ASSESSDIR"));
+         
+        
+
         VBASLogger.logDebug("url=" + url + ", user=" + assessUser
                 + ", password=" + assessPassword + ", assessDir=" + assessDir);
     }
 
-    private SeisDataDAOAssess() {
+    private __Old_SeisDataDAOAssess() {
         //
     }
 
-    public static Path getAssessDir() {
-        return assessDir;
-    }
-
-    public static String getAssessUser() {
-        return assessUser;
-    }
-
-    public static String getAssessPassword() {
-        return assessPassword;
-    }
-
-    /*
-     * Update the Assess Schema
-     * Return the locatorCommandStr
-     */
-    public static Boolean processAssessData(int evid, ArrayList<String> functionArray) {
-        VBASLogger.logDebug("url=" + url + ", user=" + assessUser + ", password=" + assessPassword);
-
-        Connection con = null;
-        Statement st = null;
-        ResultSet rs = null;
-
-        String query = null;
-
-        try {
-            con = DriverManager.getConnection(url, assessUser, assessPassword);
-
-            st = con.createStatement();
-
-            /*
-             * 1: delete existing data in assess schema
-             */
-            query = "SELECT CLEAR_ASSESS();";
-            VBASLogger.logDebug("query= " + query);
-            rs = st.executeQuery(query);
-
-            /*
-             * 2: Fill schema with appropiate data
-             * Note: the FILL_ASSESS will read data from PGUSER.
-             */
-            query = "SELECT FILL_ASSESS (" + evid + ", '" + pgUser + "');";
-            VBASLogger.logDebug("query= " + query);
-            rs = st.executeQuery(query);
-
-            /*
-             * 3: Apply data alteration functions
-             */
-            for (String funtion : functionArray) {
-
-                query = "SELECT " + funtion;
-                VBASLogger.logDebug("query= " + query);
-                rs = st.executeQuery(query);
-            }
-
-        } catch (SQLException ex) {
-            String message = ex.toString() + "\n\n"
-                    + "Failed query= " + query
-                    + "\nFailed the database command."
-                    + "\nSee the error log file for more information. ";
-
-            JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
-            VBASLogger.logSevere(message);
-
-            return false;
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (st != null) {
-                    st.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
-
-            } catch (SQLException ex) {
-                return null;
-            }
-        }
-
-        return true;
-    }
+    
 
     /**
      * Get all the hypocentres

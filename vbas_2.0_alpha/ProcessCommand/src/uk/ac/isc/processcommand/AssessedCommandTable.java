@@ -55,7 +55,7 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
     private JScrollPane scrollPane = null;
     private AssessedCommandTableModel model;
 
-    private final AssessedCommandPanel assessedCommandPanel;
+    //private final AssessedCommandPanel assessedCommandPanel;
 
     private final AssessedCommandList assessedCommandList = Global.getAssessedCommandList();
     private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();    // used to fetch event from the EventTable, EventControlView
@@ -78,9 +78,7 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
         // Action buttons
         // layout all together
         scrollPane = new JScrollPane(table);
-        assessedCommandPanel = new AssessedCommandPanel(table);
         this.setLayout(new BorderLayout());
-        this.add(assessedCommandPanel, BorderLayout.PAGE_START);
         this.add(scrollPane, BorderLayout.CENTER);
     }
 
@@ -112,11 +110,6 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
 
     private void setupTableVisualAttributes() {
 
-        VBASLogger.logDebug("Here...");
-
-        TableCellRenderer buttonRenderer = new JTableButtonRenderer();
-        table.getColumn("Report").setCellRenderer(buttonRenderer);
-
         JTableHeader th = table.getTableHeader();
         th.setFont(new Font("Sans-serif", Font.PLAIN, 14));
         /*th.setBackground(new Color(43, 87, 151));            // Blue
@@ -144,10 +137,15 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
         leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
+        TableCellRenderer buttonRenderer = new JTableButtonRenderer();
+        table.getColumn("Report").setCellRenderer(buttonRenderer);
+        
         table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
         table.getColumnModel().getColumn(1).setCellRenderer(leftRenderer);
         table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
-        //table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer); // Note: do not mess with the button.
+        table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+        // NOTE: do not mess with the button.
+        // table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer); 
 
         // This part of the code picks good column sizes. 
         // If all column heads are wider than the column's cells'
@@ -236,50 +234,6 @@ public class AssessedCommandTable extends JPanel implements SeisDataChangeListen
                     VBASLogger.logDebug("Clicked.." + "row= " + row + ", column= " + column + ", report: " + url);
                 }
             }
-        }
-    }
-
-
-    /*
-     *****************************************************************************************
-     * A panel to 'commit' the assessed command that is selected.
-     *****************************************************************************************
-     */
-    public class AssessedCommandPanel extends JPanel {
-
-        private final JLabel label_total;
-        private final JButton button_commit;
-        private final JTable table;             // reference of the table
-
-        public AssessedCommandPanel(final JTable commandTable) {
-            this.table = commandTable;
-
-            Font font = new Font("Sans-serif", Font.PLAIN, 14);
-
-            button_commit = new JButton("Commit");
-            /*button_commit.setBackground(new Color(45, 137, 239));
-             button_commit.setForeground(new Color(255, 255, 255));*/
-            button_commit.setFont(font);
-
-            label_total = new JLabel("");
-            label_total.setFont(font);
-
-            button_commit.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    onButtonCommitActionPerformed(e);
-                }
-            });
-
-            this.setLayout(new FlowLayout());
-
-            this.add(button_commit);
-            this.add(label_total);
-        }
-
-        public void onButtonCommitActionPerformed(ActionEvent e) {
-            JOptionPane.showMessageDialog(null, "Commit is not activated yet. It will be enabled after alpha/beta testing!.",
-                    "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
 

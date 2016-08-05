@@ -14,11 +14,15 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -28,6 +32,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
@@ -35,16 +40,22 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.MouseInputAdapter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Document;
+import javax.swing.text.Element;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
+import javax.swing.text.html.HTML;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -87,13 +98,18 @@ import uk.ac.isc.seisdata.VBASLogger;
 })
 public final class HypoTextViewTopComponent extends TopComponent implements SeisDataChangeListener {
 
+    private JSplitPane splitPane;
     private JScrollPane summaryScrollPane;
-    private String nearbyEventsURL;
 
     private JTable table = null;
-    private JScrollPane scrollPane = null;
+    private JScrollPane tableScrollPane = null;
     private ListSelectionListener lsl = null;
     private final HypocentreTablePopupMenu htPopupManager;
+
+    private final static String LINK_ATTRIBUTE = "linkact";
+    private StyledDocument doc;
+    private JTextPane textPane;
+    private String nearbyEventsURL;
 
     private static final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
     private final HypocentresList hypocentresList = Global.getHypocentresList();
@@ -141,11 +157,12 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         // add the popup-menu
         htPopupManager = new HypocentreTablePopupMenu(table);
 
-        scrollPane = new JScrollPane(table);
+        tableScrollPane = new JScrollPane(table);
         this.setLayout(new BorderLayout());
-        this.add(summaryScrollPane, BorderLayout.EAST);
-        this.add(scrollPane, BorderLayout.CENTER);
-
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+                tableScrollPane, summaryScrollPane);
+        splitPane.setResizeWeight(0.95);
+        this.add(splitPane);
     }
 
     /*
@@ -211,8 +228,8 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         summaryScrollPane.setViewportView(getSummaryTextPane());
         summaryScrollPane.repaint();
 
-        scrollPane.setViewportView(table);
-        scrollPane.repaint();
+        tableScrollPane.setViewportView(table);
+        tableScrollPane.repaint();
 
         // Note: keep this call here! 
         // Add the (row) selection listener.  
@@ -283,134 +300,53 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         }
     }
 
-    private JTextPane getSummaryTextPane() {
+    private MyTextPane getSummaryTextPane() {
+
+        MyTextPane myTextPane = new MyTextPane();
+        myTextPane.addMouseListener(new MyLinkController(myTextPane));
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
         String summary = selectedSeisEvent.getEvid() + "\n"
                 + selectedSeisEvent.getLocation() + ", "
                 + dateFormat.format(selectedSeisEvent.getPrimeHypo().getOrigTime()) + ", "
                 + selectedSeisEvent.geteType() + "\n"
                 + "Grid Depth: " + selectedSeisEvent.getDefaultDepthGrid() + "\n";
 
-        nearbyEventsURL = "http://192.168.37.88/cgi-bin/web-db-v4?event_id="
-                + selectedSeisEvent.getEvid()
-                + "&out_format=IMS1.0&request=COMPREHENSIVE&table_owner="
-                + SeisDataDAO.getPgUser();
+        myTextPane.append("Summary\n", Color.BLACK, 14, false, true, StyleConstants.ALIGN_CENTER);
+        myTextPane.append(summary, Color.BLACK, 14, false, false, StyleConstants.ALIGN_LEFT);
 
-        String locatorMsg = " " + "\n";
+        myTextPane.append("\nLocator Message\n", Color.BLACK, 14, false, true, StyleConstants.ALIGN_CENTER);
+        myTextPane.append(selectedSeisEvent.getLocatorMessage(), Color.BLACK, 14, false, false, StyleConstants.ALIGN_LEFT);
 
-        String warnings = "";
+        myTextPane.append("\nNearby Events\n", Color.BLACK, 14, false, true, StyleConstants.ALIGN_CENTER);
 
-        JTextPane textPane = new JTextPane();
-        StyledDocument doc = textPane.getStyledDocument();
-        addStylesToDocument(doc);
+        if (selectedSeisEvent.getNearbyEvents() != null) {
+            //VBASLogger.logDebug("nearbyEvents:" + selectedSeisEvent.getNearbyEvents());
+            String[] nearbyEvents = selectedSeisEvent.getNearbyEvents().split(" ");
+            for (String ev : nearbyEvents) {
 
-        try {
-
-            doc.insertString(doc.getLength(), "Summary\n", doc.getStyle("large-bold-centred"));
-            doc.insertString(doc.getLength(), summary, doc.getStyle("large"));
-
-            doc.insertString(doc.getLength(), "\nNearby Events\n", doc.getStyle("large-bold-centred"));
-            doc.insertString(doc.getLength(), " ", doc.getStyle("button"));
-
-            doc.insertString(doc.getLength(), "\n\nLocator Message\n", doc.getStyle("large-bold-centred"));
-            doc.insertString(doc.getLength(), "to be added...", doc.getStyle("regular"));
-
-            doc.insertString(doc.getLength(), "\n\nWarnings\n", doc.getStyle("large-bold-centred"));
-            doc.insertString(doc.getLength(), "to be added...", doc.getStyle("regular"));
-
-        } catch (BadLocationException ble) {
-            Exceptions.printStackTrace(ble);
-            JOptionPane.showMessageDialog(null, "Exception: please ignore or report.",
-                    "Warning", JOptionPane.WARNING_MESSAGE);
-        }
-
-        return textPane;
-    }
-
-    /*
-     * Text formating
-     * Hint: https://docs.oracle.com/javase/tutorial/uiswing/components/editorpane.html
-     */
-    protected void addStylesToDocument(StyledDocument doc) {
-        //Initialize some styles.
-        Style def = StyleContext.getDefaultStyleContext().
-                getStyle(StyleContext.DEFAULT_STYLE);
-
-        Style regular = doc.addStyle("regular", def);
-        StyleConstants.setFontFamily(def, "SansSerif");
-
-        Style s = doc.addStyle("italic", regular);
-        StyleConstants.setItalic(s, true);
-
-        s = doc.addStyle("bold", regular);
-        StyleConstants.setBold(s, true);
-
-        s = doc.addStyle("small", regular);
-        StyleConstants.setFontSize(s, 10);
-
-        s = doc.addStyle("large", regular);
-        StyleConstants.setFontSize(s, 14);
-
-        s = doc.addStyle("large-bold-centred", regular);
-        StyleConstants.setFontSize(s, 14);
-        StyleConstants.setBold(s, true);
-        StyleConstants.setAlignment(s, StyleConstants.ALIGN_CENTER);
-
-        // TODO: hyperlink is not working
-        s = doc.addStyle("large-hyperlink", regular);
-        StyleConstants.setFontSize(s, 14);
-        StyleConstants.setBold(s, true);
-        StyleConstants.setForeground(s, Color.BLUE);
-        StyleConstants.setUnderline(s, true);
-        //s.addAttribute("X", new URLLinkAction("XX"));
-
-        // add some icon or picture
-        s = doc.addStyle("icon", regular);
-        StyleConstants.setAlignment(s, StyleConstants.ALIGN_CENTER);
-        URL url = getClass().getClassLoader().getResource("resources/html.png");
-        ImageIcon icon = new ImageIcon(url);
-        if (icon != null) {
-            StyleConstants.setIcon(s, icon);
-        }
-
-        // button with icon
-        s = doc.addStyle("button", regular);
-        StyleConstants.setAlignment(s, StyleConstants.ALIGN_CENTER);
-        JButton button = new JButton();
-        if (icon != null) {
-            button.setIcon(icon);
-        } else {
-            button.setText("Open");
-        }
-        button.setCursor(Cursor.getDefaultCursor());
-        button.setMargin(new Insets(0, 0, 0, 0));
-        button.setActionCommand("Open");
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
                 try {
-                    Desktop.getDesktop().browse(new URI(nearbyEventsURL));
-                } catch (URISyntaxException ex) {
-                    Exceptions.printStackTrace(ex);
-                    JOptionPane.showMessageDialog(null, "Unable to open: " + nearbyEventsURL,
-                            "Warning", JOptionPane.WARNING_MESSAGE);
-                } catch (IOException ex) {
-                    Exceptions.printStackTrace(ex);
-                    JOptionPane.showMessageDialog(null, "Unable to open: " + nearbyEventsURL,
-                            "Warning", JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
-        StyleConstants.setComponent(s, button);
-    }
+                    URL url = new URL("http://192.168.37.88/cgi-bin/web-db-v4?event_id="
+                            + ev
+                            + "&out_format=IMS1.0&request=COMPREHENSIVE&table_owner="
+                            + SeisDataDAO.getPgUser());
 
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
+                    myTextPane.addHyperlink(url, ev + "\n", Color.blue, 14, false, false, StyleConstants.ALIGN_LEFT);
+                } catch (MalformedURLException ex) {
+                    ex.printStackTrace();
+                }
+
+            }
+        }
+
+            return myTextPane;
+        
+    }
+        /**
+         * This method is called from within the constructor to initialize the
+         * form. WARNING: Do NOT modify this code. The content of this method is
+         * always regenerated by the Form Editor.
+         */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -451,5 +387,149 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         String version = p.getProperty("version");
         // TODO read your settings according to their version
     }
+}
+
+/**
+ * *******************************************************************************************************************
+ * Text formating Hint:
+ * (1)https://docs.oracle.com/javase/tutorial/uiswing/components/editorpane.html
+ * (2)https://www.daniweb.com/programming/software-development/threads/331500/how-can-i-add-a-clickable-url-in-a-jtextpane
+ * *******************************************************************************************************************
+ */
+class MyTextPane extends JTextPane {
+
+    public void append(String text,
+            Color c,
+            int font,
+            Boolean isItalic,
+            Boolean isBold,
+            int alignment /*StyleConstants.ALIGN_CENTER*/) {
+
+        try {
+            Document doc = this.getDocument();
+            SimpleAttributeSet attrs = new SimpleAttributeSet();
+            StyleConstants.setForeground(attrs, c);
+            StyleConstants.setFontSize(attrs, font);
+            if (isItalic) {
+                StyleConstants.setItalic(attrs, true);
+            }
+            if (isBold) {
+                StyleConstants.setBold(attrs, true);
+            }
+            StyleConstants.setAlignment(attrs, alignment);
+
+            doc.insertString(doc.getLength(), text, attrs);
+
+        } catch (BadLocationException e) {
+            e.printStackTrace(System.err);
+        }
+    }
+
+    public void addHyperlink(URL url,
+            String text,
+            Color c,
+            int font,
+            Boolean isItalic,
+            Boolean isBold,
+            int alignment /*StyleConstants.ALIGN_CENTER*/) {
+        try {
+            Document doc = this.getDocument();
+            SimpleAttributeSet attrs = new SimpleAttributeSet();
+            StyleConstants.setForeground(attrs, c);
+            StyleConstants.setFontSize(attrs, font);
+            if (isItalic) {
+                StyleConstants.setItalic(attrs, true);
+            }
+            if (isBold) {
+                StyleConstants.setBold(attrs, true);
+            }
+            StyleConstants.setAlignment(attrs, alignment);
+
+            StyleConstants.setUnderline(attrs, true);
+            attrs.addAttribute(HTML.Attribute.HREF, url.toString());
+            doc.insertString(doc.getLength(), text, attrs);
+
+        } catch (BadLocationException e) {
+            e.printStackTrace(System.err);
+        }
+    }
 
 }
+
+class MyLinkController extends MouseAdapter implements MouseMotionListener {
+
+    private MyTextPane myTextPane;
+    private String copiedSelection = null;
+    private Clipboard clipboard;
+
+    MyLinkController(MyTextPane myTextPane) {
+        this.myTextPane = myTextPane;
+    }
+
+    public void mouseReleased(MouseEvent e) {
+        copiedSelection = myTextPane.getSelectedText();
+
+        if (copiedSelection != null) {
+            StringSelection data = new StringSelection(copiedSelection);
+            clipboard.setContents(data, data);
+        }
+    }
+
+    public void mouseClicked(MouseEvent e) {
+        java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
+        JTextPane editor = (JTextPane) e.getSource();
+        Document doc = editor.getDocument();
+        Point pt = new Point(e.getX(), e.getY());
+        int pos = editor.viewToModel(pt);
+
+        if (pos >= 0) {
+            if (doc instanceof DefaultStyledDocument) {
+                DefaultStyledDocument hdoc = (DefaultStyledDocument) doc;
+                Element el = hdoc.getCharacterElement(pos);
+                AttributeSet a = el.getAttributes();
+                String href = (String) a.getAttribute(HTML.Attribute.HREF);
+
+                if (href != null) {
+                    try {
+                        java.net.URI uri = new java.net.URI(href);
+                        desktop.browse(uri);
+                    } catch (Exception ev) {
+                        System.err.println(ev.getMessage());
+                    }
+                }
+            }
+        }
+    }
+
+    public void mouseMoved(MouseEvent ev) {
+
+        Cursor handCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+        Cursor defaultCursor = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
+        JTextPane editor = (JTextPane) ev.getSource();
+        Point pt = new Point(ev.getX(), ev.getY());
+        int pos = editor.viewToModel(pt);
+
+        if (pos >= 0) {
+            Document doc = editor.getDocument();
+
+            if (doc instanceof DefaultStyledDocument) {
+                DefaultStyledDocument hdoc = (DefaultStyledDocument) doc;
+                Element e = hdoc.getCharacterElement(pos);
+                AttributeSet a = e.getAttributes();
+                String href = (String) a.getAttribute(HTML.Attribute.HREF);
+
+                if (href != null) {
+                    /*if (getCursor() != handCursor) {
+                     editor.setCursor(handCursor);
+                     }*/
+                } else {
+                    editor.setCursor(defaultCursor);
+                }
+            }
+        } else {
+            /*setToolTipText(null);*/
+        }
+    }
+
+}//LinkController
+

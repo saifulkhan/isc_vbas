@@ -121,7 +121,23 @@ public final class ColorUtils {
         };
 
     }
+    // Saiful
+    public static Color[] createSeismicityPaintArray3Translucent() {
 
+        return new Color[]{
+            new Color(219, 21, 6, 100),
+            new Color(251, 185, 15, 100),
+            new Color(95, 134, 185, 100),
+            new Color(149, 123, 53, 100),
+            new Color(118, 40, 173, 100),
+            new Color(126, 229, 7, 100),
+            new Color(13, 96, 16, 100),
+            new Color(238, 47, 254, 100)
+        };
+
+    }
+
+    
     //color scheme for depth map
     public static Paint[] createDepthViewPaintArray() {
 

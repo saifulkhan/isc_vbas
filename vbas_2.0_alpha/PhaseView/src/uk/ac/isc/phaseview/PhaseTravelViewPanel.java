@@ -434,6 +434,16 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
         return phaseImageWithRect;
     }
 
+    public int getImageWidth() {
+        return imageWidth;
+    }
+
+    public int getImageHeight() {
+        return imageHeight;
+    }
+
+    
+    
     /*
      * ***********************************************************************
      * Mouse interaction, e.g., draw zoom rect.

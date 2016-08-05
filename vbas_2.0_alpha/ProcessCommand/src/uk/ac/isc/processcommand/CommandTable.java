@@ -29,7 +29,7 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
     private JTable table = null;
     private JScrollPane scrollPane = null;
     private CommandTableModel model = null;
-    private final AssessCommandPanel assessCommandPanel;
+    private final CommandTablePanel assessCommandPanel;
 
     private final CommandList commandList = Global.getCommandList();
     private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
@@ -73,7 +73,7 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
         // Layout all together
         // Table and action buttons
         scrollPane = new JScrollPane(table);
-        assessCommandPanel = new AssessCommandPanel(table);
+        assessCommandPanel = new CommandTablePanel(table);
         this.setLayout(new BorderLayout());
         this.add(assessCommandPanel, BorderLayout.PAGE_START);
         this.add(scrollPane, BorderLayout.CENTER);
@@ -144,8 +144,7 @@ public class CommandTable extends JPanel implements SeisDataChangeListener {
         // SiesEventsTableModel model = (SiesEventsTableModel) table.getModel();
         TableColumn column = null;
         Component comp = null;
-        int headerWidth = 0;
-        int cellWidth = 0;
+        int headerWidth = 0, cellWidth = 0;
 
         Object[] longValues = model.longValues;
         TableCellRenderer headerRenderer = table.getTableHeader().getDefaultRenderer();

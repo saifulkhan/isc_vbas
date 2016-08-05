@@ -29,35 +29,39 @@ import org.openide.util.Exceptions;
 import uk.ac.isc.seisdata.AssessedCommand;
 import uk.ac.isc.seisdata.CommandList;
 import uk.ac.isc.seisdata.SeisEvent;
+import uk.ac.isc.seisdata.SeisEventsList;
 import uk.ac.isc.seisdata.VBASLogger;
 import uk.ac.isc.seisdatainterface.FormulateCommand;
 import uk.ac.isc.seisdatainterface.Global;
 import uk.ac.isc.seisdatainterface.Locator;
 import uk.ac.isc.seisdatainterface.SeisDataDAO;
-import uk.ac.isc.seisdatainterface.SeisDataDAOAssess;
 
 /*
  *****************************************************************************************
- * A panel (button) to send the selected commands to assessed-comamnd-table .
+ * A panel (button) to send the selected commands to assessed-comamnd-tableCommand .
  *****************************************************************************************
  */
-public class AssessCommandPanel extends JPanel {
+public class CommandTablePanel extends JPanel {
 
     private final JLabel label_total;
     private final JLabel label_totalValue;
     private final JButton button_assess;
     private final JButton button_manualCommand;
     private final ManualCommand manualCommand = new ManualCommand();
-    
-    private final JTable table;             // reference of the table
-    private final GenerateReport generateReport = new GenerateReport();
 
+    private final JButton button_commit;
+
+    private final JTable tableCommand;             // reference of the tableCommand
+
+    private final SeisEventsList seisEventList = Global.getSeisEventsList();
     private final SeisEvent selectedSeisEvent = Global.getSelectedSeisEvent();
     private final CommandList commandList = Global.getCommandList();
-    private final AssessedCommand assessedCommandEvent = Global.getAssessedComamndEvent(); // send event to AssessedCommand table
-    
-    public AssessCommandPanel(final JTable commandTable) {
-        this.table = commandTable;
+    private final AssessedCommand assessedCommandEvent = Global.getAssessedComamndEvent(); // send event to AssessedCommand tableCommand
+
+    Calendar calendar = new GregorianCalendar();
+
+    public CommandTablePanel(final JTable commandTable) {
+        this.tableCommand = commandTable;
 
         Font font = new Font("Sans-serif", Font.PLAIN, 14);
 
@@ -67,12 +71,12 @@ public class AssessCommandPanel extends JPanel {
         button_assess.setFont(font);
         button_manualCommand = new JButton("Manual Command");
         button_manualCommand.setFont(font);
-      
-        label_total = new JLabel(""); // No. of comamnds selected for assess: 
+
+        label_total = new JLabel(""); // No. of comamnds selected for assess:
         label_total.setFont(font);
         label_totalValue = new JLabel("");
         label_totalValue.setFont(font);
-        
+
         button_assess.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -88,124 +92,142 @@ public class AssessCommandPanel extends JPanel {
 
         });
 
+        button_commit = new JButton("Commit");
+        button_commit.setFont(font);
+
+        button_commit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                onButtonCommitActionPerformed(e);
+            }
+        });
+
         this.setLayout(new FlowLayout());
         this.add(button_manualCommand);
         this.add(button_assess);
-        this.add(label_total);
-        this.add(label_totalValue);
+        this.add(button_commit);
+        //this.add(label_total);
+        //this.add(label_totalValue);
+    }
+
+    public void onButtonCommitActionPerformed(ActionEvent e) {
+        VBASLogger.logDebug("Commit...");
+        button_commit.setEnabled(false);
+        if (this.assessOrCommit(false)) {
+            button_commit.setEnabled(true);
+            VBASLogger.logDebug("SeiesEventList fire...");
+            seisEventList.fireSeisDataChanged();
+        }
     }
 
     public void onButtonAssessActionPerformed(ActionEvent e) {
-
+        VBASLogger.logDebug("Assess...");
         button_assess.setEnabled(false);
+        if (this.assessOrCommit(true)) {
+            button_assess.setEnabled(true);
+        }
+    }
 
-        /*
-         *  Stage-1 Write the commands in the database.
-         */
-        int[] selectedRows = table.getSelectedRows();
+    private Boolean assessOrCommit(Boolean isAssess) {
+
+        /* Access/Commit directory and URL related */
+        calendar.setTime(Global.getSelectedSeisEvent().getPrimeHypo().getOrigTime());
+        String year = String.valueOf(calendar.get(Calendar.YEAR));
+        String month = ((calendar.get(Calendar.MONTH) + 1) < 10
+                ? ("0" + String.valueOf(calendar.get(Calendar.MONTH) + 1))
+                : String.valueOf(calendar.get(Calendar.MONTH) + 1));
+
+        /* Ex. 2013/04/678905 */
+        String offsetPath = year + File.separator
+                + month + File.separator
+                + Global.getSelectedSeisEvent().getEvid();
+
+        /* Ex. http://nemesis.isc.ac.uk/(assess)(commit)/2013/04/678905*/
+        String offsetUrl = (isAssess ? SeisDataDAO.getAssessUrl() : SeisDataDAO.getCommitUrl())
+                + "/" + offsetPath;
+
+        String commandType = (isAssess ? "assess" : "commit");
+
+        /* Stage-1 Write the commands in the database. */
+        int[] selectedRows = tableCommand.getSelectedRows();
         if (selectedRows.length <= 0) {
             JOptionPane.showMessageDialog(null, "Select a command.", "Warning", JOptionPane.WARNING_MESSAGE);
             button_assess.setEnabled(true);
-            return;
+            button_commit.setEnabled(true);
+            return false;
         }
 
         ArrayList<Integer> commandIds = new ArrayList<Integer>();
-        String commandType = "assess";
         FormulateCommand formulateCommand
                 = new FormulateCommand(commandType, "seisevent", Global.getSelectedSeisEvent().getEvid(), "");
 
+        /* Process (merge) selected commands */
         String analystRedableCommand = "";
         int i = 0;
         for (int row : selectedRows) {
-            commandIds.add((Integer) table.getValueAt(row, 0));
-
+            commandIds.add((Integer) tableCommand.getValueAt(row, 0));
             String systemCommandStr = commandList.getCommandList().get(row).getSystemCommand();
-            // add/append the command to the formulated asses command
+
             VBASLogger.logDebug("Append the systemCommand: " + systemCommandStr);
             formulateCommand.mergeSystemCommand(systemCommandStr);
 
-            analystRedableCommand += "[" + (++i) + "] " + FormulateCommand.getAnalystReadableCommand(
-                    commandList.getCommandList().get(row).getCommandProvenance());
+            analystRedableCommand += "[" + (++i) + "] "
+                    + FormulateCommand.getAnalystReadableCommand(
+                            commandList.getCommandList().get(row).getCommandProvenance());
             VBASLogger.logDebug("Append the analystRedableCommand: " + analystRedableCommand);
         }
         formulateCommand.addAttribute("analystRedableCommand", analystRedableCommand, null);
 
-        // the
-        Date date = Global.getSelectedSeisEvent().getPrimeHypo().getOrigTime();
-        Calendar calendar = new GregorianCalendar();
-        calendar.setTime(date);
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH) + 1;
 
-        /*
-         * Now write the assessed details
-         */
+        /*update the assessed table*/
         int newAssessId = 0;
         if (formulateCommand.isValidSystemCommand()) {
-
+            VBASLogger.logDebug("isAssess=" + isAssess + ", offsetUrl=" + offsetUrl);
             VBASLogger.logDebug("commandProvenance= " + formulateCommand.getCmdProvenance().toString());
             VBASLogger.logDebug("systemCommand= " + formulateCommand.getSystemCommand().toString());
-
-            String url = "http://nemesis.isc.ac.uk/assess" + "/"
-                    + year + "/"
-                    + (month < 10 ? ("0" + String.valueOf(month)) : String.valueOf(month)) + "/"
-                    + Global.getSelectedSeisEvent().getEvid();
-
+            
             newAssessId = SeisDataDAO.updateAssessedCommandTable(Global.getSelectedSeisEvent().getEvid(),
-                    commandType, commandIds, url, "");
+                    commandType, commandIds, offsetUrl, "");
 
             if (newAssessId > 0) {
-                VBASLogger.logDebug(" Fired: " + commandType);
+                VBASLogger.logDebug("Fired: " + commandType);
                 assessedCommandEvent.fireSeisDataChanged();
             } else {
-                JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
-                button_assess.setEnabled(true);
-                return;
+                JOptionPane.showMessageDialog(null, "Incorrect Command. \nReport to system admin.", 
+                        "ERROR", JOptionPane.ERROR_MESSAGE);
+                return false;
             }
         } else {
-            button_assess.setEnabled(true);
-            return;
+            JOptionPane.showMessageDialog(null, "Incorrect Command. \nReport to system admin.", 
+                    "ERROR", JOptionPane.ERROR_MESSAGE);
+            return false;
         }
 
 
-        /*
-         * ***************************************************************************
-         * Locator run
-         * ****************************************************************************
-         */
-        Path assessDir = Paths.get(SeisDataDAOAssess.getAssessDir().toString()
-                + File.separator + year
-                + File.separator + (month < 10 ? ("0" + String.valueOf(month)) : String.valueOf(month))
-                + File.separator + Global.getSelectedSeisEvent().getEvid()
+        /* Invoke locator */
+        Path dir = Paths.get((isAssess ? SeisDataDAO.getAssessDir() : SeisDataDAO.getCommitDir())
+                + File.separator + offsetPath 
                 + File.separator + newAssessId);
 
-        Boolean ret = Locator.runLocator(assessDir, formulateCommand.getSQLFunctionArray(), formulateCommand.getLocatorArgStr());
+        VBASLogger.logDebug("Run locator, dir: " + dir.toString());
 
-        /*
-         * ***************************************************************************
-         * GenerateReport: runLocator relocator, generate html etc.. If susccess write the
-         * generateReport info in the AssessedCommand table
-         * ****************************************************************************
-         */
-        if (ret == true) {
+        Boolean ret = Locator.runLocator(dir,
+                formulateCommand.getSQLFunctionArray(),
+                formulateCommand.getLocatorArgStr(),
+                isAssess);
 
-            /*
-             * Load assessed data.
-             */
-            generateReport.readAssessedData();
-            File htmlFile = generateReport.createHTML(assessDir, newAssessId);
-            generateReport.createTables();
-            generateReport.createViews();
-            generateReport.writeSystemCommand(formulateCommand.getSystemCommand().toString());
-            generateReport.writeAnalystReadableCommand(analystRedableCommand);
+        /* if assesss, then generate HTML report */
+        if (ret) {
+            /* generate report */
+            GenerateReport generateReport = new GenerateReport(dir,
+                    newAssessId,
+                    analystRedableCommand,
+                    formulateCommand.getSystemCommand().toString(),
+                    isAssess);
 
-            String url = "http://nemesis.isc.ac.uk/assess"
-                    + "/" + year
-                    + "/" + (month < 10 ? ("0" + String.valueOf(month)) : String.valueOf(month))
-                    + "/" + Global.getSelectedSeisEvent().getEvid()
-                    + "/" + newAssessId
-                    + "/" + newAssessId + ".html";
+            String url = offsetUrl + "/" + newAssessId + "/" + newAssessId + ".html";
 
+            /* open the html file */
             try {
                 Desktop.getDesktop().browse(new URI(url));
             } catch (URISyntaxException ex) {
@@ -217,21 +239,15 @@ public class AssessCommandPanel extends JPanel {
                 JOptionPane.showMessageDialog(null, "Unable to open: " + url,
                         "Warning", JOptionPane.WARNING_MESSAGE);
             }
-
-            // open html as a file in browser
-            /*try {
-             Desktop.getDesktop().browse(htmlFile.toURI());
-             } catch (IOException ex) {
-             Exceptions.printStackTrace(ex);
-             }*/
-            JOptionPane.showMessageDialog(null, "Assess Complete. Please see the report in your browser. \n" + url,
+            JOptionPane.showMessageDialog(null, commandType + " is complete. Please see the report in your browser. \n" + url,
                     "Complete", JOptionPane.NO_OPTION);
 
-        } else {
-            JOptionPane.showMessageDialog(null, "Locator command failed.", "Error", JOptionPane.ERROR_MESSAGE);
+        } else if (isAssess) {
+            JOptionPane.showMessageDialog(null, "Locator command failed. \nReport to system admin.", "ERROR", JOptionPane.ERROR_MESSAGE);
+            return false;
         }
 
-        button_assess.setEnabled(true);
+        return true;
     }
 
     private void onButtonManualComamndActionPerformed(ActionEvent ae) {

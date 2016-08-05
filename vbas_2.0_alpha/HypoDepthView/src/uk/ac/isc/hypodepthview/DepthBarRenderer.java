@@ -142,6 +142,9 @@ class DepthBarRenderer extends BarRenderer {
         double bgBound1, bgBound2;
         Rectangle2D adaptiveBG = null;
 
+        // TODO: Saiful
+        // The depths and corrosponding color is not 100% consistant with the used in Hypocentre Siesmicity view.   
+        
         //draw background if it is the first bar
         if (row == 0 && column == 0) {
             //now we won't do too much cause the bar chart is vertical

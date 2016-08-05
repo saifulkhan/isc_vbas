@@ -41,7 +41,7 @@ import uk.ac.isc.seisdata.VBASLogger;
 public final class AgencyPieChartViewTopComponent extends TopComponent implements SeisDataChangeListener {
 
     //processed data with sorted percentages
-    private final PieChartData pcData;
+    //private final PieChartData pcData;
     private final JScrollPane scrollPane;
     //the key class of the piechart
     private final AgencyPieChartView apcView = new AgencyPieChartView();
@@ -62,8 +62,8 @@ public final class AgencyPieChartViewTopComponent extends TopComponent implement
 
         selectedSeisEvent.addChangeListener(this);
 
-        pcData = new PieChartData(phasesList.getPhases());
-        apcView.setData(pcData);
+        //pcData = new PieChartData(phasesList.getPhases());
+        apcView.setData(phasesList);
 
         scrollPane = new JScrollPane(apcView);
         this.setLayout(new BorderLayout());
@@ -83,7 +83,8 @@ public final class AgencyPieChartViewTopComponent extends TopComponent implement
                 //SeisEvent seisEvent = (SeisEvent) event.getData();
                 VBASLogger.logDebug("SeisEvent= " + selectedSeisEvent.getEvid());
 
-                pcData.UpdateData(phasesList.getPhases());
+                //pcData.UpdateData(phasesList.getPhases());
+                apcView.setData(phasesList);
                 apcView.repaint();
                 scrollPane.setViewportView(apcView);
                 break;
