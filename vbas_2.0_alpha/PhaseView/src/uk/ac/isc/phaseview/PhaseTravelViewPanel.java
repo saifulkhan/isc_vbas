@@ -57,9 +57,9 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
     private final int imageWidth = 500;
     private final int imageHeight = 1000;
     // Gap between the container panel and the actual graph view.
-    private int xOffset = 0;  
+    private int xOffset = 0;
     private int yOffset = 0;
-    
+
     // Axis draw once
     private DateAxis timeAxis = null;
     private NumberAxis valueAxis = null;
@@ -92,10 +92,10 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
     private double zoomMinTime, zoomMaxTime, zoomMinDist, zoomMaxDist;
     private double zoomRextX, zoomRextY, zoomRextW, zoomRextH;
     Rectangle2D zoomRectDim;
-            
+
     private final PhasesList pList;
     private final HypocentresList hList;
-    private Hypocentre prime;
+    private Hypocentre prime = null;
     // seleted list of Phases for details view
     private final PhasesList detailedPList = new PhasesList();
     // selected phases in the Phase Selection table
@@ -183,6 +183,7 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
         phaseTimeSeriesCollection = new DuplicateUnorderTimeSeriesCollection();
         resetZoomRange();
         zoomRectangle = null;
+        prime = null;
 
         // get the prime hypocentre from the new hypocentres list
         for (int i = 0; i < hList.getHypocentres().size(); i++) {
@@ -190,8 +191,7 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
                 prime = hList.getHypocentres().get(i);
             }
         }
-        
-    
+
         // get travel time curve data
         ttdData = LoadTTDData.loadTTDData(Global.getSelectedSeisEvent().getEvid(), ttimesScript);
 
@@ -208,12 +208,28 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
 
         phaseTimeSeriesCollection.addSeries(phaseTimeSeries);
 
-        VBASLogger.logDebug(String.valueOf(prime.getOrigTime()));
-        VBASLogger.logDebug(String.valueOf(phaseTimeSeries.getMinX()));
-        
-        minTime = Math.min(prime.getOrigTime().getTime(), phaseTimeSeries.getMinX());
-        maxTime = phaseTimeSeries.getMaxX();
-        maxDist = phaseTimeSeries.getMaxY();
+        /*if empty then create a blank plot*/
+        if (prime == null && phaseTimeSeries.isEmpty()) {
+            VBASLogger.logDebug("prime=" + prime + ", phaseTimeSeries.isEmpty()=" + phaseTimeSeries.isEmpty());
+            minTime = new Long(1);
+            maxTime = new Long(1);
+            maxDist = 1.0;
+        } else {
+            VBASLogger.logDebug("prime=" + prime + ", phaseTimeSeries.isEmpty()=" + phaseTimeSeries.isEmpty());
+            VBASLogger.logDebug("prime.getOrigTime()=" + String.valueOf(prime.getOrigTime()) 
+                    + "phaseTimeSeries.getMinX()=" + String.valueOf(phaseTimeSeries.getMinX()));
+            
+            minTime = Math.min(prime.getOrigTime().getTime(), phaseTimeSeries.getMinX());
+            maxTime = phaseTimeSeries.getMaxX();
+            maxDist = phaseTimeSeries.getMaxY();
+            if (maxDist <= 0) { 
+                maxDist = 1.0; // TODO: fix the script
+                JOptionPane.showMessageDialog(null, "Possible corrupted traveltime data (script).", 
+                        "WARNING", JOptionPane.ERROR_MESSAGE);
+            }   
+            
+            VBASLogger.logDebug("minTime=" + minTime + ", maxTime="  + maxTime + ", maxDist=" + maxDist);
+        }
 
         //VBASLogger.logDebug("#phaseTimeSeries:" + phaseTimeSeries.getItemCount() + " minTime=" + minTime + " maxTime=" + maxTime + " maxDist=" + maxDist);
         setupAxis();
@@ -239,8 +255,9 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
         timeAxis.setDateFormatOverride(new SimpleDateFormat("HH:mm:ss.S"));
 
         valueAxis = new NumberAxis("");
-        double gapX = 10 * (Math.min(180, maxDist) - 0.0) / imageWidth; // issue# 44
-        valueAxis.setRange(0.0 - gapX, Math.min(180, maxDist) + gapX);
+        double gapX = 10 * Math.min(180, maxDist) / imageWidth; // issue# 44
+        //VBASLogger.logDebug("gapX=" + gapX + ", (Math.min(180, maxDist) + gapX)="  +(Math.min(180, maxDist) + gapX));
+        valueAxis.setRange(gapX, (Math.min(180, maxDist) + gapX));
 
         renderer = new TravelViewRenderer(pList.getPhases());
     }
@@ -336,15 +353,15 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
         double yMin, yMax, xMin, xMax;
 
         /*if (zoomRect == true) {
-            yMin = zoomRectangle.getY();
-            yMax = yMin + zoomRectangle.getHeight();
-            xMin = zoomRectangle.getX();
-            xMax = xMin + zoomRectangle.getWidth();
-        } else {*/
-            yMin = zoomRectangle.getY() - yOffset;
-            yMax = yMin + zoomRectangle.getHeight();
-            xMin = zoomRectangle.getX() - xOffset;
-            xMax = xMin + zoomRectangle.getWidth();
+         yMin = zoomRectangle.getY();
+         yMax = yMin + zoomRectangle.getHeight();
+         xMin = zoomRectangle.getX();
+         xMax = xMin + zoomRectangle.getWidth();
+         } else {*/
+        yMin = zoomRectangle.getY() - yOffset;
+        yMax = yMin + zoomRectangle.getHeight();
+        xMin = zoomRectangle.getX() - xOffset;
+        xMax = xMin + zoomRectangle.getWidth();
         //}
 
         //use zoomRectangle to get the min-max Time and min-max distance
@@ -414,7 +431,6 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
         Graphics2D g2 = (Graphics2D) g;
 
         //VBASLogger.logDebug("getWidth()=" + getWidth() + ", imageWidth=" + imageWidth + ", getHeight()=" + getHeight() + ", imageHeight=" + imageHeight);
-
         xOffset = Math.max((getWidth() - imageWidth) / 2, 0);
         yOffset = Math.max((getHeight() - imageHeight) / 2, 0);
 
@@ -442,8 +458,6 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
         return imageHeight;
     }
 
-    
-    
     /*
      * ***********************************************************************
      * Mouse interaction, e.g., draw zoom rect.
@@ -508,7 +522,7 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
         // selected rectangle shouldn't extend outside the data area...
         double xmax = Math.min(e.getX(), scaledDataArea.getMaxX());
         double ymax = Math.min(e.getY(), scaledDataArea.getMaxY());
-        
+
         if ((xmax - this.zoomPoint.getX()) > 0 && (ymax - this.zoomPoint.getY()) > 0) {
             this.zoomRectangle = new Rectangle2D.Double(this.zoomPoint.getX(),
                     this.zoomPoint.getY(),
@@ -548,7 +562,6 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
                 + ", yOffset=" + yOffset
                 + ", w=" + w
                 + ", h=" + h);
-        
 
         return new Rectangle2D.Double(x, y, w, h);
     }
@@ -578,28 +591,27 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
      * @param xor use XOR for drawing?
      */
     /*private void drawZoomRectangleManually(Graphics2D g2, boolean xor) {
-        if (this.zoomRectangle != null) {
-            if (xor) {
-                // Set XOR mode to draw the zoom rectangle
-                g2.setXORMode(Color.gray);
-            }
+     if (this.zoomRectangle != null) {
+     if (xor) {
+     // Set XOR mode to draw the zoom rectangle
+     g2.setXORMode(Color.gray);
+     }
 
-            g2.setPaint(Color.BLACK);
-            g2.setStroke(new BasicStroke(2));
+     g2.setPaint(Color.BLACK);
+     g2.setStroke(new BasicStroke(2));
 
-            g2.drawRect(((int) zoomRectangle.getX() - (int) xOffset), 
-                    ((int) zoomRectangle.getY() - (int) yOffset), 
-                    (int) zoomRectangle.getWidth(), 
-                    (int) zoomRectangle.getHeight());
+     g2.drawRect(((int) zoomRectangle.getX() - (int) xOffset), 
+     ((int) zoomRectangle.getY() - (int) yOffset), 
+     (int) zoomRectangle.getWidth(), 
+     (int) zoomRectangle.getHeight());
 
-            if (xor) {
-                // Reset to the default 'overwrite' mode
-                g2.setPaintMode();
-            }
-        }
-        zoomRect = true;
-    }*/
-
+     if (xor) {
+     // Reset to the default 'overwrite' mode
+     g2.setPaintMode();
+     }
+     }
+     zoomRect = true;
+     }*/
     /**
      * Draws zoom rectangle (if present). The drawing is performed in XOR mode,
      * therefore when this method is called twice in a row, the second call will
@@ -611,13 +623,13 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
     private void drawZoomRectangle(Graphics2D g2, boolean xor) {
 
         if (this.zoomRectangle != null) {
-            
-            VBASLogger.logDebug("zoomRectangle = [" 
-                    + (int) zoomRectangle.getX() + ", " 
-                    + (int) zoomRectangle.getY() + ", " 
-                    + (int) zoomRectangle.getWidth() + ", "  
+
+            VBASLogger.logDebug("zoomRectangle = ["
+                    + (int) zoomRectangle.getX() + ", "
+                    + (int) zoomRectangle.getY() + ", "
+                    + (int) zoomRectangle.getWidth() + ", "
                     + (int) zoomRectangle.getHeight() + "]");
-            
+
             if (xor) {
                 // Set XOR mode to draw the zoom rectangle
                 g2.setXORMode(Color.gray);
@@ -626,14 +638,14 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
             g2.setPaint(Color.BLACK);
 
             g2.setStroke(new BasicStroke(2));
-            
+
             /*g2.drawRect((int) zoomRectangle.getX(), 
-                    (int) zoomRectangle.getY(), 
-                    (int) zoomRectangle.getWidth(), 
-                    (int) zoomRectangle.getHeight());*/
-            g2.drawRect(((int) zoomRectangle.getX() - (int) xOffset), 
-                    ((int) zoomRectangle.getY() - (int) yOffset), 
-                    (int) zoomRectangle.getWidth(), 
+             (int) zoomRectangle.getY(), 
+             (int) zoomRectangle.getWidth(), 
+             (int) zoomRectangle.getHeight());*/
+            g2.drawRect(((int) zoomRectangle.getX() - (int) xOffset),
+                    ((int) zoomRectangle.getY() - (int) yOffset),
+                    (int) zoomRectangle.getWidth(),
                     (int) zoomRectangle.getHeight());
 
             if (xor) {

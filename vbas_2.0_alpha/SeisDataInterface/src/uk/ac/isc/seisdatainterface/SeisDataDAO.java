@@ -1026,7 +1026,7 @@ public class SeisDataDAO {
         }
 
         try {
-           if (isAssess) {
+            if (isAssess) {
                 st = assessCon.createStatement();
             } else {
                 st = pgCon.createStatement();
@@ -1099,7 +1099,7 @@ public class SeisDataDAO {
             } else {
                 st = pgCon.createStatement();
             }
-            
+
             rs = st.executeQuery(query);
 
             while (rs.next()) {
@@ -1838,17 +1838,17 @@ public class SeisDataDAO {
             //con = DriverManager.getConnection(url, pgUser, pgPassword);
             st = pgCon.createStatement();
 
-            query = "SELECT ba.pass, a.name, ec.type, ec.id AS assessid, ec.command AS command, eca.id AS cmdids\n"
-                    + " FROM edit_commands ec, command_group cg, edit_commands eca, block_allocation ba, analyst a\n"
+            query = "SELECT ba.pass, a.name, ec.type, ec.id AS assessid, ec.command AS command, eca.id AS cmdids"
+                    + " FROM edit_commands ec, command_group cg, edit_commands eca, block_allocation ba, analyst a"
                     + "   WHERE ec.evid = " + evid
-                    + "      AND cg.evid = ec.evid\n"
-                    + "      AND eca.evid = ec.evid\n"
-                    + "      AND (    ec.type = 'assess'\n"
-                    + "            OR ec.type = 'commit')\n"
-                    + "      AND cg.id = ec.id\n"
-                    + "      AND eca.id = cg.edit_commands_id\n"
-                    + "      AND ba.id = ec.block_allocation_id\n"
-                    + "      AND ba.analyst_id = a.id\n"
+                    + "      AND cg.evid = ec.evid"
+                    + "      AND eca.evid = ec.evid"
+                    + "      AND (ec.type = 'assess'"
+                    + "            OR ec.type = 'commit')"
+                    + "      AND cg.id = ec.id"
+                    + "      AND eca.id = cg.edit_commands_id"
+                    + "      AND ba.id = ec.block_allocation_id"
+                    + "      AND ba.analyst_id = a.id"
                     + " ORDER BY ec.adddate;";
 
             rs = st.executeQuery(query);
@@ -2056,8 +2056,26 @@ public class SeisDataDAO {
                 VBASLogger.logDebug("query= " + query);
                 rs = st.executeQuery(query);
 
-                /* 2: Fill schema with appropiate data. 
-                 Note: the FILL_ASSESS will read data from PGUSER. */
+                /* 2: Fill schema with appropiate data. */
+                /* NOTE: the FILL_ASSESS will read data from PGUSER. */
+                
+                /* NOTE: for "merge" command assess the evid will change to source evid*/
+                Boolean isMerge = false;
+                Integer srcEvid = null;
+                for (String function : functionArray) {
+                    if (function.contains("merge")) {
+                        isMerge = true;
+                        String[] token = function.split("\\s");
+                        srcEvid = Integer.valueOf(token[2]);
+                        break;
+                    }
+                }
+                if (isMerge) {
+                    query = "SELECT FILL_ASSESS (" + srcEvid + ", '" + pgUser + "');";
+                    VBASLogger.logDebug("isMerge=" + isMerge + ", query= " + query);
+                    rs = st.executeQuery(query);
+                }
+
                 query = "SELECT FILL_ASSESS (" + evid + ", '" + pgUser + "');";
                 VBASLogger.logDebug("query= " + query);
                 rs = st.executeQuery(query);

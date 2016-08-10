@@ -6,10 +6,8 @@
 package uk.ac.isc.processcommand;
 
 import javax.swing.ButtonGroup;
-import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import uk.ac.isc.seisdata.Command;
-import uk.ac.isc.seisdata.SeisEvent;
 import uk.ac.isc.seisdata.VBASLogger;
 import uk.ac.isc.seisdatainterface.FormulateCommand;
 import uk.ac.isc.seisdatainterface.Global;
@@ -60,7 +58,7 @@ public class ManualCommand extends javax.swing.JDialog {
             commandType = "merge";
             formulateCommand = new FormulateCommand(commandType, "seisevent", dest, "");
             formulateCommand.addAttribute("siesevent", dest, src);
-            formulateCommand.addSQLFunction("merge (" + src + ", " + dest + " )");
+            formulateCommand.addSQLFunction("merge ( " + src + " , " + dest + " )");
 
         } /*else if (radioButton_create.isSelected()) {
             JOptionPane.showMessageDialog(null, "Create: will be enabled in the next release.",
@@ -113,6 +111,7 @@ public class ManualCommand extends javax.swing.JDialog {
 
         panel_merge.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
+        radioButton_merge.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(radioButton_merge, org.openide.util.NbBundle.getMessage(ManualCommand.class, "ManualCommand.radioButton_merge.text")); // NOI18N
 
         text_mergeDest.setText(org.openide.util.NbBundle.getMessage(ManualCommand.class, "ManualCommand.text_mergeDest.text")); // NOI18N

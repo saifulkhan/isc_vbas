@@ -36,8 +36,8 @@ public class Locator {
         if (!new File(dir.toString()).exists()) {
             boolean success = (new File(dir.toString())).mkdirs();
             if (!success) {
-                String message = "Error creating the directory: " 
-                        + dir 
+                String message = "Error creating the directory: "
+                        + dir
                         + "\nReport to the system admin.";
                 VBASLogger.logSevere(message);
                 JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);

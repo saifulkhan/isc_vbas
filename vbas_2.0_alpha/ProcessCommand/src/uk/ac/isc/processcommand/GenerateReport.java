@@ -84,9 +84,10 @@ public class GenerateReport {
         this.createHTML();
         this.createTables();
         this.createViews();
-
+        this.logCommands();
     }
 
+    
     private void readData() {
 
         System.out.println(VBASLogger.debugAt() + "Load list of Hypocentre and Phase for SeisEvent: "
@@ -298,12 +299,12 @@ public class GenerateReport {
                     break;
 
                 case "station_geometry":
-                    StationAzimuthView saView = new StationAzimuthView(hypocentresList, phasesList, true);
+                    StationAzimuthView saView = new StationAzimuthView(hypocentresList, phasesList, isAssess);
                     genetarePNG(view, saView, saView.getViewWidth(), saView.getViewHeight());
                     break;
 
                 case "station_magnitudes":
-                    StationMagnitudeView smView = new StationMagnitudeView(hypocentresList, true);
+                    StationMagnitudeView smView = new StationMagnitudeView(hypocentresList, isAssess);
                     genetarePNG(view, smView, smView.getViewWidth(), smView.getViewHeight());
                     break;
 

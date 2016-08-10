@@ -104,6 +104,7 @@
       <SubComponents>
         <Component class="javax.swing.JRadioButton" name="radioButton_merge">
           <Properties>
+            <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="uk/ac/isc/processcommand/Bundle.properties" key="ManualCommand.radioButton_merge.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
             </Property>

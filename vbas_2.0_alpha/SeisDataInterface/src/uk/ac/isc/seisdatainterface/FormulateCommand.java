@@ -6,6 +6,7 @@ import com.orsoncharts.util.json.JSONObject;
 import java.util.Arrays;
 import com.orsoncharts.util.json.parser.JSONParser;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 import org.openide.util.Exceptions;
 
 /**
@@ -15,19 +16,44 @@ import org.openide.util.Exceptions;
  */
 public class FormulateCommand {
 
-    private static final String[] COMMAND_TYPES
-            = {"phaseedit", "hypocentreedit", "seiseventrelocate", "setprime", "seiseventbanish", "assess", 
-                "movehypocentre", "deletehypocentre", "createevent"};
+    private static final String[] COMMAND_TYPES = {"phaseedit",
+        "hypocentreedit",
+        "seiseventrelocate",
+        "setprime",
+        "seiseventbanish",
+        "seiseventunbanish",
+        "assess",
+        "movehypocentre",
+        "deletehypocentre",
+        "createevent",
+        "merge",
+        "commit"};
 
-    private static final String[] DATA_TYPES
-            = {"seisevent", "hypocentre", "phase"};
-    private static final String[] ATTRIBUTES
-            = { /*setprime*/"primehypocentre",
-                /*phaseedit*/ "phasetype", "phase_fixed", "nondef", "timeshift", "deleteamp", "phasebreak", "putvalue",
-                /*hypocentreedit*/ "depth", "time", "lat", "lon",
-                /*seiseventrelocate*/ "fix_depth", "free_depth", "fix_depth_default", "fix_depth_median", "do_gridsearch",
-                /*assess*/ "commands", "report",
-                "comment", "reason"};
+    private static final String[] DATA_TYPES = {"seisevent",
+        "hypocentre",
+        "phase"};
+
+    private static final String[] ATTRIBUTES = {"primehypocentre", /*setprime*/
+        "phasetype", /*phaseedit*/
+        "phase_fixed",
+        "nondef",
+        "timeshift",
+        "deleteamp",
+        "phasebreak",
+        "putvalue",
+        "depth", /*hypocentreedit*/
+        "time",
+        "lat",
+        "lon",
+        "fix_depth", /*seiseventrelocate*/
+        "free_depth",
+        "fix_depth_default",
+        "fix_depth_median",
+        "do_gridsearch",
+        "commands", /*assess*/
+        "report",
+        "comment",
+        "reason"};
 
     private final String commandType;
     private final String dataType;
@@ -37,11 +63,15 @@ public class FormulateCommand {
     public FormulateCommand(String commandType, String dataType, int id, String agency) {
 
         if (!Arrays.asList(COMMAND_TYPES).contains(commandType)) {
-            VBASLogger.logSevere("commandType=" + commandType + ", Supported:" + Arrays.toString(COMMAND_TYPES));
+            String message = "commandType=" + commandType + ", Supported:" + Arrays.toString(COMMAND_TYPES);
+            JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+            VBASLogger.logSevere(message);
         }
 
         if (!Arrays.asList(DATA_TYPES).contains(dataType)) {
-            VBASLogger.logSevere("dataType=" + dataType + ", Supported:" + Arrays.toString(DATA_TYPES));
+            String message = "dataType=" + dataType + ", Supported:" + Arrays.toString(DATA_TYPES);
+            JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+            VBASLogger.logSevere(message);
         }
 
         this.commandType = commandType;
@@ -229,24 +259,29 @@ public class FormulateCommand {
                 str += "Setprime" + " ";
                 str += command.get("agency").toString() + " ";
                 break;
-            
+
             case "movehypocentre":
                 str += "MoveHypocentre" + " ";
                 str += command.get("agency").toString() + " ";
                 break;
-            
+
             case "deletehypocentre":
                 str += "DeleteHypocentre" + " ";
                 str += command.get("agency").toString() + " ";
                 break;
-                
+
             case "createevent":
                 str += "CreateEvent" + " ";
                 str += command.get("agency").toString() + " ";
                 break;
 
             case "seiseventbanish":
-                str += commandType + " ";
+                str += "Banish" + " ";
+                str += command.get("id").toString() + " ";
+                break;
+
+            case "seiseventunbanish":
+                str += "Unbanish" + " ";
                 str += command.get("id").toString() + " ";
                 break;
 
@@ -296,7 +331,7 @@ public class FormulateCommand {
                     case "merge":
                         str += attribute.get("newValue") + " " + attribute.get("oldValue");
                         break;
-                        
+
                     default:
                         if (!attribute.get("name").toString().equals("reason")) {
                             str += (attribute.get("newValue") == null ? " " : attribute.get("name").toString()
