@@ -154,8 +154,8 @@ public class PhaseEditDialog extends JDialog {
 
         for (int i = 0; i < nRow; i++) {
 
-            FormulateCommand formulateCommand = 
-                    new FormulateCommand(commandType, "phase", (Integer) model.getValueAt(i, 0), ""); // agency is not used here.
+            FormulateCommand formulateCommand
+                    = new FormulateCommand(commandType, "phase", (Integer) model.getValueAt(i, 0), ""); // agency is not used here.
 
             /*
              * Type (phase type)
@@ -164,12 +164,14 @@ public class PhaseEditDialog extends JDialog {
             String newPhaseType = (String) model.getValueAt(i, 1);
             VBASLogger.logDebug("oldPhaseType= " + oldPhaseType + ", newPhaseType= " + newPhaseType);
 
-            if (!newPhaseType.equals(oldPhaseType) && !newPhaseType.equals("")) {
-                formulateCommand.addAttribute("phasetype", (String) model.getValueAt(i, 1), oldPhaseType);
-                formulateCommand.addSQLFunction("chphase ( "
-                        + (Integer) model.getValueAt(i, 0) + ", "
-                        + "''phase'', "
-                        + "''" + (String) model.getValueAt(i, 1) + "'' )");
+            if (newPhaseType != null) {
+                if (!newPhaseType.equals(oldPhaseType) && !newPhaseType.equals("")) {
+                    formulateCommand.addAttribute("phasetype", (String) model.getValueAt(i, 1), oldPhaseType);
+                    formulateCommand.addSQLFunction("chphase ( "
+                            + (Integer) model.getValueAt(i, 0) + ", "
+                            + "''phase'', "
+                            + "''" + (String) model.getValueAt(i, 1) + "'' )");
+                }
             }
 
             /*
@@ -177,11 +179,12 @@ public class PhaseEditDialog extends JDialog {
              */
             if ((Boolean) model.getValueAt(i, 2)) {
                 // TODO old value can be read from database
-                formulateCommand.addAttribute("phase_fixed", (Boolean) model.getValueAt(i, 2), null);
+                int fagVal = (Boolean) model.getValueAt(i, 2) ? 1 : 0;
+                formulateCommand.addAttribute("phase_fixed", fagVal, null);
                 formulateCommand.addSQLFunction("chphase ( "
                         + (Integer) model.getValueAt(i, 0) + ", "
                         + "''phase_fixed'', "
-                        + "''" + (Boolean) model.getValueAt(i, 2) + "'' )");
+                        + "''" + fagVal + "'' )");
             }
 
             /*
@@ -189,11 +192,12 @@ public class PhaseEditDialog extends JDialog {
              */
             if ((Boolean) model.getValueAt(i, 3)) {
                 // TODO old value can be read from database
-                formulateCommand.addAttribute("nondef", (Boolean) model.getValueAt(i, 3), null);
+                int fagVal = (Boolean) model.getValueAt(i, 3) ? 1 : 0;
+                formulateCommand.addAttribute("nondef", fagVal, null);
                 formulateCommand.addSQLFunction("chphase ( "
                         + (Integer) model.getValueAt(i, 0) + ", "
                         + "''nondef'', "
-                        + "''" + (Boolean) model.getValueAt(i, 3) + "'' )");
+                        + "''" + fagVal + "'' )");
             }
 
             /*

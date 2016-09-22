@@ -331,7 +331,6 @@ public class HypoMagnitudeViewPanel extends JPanel {
         Graphics2D g2 = (Graphics2D) g.create();
 
         // Saiful: isVertical is false (hardcoded)
-        // if (..) not used!
         if (isVertical) {
             hypoMagImg = freeChartMain.createBufferedImage(600, 300);
             magDeltaImg = freeChartDelta.createBufferedImage(600, 150);

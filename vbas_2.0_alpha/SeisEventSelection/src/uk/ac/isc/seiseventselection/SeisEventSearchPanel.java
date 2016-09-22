@@ -1,9 +1,7 @@
 package uk.ac.isc.seiseventselection;
 
-import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
@@ -13,7 +11,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.JViewport;
 import uk.ac.isc.seisdata.Command;
 import uk.ac.isc.seisdata.SeisEvent;
 import uk.ac.isc.seisdata.SeisEventsList;
@@ -129,7 +126,7 @@ public class SeisEventSearchPanel extends JPanel {
         try {
             evid = Integer.valueOf(evidString);
         } catch (NumberFormatException nfe) {
-            JOptionPane.showMessageDialog(null,
+            JOptionPane.showMessageDialog(this,
                     "The input Evid should be an integer value",
                     "Search Error",
                     JOptionPane.WARNING_MESSAGE);
@@ -140,7 +137,7 @@ public class SeisEventSearchPanel extends JPanel {
             found = seisEventsTable.searchSeiesEvent(evid);
         }
         if (evid != null && found == false) {
-            JOptionPane.showMessageDialog(null,
+            JOptionPane.showMessageDialog(this,
                     "Cannot find the input Evid, Please check the input!",
                     "Search Warning",
                     JOptionPane.WARNING_MESSAGE);
@@ -152,7 +149,7 @@ public class SeisEventSearchPanel extends JPanel {
 
         int row = table.getSelectedRow();
         if (row < 0) {
-            JOptionPane.showMessageDialog(null, "Select an event to banish.",
+            JOptionPane.showMessageDialog(this, "Select an event to banish.",
                     "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -179,7 +176,7 @@ public class SeisEventSearchPanel extends JPanel {
                 VBASLogger.logDebug(" Fired: " + commandType);
                 commandEvent.fireSeisDataChanged();
             } else {
-                JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
 
@@ -195,7 +192,7 @@ public class SeisEventSearchPanel extends JPanel {
 
         int row = table.getSelectedRow();
         if (row < 0) {
-            JOptionPane.showMessageDialog(null, "Select an event to unbanish.",
+            JOptionPane.showMessageDialog(this, "Select an event to unbanish.",
                     "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -222,7 +219,7 @@ public class SeisEventSearchPanel extends JPanel {
                 VBASLogger.logDebug(" Fired: " + commandType);
                 commandEvent.fireSeisDataChanged();
             } else {
-                JOptionPane.showMessageDialog(null, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Incorrect Command.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
 
@@ -238,7 +235,7 @@ public class SeisEventSearchPanel extends JPanel {
 
         int row = table.getSelectedRow();
         if (row < 0) {
-            JOptionPane.showMessageDialog(null, "Done: select an event.",
+            JOptionPane.showMessageDialog(this, "Done: select an event.",
                     "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -261,19 +258,29 @@ public class SeisEventSearchPanel extends JPanel {
 
         String evidString = text_search.getText().trim();
         Integer evid = null;
+
         try {
             evid = Integer.valueOf(evidString);
         } catch (NumberFormatException nfe) {
-            JOptionPane.showMessageDialog(null,
+            JOptionPane.showMessageDialog(this,
                     "The input Evid should be an integer value",
                     "Search Error",
                     JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        int dialogResult = JOptionPane.showConfirmDialog(this,
+                "Would you like to allocate a SeisEvent " + evid,
+                "Warning",
+                JOptionPane.YES_NO_OPTION);
+
+        if (dialogResult == JOptionPane.YES_OPTION) {
+            SeisDataDAO.processAllocateCommand(evid);
+
+            VBASLogger.logDebug("Firing an event...");
+            seisEventsList.fireSeisDataChanged();
         }
 
-        // TODO: call SQL functiuon
-        /* Load new SeiesEvent data */
-        VBASLogger.logDebug("Firing an event...");
-        seisEventsList.fireSeisDataChanged();
     }
 
 }

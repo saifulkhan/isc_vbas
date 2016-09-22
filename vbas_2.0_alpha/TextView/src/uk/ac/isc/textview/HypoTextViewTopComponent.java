@@ -120,8 +120,8 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         setName(Bundle.CTL_HypoTextViewTopComponent());
         setToolTipText(Bundle.HINT_HypoTextViewTopComponent());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
-        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
-        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.FALSE);
+        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.FALSE);
         //setName("Hypocentre Selection");
 
         VBASLogger.logDebug("Loaded...");
@@ -303,6 +303,7 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
     private MyTextPane getSummaryTextPane() {
 
         MyTextPane myTextPane = new MyTextPane();
+        myTextPane.setEditable(false);
         myTextPane.addMouseListener(new MyLinkController(myTextPane));
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -467,12 +468,14 @@ class MyLinkController extends MouseAdapter implements MouseMotionListener {
     }
 
     public void mouseReleased(MouseEvent e) {
-        copiedSelection = myTextPane.getSelectedText();
+        /*copiedSelection = myTextPane.getSelectedText();
 
         if (copiedSelection != null) {
             StringSelection data = new StringSelection(copiedSelection);
-            clipboard.setContents(data, data);
-        }
+            if (data != null) {
+                clipboard.setContents(data, data);
+            }
+        }*/
     }
 
     public void mouseClicked(MouseEvent e) {

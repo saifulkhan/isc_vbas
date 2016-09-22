@@ -21,6 +21,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.jfree.chart.ChartRenderingInfo;
@@ -134,8 +135,16 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
                 //ttimesScript = File.createTempFile("ttimes", ".pl"); 
                 ttimesScript = new File(scriptpath + File.separator + "ttimes.pl");
                 ttimesScript.setReadable(true, true);
+                ttimesScript.setWritable(true, true);
                 ttimesScript.setExecutable(true, true);
+                
                 VBASLogger.logDebug("Perl script location for TTDData, ttimesScript= " + ttimesScript.toPath());
+                if (!ttimesScript.canRead() && !ttimesScript.canExecute()) {
+                    String message = ttimesScript.toPath() + " is not readable and writable. Please report to system admin.";
+                    VBASLogger.logDebug(message);
+                    JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+                    //logger.log(Level.SEVERE, message);
+                }
 
                 Files.copy(inSream, ttimesScript.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 inSream.close();
@@ -216,19 +225,19 @@ public class PhaseTravelViewPanel extends JPanel implements MouseListener, Mouse
             maxDist = 1.0;
         } else {
             VBASLogger.logDebug("prime=" + prime + ", phaseTimeSeries.isEmpty()=" + phaseTimeSeries.isEmpty());
-            VBASLogger.logDebug("prime.getOrigTime()=" + String.valueOf(prime.getOrigTime()) 
+            VBASLogger.logDebug("prime.getOrigTime()=" + String.valueOf(prime.getOrigTime())
                     + "phaseTimeSeries.getMinX()=" + String.valueOf(phaseTimeSeries.getMinX()));
-            
+
             minTime = Math.min(prime.getOrigTime().getTime(), phaseTimeSeries.getMinX());
             maxTime = phaseTimeSeries.getMaxX();
             maxDist = phaseTimeSeries.getMaxY();
-            if (maxDist <= 0) { 
+            if (maxDist <= 0) {
                 maxDist = 1.0; // TODO: fix the script
-                JOptionPane.showMessageDialog(null, "Possible corrupted traveltime data (script).", 
+                JOptionPane.showMessageDialog(null, "Possible corrupted traveltime data (script).",
                         "WARNING", JOptionPane.ERROR_MESSAGE);
-            }   
-            
-            VBASLogger.logDebug("minTime=" + minTime + ", maxTime="  + maxTime + ", maxDist=" + maxDist);
+            }
+
+            VBASLogger.logDebug("minTime=" + minTime + ", maxTime=" + maxTime + ", maxDist=" + maxDist);
         }
 
         //VBASLogger.logDebug("#phaseTimeSeries:" + phaseTimeSeries.getItemCount() + " minTime=" + minTime + " maxTime=" + maxTime + " maxDist=" + maxDist);

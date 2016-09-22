@@ -48,8 +48,8 @@ public final class SeisEventSelectionTopComponent extends TopComponent {
         setName(Bundle.CTL_SeisEventSelectionTopComponent());
         setToolTipText(Bundle.HINT_SeisEventSelectionTopComponent());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
-        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
-        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.FALSE);
+        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.FALSE);
         //setName("SeisEvent Selection");
 
         VBASLogger.logDebug("Here...");

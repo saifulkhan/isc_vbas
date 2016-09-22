@@ -20,7 +20,6 @@ import org.jfree.ui.RectangleEdge;
 
 /**
  *
- * @author hui
  */
 public class MagSimpleCategoryAxis extends CategoryAxis {
 

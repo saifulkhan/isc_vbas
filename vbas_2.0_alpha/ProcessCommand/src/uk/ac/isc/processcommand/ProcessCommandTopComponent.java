@@ -49,8 +49,8 @@ public final class ProcessCommandTopComponent extends TopComponent {
         setName(Bundle.CTL_ProcessCommandTopComponent());
         setToolTipText(Bundle.HINT_ProcessCommandTopComponent());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
-        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.TRUE);
-        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.TRUE);
+        putClientProperty(TopComponent.PROP_SLIDING_DISABLED, Boolean.FALSE);
+        putClientProperty(TopComponent.PROP_UNDOCKING_DISABLED, Boolean.FALSE);
         //setName("Command Selection | Assessed Reports");
 
         VBASLogger.logDebug("Loaded...");

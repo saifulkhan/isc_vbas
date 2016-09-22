@@ -159,8 +159,8 @@ public class GenerateReport {
                 inSream.close();
 
                 if (htmlFile.exists()) {
-                    htmlFile.setReadable(true, false);
-                    htmlFile.setWritable(true, false);
+                    htmlFile.setReadable(true, true);
+                    htmlFile.setWritable(true, true);
                 }
 
             } catch (IOException e) {

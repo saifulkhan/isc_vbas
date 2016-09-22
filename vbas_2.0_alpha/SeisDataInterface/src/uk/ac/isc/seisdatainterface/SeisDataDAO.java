@@ -1946,8 +1946,16 @@ public class SeisDataDAO {
                     + "  LIMIT 1 )";
 
             VBASLogger.logDebug("query= " + query);
-            st.executeUpdate(query);
-            //rs.close();
+            int succ = st.executeUpdate(query);
+            // UPDATE 0    => failed, UPDATE 1    => pass, UPDATE X => somethiog wrong
+            if (succ != 1) {
+                String message = VBASLogger.debugAt()
+                        + "\nFailed to run, the query:"
+                        + query
+                        + "\nReport to system admin. ";
+                JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+                logger.log(Level.SEVERE, message);
+            }
 
         } catch (SQLException ex) {
             String message = ex.toString() + "\n\n"
@@ -2029,6 +2037,70 @@ public class SeisDataDAO {
     }
 
     /*
+     * Update the database when an event is "Banished".
+     */
+    public static Boolean processAllocateCommand(int evid) {
+
+        //Connection pgCon = null;
+        Statement st = null;
+        ResultSet rs = null;
+        String query = null;
+        Boolean ret = false;
+
+        try {
+            st = pgCon.createStatement();
+            query = "SELECT " + "ALLOCATE ( " + evid + " , '" + sysUser + "' );";
+            VBASLogger.logDebug("query= " + query);
+            rs = st.executeQuery(query);
+
+            while (rs.next()) {
+                if (rs.getInt("allocate") == 1) {
+                    String msg = "Failed to allocate a SeiesEvent. "
+                            + "\nReport to system admin."
+                            + "\nQuery: "
+                            + query;
+
+                    JOptionPane.showMessageDialog(null,
+                            msg,
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    logger.log(Level.SEVERE, msg);
+                    ret = false;
+                } else if (rs.getInt("allocate") == 0) {
+                    ret = true;
+                }
+            }
+
+            rs.close();
+
+        } catch (SQLException ex) {
+            String message = ex.toString() + "\n\n"
+                    + VBASLogger.debugAt()
+                    + "\nFailed to run."
+                    + "\nRepot to system admin."
+                    + "\nQuery= "
+                    + query;
+
+            JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+            logger.log(Level.SEVERE, message);
+            return false;
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (st != null) {
+                    st.close();
+                }
+            } catch (SQLException ex) {
+                return false;
+            }
+        }
+
+        return ret;
+    }
+
+    /*
      * Update the Assess Schema
      * Return the locatorCommandStr
      */
@@ -2040,6 +2112,8 @@ public class SeisDataDAO {
         Statement st = null;
         ResultSet rs = null;
         String query = null;
+        Boolean ret = false;
+        String notification = "Failed a database query, report to system admin.\n" + "Query: ";
 
         try {
 
@@ -2055,10 +2129,19 @@ public class SeisDataDAO {
                 query = "SELECT CLEAR_ASSESS();";
                 VBASLogger.logDebug("query= " + query);
                 rs = st.executeQuery(query);
+                while (rs.next()) {
+                    if (rs.getInt("clear_assess") == 1) {
+                        JOptionPane.showMessageDialog(null, notification + query + "\n", "Error", JOptionPane.ERROR_MESSAGE);
+                        logger.log(Level.SEVERE, notification + query + "\n");
+                        ret = false;
+                    } else if (rs.getInt("clear_assess") == 0) {
+                        ret = true;
+                        VBASLogger.logDebug("Success..");
+                    }
+                }
 
                 /* 2: Fill schema with appropiate data. */
                 /* NOTE: the FILL_ASSESS will read data from PGUSER. */
-                
                 /* NOTE: for "merge" command assess the evid will change to source evid*/
                 Boolean isMerge = false;
                 Integer srcEvid = null;
@@ -2070,31 +2153,59 @@ public class SeisDataDAO {
                         break;
                     }
                 }
+
                 if (isMerge) {
                     query = "SELECT FILL_ASSESS (" + srcEvid + ", '" + pgUser + "');";
                     VBASLogger.logDebug("isMerge=" + isMerge + ", query= " + query);
                     rs = st.executeQuery(query);
+                    while (rs.next()) {
+                        if (rs.getInt("fill_assess") == 1) {
+                            JOptionPane.showMessageDialog(null, notification + query + "\n", "Error", JOptionPane.ERROR_MESSAGE);
+                            logger.log(Level.SEVERE, notification + query + "\n");
+                            ret = false;
+                        } else if (rs.getInt("fill_assess") == 0) {
+                            ret = true;
+                            VBASLogger.logDebug("Success..");
+                        }
+                    }
                 }
 
                 query = "SELECT FILL_ASSESS (" + evid + ", '" + pgUser + "');";
                 VBASLogger.logDebug("query= " + query);
                 rs = st.executeQuery(query);
+                while (rs.next()) {
+                    if (rs.getInt("fill_assess") == 1) {
+                        JOptionPane.showMessageDialog(null, notification + query + "\n", "Error", JOptionPane.ERROR_MESSAGE);
+                        logger.log(Level.SEVERE, notification + query + "\n");
+                        ret = false;
+                    } else if (rs.getInt("fill_assess") == 0) {
+                        ret = true;
+                        VBASLogger.logDebug("Success..");
+                    }
+                }
             }
 
             /*3: Commands: apply data alteration functions */
-            for (String funtion : functionArray) {
-
-                query = "SELECT " + funtion;
+            for (String function : functionArray) {
+                query = "SELECT " + function + ";";
                 VBASLogger.logDebug("query= " + query);
                 rs = st.executeQuery(query);
+                
+                String functionName = function.split("\\s")[0];
+                 while (rs.next()) {
+                    if (rs.getInt(functionName) == 1) {
+                        JOptionPane.showMessageDialog(null, notification + query + "\n", "Error", JOptionPane.ERROR_MESSAGE);
+                        logger.log(Level.SEVERE, notification + query + "\n");
+                        ret = false;
+                    } else if (rs.getInt(functionName) == 0) {
+                        ret = true;
+                        VBASLogger.logDebug("Success..");
+                    }
+                }
             }
 
         } catch (SQLException ex) {
-            String message = ex.toString() + "\n\n"
-                    + "Failed query= " + query
-                    + "\nFailed the database command."
-                    + "\nSee the error log file for more information. ";
-
+            String message = notification + query + "\nException: " + ex.toString() + "\n\n";
             JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
             VBASLogger.logSevere(message);
 
