@@ -153,7 +153,7 @@ public class SeisEventRelocateDialog extends JDialog {
         }
 
         String commandType = "seiseventrelocate";
-        FormulateCommand formulateCommand 
+        FormulateCommand formulateCommand
                 = new FormulateCommand(commandType, "seisevent", selectedSeisEvent.getEvid(), selectedHypocentre.getAgency());
 
         /*
@@ -173,8 +173,19 @@ public class SeisEventRelocateDialog extends JDialog {
                 formulateCommand.addAttribute("fix_depth", depth, selectedHypocentre.getDepth());
                 formulateCommand.addLocatorArg("fix_depth=" + depth);
             } else if (radio_free.isSelected()) {
-                formulateCommand.addAttribute("free_depth", depth, selectedHypocentre.getDepth());
-                formulateCommand.addLocatorArg("free_depth=" + depth);
+                // Issue# 96
+                String arg = "";
+                if (depth.equals(selectedHypocentre.getDepth())) {
+                    arg = "depth=" + selectedHypocentre.getAgency();
+                } else {
+                    arg = "depth=" + depth;
+                }
+                arg += " lat=" + selectedHypocentre.getAgency()
+                        + " lon=" + selectedHypocentre.getAgency()
+                        + " time=" + selectedHypocentre.getAgency();
+
+                formulateCommand.addAttribute("depth", depth, selectedHypocentre.getDepth());
+                formulateCommand.addLocatorArg(arg);
             }
 
         }

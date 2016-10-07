@@ -23,20 +23,24 @@ public class SeisEvent extends AbstractSeisData {
     private String locatorMessage = null;
     private String nearbyEvents = null;
     /*'Done' will set this to 'now' date. 
-    If not null, i.e., the event is done and highlight as gray.*/
+     If not null, i.e., the event is done and highlight as gray.*/
     private Date finishDate;
     private Boolean isBanish = null;
 
+    private String duplicateEvents;
+
     public SeisEvent() {
+        //
     }
 
-    public SeisEvent(Integer evid, 
-            String eType, 
-            Double defaultDepthGrid, 
+    public SeisEvent(Integer evid,
+            String eType,
+            Double defaultDepthGrid,
             String locatorMessage,
             String nearbyEvents,
             Boolean isBanish,
-            Date finishDate) {
+            Date finishDate,
+            String duplicateEvents) {
         this.evid = evid;
         this.eType = eType;
         this.defaultDepthGrid = defaultDepthGrid;
@@ -44,7 +48,8 @@ public class SeisEvent extends AbstractSeisData {
         this.nearbyEvents = nearbyEvents;
         this.finishDate = finishDate;
         this.isBanish = isBanish;
-        
+        this.duplicateEvents = duplicateEvents;
+
         this.phaseNumber = 0;
         //VBASLogger.logDebug(this.evid + ", " + this.defaultDepthGrid + ", " + this.locatorMessage);
     }
@@ -64,6 +69,7 @@ public class SeisEvent extends AbstractSeisData {
         this.nearbyEvents = e.nearbyEvents;
         this.finishDate = e.finishDate;
         this.isBanish = e.isBanish;
+        this.duplicateEvents = e.duplicateEvents;
     }
 
     public void setEvid(Integer evid) {
@@ -160,13 +166,17 @@ public class SeisEvent extends AbstractSeisData {
     public void setFinishDate(Date finishDate) {
         this.finishDate = finishDate;
     }
-    
+
     public Boolean getIsBanish() {
         return isBanish;
     }
 
     public void setIsBanish(Boolean isBanish) {
         this.isBanish = isBanish;
+    }
+
+    public String getDuplicateEvents() {
+        return duplicateEvents;
     }
     
 }

@@ -52,7 +52,7 @@ public class Locator {
                     + "export PGPASSWORD=" + SeisDataDAO.getAssessPassword() + "; "
                     + "echo " + "\""
                     + Global.getSelectedSeisEvent().getEvid() + " "
-                    + locatorArgStr + "\"" + " | /export/isc-linux/src/iscloc/current_vbas/iscloc_vbas - > "
+                    + locatorArgStr + "\"" + " | " + SeisDataDAO.getLocatorBin() + " - > "
                     + iscLocOut;
         } else {
             runLocatorStr = "ssh beast "
@@ -60,7 +60,7 @@ public class Locator {
                     + "export PGPASSWORD=" + SeisDataDAO.getPgPassword() + "; "
                     + "echo " + "\""
                     + Global.getSelectedSeisEvent().getEvid() + " "
-                    + locatorArgStr + "\"" + " | /export/isc-linux/src/iscloc/current_vbas/iscloc_vbas - > "
+                    + locatorArgStr + "\"" + " | " + SeisDataDAO.getLocatorBin() + " - > "
                     + iscLocOut;
         }
 

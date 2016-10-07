@@ -96,8 +96,13 @@ public class FormulateCommand {
 
     String locatorArgStr = "";
 
+    // no balnk space should be there at the end of the string
     public void addLocatorArg(String arg) {
-        locatorArgStr += arg + " ";
+        if(locatorArgStr.equals("")) {
+            locatorArgStr += arg;
+        } else {
+            locatorArgStr += " " + arg;
+        }
     }
 
     public JSONObject getSystemCommand() {

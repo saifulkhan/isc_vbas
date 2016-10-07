@@ -30,7 +30,7 @@ public class PhaseTextViewTableModel extends AbstractTableModel {
         "SNR",
         "SE. Az.",
         "Phase ID",
-        "Reading ID"};
+        "Reading ID" };
 
     private final Class[] columns = new Class[]{
         String.class,
@@ -48,7 +48,7 @@ public class PhaseTextViewTableModel extends AbstractTableModel {
         Double.class, 
         Double.class, 
         Integer.class,
-        Integer.class};
+        Integer.class };
 
     public static final Object[] longValues = {
         "XXXXX",
@@ -123,6 +123,8 @@ public class PhaseTextViewTableModel extends AbstractTableModel {
                     retObject = dateFormat.format(phasesList.get(rowIndex).getArrivalTime())
                             + "."
                             + phasesList.get(rowIndex).getMsec() / 100;
+                    //VBASLogger.logDebug(phasesList.get(rowIndex).getPhid() + " Arrival time: " + dateFormat.format(phasesList.get(rowIndex).getArrivalTime()) + ", retObj:" + retObject.toString());
+                    
                 } else {
                     retObject = null;
                 }

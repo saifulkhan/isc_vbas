@@ -181,7 +181,7 @@
                 <li  class='active'><a href="#command">Command</a></li>
                 <li><a href="#hypocentre_table">Hypocentre Table</a></li>
                 <li><a href="#phase_table">Phase Table</a></li>
-                <li><a href="#hypocentre_siesmicity">Hypocentre Siesmicity</a></li>
+                <li><a href="#hypocentre_siesmicity">Hypocentre Seismicity</a></li>
                 <li><a href="#phase_travel_time">Phase Travel-time</a></li>
                 <li><a href="#station_magnitudes">Station Magnitudes</a></li>
                 <li><a href="#station_geometry">Station Geometry</a></li>
@@ -196,6 +196,8 @@
             <section id="command">
                 <div class="gap"> </div>
                 <div class="title"> Command  </div>
+                <div id="machine-command"> </div>
+                <div id="readable-command"> </div>
 
                  <script>
                     d3.json("systemCommand.json", function (error, data) {
@@ -214,7 +216,7 @@
                             }
                         }
 
-                        var container = d3.select("#command")
+                        var container = d3.select("#machine-command")
                                 .append("text")
                                 .html("<br/>"
                                         + "SeisEvent No: " + seisEvent + "<br/>"
@@ -234,9 +236,9 @@
                                 if (rawFile.status === 200 || rawFile.status == 0) {
                                     var allText = rawFile.responseText;
                                     //alert(allText);
-                                    var container = d3.select("#command")
+                                    var container = d3.select("#readable-command")
                                 .append("text")
-                                .html("<br/>  <br/>  <br/> " + allText)                                        
+                                .html("<br/> <br/> <br/> " + allText)                                        
                                 .style("font-size", 12 + "px")
                                 .style("font-family", "sans-serif");
                                 }
@@ -245,6 +247,7 @@
                         rawFile.send(null);
                     }
                     readTextFile("analystRedableCommand.txt");
+                    readTextFile("locatorMsg.txt");
                 </script>
 
             </section>
@@ -309,7 +312,7 @@
 
             <section id="hypocentre_siesmicity">
                 <div class="gap"> </div>
-                <div class="title"> Hypocentre Siesmicity </div>
+                <div class="title"> Hypocentre Seismicity </div>
                 <div> <img src="hypocentre_siesmicity.png" alt="hypocentre_siesmicity" class="bottom-three"> <br> </div>
             </section>
 

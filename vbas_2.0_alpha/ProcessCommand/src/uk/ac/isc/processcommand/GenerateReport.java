@@ -451,6 +451,35 @@ public class GenerateReport {
                 e.printStackTrace();
             }
         }
+        
+        
+        File fileLocatorMsg = new File(assessDir + File.separator + "locatorMsg.txt");
 
+             try {
+            // if the file doesnt exists, then create it
+            if (!fileLocatorMsg.exists()) {
+                fileLocatorMsg.createNewFile();
+                fileLocatorMsg.setReadable(true, false);
+                fileLocatorMsg.setWritable(true, false);
+            }
+
+            fileWritter = new FileWriter(fileLocatorMsg, false);
+            bufferedWriter = new BufferedWriter(fileWritter);
+            bufferedWriter.write("Locator Message:<br/>" + selectedSeisEvent.getLocatorMessage() + "<br/>");
+
+        } catch (IOException e) {
+            VBASLogger.logSevere("Error writing to json file.");
+            e.printStackTrace();
+        } finally {
+            try {
+                if (bufferedWriter != null) {
+                    bufferedWriter.close();
+                }
+            } catch (IOException e) {
+                VBASLogger.logSevere("Error releasing resources.");
+                e.printStackTrace();
+            }
+        }
+      
     }
 }

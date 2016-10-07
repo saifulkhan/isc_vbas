@@ -1,5 +1,6 @@
 package uk.ac.isc.seisdatainterface;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
@@ -45,17 +46,19 @@ public class SeisDataDAO {
     protected static String pgUser;
     protected static String pgPassword;
     protected static String sysUser;
-
-    // Assess schema 
+    // Assess schema
     protected static String assessUser;
     protected static String assessPassword;
+    // connections
+    private static Connection pgCon = null;
+    private static Connection assessCon = null;
+    // other
     private static String assessDir;
     private static String commitDir;
     private static String assessUrl;
     private static String commitUrl;
-
-    private static Connection pgCon = null;
-    private static Connection assessCon = null;
+    // locator binary
+    private static String locatorBin;
 
     static long totalLocatormessageLoadingTime = 0;
 
@@ -76,6 +79,7 @@ public class SeisDataDAO {
         commitDir = env.get("COMMITDIR");
         assessUrl = env.get("ASSESS_URL");
         commitUrl = env.get("COMMIT_URL");
+        locatorBin = env.get("OPSBIN") + File.separator + "iscloc";
 
         VBASLogger.logDebug("url=" + url
                 + ", user=" + pgUser
@@ -133,6 +137,10 @@ public class SeisDataDAO {
         return commitUrl;
     }
 
+    public static String getLocatorBin() {
+        return locatorBin;
+    }
+
     /**
      * retrieve all the events in a pgUser's schema
      *
@@ -149,13 +157,6 @@ public class SeisDataDAO {
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        /*long startTime = System.nanoTime();*/
-        /*query = "SELECT e.evid, h.author, h.day, h.lat, h.lon, h.depth, e.etype, get_default_depth_grid (h.lat, h.lon)"
-         + " FROM event e, hypocenter h"
-         + " WHERE e.prime_hyp = h.hypid"
-         + " AND h.isc_evid = e.evid AND e.banished IS NULL AND e.ready IS NOT NULL"
-         + " AND h.deprecated is NULL AND h.hypid = h.pref_hypid"
-         + " ORDER BY h.day ASC;";*/
         query = "SELECT e.evid, h.author, h.day, h.lat, h.lon, h.depth, e.etype, get_default_depth_grid (h.lat, h.lon), e.banished,"
                 + " ( SELECT MAX(ea.finish) FROM event_allocation ea WHERE ea.evid = e.evid )"
                 + "    FROM event e, hypocenter h"
@@ -185,7 +186,8 @@ public class SeisDataDAO {
                         SeisDataDAO.getLocatorMessage(evid),
                         SeisDataDAO.getNearbyEvents(evid),
                         isBanish,
-                        finishDate);
+                        finishDate,
+                        SeisDataDAO.getDuplicateEvents(evid));
 
                 Date dd = null;
                 try {
@@ -258,7 +260,7 @@ public class SeisDataDAO {
                 + evid
                 + " ORDER BY commno; ";
 
-        //VBASLogger.logDebug("\nEvid = " + evid); 
+        //VBASLogger.logDebug("\nEvid = " + evid);
         String tempMsg = "";
 
         try {
@@ -346,21 +348,26 @@ public class SeisDataDAO {
     }
 
     private static String getNearbyEvents(int evid) {
-        String nearbyEvents = null;
+        String nearbyEvents = "";
         Statement st = null;
         ResultSet rs = null;
-        String query = "SELECT near FROM near(" + evid + "); ";
+        String query = //"SELECT near FROM near(" + evid + "); ";
+                "SELECT e.evid,h.author,h.day,h.lat,h.lon,h.depth,(SELECT MAX(n.magnitude) FROM netmag n WHERE n.hypid = h.hypid )"
+                + "  FROM hypocenter h, event e"
+                + " WHERE e.evid IN ( SELECT * FROM NEAR(" + evid + ") )"
+                + "   AND h.hypid = e.prime_hyp"
+                + " ORDER BY h.day;";
 
         try {
             st = pgCon.createStatement();
             rs = st.executeQuery(query);
 
             while (rs.next()) {
-                if (rs.getObject(1) != null && nearbyEvents == null) {
-                    nearbyEvents = rs.getString(1) + " ";
-                } else if (rs.getObject(1) != null && nearbyEvents != null) {
-                    nearbyEvents += rs.getString(1) + " ";
-                }
+                int nEvid = rs.getInt("evid");
+                String nAuthor = rs.getString("author");
+                nearbyEvents += (nearbyEvents == "") 
+                        ? (nEvid + ":" + nAuthor)
+                        : (" " + nEvid + ":" + nAuthor);
             }
             /*endTime3 = System.nanoTime();*/
         } catch (SQLException ex) {
@@ -374,10 +381,6 @@ public class SeisDataDAO {
                 if (st != null) {
                     st.close();
                 }
-                /*if (pgCon != null) {
-                 pgCon.close();
-                 }*/
-
             } catch (SQLException ex) {
                 String message = VBASLogger.debugAt() + ex.toString();
                 logger.log(Level.SEVERE, message);
@@ -386,7 +389,46 @@ public class SeisDataDAO {
 
         return nearbyEvents;
     }
+    
+    private static String getDuplicateEvents(int evid) {
+        String dupEvents = "";
+        Statement st = null;
+        ResultSet rs = null;
+        String query = "SELECT * FROM DUPLICATES(" + evid + ");";
 
+        try {
+            st = pgCon.createStatement();
+            rs = st.executeQuery(query);
+
+            while (rs.next()) {
+                dupEvents += rs.getInt("ownrdid") + " " 
+                        + rs.getInt("ownrdid") + " " 
+                        + rs.getInt("ownrdid") + "\n";
+            }
+           
+        } catch (SQLException ex) {
+            String message = VBASLogger.debugAt() + ex.toString();
+            logger.log(Level.SEVERE, message);
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (st != null) {
+                    st.close();
+                }
+            } catch (SQLException ex) {
+                String message = VBASLogger.debugAt() + ex.toString();
+                logger.log(Level.SEVERE, message);
+            }
+        }
+
+        //System.err.println("Duplicate events:\n" + dupEvents);
+        return dupEvents;
+    }
+    
+    
+ 
     /**
      * retrieve events' magnitude, actually it retrieves the magnitudes of
      * primehypo
@@ -957,10 +999,12 @@ public class SeisDataDAO {
                 //SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 SimpleDateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-                if (rs.getObject(3) != null && rs.getObject(13) != null) {
+                if (rs.getObject(3) != null) {
                     try {
+                        // James: Issue#94: millisec field can be null, then treat as  0.
+                        int mSec = (rs.getObject(13) == null) ? 0 : rs.getInt(13);
+                        dd = df1.parse(rs.getString(3) + "." + mSec);
                         //dd = df.parse(rs.getString(3));
-                        dd = df1.parse(rs.getString(3) + "." + rs.getInt(13));
                     } catch (ParseException e) {
                         String message = "Failed parsing: " + rs.getObject(3) + rs.getObject(13)
                                 + "\nSee the error log file for more information. ";
@@ -973,7 +1017,7 @@ public class SeisDataDAO {
                     }
                     tmp.setArrivalTime(dd);
                 }
-
+                //VBASLogger.logDebug(tmp.getPhid() + ", Arrival time: " + dd);
                 PhasesList.add(tmp);
             }
 
@@ -1251,7 +1295,7 @@ public class SeisDataDAO {
         return true;
     }
 
-    //related with the scheduling 
+    //related with the scheduling
     /**
      * as the list is not big, so use iteration to fill the events number
      *
@@ -2190,9 +2234,9 @@ public class SeisDataDAO {
                 query = "SELECT " + function + ";";
                 VBASLogger.logDebug("query= " + query);
                 rs = st.executeQuery(query);
-                
+
                 String functionName = function.split("\\s")[0];
-                 while (rs.next()) {
+                while (rs.next()) {
                     if (rs.getInt(functionName) == 1) {
                         JOptionPane.showMessageDialog(null, notification + query + "\n", "Error", JOptionPane.ERROR_MESSAGE);
                         logger.log(Level.SEVERE, notification + query + "\n");
