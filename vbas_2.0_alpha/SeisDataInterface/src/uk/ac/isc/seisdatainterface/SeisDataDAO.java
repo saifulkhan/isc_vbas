@@ -365,7 +365,7 @@ public class SeisDataDAO {
             while (rs.next()) {
                 int nEvid = rs.getInt("evid");
                 String nAuthor = rs.getString("author");
-                nearbyEvents += (nearbyEvents == "") 
+                nearbyEvents += (nearbyEvents == "")
                         ? (nEvid + ":" + nAuthor)
                         : (" " + nEvid + ":" + nAuthor);
             }
@@ -389,8 +389,14 @@ public class SeisDataDAO {
 
         return nearbyEvents;
     }
-    
+
     private static String getDuplicateEvents(int evid) {
+
+        ArrayList dupevids = new <Integer>ArrayList();
+        ArrayList output = new <String>ArrayList();
+
+        Map map = new <Integer, String>HashMap();
+
         String dupEvents = "";
         Statement st = null;
         ResultSet rs = null;
@@ -401,11 +407,21 @@ public class SeisDataDAO {
             rs = st.executeQuery(query);
 
             while (rs.next()) {
-                dupEvents += rs.getInt("ownrdid") + " " 
-                        + rs.getInt("ownrdid") + " " 
-                        + rs.getInt("ownrdid") + "\n";
+
+                int key = rs.getInt("dupevid");
+                String value = rs.getString("ownsta") + " "
+                        + rs.getInt("ownphid") + " "
+                        + rs.getString("ownphase") + " "
+                        + rs.getInt("dupphid") + " "
+                        + rs.getString("dupphase") + " \n";
+
+                if (map.containsKey(key)) {
+                    map.put(key, map.get(key) + value);  // update or append
+                } else {
+                    map.put(key, value);
+                }
             }
-           
+
         } catch (SQLException ex) {
             String message = VBASLogger.debugAt() + ex.toString();
             logger.log(Level.SEVERE, message);
@@ -423,12 +439,16 @@ public class SeisDataDAO {
             }
         }
 
-        //System.err.println("Duplicate events:\n" + dupEvents);
+        for (Object key : map.keySet()) {
+            Object value = map.get(key);
+            dupEvents += key.toString() + ":\n" + value.toString() + "\n";
+        }
+        
+        
+        //System.err.println("evid=" + evid + ", Duplicate events:\n" + dupEvents);
         return dupEvents;
     }
-    
-    
- 
+
     /**
      * retrieve events' magnitude, actually it retrieves the magnitudes of
      * primehypo
