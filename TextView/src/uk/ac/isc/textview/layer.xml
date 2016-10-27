@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    <folder name="Windows2">
+        <folder name="Modes">
+            <file name="depthview.wsmode" url="depthviewWsmode.xml"/>
+            <file name="hypotext.wsmode" url="hypotextWsmode.xml"/>
+            <file name="magnitudeview.wsmode" url="magnitudeviewWsmode.xml"/>
+            <file name="mapview.wsmode" url="mapviewWsmode.xml"/>
+            <file name="phasearrivalview.wsmode" url="phasearrivalviewWsmode.xml"/>
+            <file name="phasetext.wsmode" url="phasetextWsmode.xml"/>
+        </folder>
+    </folder>
+</filesystem>

@@ -1,32 +1,3 @@
 *.ini
 build/
-/vbas0.1.0_Interaction/nbproject/private/
-/JMapViewerWrapper/nbproject/private/
-/dist/
-/AgencyPossiblityView/nbproject/private/
-/vbas0.1.0/dist/
-/ExperimentalCode/Swing1/nbproject/private/
-/ExperimentalCode/Swing1/Swing1/nbproject/private/
-/ExperimentalCode/Swing2/nbproject/private/
-/ExperimentalCode/Swing3/nbproject/private/
-/ExperimentalCode/Swing4/nbproject/private/
-/ExperimentalCode/Swing5 - Toolbars/nbproject/private/
-/ExperimentalCode/Swing6 - Communication/nbproject/private/
-/ExperimentalCode/Swing7_-_Listeners/nbproject/private/
-/ExperimentalCode/Swing7_-_Listeners_1/nbproject/private/
-/ExperimentalCode/Swing9_-_Setting-Component-Size/nbproject/private/
-/ExperimentalCode/Swing10_-_Setting-Borders/nbproject/private/
-/ExperimentalCode/Swing11_-_Text-Fields-and-Lables/nbproject/private/
-/ExperimentalCode/Swing12_-_Layout-Controls-with-GridbagLayout/nbproject/private/
-/ExperimentalCode/Swing13_-_List-Boxes/nbproject/private/
-/ExperimentalCode/myTable/nbproject/private/
-/ExperimentalCode/Table/components-TableDialogEditDemoProject/nbproject/private/
-/ExperimentalCode/Table/components-TableDialogEditDemoProject/nbproject/*
-/ExperimentalCode/Table/myTable/nbproject/
-/vbas0.1.0/nbproject/private/
-/ExperimentalCode/ObserverPattern/nbproject/private/
-/vbas0.1.0_alpha/ProcessCommand/nbproject/private/
-/vbas0.1.0_alpha/__ProcessCommand/nbproject/private/
-/vbas0.1.0_alpha/dist/
-/vbas_2.0_alpha/dist/
-/vbas_2.0_alpha/SeisDataInterface/nbproject/private/
+temp/

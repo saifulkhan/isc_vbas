@@ -1,0 +1,78 @@
+#!/usr/bin/perl -w
+
+#DOC
+#DOC   Program: gen_base_map
+#DOC
+#DOC   src dir: 
+#DOC
+#DOC      Desc: When the number of map levels is provided, the map tiles are generated and saved based on Mercator 
+#DOC            projection 
+#DOC Arguments:
+#DOC            
+#DOC
+#DOC    Calls:
+#DOC            pgcoast
+#DOC            convert
+#DOC
+
+use strict;
+use Getopt::Long;
+use Math::Trig;
+
+my $max_scale_level = 0;
+my $image_size = 256;
+my $num_row = 1;
+my $num_col = 1;
+
+# Read command line
+my $usage = "Usage: $0 -scale=scale_level\n";
+$usage .= "scale_level: how many levels of tiles are used, e.g. 0 means 256x256, 1 means 512x512 etc\n";
+
+GetOptions("scale=i" => \$max_scale_level)
+or die($usage);
+
+#print "$num_row\n$num_col\n";
+
+#Build directory for the tiles, top directory name is the same as the scale level
+#`mkdir "./Tiles"`;
+for(my $level=0;$level<=$max_scale_level;$level++)
+{
+#    my $top_dir_name = "./Tiles/$level/";
+#    `mkdir $top_dir_name`;
+     $num_row = 1 << $level;
+     $num_col = 1 << $level;	
+     for(my $column=0; $column<$num_col;$column++)
+     {     
+	for(my $row=0; $row<$num_row; $row++)
+        {
+            my $region = calc_region($level,$column,$row);
+
+        }
+     }
+}
+
+sub calc_region {
+
+    my ( $scale, $col_idx, $row_idx ) = @_;
+    my ($wes_pix, $eas_pix, $sos_pix, $nos_pix); 
+    my ($reg, $wes, $eas, $sos, $nos);
+    
+    my $maxpix = $image_size << $scale;
+    $wes_pix = $col_idx * $image_size + 1;
+    $eas_pix = ($col_idx + 1)*$image_size;
+    $sos_pix = ($row_idx + 1)*$image_size;
+    $nos_pix = $row_idx * $image_size + 1;
+
+    $wes = (($wes_pix-1)*360.0)/$maxpix - 180.0;
+    $eas = ($eas_pix*360.0)/$maxpix - 180.0;
+
+    $sos = -1*rad2deg(pi/2-2.0*atan(exp(-1.0*($sos_pix-($maxpix)/2)/($maxpix/(2*pi)))));
+    $nos = -1*rad2deg(pi/2-2.0*atan(exp(-1.0*($nos_pix-1-($maxpix)/2)/($maxpix/(2*pi)))));
+    #it is strange why right shift doesn't work
+    #$sos = -1*rad2deg(pi/2-2*atan(exp(-1.0*($sos_pix-($maxpix)>>1)/($maxpix/(2*pi)))));
+    #$nos = -1*rad2deg(pi/2-2*atan(exp(-1.0*($nos_pix-($maxpix)>>1)/($maxpix/(2*pi)))));
+
+    $reg = sprintf "%4.4f/%4.4f/%4.4f/%4.4f\n", $wes, $eas, $sos, $nos;
+    #print $reg;
+    return $reg;
+}
