@@ -12,7 +12,7 @@ import javax.swing.event.ChangeListener;
 /**
  * The control panel for setting criteria of data filtering
  *
- * @author hui
+ *  
  */
 class PhaseViewControlPanel extends JPanel {
 

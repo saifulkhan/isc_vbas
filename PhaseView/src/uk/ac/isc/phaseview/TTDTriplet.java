@@ -7,7 +7,7 @@ import java.util.Date;
 /**
  * keeping the travel time curve data
  *
- * @author hui
+ *  
  */
 public class TTDTriplet implements Comparable<TTDTriplet> {
 

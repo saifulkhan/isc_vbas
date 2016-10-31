@@ -25,7 +25,7 @@ import uk.ac.isc.seisdata.Phase;
  * difference between 2K and one K as well as ab, bc and df change all the K
  * type representation to straight lines
  *
- * @author hui
+ *  
  */
 public class DetailGlyphRenderer extends XYDotRenderer {
 

@@ -11,7 +11,7 @@ import org.jfree.data.time.TimeSeriesCollection;
  * The same as DuplicateUnorderTimeSeries, we allow duplications in the
  * timeseriescollection
  *
- * @author hui
+ *  
  */
 public class DuplicateUnorderTimeSeriesCollection extends TimeSeriesCollection implements LegendItemSource {
 

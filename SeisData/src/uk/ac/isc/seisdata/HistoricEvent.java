@@ -3,7 +3,7 @@ package uk.ac.isc.seisdata;
 /**
  * historic data
  *
- * @author hui
+ *  
  */
 public class HistoricEvent extends AbstractSeisData {
 

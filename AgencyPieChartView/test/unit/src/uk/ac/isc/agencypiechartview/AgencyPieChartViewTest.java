@@ -18,7 +18,7 @@ import uk.ac.isc.seisdatainterface.SeisDataDAO;
 
 /**
  *
- * @author hui
+ *  
  */
 public class AgencyPieChartViewTest {
 

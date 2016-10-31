@@ -18,7 +18,7 @@ import org.jfree.ui.RectangleEdge;
 /**
  * customed bar renderer
  *
- * @author hui
+ *  
  */
 public class MagBarRenderer extends BarRenderer {
 

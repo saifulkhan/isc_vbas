@@ -6,7 +6,7 @@ import java.awt.Paint;
 /**
  * Color API to generate a group of color sets
  *
- * @author hui
+ *  
  */
 public final class ColorUtils {
 

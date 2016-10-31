@@ -26,7 +26,7 @@ import org.jfree.ui.RectangleEdge;
 /**
  * customed category axis
  *
- * @author hui
+ *  
  */
 public class ISCEmphCategoryAxis extends CategoryAxis {
 

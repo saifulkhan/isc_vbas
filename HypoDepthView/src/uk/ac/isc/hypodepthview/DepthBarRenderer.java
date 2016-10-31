@@ -25,7 +25,7 @@ import uk.ac.isc.seisdata.Hypocentre;
 /**
  * custom the bar renderer
  *
- * @author hui
+ *  
  */
 class DepthBarRenderer extends BarRenderer {
 

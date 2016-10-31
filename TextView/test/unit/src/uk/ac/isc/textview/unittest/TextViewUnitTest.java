@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author hui
+ *  
  */
 public class TextViewUnitTest {
 

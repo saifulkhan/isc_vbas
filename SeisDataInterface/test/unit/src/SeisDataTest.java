@@ -22,7 +22,7 @@ import uk.ac.isc.seisdata.Station;
 
 /**
  *
- * @author hui
+ *  
  */
 public class SeisDataTest {
 

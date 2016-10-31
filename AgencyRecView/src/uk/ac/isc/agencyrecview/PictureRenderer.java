@@ -14,7 +14,7 @@ import org.openide.util.Exceptions;
 /**
  * just a cell renderer, need be revisited
  *
- * @author hui
+ *  
  */
 class PictureRenderer extends DefaultTableCellRenderer {
 

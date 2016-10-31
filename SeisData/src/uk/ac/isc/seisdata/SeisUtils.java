@@ -10,7 +10,7 @@ import java.util.Set;
  * Utilities to calculate distance, angels, magnitude groups, depth bands,
  * azimuth etc.
  *
- * @author hui
+ *  
  */
 public final class SeisUtils {
 

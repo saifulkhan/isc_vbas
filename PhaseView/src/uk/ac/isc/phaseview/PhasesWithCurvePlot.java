@@ -33,7 +33,7 @@ import org.jfree.ui.RectangleInsets;
 /**
  * customed plot with curves
  *
- * @author hui
+ *  
  */
 public class PhasesWithCurvePlot extends XYPlot {
 

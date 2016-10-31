@@ -9,7 +9,7 @@ import uk.ac.isc.seisdata.VBASLogger;
  *
  * Control panel for controlling the things shown on the main map
  *
- * @author hui
+ *  
  */
 public class OverviewControlPanel3 extends javax.swing.JPanel {
 

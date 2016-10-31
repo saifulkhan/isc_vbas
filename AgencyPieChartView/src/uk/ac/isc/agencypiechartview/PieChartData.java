@@ -12,7 +12,7 @@ import uk.ac.isc.seisdata.Phase;
 /**
  * Data structure to save the agency list for drawing the pie chart
  *
- * @author hui
+ *  
  */
 public class PieChartData {
 

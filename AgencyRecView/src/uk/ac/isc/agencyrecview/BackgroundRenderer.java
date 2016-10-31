@@ -10,7 +10,7 @@ import javax.swing.table.DefaultTableModel;
 /**
  * just a cell renderer, need be revisited
  *
- * @author hui
+ *  
  */
 class BackgroundRenderer extends DefaultTableCellRenderer {
 

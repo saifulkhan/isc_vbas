@@ -38,7 +38,7 @@ import uk.ac.isc.seisdata.SeisUtils;
 
 /**
  * This the main map panel to show the seismicity, hypocentres and minimap for the location
- * @author hui
+ *  
  * @deprecated 
  */
 public final class HypoOverviewPanel extends JPanel implements TileLoaderListener {

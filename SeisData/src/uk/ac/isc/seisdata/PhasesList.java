@@ -10,7 +10,7 @@ import java.util.ArrayList;
 /**
  * A wrapper of the Phase List
  *
- * @author hui
+ *  
  */
 public class PhasesList extends AbstractSeisData {
 

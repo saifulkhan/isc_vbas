@@ -13,7 +13,7 @@ import javax.swing.JRadioButton;
  * the map and enable/disable the text of presenting the number and percentage
  * of phase from directions
  *
- * @author hui
+ *  
  */
 public class StationAzimuthControlPanel extends JPanel {
 

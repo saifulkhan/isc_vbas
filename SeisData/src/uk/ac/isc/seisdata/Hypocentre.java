@@ -9,7 +9,7 @@ import java.util.Objects;
 /**
  * The data structure for hypocentre, currently we have 21 attributes
  *
- * @author hui
+ *  
  */
 public class Hypocentre extends AbstractSeisData implements Cloneable {
 

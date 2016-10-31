@@ -8,7 +8,7 @@ package uk.ac.isc.hypooverview;
 
 /**
  *
- * @author hui
+ *  
  * @deprecated 
  */
 public class OverviewControlPanel2 extends javax.swing.JPanel {

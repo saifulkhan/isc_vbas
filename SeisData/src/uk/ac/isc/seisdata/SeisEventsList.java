@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * A wrapper for the Event List
  *
- * @author hui
+ *  
  */
 public class SeisEventsList extends AbstractSeisData {
 

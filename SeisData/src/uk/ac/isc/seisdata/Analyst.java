@@ -2,7 +2,7 @@ package uk.ac.isc.seisdata;
 
 /**
  *
- * @author hui
+ *  
  */
 public class Analyst {
 

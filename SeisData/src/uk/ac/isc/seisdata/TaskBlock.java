@@ -7,7 +7,7 @@ import java.util.Objects;
  *
  * The class to keep the record of each assigned block
  *
- * @author hui
+ *  
  */
 public class TaskBlock implements Comparable<TaskBlock> {
 

@@ -5,7 +5,7 @@ import java.util.Comparator;
 
 /**
  *
- * @author hui
+ *  
  */
 public class Station extends AbstractSeisData {
 

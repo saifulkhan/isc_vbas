@@ -9,7 +9,7 @@ import javax.swing.event.EventListenerList;
  * Abstract class that all the data models inherit so that they can add
  * ChangeListener
  *
- * @author hui
+ *  
  */
 public abstract class AbstractSeisData implements SeisData, Cloneable {
 

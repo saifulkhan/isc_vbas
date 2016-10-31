@@ -4,7 +4,7 @@ package uk.ac.isc.seisdata;
  * This is for future likelihood view, representing the likelihood values based
  * on distance, magnitude and time.
  *
- * @author hui
+ *  
  */
 public class LikeliTriplet {
 

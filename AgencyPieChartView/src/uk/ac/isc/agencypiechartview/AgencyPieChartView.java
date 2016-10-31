@@ -14,7 +14,7 @@ import uk.ac.isc.seisdata.PhasesList;
 /**
  * The Piechart to show the percentage of phases reported by each agency
  *
- * @author hui
+ *  
  */
 public class AgencyPieChartView extends JPanel {
 

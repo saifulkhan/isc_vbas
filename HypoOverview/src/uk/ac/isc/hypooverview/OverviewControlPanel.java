@@ -14,7 +14,7 @@ import javax.swing.event.ChangeListener;
 
 /**
  * This is the panel to control the attributes and flags in the overviewMainPanel
- * @author hui
+ *  
  * @deprecated 
  */
 public final class OverviewControlPanel extends JPanel {
