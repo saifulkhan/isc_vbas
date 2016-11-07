@@ -1,14 +1,13 @@
 package uk.ac.isc.seisdatainterface;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,6 +24,7 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import uk.ac.isc.seisdata.AssessedCommand;
 import uk.ac.isc.seisdata.Command;
+import uk.ac.isc.seisdata.Duplicates;
 import uk.ac.isc.seisdata.HistoricEvent;
 import uk.ac.isc.seisdata.Hypocentre;
 import uk.ac.isc.seisdata.Phase;
@@ -60,7 +60,10 @@ public class SeisDataDAO {
     // locator binary
     private static String locatorBin;
 
+    public static DecimalFormat df = new DecimalFormat(".0");
+
     static long totalLocatormessageLoadingTime = 0;
+    static long totalDuplicatesLoadingTime = 0;
 
     static {
 
@@ -148,9 +151,11 @@ public class SeisDataDAO {
      * @return success flag
      */
     public static boolean retrieveAllEvents(ArrayList<SeisEvent> seisEvents) {
+
+        long startTime = System.nanoTime();
+
         seisEvents.clear();
 
-        //Connection pgCon = null;
         Statement st = null;
         ResultSet rs = null;
         String query = null;
@@ -169,7 +174,6 @@ public class SeisDataDAO {
         VBASLogger.logDebug("Executing Query: " + query);
 
         try {
-            //con = DriverManager.getConnection(url, pgUser, pgPassword);
             st = pgCon.createStatement();
             rs = st.executeQuery(query);
 
@@ -187,7 +191,7 @@ public class SeisDataDAO {
                         SeisDataDAO.getNearbyEvents(evid),
                         isBanish,
                         finishDate,
-                        SeisDataDAO.getDuplicateEvents(evid));
+                        SeisDataDAO.getDuplicates(evid));
 
                 Date dd = null;
                 try {
@@ -221,10 +225,6 @@ public class SeisDataDAO {
                 if (st != null) {
                     st.close();
                 }
-                /*if (pgCon != null) {
-                 pgCon.close();
-                 }*/
-
             } catch (SQLException ex) {
                 String message = ex.toString() + "\n\n"
                         + VBASLogger.debugAt()
@@ -240,20 +240,23 @@ public class SeisDataDAO {
             }
         }
 
-        /*long endTime = System.nanoTime();
-         long duration = (endTime - startTime) / 1000000;
-         VBASLogger.logDebug("Duration to load all the events = " + duration);
-         VBASLogger.logDebug("Total duration to load all the messages = " + totalLocatormessageLoadingTime);*/
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime) / 1000000;
+        VBASLogger.logDebug("Duration to load all the events = " + duration);
+        VBASLogger.logDebug("Total duration to load all the messages = " + totalLocatormessageLoadingTime);
+        VBASLogger.logDebug("Total duration to load all the duplicates = " + totalDuplicatesLoadingTime);
+
         return true;
     }
 
     private static String getLocatorMessage(int evid) {
 
-        /*long startTime1 = 0, endTime1 = 0, startTime2 = 0, endTime2 = 0, startTime3 = 0, endTime3 = 0;
-         startTime1 = System.nanoTime();
-         startTime2 = System.nanoTime();*/
+        long startTime1 = 0, endTime1 = 0, startTime2 = 0, endTime2 = 0, startTime3 = 0, endTime3 = 0;
+        startTime1 = System.nanoTime();
+        startTime2 = System.nanoTime();
+
         String msg = "";
-        //Connection pgCon = null;
+        String tempMsg = "";
         Statement st = null;
         ResultSet rs = null;
         String query = "SELECT comment FROM iscloc_comments WHERE evid = "
@@ -261,14 +264,12 @@ public class SeisDataDAO {
                 + " ORDER BY commno; ";
 
         //VBASLogger.logDebug("\nEvid = " + evid);
-        String tempMsg = "";
-
         try {
             st = pgCon.createStatement();
             rs = st.executeQuery(query);
 
-            /*endTime1 = System.nanoTime();
-             startTime3 = System.nanoTime();*/
+            endTime1 = System.nanoTime();
+            startTime3 = System.nanoTime();
             while (rs.next()) {
                 String locMsg = rs.getString(1);
                 tempMsg += locMsg + "\n";
@@ -326,24 +327,20 @@ public class SeisDataDAO {
                 if (st != null) {
                     st.close();
                 }
-                /*if (pgCon != null) {
-                 pgCon.close();
-                 }*/
-
             } catch (SQLException ex) {
                 String message = VBASLogger.debugAt() + ex.toString();
                 logger.log(Level.SEVERE, message);
             }
         }
 
-        //VBASLogger.logDebug("Entire locator message:\n" + tempMsg + "\nFiltered locator message:\n" + msg);
-        /*endTime2 = System.nanoTime();
-         VBASLogger.logDebug("Evid = " + evid
-         + ", T_SQL =" + (endTime1 - startTime1) / 1000000
-         + ", T_Parsing = " + (endTime3 - startTime3) / 1000000
-         + ", T_Total = " + (endTime2 - startTime2) / 1000000);
+        // VBASLogger.logDebug("Entire locator message:\n" + tempMsg + "\nFiltered locator message:\n" + msg);
+        endTime2 = System.nanoTime();
+        /*VBASLogger.logDebug("Evid = " + evid
+                + ", T_SQL =" + (endTime1 - startTime1) / 1000000
+                + ", T_Parsing = " + (endTime3 - startTime3) / 1000000
+                + ", T_Total = " + (endTime2 - startTime2) / 1000000);*/
+        totalLocatormessageLoadingTime += (endTime2 - startTime2) / 1000000;
 
-         totalLocatormessageLoadingTime += (endTime2 - startTime2) / 1000000;*/
         return msg;
     }
 
@@ -390,36 +387,53 @@ public class SeisDataDAO {
         return nearbyEvents;
     }
 
-    private static String getDuplicateEvents(int evid) {
+    private static ArrayList<Duplicates> getDuplicates(int evid) {
+        long startTime = System.nanoTime();
 
-        ArrayList dupevids = new <Integer>ArrayList();
-        ArrayList output = new <String>ArrayList();
-
-        Map map = new <Integer, String>HashMap();
-
-        String dupEvents = "";
         Statement st = null;
         ResultSet rs = null;
         String query = "SELECT * FROM DUPLICATES(" + evid + ");";
-
+        ArrayList<Duplicates> duplicatesList = new ArrayList<>();
+        
+        //VBASLogger.logDebug("Evid = " + evid);
         try {
             st = pgCon.createStatement();
             rs = st.executeQuery(query);
 
             while (rs.next()) {
 
-                int key = rs.getInt("dupevid");
-                String value = rs.getString("ownsta") + " "
-                        + rs.getInt("ownphid") + " "
-                        + rs.getString("ownphase") + " "
-                        + rs.getInt("dupphid") + " "
-                        + rs.getString("dupphase") + " \n";
+               
 
-                if (map.containsKey(key)) {
-                    map.put(key, map.get(key) + value);  // update or append
-                } else {
-                    map.put(key, value);
-                }
+                String ownsta = rs.getString("ownsta");
+                String ownphase = rs.getString("ownphase");
+                String ownresidual = rs.getDouble("ownresidual") > 0
+                        ? "+" + df.format(rs.getDouble("ownresidual"))
+                        : df.format(rs.getDouble("ownresidual"));
+
+                int owndelta = rs.getInt("owndelta");
+                String dupphase = rs.getString("dupphase");
+                String dupresidual = rs.getDouble("dupresidual") > 0
+                        ? "+" + df.format(rs.getDouble("dupresidual"))
+                        : df.format(rs.getDouble("dupresidual"));
+
+                int dupdelta = rs.getInt("dupdelta");
+                int dupevid = rs.getInt("dupevid");
+                String dupready = rs.getString("dupready");
+
+                Duplicates duplicates = new Duplicates(
+                        ownsta,
+                        ownphase,
+                        ownresidual,
+                        owndelta,
+                        dupphase,
+                        dupresidual,
+                        dupdelta,
+                        dupevid,
+                        dupready
+                );
+
+                duplicatesList.add(duplicates);
+                //VBASLogger.logDebug(duplicates.toString());
             }
 
         } catch (SQLException ex) {
@@ -439,14 +453,10 @@ public class SeisDataDAO {
             }
         }
 
-        for (Object key : map.keySet()) {
-            Object value = map.get(key);
-            dupEvents += key.toString() + ":\n" + value.toString() + "\n";
-        }
-        
-        
-        //System.err.println("evid=" + evid + ", Duplicate events:\n" + dupEvents);
-        return dupEvents;
+        totalDuplicatesLoadingTime += (System.nanoTime() - startTime) / 1000000;
+         //VBASLogger.logDebug("Evid = " + evid + ", t = " + (System.nanoTime() - startTime) / 1000000);
+                
+        return duplicatesList;
     }
 
     /**
@@ -674,7 +684,6 @@ public class SeisDataDAO {
                         ev.setPhaseNumber(rs.getInt(1));
                     }
                 }
-
             }
             rs.close();
 
@@ -688,9 +697,6 @@ public class SeisDataDAO {
                 if (st != null) {
                     st.close();
                 }
-                /*if (pgCon != null) {
-                 pgCon.close();
-                 }*/
 
             } catch (SQLException ex) {
                 return false;
@@ -972,7 +978,6 @@ public class SeisDataDAO {
             VBASLogger.logDebug(query);
 
             while (rs.next()) {
-                //VBASLogger.logDebug((++i) + " ");
                 Phase tmp = new Phase();
 
                 tmp.setReportAgency(rs.getString(1));
@@ -996,8 +1001,7 @@ public class SeisDataDAO {
 
                 tmp.setRdid(rs.getInt(11));
                 tmp.setStationFullName(rs.getString(12));
-                //tmp.setAmplitude(rs.getDouble(11));
-                //tmp.setPeriod(rs.getDouble(12));
+
                 tmp.setMsec(rs.getInt(13));
                 tmp.setSlowness(rs.getDouble(14));
 

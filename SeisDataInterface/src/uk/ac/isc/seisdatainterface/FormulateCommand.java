@@ -7,16 +7,15 @@ import java.util.Arrays;
 import com.orsoncharts.util.json.parser.JSONParser;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import org.openide.util.Exceptions;
+import uk.ac.isc.seisdata.CommandList;
 
-/**
- * **********************************************************************************************************
- * TODO: Move out of SeisData module.
- * *********************************************************************************************************
- */
+
 public class FormulateCommand {
 
-    private static final String[] COMMAND_TYPES = {"phaseedit",
+    private static final String[] COMMAND_TYPES = {
+        "phaseedit",
         "hypocentreedit",
         "seiseventrelocate",
         "setprime",
@@ -27,13 +26,17 @@ public class FormulateCommand {
         "deletehypocentre",
         "createevent",
         "merge",
-        "commit"};
+        "commit"
+    };
 
-    private static final String[] DATA_TYPES = {"seisevent",
+    private static final String[] DATA_TYPES = {
+        "seisevent",
         "hypocentre",
-        "phase"};
+        "phase"
+    };
 
-    private static final String[] ATTRIBUTES = {"primehypocentre", /*setprime*/
+    private static final String[] ATTRIBUTES = {
+        "primehypocentre", /*setprime*/
         "phasetype", /*phaseedit*/
         "phase_fixed",
         "nondef",
@@ -53,12 +56,16 @@ public class FormulateCommand {
         "commands", /*assess*/
         "report",
         "comment",
-        "reason"};
+        "reason"
+    };
 
     private final String commandType;
     private final String dataType;
     private final int id;           // id of the dataType
     private final String agency;    // Agency used in setprome, hypocentreedit, seiseventrelocate
+    
+    private  String analystRedableMergedCommand = "";
+
 
     public FormulateCommand(String commandType, String dataType, int id, String agency) {
 
@@ -98,7 +105,8 @@ public class FormulateCommand {
 
     // no balnk space should be there at the end of the string
     public void addLocatorArg(String arg) {
-        if(locatorArgStr.equals("")) {
+
+        if (locatorArgStr.equals("")) {
             locatorArgStr += arg;
         } else {
             locatorArgStr += " " + arg;
@@ -129,21 +137,41 @@ public class FormulateCommand {
     // Used by assess - merge multiple system commands
     // Extract the SQL functions and Locator arguments 
     // Merge with the existing system command
-    public void mergeSystemCommand(String cmd) {
+    public  ArrayList<Integer> mergeSystemCommand(int[] selectedRows, JTable tableCommand) {
+
+        ArrayList<Integer> commandIds = new ArrayList<Integer>();
+        CommandList commandList = Global.getCommandList();
 
         JSONParser parser = new JSONParser();
         Object obj = null;
 
-        try {
-            obj = parser.parse(cmd);
-        } catch (com.orsoncharts.util.json.parser.ParseException ex) {
-            VBASLogger.logSevere("cmd=" + cmd + " is not a valid json format.");
-        }
+        int i = 0;
+      
+        for (int row : selectedRows) {
+            commandIds.add((Integer) tableCommand.getValueAt(row, 0));
+            String cmd = commandList.getCommandList().get(row).getSystemCommand();
 
-        if (isJSONArray(cmd)) { // array of System Command
-            JSONArray arr = (JSONArray) obj;
-            for (Object o : arr) {
-                JSONObject jObj = (JSONObject) o;
+            VBASLogger.logDebug("Append the systemCommand: " + cmd);
+
+            try {
+                obj = parser.parse(cmd);
+            } catch (com.orsoncharts.util.json.parser.ParseException ex) {
+                VBASLogger.logSevere("cmd=" + cmd + " is not a valid json format.");
+            }
+
+            if (isJSONArray(cmd)) { // array of System Command
+                JSONArray arr = (JSONArray) obj;
+                for (Object o : arr) {
+                    JSONObject jObj = (JSONObject) o;
+                    JSONArray array = (JSONArray) jObj.get("sqlFunctionArray");
+                    if (array != null) {
+                        sqlFunctionArray.addAll(array);     // append all 
+                    }
+                    addLocatorArg(jObj.get("locatorArgStr").toString());
+                }
+
+            } else if (isJSONObject(cmd)) {
+                JSONObject jObj = (JSONObject) obj;
                 JSONArray array = (JSONArray) jObj.get("sqlFunctionArray");
                 if (array != null) {
                     sqlFunctionArray.addAll(array);     // append all 
@@ -151,19 +179,33 @@ public class FormulateCommand {
                 addLocatorArg(jObj.get("locatorArgStr").toString());
             }
 
-        } else if (isJSONObject(cmd)) {
-            JSONObject jObj = (JSONObject) obj;
-            JSONArray array = (JSONArray) jObj.get("sqlFunctionArray");
-            if (array != null) {
-                sqlFunctionArray.addAll(array);     // append all 
-            }
-            addLocatorArg(jObj.get("locatorArgStr").toString());
+            analystRedableMergedCommand += "[" + (++i) + "] "
+                    + createAnalystReadableCommand(commandList.getCommandList().get(row).getCommandProvenance());
         }
+                
+        this.addAttribute("analystRedableCommand", analystRedableMergedCommand, null);
 
-        VBASLogger.logDebug("sqlFunctionArray= " + sqlFunctionArray.toString());
-        VBASLogger.logDebug("locatorArgStr= " + locatorArgStr);
+        // Issue #101 : By default it should always be "do_gridsearch=0", unless otherwise it is defined as "do_gridsearch=1"
+        if (!locatorArgStr.contains("do_gridsearch=1") && !locatorArgStr.contains("do_gridsearch=0")) {
+            addLocatorArg("do_gridsearch=0");
+        }
+        
+        VBASLogger.logDebug("\nMerge Complete.." 
+                + "\ncommandIds = " + commandIds 
+                + "\nsqlFunctionArray = " + sqlFunctionArray
+                + "\nlocatorArgStr = " + locatorArgStr
+                + "\nanalystRedableCommand = " + analystRedableMergedCommand 
+                + "\n");
+        
+        return commandIds;
     }
 
+    
+    public String getAnalystRedableMergedCommand() {
+        return analystRedableMergedCommand;
+    }
+    
+    
     public ArrayList<String> getSQLFunctionArray() {
         ArrayList<String> fun = new ArrayList<String>();
 
@@ -223,8 +265,9 @@ public class FormulateCommand {
         return obj;
     }
 
-    // Analyst redable 
-    public static String getAnalystReadableCommand(String cmd) {
+    // Analyst redable command is generated
+    // Used as a static when the table is formulated
+    public static String createAnalystReadableCommand(String cmd) {
 
         VBASLogger.logDebug("JSON Format: " + cmd);
 
@@ -383,62 +426,4 @@ public class FormulateCommand {
         return false;
     }
 
-    /*
-    
-     // Reformat the input command (Command Provenance format) for user.
-     public static String getRedableCommandStr(String cmd) {
-
-     VBASLogger.logDebug("json: " + cmd);
-
-     JSONParser parser = new JSONParser();
-     Object obj = null;
-     try {
-     obj = parser.parse(cmd);
-     } catch (com.orsoncharts.util.json.parser.ParseException ex) {
-     VBASLogger.logSevere("cmd=" + cmd + " is not a valid json format.");
-     }
-
-     String str = "";
-
-     if (isJSONArray(cmd)) { // array of System Command
-     JSONArray commands = (JSONArray) obj;
-     for (Object o : commands) {
-     JSONObject command = (JSONObject) o;
-     str += command.get("dataType").toString() + "#" + command.get("id").toString() + ": ";
-
-     // TODO: repeated code
-     JSONArray attributes = (JSONArray) command.get("attributeArray");
-     if (attributes != null) {
-     for (Object o1 : attributes) {
-     JSONObject attribute = (JSONObject) o1;
-     str += attribute.get("name").toString() + ":"
-     + (attribute.get("oldValue") == null ? "" : (attribute.get("oldValue").toString() + "->"))
-     + (attribute.get("newValue") == null ? "" : attribute.get("newValue").toString())
-     + " ";
-     }
-     }
-     }
-
-     } else if (isJSONObject(cmd)) {
-     JSONObject command = (JSONObject) obj;
-     str += command.get("dataType").toString() + "#" + command.get("id").toString() + ": ";
-
-     // TODO: repeated code
-     JSONArray attributes = (JSONArray) command.get("attributeArray");
-     if (attributes != null) {
-     for (Object o1 : attributes) {
-     JSONObject attribute = (JSONObject) o1;
-     str += attribute.get("name").toString() + ":"
-     + (attribute.get("oldValue") == null ? "" : (attribute.get("oldValue").toString() + "->"))
-     + (attribute.get("newValue") == null ? "" : attribute.get("newValue").toString())
-     + " ";
-     }
-     }
-
-     }
-
-     VBASLogger.logDebug("readable format: " + str);
-     return str;
-     }
-     */
 }

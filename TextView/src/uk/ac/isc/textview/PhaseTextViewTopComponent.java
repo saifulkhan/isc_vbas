@@ -11,6 +11,7 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -182,6 +183,8 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         table.getColumnModel().getColumn(13).setCellRenderer(centerRenderer);
         table.getColumnModel().getColumn(14).setCellRenderer(centerRenderer);
         table.getColumnModel().getColumn(15).setCellRenderer(centerRenderer);
+        // OP.ID. is NULL
+        table.getColumnModel().getColumn(6).setCellRenderer(new PhaseTableCellRender());
 
         // This part of the code picks good column sizes. 
         // If all column heads are wider than the column's cells'
@@ -244,6 +247,9 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         longTable.getColumnModel().getColumn(9).setCellRenderer(rightRenderer);
         longTable.getColumnModel().getColumn(10).setCellRenderer(rightRenderer);
         longTable.getColumnModel().getColumn(11).setCellRenderer(rightRenderer);
+        
+        // OP.ID. is NULL
+        longTable.getColumnModel().getColumn(6).setCellRenderer(new PhaseTableCellRender());
 
         longTable.setRowHeight(25);
         longTable.setFont(new Font("Sans-serif", Font.PLAIN, 14));
@@ -330,6 +336,44 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         }
     }
 
+    
+    /*
+     **********************************************************************************
+     * Code to render cell
+     * 
+     ***********************************************************************************
+     */
+    class PhaseTableCellRender extends DefaultTableCellRenderer {
+
+        @Override
+        public Component getTableCellRendererComponent(
+                JTable table,
+                Object value,
+                boolean isSelected,
+                boolean hasFocus,
+                int row,
+                int column) {
+
+            Color backgroundColor = getBackground();
+
+            Component cellComponent
+                    = super.getTableCellRendererComponent(
+                            table, value, isSelected, hasFocus, row, column);
+
+            String origPhaseType = phasesList.getPhases().get(row).getOrigPhaseType();
+ 
+            if (origPhaseType == null) {
+                //VBASLogger.logDebug(origPhaseType);
+                cellComponent.setBackground(Color.GRAY);
+            } else {
+                cellComponent.setBackground(Color.WHITE);
+            }
+
+            return cellComponent;
+        }
+    }
+
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -376,4 +420,9 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         // TODO read your settings according to their version
     }
 
+    
+    
 }
+
+
+

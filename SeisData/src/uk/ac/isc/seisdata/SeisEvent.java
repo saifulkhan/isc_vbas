@@ -1,5 +1,6 @@
 package uk.ac.isc.seisdata;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -22,12 +23,14 @@ public class SeisEvent extends AbstractSeisData {
     private Double defaultDepthGrid = null;
     private String locatorMessage = null;
     private String nearbyEvents = null;
-    /*'Done' will set this to 'now' date. 
-     If not null, i.e., the event is done and highlight as gray.*/
+    /*
+    'Done' will set this to 'now' date. 
+     If not null, i.e., the event is done and highlight as gray.
+    */
     private Date finishDate;
     private Boolean isBanish = null;
 
-    private String duplicateEvents;
+    private ArrayList<Duplicates> duplicatesList = null;
 
     public SeisEvent() {
         //
@@ -40,7 +43,7 @@ public class SeisEvent extends AbstractSeisData {
             String nearbyEvents,
             Boolean isBanish,
             Date finishDate,
-            String duplicateEvents) {
+            ArrayList<Duplicates> duplicatesList) {
         this.evid = evid;
         this.eType = eType;
         this.defaultDepthGrid = defaultDepthGrid;
@@ -48,7 +51,7 @@ public class SeisEvent extends AbstractSeisData {
         this.nearbyEvents = nearbyEvents;
         this.finishDate = finishDate;
         this.isBanish = isBanish;
-        this.duplicateEvents = duplicateEvents;
+        this.duplicatesList = duplicatesList;
 
         this.phaseNumber = 0;
         //VBASLogger.logDebug(this.evid + ", " + this.defaultDepthGrid + ", " + this.locatorMessage);
@@ -69,7 +72,7 @@ public class SeisEvent extends AbstractSeisData {
         this.nearbyEvents = e.nearbyEvents;
         this.finishDate = e.finishDate;
         this.isBanish = e.isBanish;
-        this.duplicateEvents = e.duplicateEvents;
+        this.duplicatesList = e.duplicatesList;
     }
 
     public void setEvid(Integer evid) {
@@ -175,8 +178,8 @@ public class SeisEvent extends AbstractSeisData {
         this.isBanish = isBanish;
     }
 
-    public String getDuplicateEvents() {
-        return duplicateEvents;
+    public ArrayList<Duplicates> getDuplicates() {
+        return duplicatesList;
     }
     
 }

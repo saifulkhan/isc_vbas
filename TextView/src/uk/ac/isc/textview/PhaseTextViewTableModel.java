@@ -30,9 +30,10 @@ public class PhaseTextViewTableModel extends AbstractTableModel {
         "SNR",
         "SE. Az.",
         "Phase ID",
-        "Reading ID" };
+        "Reading ID" 
+    };
 
-    private final Class[] columns = new Class[]{
+    private final Class[] columns = new Class[] {
         String.class,
         String.class,
         String.class,
@@ -48,7 +49,8 @@ public class PhaseTextViewTableModel extends AbstractTableModel {
         Double.class, 
         Double.class, 
         Integer.class,
-        Integer.class };
+        Integer.class 
+    };
 
     public static final Object[] longValues = {
         "XXXXX",
@@ -66,7 +68,8 @@ public class PhaseTextViewTableModel extends AbstractTableModel {
         new Double(0.0),
         new Double(0.0),
         new Integer(999999999),
-        new Integer(999999999)};
+        new Integer(999999999)
+    };
 
     private ArrayList<Phase> phasesList;
 

@@ -4,12 +4,9 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
 import org.jfree.data.time.Millisecond;
-import org.jfree.data.time.Second;
 import org.openide.util.Exceptions;
 import uk.ac.isc.seisdata.VBASLogger;
 

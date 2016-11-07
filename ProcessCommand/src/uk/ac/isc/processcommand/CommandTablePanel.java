@@ -157,30 +157,17 @@ public class CommandTablePanel extends JPanel {
             return false;
         }
 
+        // create a new command merged all the selected commands.
         ArrayList<Integer> commandIds = new ArrayList<Integer>();
         FormulateCommand formulateCommand
                 = new FormulateCommand(commandType, "seisevent", Global.getSelectedSeisEvent().getEvid(), "");
 
-        /* Process (merge) selected commands */
-        String analystRedableCommand = "";
-        int i = 0;
-        for (int row : selectedRows) {
-            commandIds.add((Integer) tableCommand.getValueAt(row, 0));
-            String systemCommandStr = commandList.getCommandList().get(row).getSystemCommand();
-
-            VBASLogger.logDebug("Append the systemCommand: " + systemCommandStr);
-            formulateCommand.mergeSystemCommand(systemCommandStr);
-
-            analystRedableCommand += "[" + (++i) + "] "
-                    + FormulateCommand.getAnalystReadableCommand(
-                            commandList.getCommandList().get(row).getCommandProvenance());
-            VBASLogger.logDebug("Append the analystRedableCommand: " + analystRedableCommand);
-        }
-        formulateCommand.addAttribute("analystRedableCommand", analystRedableCommand, null);
-
-
-        /*update the assessed table*/
+        commandIds = formulateCommand.mergeSystemCommand(selectedRows, tableCommand);
+                 
+      
+        /* Update the assessed-command table */
         int newAssessId = 0;
+        
         if (formulateCommand.isValidSystemCommand()) {
             VBASLogger.logDebug("isAssess=" + isAssess + ", offsetUrl=" + offsetUrl);
             VBASLogger.logDebug("commandProvenance= " + formulateCommand.getCmdProvenance().toString());
@@ -221,7 +208,7 @@ public class CommandTablePanel extends JPanel {
             /* generate report */
             GenerateReport generateReport = new GenerateReport(dir,
                     newAssessId,
-                    analystRedableCommand,
+                    formulateCommand.getAnalystRedableMergedCommand(),
                     formulateCommand.getSystemCommand().toString(),
                     isAssess);
 
@@ -250,6 +237,7 @@ public class CommandTablePanel extends JPanel {
         return true;
     }
 
+    
     private void onButtonManualComamndActionPerformed(ActionEvent ae) {
         manualCommand.setLocationRelativeTo(button_manualCommand);
         manualCommand.showManualCommandDialog(selectedSeisEvent.getEvid());

@@ -70,17 +70,13 @@ public class CommandTableModel extends AbstractTableModel {
                 break;
 
             case 3:
-                retObject = FormulateCommand.getAnalystReadableCommand(
+                retObject = FormulateCommand.createAnalystReadableCommand(
                         commandList.get(rowIndex).getCommandProvenance());
                 break;
 
             case 4:
                 retObject = commandList.get(rowIndex).getStatus();
                 break;
-            /*default:
-             String message
-             = VBASLogger.debugAt() + "\nSee the error log file for more information. ";
-             JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);*/
         }
 
         return retObject;
@@ -88,7 +84,6 @@ public class CommandTableModel extends AbstractTableModel {
 
     @Override
     public Class getColumnClass(int c) {
-        //System.out.println(Global.debugAt() + "c= " + c + ", getValueAt(0, c)=" + getValueAt(0, c));
         //return getValueAt(0, c).getClass();
         return columns[c];
     }

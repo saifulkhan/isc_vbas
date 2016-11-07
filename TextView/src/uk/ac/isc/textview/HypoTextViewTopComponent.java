@@ -10,15 +10,22 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.datatransfer.Clipboard;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
@@ -32,13 +39,16 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.html.HTML;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -284,11 +294,11 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
         }
     }
 
-    private MyTextPane getSummaryTextPane() {
+    private SummaryTextPane getSummaryTextPane() {
 
-        MyTextPane myTextPane = new MyTextPane();
-        myTextPane.setEditable(false);
-        myTextPane.addMouseListener(new MyLinkController(myTextPane));
+        SummaryTextPane summaryTextPane = new SummaryTextPane();
+        summaryTextPane.setEditable(false);
+        summaryTextPane.addMouseListener(new MyLinkController(summaryTextPane));
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String summary = selectedSeisEvent.getEvid() + "\n"
@@ -297,13 +307,13 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
                 + selectedSeisEvent.geteType() + "\n"
                 + "Grid Depth: " + selectedSeisEvent.getDefaultDepthGrid() + "\n";
 
-        myTextPane.append("Summary\n", Color.BLACK, 14, false, true, StyleConstants.ALIGN_CENTER);
-        myTextPane.append(summary, Color.BLACK, 14, false, false, StyleConstants.ALIGN_LEFT);
+        summaryTextPane.addText("Summary\n", Color.BLACK, 14, false, true, StyleConstants.ALIGN_CENTER);
+        summaryTextPane.addText(summary, Color.BLACK, 14, false, false, StyleConstants.ALIGN_LEFT);
 
-        myTextPane.append("\nLocator Message\n", Color.BLACK, 14, false, true, StyleConstants.ALIGN_CENTER);
-        myTextPane.append(selectedSeisEvent.getLocatorMessage(), Color.BLACK, 14, false, false, StyleConstants.ALIGN_LEFT);
+        summaryTextPane.addText("\nLocator Message\n", Color.BLACK, 14, false, true, StyleConstants.ALIGN_CENTER);
+        summaryTextPane.addText(selectedSeisEvent.getLocatorMessage(), Color.BLACK, 14, false, false, StyleConstants.ALIGN_LEFT);
 
-        myTextPane.append("\nNearby Events\n", Color.BLACK, 14, false, true, StyleConstants.ALIGN_CENTER);
+        summaryTextPane.addText("\nNearby Events\n", Color.BLACK, 14, false, true, StyleConstants.ALIGN_CENTER);
 
         if (selectedSeisEvent.getNearbyEvents() != null) {
             //VBASLogger.logDebug("nearbyEvents:" + selectedSeisEvent.getNearbyEvents());
@@ -316,7 +326,7 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
                             + "&out_format=IMS1.0&request=COMPREHENSIVE&table_owner="
                             + SeisDataDAO.getPgUser());
 
-                    myTextPane.addHyperlink(url, ev + "\n", Color.blue, 14, false, false, StyleConstants.ALIGN_LEFT);
+                    summaryTextPane.addHyperlink(url, ev + "\n", Color.blue, 14, false, false, StyleConstants.ALIGN_LEFT);
                 } catch (MalformedURLException ex) {
                     ex.printStackTrace();
                 }
@@ -324,10 +334,20 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
             }
         }
 
-        myTextPane.append("\nDuplicate Events\n", Color.BLACK, 14, false, true, StyleConstants.ALIGN_CENTER);
-        myTextPane.append(selectedSeisEvent.getDuplicateEvents(), Color.BLACK, 14, false, false, StyleConstants.ALIGN_LEFT);
+        summaryTextPane.addText("\nDuplicate Events\n", Color.BLACK, 14, false, true, StyleConstants.ALIGN_CENTER);
+        // summaryTextPane.addText(selectedSeisEvent.getDuplicateEvents(), Color.BLACK, 14, false, false, StyleConstants.ALIGN_LEFT);
 
-        return myTextPane;
+        
+        // Duplicates
+        JDialog dupFrame = new JDialog();
+        dupFrame.pack();
+
+        JScrollPane dupScrollPane = new JScrollPane(new JTable(new DuplicatesTableModel(selectedSeisEvent.getDuplicates())));
+        dupFrame.add(dupScrollPane, BorderLayout.CENTER);
+        
+        summaryTextPane.addButton(selectedSeisEvent.getDuplicates().size(), dupFrame);
+         
+        return summaryTextPane;
 
     }
 
@@ -380,14 +400,15 @@ public final class HypoTextViewTopComponent extends TopComponent implements Seis
 
 /**
  * ******************************************************************************************************
- * Text formating Hint: 1.
- * https://docs.oracle.com/javase/tutorial/uiswing/components/editorpane.html 2.
+ * Text formating Hint: (a)
+ * https://docs.oracle.com/javase/tutorial/uiswing/components/editorpane.html
+ * (b)
  * https://www.daniweb.com/programming/software-development/threads/331500/how-can-i-add-a-clickable-url-in-a-jtextpane
  * *******************************************************************************************************
  */
-class MyTextPane extends JTextPane {
+class SummaryTextPane extends JTextPane {
 
-    public void append(String text,
+    public void addText(String text,
             Color c,
             int font,
             Boolean isItalic,
@@ -414,13 +435,15 @@ class MyTextPane extends JTextPane {
         }
     }
 
-    public void addHyperlink(URL url,
+    public void addHyperlink(
+            URL url,
             String text,
             Color c,
             int font,
             Boolean isItalic,
             Boolean isBold,
             int alignment /*StyleConstants.ALIGN_CENTER*/) {
+
         try {
             Document doc = this.getDocument();
             SimpleAttributeSet attrs = new SimpleAttributeSet();
@@ -443,20 +466,48 @@ class MyTextPane extends JTextPane {
         }
     }
 
+    public void addButton(final int totalDuplicates, final JDialog dupFrame) {
+
+        Document doc = this.getDocument();
+        SimpleAttributeSet attrs = new SimpleAttributeSet();
+
+        JButton button = new JButton();
+        button.setText(String.valueOf(totalDuplicates));
+        //button.setCursor(Cursor.getDefaultCursor());
+        //button.setMargin(new Insets(0, 0, 0, 0));
+        //StyleConstants.setComponent(attrs, button);
+
+                        dupFrame.setSize(600, 150);
+        dupFrame.setLocation(button.getLocation());
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                VBASLogger.logDebug("clicked");
+                        
+
+                dupFrame.setVisible(true);
+                
+            }
+        });
+
+        this.insertComponent(button);
+
+    }
+
 }
 
 class MyLinkController extends MouseAdapter implements MouseMotionListener {
 
-    private MyTextPane myTextPane;
+    private SummaryTextPane myTextPane;
     private String copiedSelection = null;
     private Clipboard clipboard;
 
-    MyLinkController(MyTextPane myTextPane) {
+    MyLinkController(SummaryTextPane myTextPane) {
         this.myTextPane = myTextPane;
     }
 
     public void mouseReleased(MouseEvent e) {
-        /*copiedSelection = myTextPane.getSelectedText();
+        /*copiedSelection = summaryTextPane.getSelectedText();
 
          if (copiedSelection != null) {
          StringSelection data = new StringSelection(copiedSelection);
@@ -522,5 +573,5 @@ class MyLinkController extends MouseAdapter implements MouseMotionListener {
         }
     }
 
-}//LinkController
+} //LinkController
 
