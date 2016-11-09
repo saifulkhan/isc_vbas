@@ -10,19 +10,20 @@ import java.util.Date;
  */
 public class SeisEvent extends AbstractSeisData {
 
-    private Integer evid = null;           //event id
-    private Hypocentre primeHypo;   //reference of prime hypocentre
-    private Integer phaseNumber;    //phse number associated with this event
-    private Double magnitude;       //a reference magnitude    
-    private String location;        //the region name
-    private Integer grn;            //these two ref, please ask James
+    private Integer evid = null;    // event id
+    private Hypocentre primeHypo;   // reference of prime hypocentre
+    private Integer phaseNumber;    // phse number associated with this event
+    private Double magnitude;       // a reference magnitude    
+    private String location;        // the region name
+    private Integer grn;            // these two ref, please ask James
     private Integer srn;
-    private Integer defaultDepth;   //default Depth of the event
+    private Integer defaultDepth;   // default Depth of the event
     private String eType;
 
     private Double defaultDepthGrid = null;
     private String locatorMessage = null;
     private String nearbyEvents = null;
+    
     /*
     'Done' will set this to 'now' date. 
      If not null, i.e., the event is done and highlight as gray.
@@ -44,6 +45,7 @@ public class SeisEvent extends AbstractSeisData {
             Boolean isBanish,
             Date finishDate,
             ArrayList<Duplicates> duplicatesList) {
+        
         this.evid = evid;
         this.eType = eType;
         this.defaultDepthGrid = defaultDepthGrid;

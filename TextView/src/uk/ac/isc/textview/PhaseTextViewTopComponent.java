@@ -183,8 +183,9 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         table.getColumnModel().getColumn(13).setCellRenderer(centerRenderer);
         table.getColumnModel().getColumn(14).setCellRenderer(centerRenderer);
         table.getColumnModel().getColumn(15).setCellRenderer(centerRenderer);
-        // OP.ID. is NULL
-        table.getColumnModel().getColumn(6).setCellRenderer(new PhaseTableCellRender());
+
+        // if time res is 999
+        table.getColumnModel().getColumn(8).setCellRenderer(new PhaseTableCellRender());
 
         // This part of the code picks good column sizes. 
         // If all column heads are wider than the column's cells'
@@ -201,7 +202,7 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         for (int i = 0; i < model.getColumnCount(); i++) {
             //VBASLogger.logDebug("i=" + i);
             column = table.getColumnModel().getColumn(i);
-            comp = headerRenderer.getTableCellRendererComponent( null, column.getHeaderValue(), false, false, 0, 0);
+            comp = headerRenderer.getTableCellRendererComponent(null, column.getHeaderValue(), false, false, 0, 0);
             headerWidth = comp.getPreferredSize().width;
 
             comp = table.getDefaultRenderer(model.getColumnClass(i))
@@ -212,51 +213,6 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
 
     }
 
-    // set long table format, e.g. column width etc.
-    private void setupLongTableVisualAttributes(JTable longTable) {
-
-        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-        //DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
-        rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
-        //leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
-
-        longTable.setShowGrid(false);
-        longTable.setShowVerticalLines(false);
-        longTable.setShowHorizontalLines(false);
-        longTable.setAutoCreateRowSorter(true);
-        longTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        longTable.getColumnModel().getColumn(0).setResizable(false);
-        longTable.getColumnModel().getColumn(0).setMinWidth(50);
-        longTable.getColumnModel().getColumn(0).setMaxWidth(50);
-        longTable.getColumnModel().getColumn(1).setPreferredWidth(60);
-        longTable.getColumnModel().getColumn(2).setPreferredWidth(80); //station code
-        longTable.getColumnModel().getColumn(3).setPreferredWidth(120); //time
-        longTable.getColumnModel().getColumn(4).setPreferredWidth(200); //region name
-
-        longTable.getColumnModel().getColumn(5).setPreferredWidth(60);
-        longTable.getColumnModel().getColumn(6).setPreferredWidth(60);
-
-        longTable.getColumnModel().getColumn(7).setPreferredWidth(60); //phase name
-        longTable.getColumnModel().getColumn(8).setPreferredWidth(60); //isc phase name
-
-        longTable.getColumnModel().getColumn(10).setMinWidth(40);
-        longTable.getColumnModel().getColumn(10).setMaxWidth(40);
-
-        longTable.getColumnModel().getColumn(7).setCellRenderer(rightRenderer);
-        longTable.getColumnModel().getColumn(8).setCellRenderer(rightRenderer);
-        longTable.getColumnModel().getColumn(9).setCellRenderer(rightRenderer);
-        longTable.getColumnModel().getColumn(10).setCellRenderer(rightRenderer);
-        longTable.getColumnModel().getColumn(11).setCellRenderer(rightRenderer);
-        
-        // OP.ID. is NULL
-        longTable.getColumnModel().getColumn(6).setCellRenderer(new PhaseTableCellRender());
-
-        longTable.setRowHeight(25);
-        longTable.setFont(new Font("Sans-serif", Font.PLAIN, 14));
-        longTable.setShowGrid(false);
-        longTable.setShowVerticalLines(false);
-        longTable.setShowHorizontalLines(false);
-    }
 
     /*
      *****************************************************************************************
@@ -336,7 +292,6 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         }
     }
 
-    
     /*
      **********************************************************************************
      * Code to render cell
@@ -354,26 +309,24 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
                 int row,
                 int column) {
 
-            Color backgroundColor = getBackground();
-
+            //Color backgroundColor = getBackground();
             Component cellComponent
                     = super.getTableCellRendererComponent(
                             table, value, isSelected, hasFocus, row, column);
 
-            String origPhaseType = phasesList.getPhases().get(row).getOrigPhaseType();
- 
-            if (origPhaseType == null) {
-                //VBASLogger.logDebug(origPhaseType);
-                cellComponent.setBackground(Color.GRAY);
-            } else {
-                cellComponent.setBackground(Color.WHITE);
-            }
+            Double timResidual = phasesList.getPhases().get(row).getTimeResidual();
 
+            if (timResidual != null) {
+                if (timResidual == 999.0) {
+                    cellComponent.setForeground(Color.GRAY);
+                } else {
+                    cellComponent.setForeground(Color.BLACK);
+                }
+            }
             return cellComponent;
         }
     }
 
-    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -420,9 +373,4 @@ public final class PhaseTextViewTopComponent extends TopComponent implements Sei
         // TODO read your settings according to their version
     }
 
-    
-    
 }
-
-
-

@@ -46,6 +46,10 @@ public class SeisDataDAO {
     protected static String pgUser;
     protected static String pgPassword;
     protected static String sysUser;
+    
+    // blockid set as setenv BLOCKID
+    protected static String blockId;
+    
     // Assess schema
     protected static String assessUser;
     protected static String assessPassword;
@@ -78,6 +82,8 @@ public class SeisDataDAO {
         assessUser = env.get("ASSESS_USER");
         assessPassword = env.get("ASSESS_PW");
 
+        blockId = env.get("BLOCKID");
+        
         assessDir = env.get("ASSESSDIR");
         commitDir = env.get("COMMITDIR");
         assessUrl = env.get("ASSESS_URL");
@@ -162,14 +168,29 @@ public class SeisDataDAO {
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        query = "SELECT e.evid, h.author, h.day, h.lat, h.lon, h.depth, e.etype, get_default_depth_grid (h.lat, h.lon), e.banished,"
-                + " ( SELECT MAX(ea.finish) FROM event_allocation ea WHERE ea.evid = e.evid )"
-                + "    FROM event e, hypocenter h"
-                + "    WHERE e.prime_hyp = h.hypid"
-                + "     AND h.isc_evid = e.evid"
-                + "     AND e.ready IS NOT NULL"
-                + "     AND h.hypid = h.pref_hypid"
-                + " ORDER BY h.day ASC;";
+        VBASLogger.logDebug("Loading block, BLOCKID = " + blockId);
+        if (blockId == null) {
+            String errMsg = "ERR 1 : Set the environment variable BLOCKID.";
+            JOptionPane.showMessageDialog(null,
+                    errMsg,
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            logger.log(Level.SEVERE, errMsg);
+            
+            System.exit(-1);
+        }
+
+                
+        query = "SELECT e.evid, h.author, h.day, h.lat, h.lon, h.depth, e.etype, get_default_depth_grid (h.lat, h.lon), e.banished, ( SELECT MAX(ea.finish) FROM event_allocation ea WHERE ea.evid = e.evid ) "
+                + "    FROM event e, hypocenter h, block_allocation ba, event_allocation ea "
+                + "   WHERE ba.id = " + blockId
+                + "     AND ba.id = ea.block_allocation_id "
+                + "     AND ea.evid = e.evid "
+                + "     AND e.prime_hyp = h.hypid "
+                + "     AND h.isc_evid = e.evid "
+                + "     AND e.ready IS NOT NULL "
+                + "     AND h.hypid = h.pref_hypid "
+                + "ORDER BY h.day ASC; ";
 
         VBASLogger.logDebug("Executing Query: " + query);
 
@@ -336,9 +357,9 @@ public class SeisDataDAO {
         // VBASLogger.logDebug("Entire locator message:\n" + tempMsg + "\nFiltered locator message:\n" + msg);
         endTime2 = System.nanoTime();
         /*VBASLogger.logDebug("Evid = " + evid
-                + ", T_SQL =" + (endTime1 - startTime1) / 1000000
-                + ", T_Parsing = " + (endTime3 - startTime3) / 1000000
-                + ", T_Total = " + (endTime2 - startTime2) / 1000000);*/
+         + ", T_SQL =" + (endTime1 - startTime1) / 1000000
+         + ", T_Parsing = " + (endTime3 - startTime3) / 1000000
+         + ", T_Total = " + (endTime2 - startTime2) / 1000000);*/
         totalLocatormessageLoadingTime += (endTime2 - startTime2) / 1000000;
 
         return msg;
@@ -394,15 +415,13 @@ public class SeisDataDAO {
         ResultSet rs = null;
         String query = "SELECT * FROM DUPLICATES(" + evid + ");";
         ArrayList<Duplicates> duplicatesList = new ArrayList<>();
-        
+
         //VBASLogger.logDebug("Evid = " + evid);
         try {
             st = pgCon.createStatement();
             rs = st.executeQuery(query);
 
             while (rs.next()) {
-
-               
 
                 String ownsta = rs.getString("ownsta");
                 String ownphase = rs.getString("ownphase");
@@ -455,7 +474,7 @@ public class SeisDataDAO {
 
         totalDuplicatesLoadingTime += (System.nanoTime() - startTime) / 1000000;
          //VBASLogger.logDebug("Evid = " + evid + ", t = " + (System.nanoTime() - startTime) / 1000000);
-                
+
         return duplicatesList;
     }
 
@@ -809,9 +828,6 @@ public class SeisDataDAO {
                 if (st != null) {
                     st.close();
                 }
-                /*if (pgCon != null) {
-                 pgCon.close();
-                 }*/
 
             } catch (SQLException ex) {
                 return false;
@@ -988,6 +1004,13 @@ public class SeisDataDAO {
 
                 if (rs.getObject(7) != null) {
                     tmp.setTimeResidual(rs.getDouble(7));
+                } // Issue #103 
+                // When Time Residual = null and Original Phase Type is one of the "P|Pg|Pb|Pn|S|Sg|Sb|Sn",
+                // then set it to 999.    
+                else if (rs.getString(9) != null) {
+                    if (rs.getString(9).matches("P|Pg|Pb|Pn|S|Sg|Sb|Sn")) {
+                        tmp.setTimeResidual(999.0);
+                    }
                 }
 
                 tmp.setPhid(rs.getInt(8));
@@ -1062,10 +1085,6 @@ public class SeisDataDAO {
                 if (st != null) {
                     st.close();
                 }
-                /*if (pgCon != null) {
-                 pgCon.close();
-                 }*/
-
             } catch (SQLException ex) {
                 return false;
             }

@@ -21,9 +21,9 @@ public class PhaseTextViewTableModel extends AbstractTableModel {
         "Region Name",
         "Delta. Deg.",
         "ES. Az.",
-        "Op. ID",
-        "ISC ID",
-        "ISC Res",
+        "Orig. Phase",
+        "ISC Phase",
+        "Time Res.",
         "Def.",
         "AmpMag",
         "Slowness",
@@ -147,18 +147,25 @@ public class PhaseTextViewTableModel extends AbstractTableModel {
             case 7:
                 retObject = phasesList.get(rowIndex).getIscPhaseType();
                 break;
+            
             case 8:
+                String origPhase = phasesList.get(rowIndex).getOrigPhaseType();
+
                 if (phasesList.get(rowIndex).getTimeResidual() != null) {
-                    if (phasesList.get(rowIndex).getTimeResidual() > 0) {
+                    // Issue #103 
+                    if (phasesList.get(rowIndex).getTimeResidual() == 999.0) {
+                        retObject = "999.0";
+                    } else if (phasesList.get(rowIndex).getTimeResidual() > 0) {
                         retObject = "+" + numFormat.format(phasesList.get(rowIndex).getTimeResidual());
                     } else {
                         retObject = numFormat.format(phasesList.get(rowIndex).getTimeResidual());
-
                     }
-                } else {
+                } else { 
                     retObject = null;
                 }
+                
                 break;
+                
             case 9:
                 if (phasesList.get(rowIndex).getDefining() == true) {
                     retObject = "T";
