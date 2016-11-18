@@ -48,7 +48,7 @@ public class HypocentreTableModel extends AbstractTableModel {
     };
 
     private ArrayList<Hypocentre> hyposList;
-    private static final DecimalFormat decimalFormat = new DecimalFormat(".##");
+    private static final DecimalFormat decimalFormat = new DecimalFormat("0.00");
 
     public HypocentreTableModel(ArrayList<Hypocentre> hyposList) {
         this.hyposList = hyposList;
@@ -111,14 +111,13 @@ public class HypocentreTableModel extends AbstractTableModel {
 
             case 2:  // lat
                 retObject = (hyposList.get(rowIndex).getLat() < 0)
-                        ? decimalFormat.format(Math.abs(hyposList.get(rowIndex).getLat())) + "S"
+                        ? decimalFormat.format(hyposList.get(rowIndex).getLat()) + "S"
                         : decimalFormat.format(hyposList.get(rowIndex).getLat()) + "N";
                 break;
 
             case 3: // lon
-
                 retObject = (hyposList.get(rowIndex).getLon() < 0)
-                        ? decimalFormat.format(Math.abs(hyposList.get(rowIndex).getLon())) + "W"
+                        ? decimalFormat.format(hyposList.get(rowIndex).getLon()) + "W"
                         : decimalFormat.format(hyposList.get(rowIndex).getLon()) + "E";
                 break;
 
@@ -128,26 +127,28 @@ public class HypocentreTableModel extends AbstractTableModel {
 
             case 5: // depth err
                 if (hyposList.get(rowIndex).getErrDepth() != null) {
-                    retObject = (int) Math.round(hyposList.get(rowIndex).getErrDepth());
+                    retObject = Math.round(hyposList.get(rowIndex).getErrDepth());
                 } else {
                     retObject = null;
                 }
                 break;
 
-            case 6: //mag 1 + type
+            case 6: // mag 1 + type
                 if (hyposList.get(rowIndex).getMagnitude().size() > 0) {
                     Object key = hyposList.get(rowIndex).getMagnitude().keySet().toArray()[0];
-                    retObject = hyposList.get(rowIndex).getMagnitude().get(key).toString() + key.toString();
+                    retObject = decimalFormat.format(hyposList.get(rowIndex).getMagnitude().get(key))
+                            + key.toString();
                 } else {
                     retObject = null;
                 }
 
                 break;
 
-            case 7:
+            case 7: // mag 2 + type
                 if (hyposList.get(rowIndex).getMagnitude().size() > 1) {
                     Object key = hyposList.get(rowIndex).getMagnitude().keySet().toArray()[1];
-                    retObject = hyposList.get(rowIndex).getMagnitude().get(key).toString() + key.toString();
+                    retObject = decimalFormat.format(hyposList.get(rowIndex).getMagnitude().get(key))
+                            + key.toString();
                 } else {
                     retObject = null;
                 }
@@ -156,7 +157,7 @@ public class HypocentreTableModel extends AbstractTableModel {
             case 8:  // RMS
                 //VBASLogger.logDebug("sdobs=" + hyposList.get(rowIndex).getSdobs());
                 if (hyposList.get(rowIndex).getSdobs() != null) {
-                    retObject = Double.valueOf(decimalFormat.format(hyposList.get(rowIndex).getSdobs()));
+                    retObject = decimalFormat.format(hyposList.get(rowIndex).getSdobs());
                 } else {
                     retObject = null;
                 }

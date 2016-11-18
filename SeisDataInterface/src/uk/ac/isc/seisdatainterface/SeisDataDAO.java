@@ -800,8 +800,11 @@ public class SeisDataDAO {
                 tmp.setNumStations(rs.getInt(16));
                 tmp.setNumDefStations(rs.getInt(17));
                 tmp.setMsec(rs.getInt(18));
+                
                 if (rs.getObject(19) != null) {
                     tmp.setSdobs(rs.getDouble(19));
+                } else {
+                    tmp.setSdobs(null);
                 }
 
                 if (rs.getObject(20) != null) {

@@ -22,42 +22,21 @@ public class PieChartData {
     private ArrayList<String> agenciesList = new ArrayList<String>();
 
     public PieChartData(ArrayList<Phase> phases) {
-
-        if (phases.isEmpty()) {
-            return;
-        }
-
-        for (Phase phase : phases) {
-            agenciesList.add(phase.getReportAgency());
-        }
-
-        //a temporary hash set and a hash map 
-        HashSet<String> nameSet = new HashSet<String>(agenciesList);
-        HashMap<String, Double> tmpMap = new HashMap<String, Double>();
-
-        for (String name : nameSet) {
-            //get the frequecy of an agency and put it into the map
-            double tmpFreq = (double) Collections.frequency(agenciesList, name) / agenciesList.size();
-            tmpMap.put(name, tmpFreq);
-        }
-
-        //agencyMap = tmpMap;
-        agencyMap = SortByValue(tmpMap);
-
+        updateData(phases);
     }
 
+    
     /**
      * Given new phases, and update the agency list and percentages
-     *
-     * @param phases
      */
-    public void UpdateData(ArrayList<Phase> phases) {
+    public void updateData(ArrayList<Phase> phases) {
 
         if (phases.isEmpty()) {
             return;
         }
 
         agenciesList.clear();
+        
         for (Phase phase : phases) {
             agenciesList.add(phase.getReportAgency());
         }

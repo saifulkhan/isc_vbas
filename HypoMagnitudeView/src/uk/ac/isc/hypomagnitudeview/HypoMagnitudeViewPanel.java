@@ -397,7 +397,7 @@ public class HypoMagnitudeViewPanel extends JPanel {
 
     /*
      * If the layout is vertical.
-     * Saiful: hard coded and not used.
+     * Not used: hard coded now.
      */
     private void setTwoVtcCharts() {
         CombinedRangeCategoryPlot cPlotMain = new CombinedRangeCategoryPlot(new NumberAxis());

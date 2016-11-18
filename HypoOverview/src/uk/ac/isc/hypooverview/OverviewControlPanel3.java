@@ -96,8 +96,9 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
         jRadioButton12 = new javax.swing.JRadioButton();
         jRadioButton10 = new javax.swing.JRadioButton();
         jLabel4 = new javax.swing.JLabel();
-        jPanel5 = new javax.swing.JPanel();
-        jLabel_miniMap = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
+        jSeparator2 = new javax.swing.JSeparator();
+        jSeparator3 = new javax.swing.JSeparator();
 
         buttonGroup1.add(radioButton2_DB);
         org.openide.awt.Mnemonics.setLocalizedText(radioButton2_DB, org.openide.util.NbBundle.getMessage(OverviewControlPanel3.class, "OverviewControlPanel3.radioButton2_DB.text")); // NOI18N
@@ -171,17 +172,17 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(radioButton1_CB)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(radioButton2_DB)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(radioButton3_SB)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(radioButton4_RO)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(radioButton5_An)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(radioButton6_SS)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -296,27 +297,27 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel2)
-                .addGap(20, 20, 20)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jCheckBox1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jCheckBox2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jCheckBox3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jCheckBox4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jCheckBox5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jCheckBox6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jCheckBox7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jCheckBox8))
-                    .addComponent(slider_bandSelection, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(slider_bandSelection, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
         );
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(OverviewControlPanel3.class, "OverviewControlPanel3.jLabel3.text")); // NOI18N
@@ -364,11 +365,11 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel3)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jRadioButton7)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(radioButton_Static)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jRadioButton9)
                 .addContainerGap())
         );
@@ -418,134 +419,51 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(6, 6, 6)
                 .addComponent(jLabel4)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jRadioButton10)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(radioButton_Middle)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jRadioButton12)
                 .addContainerGap())
-        );
-
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel_miniMap, org.openide.util.NbBundle.getMessage(OverviewControlPanel3.class, "OverviewControlPanel3.jLabel_miniMap.text")); // NOI18N
-
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel_miniMap, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
-        );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel_miniMap, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jSeparator1)
+            .addComponent(jSeparator2)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(20, Short.MAX_VALUE)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(34, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 15, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.TRAILING)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void radioButton1_CBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButton1_CBActionPerformed
-        /*
-         * neighbour bands first
-         */
-        radioButton1_CB.setSelected(true);
-        radioButton_Static.setSelected(true);
-        setAllBandsSelected();
-        hop.setDepthBandOrder(4);
-    }//GEN-LAST:event_radioButton1_CBActionPerformed
-
-    private void radioButton2_DBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButton2_DBActionPerformed
-        // deep first
-        slider_bandSelection.setValue(7 - hop.getCurrentBand());
-        setAllBandsSelected();
-        hop.setDepthBandOrder(1);
-        radioButton2_DB.setSelected(true);
-
-
-    }//GEN-LAST:event_radioButton2_DBActionPerformed
-
-    private void radioButton3_SBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButton3_SBActionPerformed
-        //shallow first
-        slider_bandSelection.setValue(7 - hop.getCurrentBand());
-        radioButton3_SB.setSelected(true);
-        setAllBandsSelected();
-        hop.setDepthBandOrder(2);
-
-    }//GEN-LAST:event_radioButton3_SBActionPerformed
-
-    private void radioButton4_ROActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButton4_ROActionPerformed
-        // random
-        slider_bandSelection.setValue(7 - hop.getCurrentBand());
-        radioButton4_RO.setSelected(true);
-        setAllBandsSelected();
-        hop.setDepthBandOrder(3);
-    }//GEN-LAST:event_radioButton4_ROActionPerformed
-
-    private void radioButton5_AnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButton5_AnActionPerformed
-        // animation
-        slider_bandSelection.setValue(7 - hop.getCurrentBand());
-        radioButton5_An.setSelected(true);
-        setAllBandsSelected();
-
-        // set hypo anim to non
-        radioButton_Static.setSelected(true);
-
-        hop.setDepthBandOrder(5);
-        hop.setHypoVisOptions(2);
-    }//GEN-LAST:event_radioButton5_AnActionPerformed
-
-    private void radioButton6_SSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButton6_SSActionPerformed
-        // TODO add your handling code here:
-        //jSlider2.setValue(7-hop.getCurrentBand());
-
-        int fps = (int) slider_bandSelection.getValue();
-        boolean[] visible = new boolean[8];
-        for (int i = 0; i < 8; i++) {
-            if (i == fps) {
-                visible[7 - i] = true;
-                checkBoxRef[7 - i].setSelected(true);
-            } else {
-                visible[7 - i] = false;
-                checkBoxRef[7 - i].setSelected(false);
-            }
-        }
-
-        radioButton6_SS.setSelected(true);
-        hop.setMultiDepthBandVisible(visible);
-        hop.setDepthBandOrder(6);
-    }//GEN-LAST:event_radioButton6_SSActionPerformed
 
     private void slider_bandSelectionStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_slider_bandSelectionStateChanged
         // single selection and disable other bands
@@ -688,6 +606,74 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jCheckBox8ActionPerformed
 
+    private void radioButton6_SSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButton6_SSActionPerformed
+        // TODO add your handling code here:
+        //jSlider2.setValue(7-hop.getCurrentBand());
+
+        int fps = (int) slider_bandSelection.getValue();
+        boolean[] visible = new boolean[8];
+        for (int i = 0; i < 8; i++) {
+            if (i == fps) {
+                visible[7 - i] = true;
+                checkBoxRef[7 - i].setSelected(true);
+            } else {
+                visible[7 - i] = false;
+                checkBoxRef[7 - i].setSelected(false);
+            }
+        }
+
+        radioButton6_SS.setSelected(true);
+        hop.setMultiDepthBandVisible(visible);
+        hop.setDepthBandOrder(6);
+    }//GEN-LAST:event_radioButton6_SSActionPerformed
+
+    private void radioButton1_CBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButton1_CBActionPerformed
+        /*
+        * neighbour bands first
+        */
+        radioButton1_CB.setSelected(true);
+        radioButton_Static.setSelected(true);
+        setAllBandsSelected();
+        hop.setDepthBandOrder(4);
+    }//GEN-LAST:event_radioButton1_CBActionPerformed
+
+    private void radioButton4_ROActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButton4_ROActionPerformed
+        // random
+        slider_bandSelection.setValue(7 - hop.getCurrentBand());
+        radioButton4_RO.setSelected(true);
+        setAllBandsSelected();
+        hop.setDepthBandOrder(3);
+    }//GEN-LAST:event_radioButton4_ROActionPerformed
+
+    private void radioButton5_AnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButton5_AnActionPerformed
+        // animation
+        slider_bandSelection.setValue(7 - hop.getCurrentBand());
+        radioButton5_An.setSelected(true);
+        setAllBandsSelected();
+
+        // set hypo anim to non
+        radioButton_Static.setSelected(true);
+
+        hop.setDepthBandOrder(5);
+        hop.setHypoVisOptions(2);
+    }//GEN-LAST:event_radioButton5_AnActionPerformed
+
+    private void radioButton3_SBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButton3_SBActionPerformed
+        //shallow first
+        slider_bandSelection.setValue(7 - hop.getCurrentBand());
+        radioButton3_SB.setSelected(true);
+        setAllBandsSelected();
+        hop.setDepthBandOrder(2);
+    }//GEN-LAST:event_radioButton3_SBActionPerformed
+
+    private void radioButton2_DBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioButton2_DBActionPerformed
+        // deep first
+        slider_bandSelection.setValue(7 - hop.getCurrentBand());
+        setAllBandsSelected();
+        hop.setDepthBandOrder(1);
+        radioButton2_DB.setSelected(true);
+    }//GEN-LAST:event_radioButton2_DBActionPerformed
+
     public void resetOrderHypoOption() {
         radioButton1_CB.setSelected(true);
         radioButton_Static.setSelected(true);
@@ -709,16 +695,17 @@ public class OverviewControlPanel3 extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel_miniMap;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
     private javax.swing.JRadioButton jRadioButton10;
     private javax.swing.JRadioButton jRadioButton12;
     private javax.swing.JRadioButton jRadioButton7;
     private javax.swing.JRadioButton jRadioButton9;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
     private javax.swing.JRadioButton radioButton1_CB;
     private javax.swing.JRadioButton radioButton2_DB;
     private javax.swing.JRadioButton radioButton3_SB;

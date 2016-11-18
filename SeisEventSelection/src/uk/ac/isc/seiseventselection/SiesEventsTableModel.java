@@ -23,7 +23,7 @@ public class SiesEventsTableModel extends AbstractTableModel {
         "Origin Time",
         "Lat.",
         "Long.",
-        "Mag.()",
+        "Mag.",
         "Nass"};
 
     private final Class[] columns = new Class[]{

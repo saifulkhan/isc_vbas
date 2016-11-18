@@ -73,7 +73,7 @@ public final class HypoOverviewTopComponent extends TopComponent implements Seis
         
         scrollPane = new JScrollPane(overviewPanel);
         this.setLayout(new BorderLayout());
-        this.add(controlPanel, BorderLayout.NORTH);
+        this.add(controlPanel, BorderLayout.WEST);
         this.add(scrollPane, BorderLayout.CENTER);
     }
 

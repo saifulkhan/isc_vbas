@@ -105,6 +105,7 @@ public class CommandTablePanel extends JPanel {
         this.setLayout(new FlowLayout());
         this.add(button_manualCommand);
         this.add(button_assess);
+        this.add(new JLabel("                       "));
         this.add(button_commit);
         //this.add(label_total);
         //this.add(label_totalValue);
