@@ -1011,7 +1011,7 @@ public class SeisDataDAO {
                 // When Time Residual = null and Original Phase Type is one of the "P|Pg|Pb|Pn|S|Sg|Sb|Sn",
                 // then set it to 999.    
                 else if (rs.getString(9) != null) {
-                    if (rs.getString(9).matches("P|Pg|Pb|Pn|S|Sg|Sb|Sn")) {
+                    if (rs.getString(9).toLowerCase().matches("p|pg|pb|pn|s|sg|sb|sn")) {
                         tmp.setTimeResidual(999.0);
                     }
                 }
