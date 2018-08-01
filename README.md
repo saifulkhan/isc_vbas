@@ -1,3 +1,5 @@
+
+
 ## VBAS : Visual Bulletin Analytics System
 
 An example screenshoot of [2011 Tōhoku earthquake and tsunami](https://en.wikipedia.org/wiki/2011_T%C5%8Dhoku_earthquake_and_tsunami)
@@ -15,3 +17,9 @@ The GUI is designed to view on two-monitor screen. Please download and zoom to s
 
 
 **Hypocentre Depths:** Reported hypocentre depths (in km) are shown by the vertical bars.  A fixed depth is indicated with a small open circle and reported depth errors are indicated by the short horizontal lines. The 3-5 letter codes represent the different institutes who calculated a hypocentre which was reported to the ISC. The ISC is highlighted in red and is the preferred depth.
+
+
+
+## Background 
+
+https://www.oerc.ox.ac.uk/projects/seismic-change
