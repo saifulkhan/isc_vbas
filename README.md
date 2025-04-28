@@ -1,3 +1,4 @@
+This software is actively maintained by [ISC](https://www.isc.ac.uk/) internally. For up-to-date information, please reach out to them.
 
 
 ## VBAS : Visual Bulletin Analytics System
